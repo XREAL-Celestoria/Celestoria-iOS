@@ -4,7 +4,7 @@
 //
 //  Created by Minjun Kim on 1/16/25.
 //
-
+ 
 import SwiftUI
 
 @main

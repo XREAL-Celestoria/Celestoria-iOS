@@ -7,34 +7,30 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2F8800BA2D38CE6800220F89 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B22D38CE6800220F89 /* AppModel.swift */; };
+		2F8800BB2D38CE6800220F89 /* CelestoriaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B42D38CE6800220F89 /* CelestoriaApp.swift */; };
+		2F8800BC2D38CE6800220F89 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B52D38CE6800220F89 /* ContentView.swift */; };
+		2F8800BD2D38CE6800220F89 /* ImmersiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B62D38CE6800220F89 /* ImmersiveView.swift */; };
+		2F8800BE2D38CE6800220F89 /* ToggleImmersiveSpaceButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B82D38CE6800220F89 /* ToggleImmersiveSpaceButton.swift */; };
+		2F8800BF2D38CE6800220F89 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F8800B02D38CE6800220F89 /* Preview Assets.xcassets */; };
+		2F8800C02D38CE6800220F89 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F8800B32D38CE6800220F89 /* Assets.xcassets */; };
+		2F8800C42D38D3AE00220F89 /* DIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800C32D38D3AE00220F89 /* DIContainer.swift */; };
 		A21E477E2D38CD55002B60FA /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = A21E477D2D38CD55002B60FA /* RealityKitContent */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2F8800B02D38CE6800220F89 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		2F8800B22D38CE6800220F89 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		2F8800B32D38CE6800220F89 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2F8800B42D38CE6800220F89 /* CelestoriaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CelestoriaApp.swift; sourceTree = "<group>"; };
+		2F8800B52D38CE6800220F89 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2F8800B62D38CE6800220F89 /* ImmersiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImmersiveView.swift; sourceTree = "<group>"; };
+		2F8800B72D38CE6800220F89 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2F8800B82D38CE6800220F89 /* ToggleImmersiveSpaceButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleImmersiveSpaceButton.swift; sourceTree = "<group>"; };
+		2F8800C32D38D3AE00220F89 /* DIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DIContainer.swift; sourceTree = "<group>"; };
 		A21E47782D38CD55002B60FA /* Celestoria.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Celestoria.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A21E477C2D38CD55002B60FA /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A21E478F2D38CD57002B60FA /* Exceptions for "Celestoria" folder in "Celestoria" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = A21E47772D38CD55002B60FA /* Celestoria */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		A21E477A2D38CD55002B60FA /* Celestoria */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				A21E478F2D38CD57002B60FA /* Exceptions for "Celestoria" folder in "Celestoria" target */,
-			);
-			path = Celestoria;
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		A21E47752D38CD55002B60FA /* Frameworks */ = {
@@ -48,10 +44,186 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2F78A5802D38D8BF00DF5899 /* ObjectsDetails */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ObjectsDetails;
+			sourceTree = "<group>";
+		};
+		2F8800B12D38CE6800220F89 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				2F8800B02D38CE6800220F89 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		2F8800B92D38CE6800220F89 /* Celestoria */ = {
+			isa = PBXGroup;
+			children = (
+				2F8800C22D38D39C00220F89 /* App */,
+				2F8800C82D38D43F00220F89 /* Data */,
+				2F8800C52D38D3C300220F89 /* Domain */,
+				2F8800CC2D38D47400220F89 /* Presentation */,
+				2F8800D42D38D75D00220F89 /* Shared */,
+				2F8800B12D38CE6800220F89 /* Preview Content */,
+				2F8800B22D38CE6800220F89 /* AppModel.swift */,
+				2F8800B32D38CE6800220F89 /* Assets.xcassets */,
+			);
+			path = Celestoria;
+			sourceTree = "<group>";
+		};
+		2F8800C22D38D39C00220F89 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				2F8800CD2D38D52600220F89 /* Configuration */,
+				2F8800B42D38CE6800220F89 /* CelestoriaApp.swift */,
+				2F8800C32D38D3AE00220F89 /* DIContainer.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		2F8800C52D38D3C300220F89 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				2F8800C72D38D43300220F89 /* UseCases */,
+				2F8800C62D38D42000220F89 /* Entities */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		2F8800C62D38D42000220F89 /* Entities */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Entities;
+			sourceTree = "<group>";
+		};
+		2F8800C72D38D43300220F89 /* UseCases */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = UseCases;
+			sourceTree = "<group>";
+		};
+		2F8800C82D38D43F00220F89 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				2F8800CE2D38D5EF00220F89 /* Network */,
+				2F8800CB2D38D46800220F89 /* Persistence */,
+				2F8800C92D38D44C00220F89 /* Repositories */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		2F8800C92D38D44C00220F89 /* Repositories */ = {
+			isa = PBXGroup;
+			children = (
+				2F8800CF2D38D60400220F89 /* MockRepositories */,
+			);
+			path = Repositories;
+			sourceTree = "<group>";
+		};
+		2F8800CB2D38D46800220F89 /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
+		2F8800CC2D38D47400220F89 /* Presentation */ = {
+			isa = PBXGroup;
+			children = (
+				2F8800D02D38D6DB00220F89 /* Scenes */,
+				2F8800D22D38D70900220F89 /* Components */,
+				2F8800D32D38D72C00220F89 /* Resources */,
+			);
+			path = Presentation;
+			sourceTree = "<group>";
+		};
+		2F8800CD2D38D52600220F89 /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				2F8800B72D38CE6800220F89 /* Info.plist */,
+			);
+			path = Configuration;
+			sourceTree = "<group>";
+		};
+		2F8800CE2D38D5EF00220F89 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		2F8800CF2D38D60400220F89 /* MockRepositories */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = MockRepositories;
+			sourceTree = "<group>";
+		};
+		2F8800D02D38D6DB00220F89 /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				2F78A5802D38D8BF00DF5899 /* ObjectsDetails */,
+				2F8800D12D38D6F100220F89 /* Main */,
+			);
+			path = Scenes;
+			sourceTree = "<group>";
+		};
+		2F8800D12D38D6F100220F89 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				2F8800B52D38CE6800220F89 /* ContentView.swift */,
+				2F8800B62D38CE6800220F89 /* ImmersiveView.swift */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
+		2F8800D22D38D70900220F89 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				2F8800B82D38CE6800220F89 /* ToggleImmersiveSpaceButton.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		2F8800D32D38D72C00220F89 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		2F8800D42D38D75D00220F89 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				2F8800D52D38D76F00220F89 /* Utilities */,
+				2F8800D62D38D77700220F89 /* Extensions */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		2F8800D52D38D76F00220F89 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		2F8800D62D38D77700220F89 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		A21E476F2D38CD55002B60FA = {
 			isa = PBXGroup;
 			children = (
-				A21E477A2D38CD55002B60FA /* Celestoria */,
+				2F8800B92D38CE6800220F89 /* Celestoria */,
 				A21E477B2D38CD55002B60FA /* Packages */,
 				A21E47792D38CD55002B60FA /* Products */,
 			);
@@ -87,9 +259,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				A21E477A2D38CD55002B60FA /* Celestoria */,
 			);
 			name = Celestoria;
 			packageProductDependencies = (
@@ -138,6 +307,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2F8800BF2D38CE6800220F89 /* Preview Assets.xcassets in Resources */,
+				2F8800C02D38CE6800220F89 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -148,6 +319,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2F8800BA2D38CE6800220F89 /* AppModel.swift in Sources */,
+				2F8800BB2D38CE6800220F89 /* CelestoriaApp.swift in Sources */,
+				2F8800BC2D38CE6800220F89 /* ContentView.swift in Sources */,
+				2F8800BD2D38CE6800220F89 /* ImmersiveView.swift in Sources */,
+				2F8800C42D38D3AE00220F89 /* DIContainer.swift in Sources */,
+				2F8800BE2D38CE6800220F89 /* ToggleImmersiveSpaceButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
