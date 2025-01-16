@@ -224,8 +224,8 @@
 			isa = PBXGroup;
 			children = (
 				2F8800B92D38CE6800220F89 /* Celestoria */,
-				A21E477B2D38CD55002B60FA /* Packages */,
 				A21E47792D38CD55002B60FA /* Products */,
+				A21E477B2D38CD55002B60FA /* Packages */,
 			);
 			sourceTree = "<group>";
 		};
