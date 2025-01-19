@@ -4,30 +4,26 @@
 //
 //  Created by Minjun Kim on 1/16/25.
 //
- 
+
+// 앱의 진입점, DIContainer 사용하여 의존성 제공
 import SwiftUI
 
 @main
 struct CelestoriaApp: App {
-
-    @State private var appModel = AppModel()
-
+    @StateObject private var appModel = AppModel()
+    @StateObject private var diContainer = DIContainer()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(appModel)
+                .environmentObject(diContainer.mainViewModel)
+                .environmentObject(appModel)
         }
-
-        ImmersiveSpace(id: appModel.immersiveSpaceID) {
-            ImmersiveView()
-                .environment(appModel)
-                .onAppear {
-                    appModel.immersiveSpaceState = .open
-                }
-                .onDisappear {
-                    appModel.immersiveSpaceState = .closed
-                }
+        
+        ImmersiveSpace(id: diContainer.appModel.immersiveSpaceID) {
+            SpaceImmersiveView()
+                .environmentObject(diContainer.spaceCoordinator)
         }
-        .immersionStyle(selection: .constant(.mixed), in: .mixed)
-     }
+    }
 }
+

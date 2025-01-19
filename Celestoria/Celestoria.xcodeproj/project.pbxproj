@@ -7,11 +7,43 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2F3671B12D3D6A9E0048D9AD /* Color+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671B02D3D6A9E0048D9AD /* Color+.swift */; };
+		2F3671B32D3D6B660048D9AD /* Gradient+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671B22D3D6B660048D9AD /* Gradient+.swift */; };
+		2F3671BF2D3D751E0048D9AD /* Neptune.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 2F3671BA2D3D751E0048D9AD /* Neptune.usdz */; };
+		2F3671C02D3D751E0048D9AD /* Uranus.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 2F3671BD2D3D751E0048D9AD /* Uranus.usdz */; };
+		2F3671C12D3D751E0048D9AD /* Mars.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 2F3671B82D3D751E0048D9AD /* Mars.usdz */; };
+		2F3671C22D3D751E0048D9AD /* Venus.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 2F3671BE2D3D751E0048D9AD /* Venus.usdz */; };
+		2F3671C92D3D76ED0048D9AD /* SpaceCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671C82D3D76ED0048D9AD /* SpaceCoordinator.swift */; };
+		2F3671CB2D3D78000048D9AD /* GradientBorderContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671CA2D3D78000048D9AD /* GradientBorderContainer.swift */; };
+		2F3671CD2D3D7A150048D9AD /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671CC2D3D7A150048D9AD /* Logger.swift */; };
+		2F3671CF2D3D7A660048D9AD /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671CE2D3D7A660048D9AD /* MainView.swift */; };
+		2F3671D12D3D7AF90048D9AD /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671D02D3D7AF90048D9AD /* MainViewModel.swift */; };
+		2F3671D32D3D7BFC0048D9AD /* AddMemoryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671D22D3D7BFC0048D9AD /* AddMemoryButton.swift */; };
+		2F3671D52D3D7C3C0048D9AD /* ErrorBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671D42D3D7C3C0048D9AD /* ErrorBannerView.swift */; };
+		2F3671D72D3D7C730048D9AD /* MainButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671D62D3D7C730048D9AD /* MainButton.swift */; };
+		2F3671E12D3D946C0048D9AD /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671E02D3D946C0048D9AD /* Memory.swift */; };
+		2F3671E92D3D9A470048D9AD /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671E82D3D9A470048D9AD /* Category.swift */; };
+		2F3671EB2D3D9A8C0048D9AD /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671EA2D3D9A8C0048D9AD /* UserProfile.swift */; };
+		2F3671F72D3DA1990048D9AD /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 2F3671F62D3DA1990048D9AD /* Auth */; };
+		2F3671F92D3DA1990048D9AD /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = 2F3671F82D3DA1990048D9AD /* Functions */; };
+		2F3671FB2D3DA1990048D9AD /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = 2F3671FA2D3DA1990048D9AD /* PostgREST */; };
+		2F3671FD2D3DA1990048D9AD /* Realtime in Frameworks */ = {isa = PBXBuildFile; productRef = 2F3671FC2D3DA1990048D9AD /* Realtime */; };
+		2F3671FF2D3DA1990048D9AD /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = 2F3671FE2D3DA1990048D9AD /* Storage */; };
+		2F3672012D3DA1990048D9AD /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 2F3672002D3DA1990048D9AD /* Supabase */; };
+		2F3672032D3DA1F00048D9AD /* MemoryRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672022D3DA1F00048D9AD /* MemoryRepository.swift */; };
+		2F3672052D3DA2FE0048D9AD /* FetchMemoriesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672042D3DA2FE0048D9AD /* FetchMemoriesUseCase.swift */; };
+		2F3672072D3DA3170048D9AD /* CreateMemoryUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672062D3DA3170048D9AD /* CreateMemoryUseCase.swift */; };
+		2F3672092D3DA32B0048D9AD /* DeleteMemoryUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672082D3DA32B0048D9AD /* DeleteMemoryUseCase.swift */; };
+		2F36720B2D3DA3F20048D9AD /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F36720A2D3DA3F20048D9AD /* Config.swift */; };
+		2F36720F2D3DAA6E0048D9AD /* ConstellationBackGroundEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F36720E2D3DAA6E0048D9AD /* ConstellationBackGroundEntity.swift */; };
+		2F3672112D3DAAA40048D9AD /* ConstellationSpaceEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672102D3DAAA40048D9AD /* ConstellationSpaceEntity.swift */; };
+		2F3672132D3DAAD00048D9AD /* MemoryStarEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672122D3DAAD00048D9AD /* MemoryStarEntity.swift */; };
+		2F3672152D3DAAF20048D9AD /* SpaceBackgroundEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672142D3DAAF20048D9AD /* SpaceBackgroundEntity.swift */; };
+		2F3672172D3DAB120048D9AD /* SpaceEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672162D3DAB120048D9AD /* SpaceEntity.swift */; };
 		2F8800BA2D38CE6800220F89 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B22D38CE6800220F89 /* AppModel.swift */; };
 		2F8800BB2D38CE6800220F89 /* CelestoriaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B42D38CE6800220F89 /* CelestoriaApp.swift */; };
 		2F8800BC2D38CE6800220F89 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B52D38CE6800220F89 /* ContentView.swift */; };
-		2F8800BD2D38CE6800220F89 /* ImmersiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B62D38CE6800220F89 /* ImmersiveView.swift */; };
-		2F8800BE2D38CE6800220F89 /* ToggleImmersiveSpaceButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B82D38CE6800220F89 /* ToggleImmersiveSpaceButton.swift */; };
+		2F8800BD2D38CE6800220F89 /* SpaceImmersiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B62D38CE6800220F89 /* SpaceImmersiveView.swift */; };
 		2F8800BF2D38CE6800220F89 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F8800B02D38CE6800220F89 /* Preview Assets.xcassets */; };
 		2F8800C02D38CE6800220F89 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F8800B32D38CE6800220F89 /* Assets.xcassets */; };
 		2F8800C42D38D3AE00220F89 /* DIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800C32D38D3AE00220F89 /* DIContainer.swift */; };
@@ -19,14 +51,40 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2F3671B02D3D6A9E0048D9AD /* Color+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+.swift"; sourceTree = "<group>"; };
+		2F3671B22D3D6B660048D9AD /* Gradient+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Gradient+.swift"; sourceTree = "<group>"; };
+		2F3671B82D3D751E0048D9AD /* Mars.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = Mars.usdz; sourceTree = "<group>"; };
+		2F3671BA2D3D751E0048D9AD /* Neptune.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = Neptune.usdz; sourceTree = "<group>"; };
+		2F3671BD2D3D751E0048D9AD /* Uranus.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = Uranus.usdz; sourceTree = "<group>"; };
+		2F3671BE2D3D751E0048D9AD /* Venus.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = Venus.usdz; sourceTree = "<group>"; };
+		2F3671C82D3D76ED0048D9AD /* SpaceCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceCoordinator.swift; sourceTree = "<group>"; };
+		2F3671CA2D3D78000048D9AD /* GradientBorderContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientBorderContainer.swift; sourceTree = "<group>"; };
+		2F3671CC2D3D7A150048D9AD /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		2F3671CE2D3D7A660048D9AD /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		2F3671D02D3D7AF90048D9AD /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
+		2F3671D22D3D7BFC0048D9AD /* AddMemoryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMemoryButton.swift; sourceTree = "<group>"; };
+		2F3671D42D3D7C3C0048D9AD /* ErrorBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorBannerView.swift; sourceTree = "<group>"; };
+		2F3671D62D3D7C730048D9AD /* MainButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainButton.swift; sourceTree = "<group>"; };
+		2F3671E02D3D946C0048D9AD /* Memory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Memory.swift; sourceTree = "<group>"; };
+		2F3671E82D3D9A470048D9AD /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
+		2F3671EA2D3D9A8C0048D9AD /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
+		2F3672022D3DA1F00048D9AD /* MemoryRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryRepository.swift; sourceTree = "<group>"; };
+		2F3672042D3DA2FE0048D9AD /* FetchMemoriesUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchMemoriesUseCase.swift; sourceTree = "<group>"; };
+		2F3672062D3DA3170048D9AD /* CreateMemoryUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateMemoryUseCase.swift; sourceTree = "<group>"; };
+		2F3672082D3DA32B0048D9AD /* DeleteMemoryUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteMemoryUseCase.swift; sourceTree = "<group>"; };
+		2F36720A2D3DA3F20048D9AD /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
+		2F36720E2D3DAA6E0048D9AD /* ConstellationBackGroundEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConstellationBackGroundEntity.swift; sourceTree = "<group>"; };
+		2F3672102D3DAAA40048D9AD /* ConstellationSpaceEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConstellationSpaceEntity.swift; sourceTree = "<group>"; };
+		2F3672122D3DAAD00048D9AD /* MemoryStarEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryStarEntity.swift; sourceTree = "<group>"; };
+		2F3672142D3DAAF20048D9AD /* SpaceBackgroundEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceBackgroundEntity.swift; sourceTree = "<group>"; };
+		2F3672162D3DAB120048D9AD /* SpaceEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceEntity.swift; sourceTree = "<group>"; };
 		2F8800B02D38CE6800220F89 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		2F8800B22D38CE6800220F89 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		2F8800B32D38CE6800220F89 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2F8800B42D38CE6800220F89 /* CelestoriaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CelestoriaApp.swift; sourceTree = "<group>"; };
 		2F8800B52D38CE6800220F89 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		2F8800B62D38CE6800220F89 /* ImmersiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImmersiveView.swift; sourceTree = "<group>"; };
+		2F8800B62D38CE6800220F89 /* SpaceImmersiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceImmersiveView.swift; sourceTree = "<group>"; };
 		2F8800B72D38CE6800220F89 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2F8800B82D38CE6800220F89 /* ToggleImmersiveSpaceButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleImmersiveSpaceButton.swift; sourceTree = "<group>"; };
 		2F8800C32D38D3AE00220F89 /* DIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DIContainer.swift; sourceTree = "<group>"; };
 		A21E47782D38CD55002B60FA /* Celestoria.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Celestoria.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A21E477C2D38CD55002B60FA /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
@@ -37,6 +95,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2F3672012D3DA1990048D9AD /* Supabase in Frameworks */,
+				2F3671FF2D3DA1990048D9AD /* Storage in Frameworks */,
+				2F3671FB2D3DA1990048D9AD /* PostgREST in Frameworks */,
+				2F3671F92D3DA1990048D9AD /* Functions in Frameworks */,
+				2F3671F72D3DA1990048D9AD /* Auth in Frameworks */,
+				2F3671FD2D3DA1990048D9AD /* Realtime in Frameworks */,
 				A21E477E2D38CD55002B60FA /* RealityKitContent in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -44,11 +108,98 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		2F78A5802D38D8BF00DF5899 /* ObjectsDetails */ = {
+		2F3671A82D3D61750048D9AD /* ImmersiveViews */ = {
+			isa = PBXGroup;
+			children = (
+				2F8800B62D38CE6800220F89 /* SpaceImmersiveView.swift */,
+			);
+			path = ImmersiveViews;
+			sourceTree = "<group>";
+		};
+		2F3671A92D3D61880048D9AD /* RegularViews */ = {
+			isa = PBXGroup;
+			children = (
+				2F8800B52D38CE6800220F89 /* ContentView.swift */,
+				2F3671CE2D3D7A660048D9AD /* MainView.swift */,
+			);
+			path = RegularViews;
+			sourceTree = "<group>";
+		};
+		2F3671AA2D3D61920048D9AD /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				2F3671CA2D3D78000048D9AD /* GradientBorderContainer.swift */,
+				2F3671D22D3D7BFC0048D9AD /* AddMemoryButton.swift */,
+				2F3671D42D3D7C3C0048D9AD /* ErrorBannerView.swift */,
+				2F3671D62D3D7C730048D9AD /* MainButton.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		2F3671AB2D3D61C70048D9AD /* VisionOSUtilities */ = {
 			isa = PBXGroup;
 			children = (
 			);
-			path = ObjectsDetails;
+			path = VisionOSUtilities;
+			sourceTree = "<group>";
+		};
+		2F3671AC2D3D61DD0048D9AD /* RealityKit */ = {
+			isa = PBXGroup;
+			children = (
+				2F3671AE2D3D62070048D9AD /* Entities */,
+				2F3671AD2D3D61F40048D9AD /* Scenes */,
+				2F3671AF2D3D62120048D9AD /* Interactions */,
+			);
+			path = RealityKit;
+			sourceTree = "<group>";
+		};
+		2F3671AD2D3D61F40048D9AD /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Scenes;
+			sourceTree = "<group>";
+		};
+		2F3671AE2D3D62070048D9AD /* Entities */ = {
+			isa = PBXGroup;
+			children = (
+				2F3671B82D3D751E0048D9AD /* Mars.usdz */,
+				2F3671BA2D3D751E0048D9AD /* Neptune.usdz */,
+				2F3671BD2D3D751E0048D9AD /* Uranus.usdz */,
+				2F3671BE2D3D751E0048D9AD /* Venus.usdz */,
+				2F36720E2D3DAA6E0048D9AD /* ConstellationBackGroundEntity.swift */,
+				2F3672102D3DAAA40048D9AD /* ConstellationSpaceEntity.swift */,
+				2F3672122D3DAAD00048D9AD /* MemoryStarEntity.swift */,
+				2F3672142D3DAAF20048D9AD /* SpaceBackgroundEntity.swift */,
+				2F3672162D3DAB120048D9AD /* SpaceEntity.swift */,
+			);
+			path = Entities;
+			sourceTree = "<group>";
+		};
+		2F3671AF2D3D62120048D9AD /* Interactions */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Interactions;
+			sourceTree = "<group>";
+		};
+		2F3671B42D3D74810048D9AD /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				2F3671C82D3D76ED0048D9AD /* SpaceCoordinator.swift */,
+				2F3671D02D3D7AF90048D9AD /* MainViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		2F3671B52D3D74940048D9AD /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				2F3671A92D3D61880048D9AD /* RegularViews */,
+				2F3671A82D3D61750048D9AD /* ImmersiveViews */,
+				2F3671AA2D3D61920048D9AD /* Components */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		2F8800B12D38CE6800220F89 /* Preview Content */ = {
@@ -67,8 +218,8 @@
 				2F8800C52D38D3C300220F89 /* Domain */,
 				2F8800CC2D38D47400220F89 /* Presentation */,
 				2F8800D42D38D75D00220F89 /* Shared */,
+				2F3671AC2D3D61DD0048D9AD /* RealityKit */,
 				2F8800B12D38CE6800220F89 /* Preview Content */,
-				2F8800B22D38CE6800220F89 /* AppModel.swift */,
 				2F8800B32D38CE6800220F89 /* Assets.xcassets */,
 			);
 			path = Celestoria;
@@ -80,6 +231,7 @@
 				2F8800CD2D38D52600220F89 /* Configuration */,
 				2F8800B42D38CE6800220F89 /* CelestoriaApp.swift */,
 				2F8800C32D38D3AE00220F89 /* DIContainer.swift */,
+				2F8800B22D38CE6800220F89 /* AppModel.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -87,8 +239,8 @@
 		2F8800C52D38D3C300220F89 /* Domain */ = {
 			isa = PBXGroup;
 			children = (
-				2F8800C72D38D43300220F89 /* UseCases */,
 				2F8800C62D38D42000220F89 /* Entities */,
+				2F8800C72D38D43300220F89 /* UseCases */,
 			);
 			path = Domain;
 			sourceTree = "<group>";
@@ -96,6 +248,9 @@
 		2F8800C62D38D42000220F89 /* Entities */ = {
 			isa = PBXGroup;
 			children = (
+				2F3671E02D3D946C0048D9AD /* Memory.swift */,
+				2F3671E82D3D9A470048D9AD /* Category.swift */,
+				2F3671EA2D3D9A8C0048D9AD /* UserProfile.swift */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -103,6 +258,9 @@
 		2F8800C72D38D43300220F89 /* UseCases */ = {
 			isa = PBXGroup;
 			children = (
+				2F3672042D3DA2FE0048D9AD /* FetchMemoriesUseCase.swift */,
+				2F3672062D3DA3170048D9AD /* CreateMemoryUseCase.swift */,
+				2F3672082D3DA32B0048D9AD /* DeleteMemoryUseCase.swift */,
 			);
 			path = UseCases;
 			sourceTree = "<group>";
@@ -120,7 +278,7 @@
 		2F8800C92D38D44C00220F89 /* Repositories */ = {
 			isa = PBXGroup;
 			children = (
-				2F8800CF2D38D60400220F89 /* MockRepositories */,
+				2F3672022D3DA1F00048D9AD /* MemoryRepository.swift */,
 			);
 			path = Repositories;
 			sourceTree = "<group>";
@@ -135,8 +293,8 @@
 		2F8800CC2D38D47400220F89 /* Presentation */ = {
 			isa = PBXGroup;
 			children = (
-				2F8800D02D38D6DB00220F89 /* Scenes */,
-				2F8800D22D38D70900220F89 /* Components */,
+				2F3671B52D3D74940048D9AD /* Views */,
+				2F3671B42D3D74810048D9AD /* ViewModels */,
 				2F8800D32D38D72C00220F89 /* Resources */,
 			);
 			path = Presentation;
@@ -146,6 +304,7 @@
 			isa = PBXGroup;
 			children = (
 				2F8800B72D38CE6800220F89 /* Info.plist */,
+				2F36720A2D3DA3F20048D9AD /* Config.swift */,
 			);
 			path = Configuration;
 			sourceTree = "<group>";
@@ -155,39 +314,6 @@
 			children = (
 			);
 			path = Network;
-			sourceTree = "<group>";
-		};
-		2F8800CF2D38D60400220F89 /* MockRepositories */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = MockRepositories;
-			sourceTree = "<group>";
-		};
-		2F8800D02D38D6DB00220F89 /* Scenes */ = {
-			isa = PBXGroup;
-			children = (
-				2F78A5802D38D8BF00DF5899 /* ObjectsDetails */,
-				2F8800D12D38D6F100220F89 /* Main */,
-			);
-			path = Scenes;
-			sourceTree = "<group>";
-		};
-		2F8800D12D38D6F100220F89 /* Main */ = {
-			isa = PBXGroup;
-			children = (
-				2F8800B52D38CE6800220F89 /* ContentView.swift */,
-				2F8800B62D38CE6800220F89 /* ImmersiveView.swift */,
-			);
-			path = Main;
-			sourceTree = "<group>";
-		};
-		2F8800D22D38D70900220F89 /* Components */ = {
-			isa = PBXGroup;
-			children = (
-				2F8800B82D38CE6800220F89 /* ToggleImmersiveSpaceButton.swift */,
-			);
-			path = Components;
 			sourceTree = "<group>";
 		};
 		2F8800D32D38D72C00220F89 /* Resources */ = {
@@ -200,6 +326,7 @@
 		2F8800D42D38D75D00220F89 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				2F3671AB2D3D61C70048D9AD /* VisionOSUtilities */,
 				2F8800D52D38D76F00220F89 /* Utilities */,
 				2F8800D62D38D77700220F89 /* Extensions */,
 			);
@@ -216,6 +343,9 @@
 		2F8800D62D38D77700220F89 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				2F3671CC2D3D7A150048D9AD /* Logger.swift */,
+				2F3671B22D3D6B660048D9AD /* Gradient+.swift */,
+				2F3671B02D3D6A9E0048D9AD /* Color+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -263,6 +393,12 @@
 			name = Celestoria;
 			packageProductDependencies = (
 				A21E477D2D38CD55002B60FA /* RealityKitContent */,
+				2F3671F62D3DA1990048D9AD /* Auth */,
+				2F3671F82D3DA1990048D9AD /* Functions */,
+				2F3671FA2D3DA1990048D9AD /* PostgREST */,
+				2F3671FC2D3DA1990048D9AD /* Realtime */,
+				2F3671FE2D3DA1990048D9AD /* Storage */,
+				2F3672002D3DA1990048D9AD /* Supabase */,
 			);
 			productName = Celestoria;
 			productReference = A21E47782D38CD55002B60FA /* Celestoria.app */;
@@ -292,6 +428,9 @@
 			);
 			mainGroup = A21E476F2D38CD55002B60FA;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				2F3671F52D3DA1990048D9AD /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A21E47792D38CD55002B60FA /* Products */;
 			projectDirPath = "";
@@ -309,6 +448,10 @@
 			files = (
 				2F8800BF2D38CE6800220F89 /* Preview Assets.xcassets in Resources */,
 				2F8800C02D38CE6800220F89 /* Assets.xcassets in Resources */,
+				2F3671BF2D3D751E0048D9AD /* Neptune.usdz in Resources */,
+				2F3671C02D3D751E0048D9AD /* Uranus.usdz in Resources */,
+				2F3671C12D3D751E0048D9AD /* Mars.usdz in Resources */,
+				2F3671C22D3D751E0048D9AD /* Venus.usdz in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -319,12 +462,34 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2F3671E12D3D946C0048D9AD /* Memory.swift in Sources */,
+				2F3671B12D3D6A9E0048D9AD /* Color+.swift in Sources */,
 				2F8800BA2D38CE6800220F89 /* AppModel.swift in Sources */,
+				2F3671D72D3D7C730048D9AD /* MainButton.swift in Sources */,
 				2F8800BB2D38CE6800220F89 /* CelestoriaApp.swift in Sources */,
+				2F3671D32D3D7BFC0048D9AD /* AddMemoryButton.swift in Sources */,
+				2F3671C92D3D76ED0048D9AD /* SpaceCoordinator.swift in Sources */,
+				2F3672132D3DAAD00048D9AD /* MemoryStarEntity.swift in Sources */,
+				2F3671CB2D3D78000048D9AD /* GradientBorderContainer.swift in Sources */,
+				2F3672072D3DA3170048D9AD /* CreateMemoryUseCase.swift in Sources */,
+				2F3672152D3DAAF20048D9AD /* SpaceBackgroundEntity.swift in Sources */,
+				2F3671EB2D3D9A8C0048D9AD /* UserProfile.swift in Sources */,
+				2F3672032D3DA1F00048D9AD /* MemoryRepository.swift in Sources */,
+				2F3672112D3DAAA40048D9AD /* ConstellationSpaceEntity.swift in Sources */,
+				2F3671E92D3D9A470048D9AD /* Category.swift in Sources */,
+				2F3671B32D3D6B660048D9AD /* Gradient+.swift in Sources */,
 				2F8800BC2D38CE6800220F89 /* ContentView.swift in Sources */,
-				2F8800BD2D38CE6800220F89 /* ImmersiveView.swift in Sources */,
+				2F3672172D3DAB120048D9AD /* SpaceEntity.swift in Sources */,
+				2F3672052D3DA2FE0048D9AD /* FetchMemoriesUseCase.swift in Sources */,
+				2F3671CD2D3D7A150048D9AD /* Logger.swift in Sources */,
+				2F8800BD2D38CE6800220F89 /* SpaceImmersiveView.swift in Sources */,
+				2F3672092D3DA32B0048D9AD /* DeleteMemoryUseCase.swift in Sources */,
+				2F36720F2D3DAA6E0048D9AD /* ConstellationBackGroundEntity.swift in Sources */,
+				2F36720B2D3DA3F20048D9AD /* Config.swift in Sources */,
 				2F8800C42D38D3AE00220F89 /* DIContainer.swift in Sources */,
-				2F8800BE2D38CE6800220F89 /* ToggleImmersiveSpaceButton.swift in Sources */,
+				2F3671D52D3D7C3C0048D9AD /* ErrorBannerView.swift in Sources */,
+				2F3671CF2D3D7A660048D9AD /* MainView.swift in Sources */,
+				2F3671D12D3D7AF90048D9AD /* MainViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -525,7 +690,48 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		2F3671F52D3DA1990048D9AD /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
+		2F3671F62D3DA1990048D9AD /* Auth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2F3671F52D3DA1990048D9AD /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Auth;
+		};
+		2F3671F82D3DA1990048D9AD /* Functions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2F3671F52D3DA1990048D9AD /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Functions;
+		};
+		2F3671FA2D3DA1990048D9AD /* PostgREST */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2F3671F52D3DA1990048D9AD /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = PostgREST;
+		};
+		2F3671FC2D3DA1990048D9AD /* Realtime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2F3671F52D3DA1990048D9AD /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Realtime;
+		};
+		2F3671FE2D3DA1990048D9AD /* Storage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2F3671F52D3DA1990048D9AD /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Storage;
+		};
+		2F3672002D3DA1990048D9AD /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2F3671F52D3DA1990048D9AD /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
 		A21E477D2D38CD55002B60FA /* RealityKitContent */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RealityKitContent;
