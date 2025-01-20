@@ -9,15 +9,31 @@ import SwiftUI
 
 struct ErrorBannerView: View {
     let message: String
+    let dismissAction: () -> Void
 
     var body: some View {
-        Text(message)
+        VStack {
+            HStack {
+                Text(message)
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.leading)
+
+                Spacer()
+
+                Button(action: dismissAction) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.white)
+                        .imageScale(.large)
+                }
+            }
             .padding()
-            .background(Color.red.opacity(0.8))
-            .foregroundColor(.white)
+            .background(Color.red.opacity(0.9))
             .cornerRadius(10)
-            .transition(.move(edge: .top))
-            .animation(.easeInOut, value: message)
-            .padding(.top, 20)
+            .shadow(radius: 5)
+            .padding(.horizontal, 20)
+        }
+        .transition(.move(edge: .top)) // 에러 메시지가 상단에서 나타나는 효과
+        .animation(.easeInOut, value: message)
     }
 }

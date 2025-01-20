@@ -8,19 +8,29 @@
 import SwiftUI
 
 struct MainButton: View {
-    let icon: String
+    let imageName: String
     let text: String
     let action: () -> Void
-
+    
     var body: some View {
         Button(action: action) {
-            VStack {
-                Image(systemName: icon)
-                    .font(.system(size: 24))
-                Text(text)
-                    .font(.system(size: 14, weight: .medium))
+            GeometryReader { geometry in
+                VStack {
+                    Image(imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(
+                            width: geometry.size.width * 1,
+                            height: geometry.size.width * 1
+                        )
+                    Text(text)
+                        .font(.system(size: 19, weight: .bold))
+                }
+                .foregroundColor(.NebulaWhite)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .foregroundColor(.white)
         }
+        .buttonStyle(PlainButtonStyle())
     }
 }
+
