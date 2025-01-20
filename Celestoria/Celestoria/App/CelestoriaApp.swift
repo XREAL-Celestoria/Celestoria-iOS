@@ -10,14 +10,14 @@ import SwiftUI
 
 @main
 struct CelestoriaApp: App {
-    @StateObject private var appModel = AppModel()
     @StateObject private var diContainer = DIContainer()
     
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(diContainer.appModel)
                 .environmentObject(diContainer.mainViewModel)
-                .environmentObject(appModel)
+                .environmentObject(diContainer.loginViewModel)
         }
         
         ImmersiveSpace(id: diContainer.appModel.immersiveSpaceID) {

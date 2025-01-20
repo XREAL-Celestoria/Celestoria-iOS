@@ -32,6 +32,7 @@ class MainViewModel: ObservableObject {
     func fetchMemories(for userId: UUID) {
         isLoading = true
         fetchMemoriesUseCase.execute(for: userId)
+            .receive(on: DispatchQueue.main) 
             .sink(receiveCompletion: { [weak self] completion in
                 self?.isLoading = false
                 if case .failure(let error) = completion {
@@ -46,6 +47,7 @@ class MainViewModel: ObservableObject {
     func createMemory(_ memory: Memory) {
         isLoading = true
         createMemoryUseCase.execute(memory: memory)
+            .receive(on: DispatchQueue.main)  // 메인 스레드에서 처리
             .sink(receiveCompletion: { [weak self] completion in
                 self?.isLoading = false
                 if case .failure(let error) = completion {
@@ -60,6 +62,7 @@ class MainViewModel: ObservableObject {
     func deleteMemory(_ memoryId: UUID) {
         isLoading = true
         deleteMemoryUseCase.execute(memoryId: memoryId)
+            .receive(on: DispatchQueue.main)  // 메인 스레드에서 처리
             .sink(receiveCompletion: { [weak self] completion in
                 self?.isLoading = false
                 if case .failure(let error) = completion {

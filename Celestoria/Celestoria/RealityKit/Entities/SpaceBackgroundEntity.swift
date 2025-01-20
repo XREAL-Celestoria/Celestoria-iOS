@@ -15,7 +15,7 @@ class SpaceBackgroundEntity: Entity {
     private enum Constants {
         static let sphereRadius: Float = 1000
         static let textureName = "Starfield"
-        static let scaleX: Float = -1  // 텍스처를 안쪽으로 뒤집기 위한 값
+        static let scaleX: Float = -1
         static let scaleY: Float = 1
         static let scaleZ: Float = 1
     }

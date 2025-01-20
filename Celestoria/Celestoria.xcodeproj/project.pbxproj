@@ -45,6 +45,13 @@
 		2F36721E2D3E1A1F0048D9AD /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F36721D2D3E1A1F0048D9AD /* SettingView.swift */; };
 		2F3672202D3E1C2F0048D9AD /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F36721F2D3E1C2F0048D9AD /* LoginView.swift */; };
 		2F3672222D3E1E410048D9AD /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672212D3E1E410048D9AD /* LoginViewModel.swift */; };
+		2F3672252D3E35110048D9AD /* AuthRepositoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672242D3E35110048D9AD /* AuthRepositoryProtocol.swift */; };
+		2F3672272D3E35310048D9AD /* AuthRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672262D3E35310048D9AD /* AuthRepository.swift */; };
+		2F36722A2D3E35670048D9AD /* SignInWithAppleUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672292D3E35670048D9AD /* SignInWithAppleUseCase.swift */; };
+		2F36722C2D3E35750048D9AD /* SignOutUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F36722B2D3E35750048D9AD /* SignOutUseCase.swift */; };
+		2F36722E2D3E35830048D9AD /* DeleteAccountUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F36722D2D3E35830048D9AD /* DeleteAccountUseCase.swift */; };
+		2F3672322D3E650B0048D9AD /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672312D3E650B0048D9AD /* HeaderView.swift */; };
+		2F3672342D3E652C0048D9AD /* ErrorOvelayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672332D3E652C0048D9AD /* ErrorOvelayView.swift */; };
 		2F8800BA2D38CE6800220F89 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B22D38CE6800220F89 /* AppModel.swift */; };
 		2F8800BB2D38CE6800220F89 /* CelestoriaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B42D38CE6800220F89 /* CelestoriaApp.swift */; };
 		2F8800BC2D38CE6800220F89 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B52D38CE6800220F89 /* ContentView.swift */; };
@@ -89,6 +96,13 @@
 		2F36721D2D3E1A1F0048D9AD /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		2F36721F2D3E1C2F0048D9AD /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		2F3672212D3E1E410048D9AD /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
+		2F3672242D3E35110048D9AD /* AuthRepositoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthRepositoryProtocol.swift; sourceTree = "<group>"; };
+		2F3672262D3E35310048D9AD /* AuthRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthRepository.swift; sourceTree = "<group>"; };
+		2F3672292D3E35670048D9AD /* SignInWithAppleUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithAppleUseCase.swift; sourceTree = "<group>"; };
+		2F36722B2D3E35750048D9AD /* SignOutUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignOutUseCase.swift; sourceTree = "<group>"; };
+		2F36722D2D3E35830048D9AD /* DeleteAccountUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteAccountUseCase.swift; sourceTree = "<group>"; };
+		2F3672312D3E650B0048D9AD /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
+		2F3672332D3E652C0048D9AD /* ErrorOvelayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorOvelayView.swift; sourceTree = "<group>"; };
 		2F8800B02D38CE6800220F89 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		2F8800B22D38CE6800220F89 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		2F8800B32D38CE6800220F89 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -147,6 +161,8 @@
 				2F3671D22D3D7BFC0048D9AD /* AddMemoryButton.swift */,
 				2F3671D42D3D7C3C0048D9AD /* ErrorBannerView.swift */,
 				2F3671D62D3D7C730048D9AD /* MainButton.swift */,
+				2F3672312D3E650B0048D9AD /* HeaderView.swift */,
+				2F3672332D3E652C0048D9AD /* ErrorOvelayView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -218,6 +234,14 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		2F3672232D3E34EF0048D9AD /* Protocol */ = {
+			isa = PBXGroup;
+			children = (
+				2F3672242D3E35110048D9AD /* AuthRepositoryProtocol.swift */,
+			);
+			path = Protocol;
+			sourceTree = "<group>";
+		};
 		2F8800B12D38CE6800220F89 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
@@ -258,6 +282,7 @@
 			children = (
 				2F8800C62D38D42000220F89 /* Entities */,
 				2F8800C72D38D43300220F89 /* UseCases */,
+				2F3672232D3E34EF0048D9AD /* Protocol */,
 			);
 			path = Domain;
 			sourceTree = "<group>";
@@ -278,6 +303,9 @@
 				2F3672042D3DA2FE0048D9AD /* FetchMemoriesUseCase.swift */,
 				2F3672062D3DA3170048D9AD /* CreateMemoryUseCase.swift */,
 				2F3672082D3DA32B0048D9AD /* DeleteMemoryUseCase.swift */,
+				2F3672292D3E35670048D9AD /* SignInWithAppleUseCase.swift */,
+				2F36722B2D3E35750048D9AD /* SignOutUseCase.swift */,
+				2F36722D2D3E35830048D9AD /* DeleteAccountUseCase.swift */,
 			);
 			path = UseCases;
 			sourceTree = "<group>";
@@ -296,6 +324,7 @@
 			isa = PBXGroup;
 			children = (
 				2F3672022D3DA1F00048D9AD /* MemoryRepository.swift */,
+				2F3672262D3E35310048D9AD /* AuthRepository.swift */,
 			);
 			path = Repositories;
 			sourceTree = "<group>";
@@ -479,6 +508,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2F36722C2D3E35750048D9AD /* SignOutUseCase.swift in Sources */,
 				2F3671E12D3D946C0048D9AD /* Memory.swift in Sources */,
 				2F3671B12D3D6A9E0048D9AD /* Color+.swift in Sources */,
 				2F3672222D3E1E410048D9AD /* LoginViewModel.swift in Sources */,
@@ -492,17 +522,23 @@
 				2F3672132D3DAAD00048D9AD /* MemoryStarEntity.swift in Sources */,
 				2F3671CB2D3D78000048D9AD /* GradientBorderContainer.swift in Sources */,
 				2F3672072D3DA3170048D9AD /* CreateMemoryUseCase.swift in Sources */,
+				2F3672252D3E35110048D9AD /* AuthRepositoryProtocol.swift in Sources */,
+				2F36722A2D3E35670048D9AD /* SignInWithAppleUseCase.swift in Sources */,
 				2F3672152D3DAAF20048D9AD /* SpaceBackgroundEntity.swift in Sources */,
 				2F3671EB2D3D9A8C0048D9AD /* UserProfile.swift in Sources */,
 				2F3672032D3DA1F00048D9AD /* MemoryRepository.swift in Sources */,
 				2F3672112D3DAAA40048D9AD /* ConstellationSpaceEntity.swift in Sources */,
+				2F3672272D3E35310048D9AD /* AuthRepository.swift in Sources */,
 				2F3671E92D3D9A470048D9AD /* Category.swift in Sources */,
 				2F3671B32D3D6B660048D9AD /* Gradient+.swift in Sources */,
 				2F8800BC2D38CE6800220F89 /* ContentView.swift in Sources */,
 				2F36721A2D3E19A30048D9AD /* GalaxyView.swift in Sources */,
+				2F3672322D3E650B0048D9AD /* HeaderView.swift in Sources */,
 				2F3672172D3DAB120048D9AD /* SpaceEntity.swift in Sources */,
 				2F3672052D3DA2FE0048D9AD /* FetchMemoriesUseCase.swift in Sources */,
 				2F3671CD2D3D7A150048D9AD /* Logger.swift in Sources */,
+				2F3672342D3E652C0048D9AD /* ErrorOvelayView.swift in Sources */,
+				2F36722E2D3E35830048D9AD /* DeleteAccountUseCase.swift in Sources */,
 				2F8800BD2D38CE6800220F89 /* SpaceImmersiveView.swift in Sources */,
 				2F3672092D3DA32B0048D9AD /* DeleteMemoryUseCase.swift in Sources */,
 				2F36720F2D3DAA6E0048D9AD /* ConstellationBackGroundEntity.swift in Sources */,

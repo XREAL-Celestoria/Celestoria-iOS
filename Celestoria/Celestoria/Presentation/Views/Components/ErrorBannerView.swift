@@ -33,7 +33,7 @@ struct ErrorBannerView: View {
             .shadow(radius: 5)
             .padding(.horizontal, 20)
         }
-        .transition(.move(edge: .top)) // 에러 메시지가 상단에서 나타나는 효과
+        .transition(.move(edge: .top)) 
         .animation(.easeInOut, value: message)
     }
 }

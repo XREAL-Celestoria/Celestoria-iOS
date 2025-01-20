@@ -16,7 +16,7 @@ struct MainView: View {
         GeometryReader { geometry in
             
             VStack {
-                header
+                HeaderView(title: "Celestoria", subtitle: "Spatial Video Social Network")
                     .padding(.top, geometry.size.height * 0.2)
                 Spacer()
                     .frame(height: geometry.size.height * 0.05)
@@ -46,7 +46,6 @@ struct MainView: View {
                 .padding(.horizontal, 16)
                 .padding(.top, geometry.safeAreaInsets.top + 10)
                 .zIndex(1)
-                
             }
         }
         .onAppear {
@@ -57,22 +56,6 @@ struct MainView: View {
 
 // MARK: - Subviews
 private extension MainView {
-    var header: some View {
-        VStack(spacing: 10) {
-            Text("Celestoria")
-                .font(.system(size: 96, weight: .bold, design: .default))
-                .foregroundStyle(LinearGradient.GradientMain)
-                .multilineTextAlignment(.center)
-            
-            Text("SpatialVideo Social Network")
-                .font(.system(size: 29, weight: .bold, design: .default))
-                .foregroundStyle(LinearGradient.GradientMain)
-                .multilineTextAlignment(.center)
-        }
-        .frame(maxWidth: .infinity, alignment: .center)
-        .padding(.top, 20)
-    }
-    
     var tabMenu: some View {
         GeometryReader { geometry in
             HStack(spacing: geometry.size.width * 0.1) {
@@ -96,24 +79,9 @@ private extension MainView {
         }
     }
     
-    
     var loadingView: some View {
         ProgressView()
             .scaleEffect(1.5)
             .progressViewStyle(CircularProgressViewStyle(tint: .white))
     }
-    
-    private var errorOverlay: some View {
-        Group {
-            if let errorMessage = viewModel.errorMessage {
-                ErrorBannerView(message: errorMessage) {
-                    viewModel.errorMessage = nil // 닫기 버튼 동작
-                }
-                .padding(.top, 10)
-            } else {
-                EmptyView()
-            }
-        }
-    }
-    
 }

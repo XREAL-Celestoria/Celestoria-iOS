@@ -9,90 +9,64 @@ import SwiftUI
 import AuthenticationServices
 
 struct LoginView: View {
-    @State private var isImmersiveViewActive = false
-    @Environment(\.openImmersiveSpace) private var openImmersiveSpace
-    @Environment(\.dismissImmersiveSpace) private var dismissImmersiveSpace
-    
     @EnvironmentObject private var appModel: AppModel
-    
-    @State private var activeScreen: ActiveScreen = .login
-    @StateObject private var appleLoginViewModel = LoginViewModel()
-
-    private let mainColor = Color(red: 88/255, green: 86/255, blue: 214/255)
-    private let backgroundColor = Color.white
+    @Environment(\.openImmersiveSpace) private var openImmersiveSpace
+    @StateObject private var viewModel = DIContainer.shared.loginViewModel
 
     var body: some View {
-        ZStack {
-            backgroundColor
-                .edgesIgnoringSafeArea(.all)
-            
-            VStack(spacing: 40) {
-                Text("Spatial Nebula")
-                    .font(.system(size: 42, weight: .bold, design: .rounded))
-                    .foregroundColor(mainColor)
-                
-                Image(systemName: "sparkles")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 100, height: 100)
-                    .foregroundColor(mainColor)
-                
-                VStack(spacing: 20) {
-                    Text("Create your personal universe")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                    
-                    Text("Turn emotions and spatial videos into cosmic memories")
-                        .font(.subheadline)
-                }
-                .foregroundColor(mainColor.opacity(0.8))
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
-                
-                // Apple Sign-In Button
+        GeometryReader { geometry in
+            VStack {
+                HeaderView(title: "Celestoria", subtitle: "Spatial Video Social Network")
+                    .padding(.top, geometry.size.height * 0.2)
+                Spacer()
+                    .frame(height: geometry.size.height * 0.2)
                 SignInWithAppleButton(.signIn, onRequest: { request in
-                    appleLoginViewModel.prepareRequest(request: request)
+                    viewModel.prepareRequest(request: request)
                 }, onCompletion: { result in
-                    appleLoginViewModel.handleAuthorization(result: result) { [weak appleLoginViewModel] in
-                        if let userId = appleLoginViewModel?.userId {
+                    viewModel.handleAuthorization(result: result) { userId in
+                        if let userId = userId {
                             appModel.userId = userId
-                            startImmersiveExperience(for: userId)
+                            startImmersiveExperience()
+                            appModel.isImmersiveViewActive = true
+                            appModel.activeScreen = .main
                         }
                     }
                 })
-                .frame(width: 300, height: 50)
-                .cornerRadius(25)
-                .shadow(color: Color.gray.opacity(0.4), radius: 10, x: 0, y: 5)
-                .padding()
+                .frame(width: geometry.size.width * 0.3, height: geometry.size.height * 0.08)
+                .cornerRadius(16)
+                .signInWithAppleButtonStyle(.white)
             }
             .padding()
-        }
-    }
-
-    private func startImmersiveExperience(for userId: UUID) {
-        Task {
-            do {
-                // Immersive space 개설
-                try await openImmersiveSpace(id: "SpaceEnvironment")
-                print("여기까지 잘 왔나요?", userId)
-                self.activeScreen = .main
-
-                isImmersiveViewActive = true
-            } catch {
-                print("Failed to open Immersive Space: \(error)")
+            
+            if let errorMessage = viewModel.errorMessage {
+                ErrorBannerView(message: errorMessage) {
+                    viewModel.errorMessage = nil
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 16)
+                .padding(.top, geometry.safeAreaInsets.top + 10)
+                .zIndex(1)
             }
         }
     }
 
-    private func closeImmersiveExperience() {
+    private func startImmersiveExperience() {
         Task {
-            await dismissImmersiveSpace()
-            isImmersiveViewActive = false
-            activeScreen = .login
+            await openImmersiveSpace(id: appModel.immersiveSpaceID)
+        }
+    }
+    //close
+    private var errorOverlay: some View {
+        Group {
+            if let error = viewModel.errorMessage {
+                ErrorBannerView(message: error) {
+                    viewModel.errorMessage = nil
+                }
+                .padding(.top, 10)
+            } else {
+                EmptyView()
+            }
         }
     }
 }
 
-#Preview {
-    LoginView()
-}

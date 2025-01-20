@@ -6,121 +6,70 @@
 //
 
 import Foundation
+import Combine
 import AuthenticationServices
-import SwiftUI
-import Supabase
 
 class LoginViewModel: NSObject, ObservableObject {
-    private let supabase: SupabaseClient
+    private let signInUseCase: SignInWithAppleUseCase
+    private var cancellables = Set<AnyCancellable>()
     
+    @Published var errorMessage: String?
     @Published var userId: UUID?
-    @Published var email: String?
-    @Published var isDeleting: Bool = false
-    @Published var deleteError: String?
 
-    init(supabase: SupabaseClient = DIContainer.shared.supabaseClient) {
-        self.supabase = supabase
+    init(signInUseCase: SignInWithAppleUseCase) {
+        self.signInUseCase = signInUseCase
     }
 
     func prepareRequest(request: ASAuthorizationAppleIDRequest) {
         request.requestedScopes = [.fullName, .email]
     }
 
-    func handleAuthorization(result: Result<ASAuthorization, Error>, onSuccess: @escaping () -> Void) {
+    func handleAuthorization(result: Result<ASAuthorization, Error>, completion: @escaping (UUID?) -> Void) {
         switch result {
         case .success(let authorization):
-            handleAppleAuthorization(authorization, onSuccess: onSuccess)
+            handleAppleAuthorization(authorization)
+                .receive(on: DispatchQueue.main)
+                .sink(receiveCompletion: { [weak self] completionResult in
+                    if case .failure(let error) = completionResult {
+                        self?.errorMessage = error.localizedDescription
+                        completion(nil)
+                    }
+                }, receiveValue: { [weak self] userId in
+                    self?.userId = userId
+                    self?.errorMessage = nil
+                    completion(userId)
+                })
+                .store(in: &cancellables)
         case .failure(let error):
-            print("Apple Sign In failed: \(error.localizedDescription)")
+            DispatchQueue.main.async {
+                self.errorMessage = error.localizedDescription
+                completion(nil)
+            }
         }
     }
 
-    private func handleAppleAuthorization(_ authorization: ASAuthorization, onSuccess: @escaping () -> Void) {
+    private func handleAppleAuthorization(_ authorization: ASAuthorization) -> AnyPublisher<UUID, Error> {
         guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
               let identityToken = appleIDCredential.identityToken,
               let idToken = String(data: identityToken, encoding: .utf8) else {
-            print("Failed to retrieve or convert Apple identity token")
-            return
+            return Fail(error: NSError(
+                domain: "LoginError",
+                code: -1,
+                userInfo: [NSLocalizedDescriptionKey: "Failed to retrieve or convert Apple identity token."]
+            )).eraseToAnyPublisher()
         }
 
-        Task {
-            do {
-                try await signInWithSupabase(idToken: idToken)
-                
-                if let userId = supabase.auth.currentUser?.id {
-                    print("Supabase User ID: \(userId)")
-                    
-                    DispatchQueue.main.async {
-                        self.userId = userId
-                        onSuccess()
-                    }
-                } else {
-                    print("Failed to retrieve Supabase user ID")
+        return Future { [weak self] promise in
+            Task {
+                do {
+                    let userId = try await self?.signInUseCase.execute(idToken: idToken)
+                    promise(.success(userId ?? UUID()))
+                } catch {
+                    promise(.failure(error))
                 }
-                
-            } catch {
-                print("Error during sign-in: \(error.localizedDescription)")
             }
         }
-    }
-
-    private func signInWithSupabase(idToken: String) async throws {
-        try await supabase.auth.signInWithIdToken(
-            credentials: .init(provider: .apple, idToken: idToken)
-        )
-        print("Sign-in successful with Supabase")
-    }
-    
-    func signOut(onSuccess: @escaping () -> Void) async {
-        do {
-            try await supabase.auth.signOut()
-            
-            DispatchQueue.main.async {
-                self.userId = nil
-                self.email = nil
-                onSuccess()
-            }
-            print("Successfully signed out")
-        } catch {
-            print("Error signing out: \(error.localizedDescription)")
-        }
-    }
-    
-    func deleteAccount(onSuccess: @escaping () -> Void) {
-        DispatchQueue.main.async {
-            self.isDeleting = true
-            self.deleteError = nil
-        }
-        
-        Task {
-            do {
-                let response = try await supabase.rpc("delete_current_user").execute()
-
-                DispatchQueue.main.async {
-                    self.userId = nil
-                    self.email = nil
-                    self.isDeleting = false
-                    onSuccess()
-                }
-                print("Account successfully deleted")
-                
-            } catch {
-                DispatchQueue.main.async {
-                    self.isDeleting = false
-                    self.deleteError = error.localizedDescription
-                }
-                print("Failed to delete account: \(error.localizedDescription)")
-            }
-        }
+        .eraseToAnyPublisher()
     }
 }
 
-extension LoginViewModel: ASAuthorizationControllerPresentationContextProviding {
-    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else {
-            print("No connected window scene found")
-            return UIWindow()
-        }
-        return windowScene.windows.first ?? UIWindow()
-    }
-}

@@ -16,7 +16,7 @@ struct SpaceImmersiveView: View {
     var body: some View {
         ZStack {
             RealityView { content in
-                os.Logger.space.debug("SpaceImmersiveView: Setting up RealityView")
+                os.Logger.info("SpaceImmersiveView: Setting up RealityView")
                 content.entities.removeAll()
 
                 spaceCoordinator.initialize()
@@ -24,7 +24,7 @@ struct SpaceImmersiveView: View {
 
                 if let spaceEntity = spaceCoordinator.spaceEntity {
                     content.add(spaceEntity)
-                    os.Logger.space.debug("SpaceImmersiveView: Added spaceEntity to RealityView")
+                    os.Logger.info("SpaceImmersiveView: Added spaceEntity to RealityView")
                 }
             }
             .gesture(starTapGesture) // Handle gestures for user interaction
@@ -36,15 +36,15 @@ struct SpaceImmersiveView: View {
         SpatialTapGesture()
             .targetedToAnyEntity()
             .onEnded { value in
-                os.Logger.space.debug("Star tapped!")
+                os.Logger.info("Star tapped!")
                 if let modelEntity = value.entity as? ModelEntity,
                    let starEntity = modelEntity.parent as? MemoryStarEntity {
                     Task { @MainActor in
                         await openMemoryDetailView(for: starEntity)
                     }
                 } else {
-                    os.Logger.space.error("Failed to cast entity to MemoryStarEntity")
-                    os.Logger.space.error("Actual entity type: \(type(of: value.entity))")
+                    os.Logger.error("Failed to cast entity to MemoryStarEntity")
+                    os.Logger.info("Actual entity type: \(type(of: value.entity))")
                 }
             }
     }
