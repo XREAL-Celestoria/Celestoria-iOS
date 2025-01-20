@@ -13,7 +13,6 @@ import os
 
 @MainActor
 final class DIContainer: ObservableObject {
-    static let shared = DIContainer()
     
     // ViewModels
     let mainViewModel: MainViewModel
@@ -36,6 +35,8 @@ final class DIContainer: ObservableObject {
 
     init() {
         Logger.info("Initializing DIContainer...")
+        self.appModel = AppModel()
+        
         // Initialize Supabase Client
         self.supabaseClient = SupabaseClient(
             supabaseURL: Config.supabaseURL,
@@ -60,6 +61,5 @@ final class DIContainer: ObservableObject {
         )
         self.loginViewModel = LoginViewModel(signInUseCase: signInWithAppleUseCase)
         self.spaceCoordinator = SpaceCoordinator()
-        self.appModel = AppModel()
     }
 }

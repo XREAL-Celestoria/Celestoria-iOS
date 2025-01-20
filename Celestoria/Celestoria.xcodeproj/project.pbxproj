@@ -20,7 +20,7 @@
 		2F3671D12D3D7AF90048D9AD /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671D02D3D7AF90048D9AD /* MainViewModel.swift */; };
 		2F3671D32D3D7BFC0048D9AD /* AddMemoryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671D22D3D7BFC0048D9AD /* AddMemoryButton.swift */; };
 		2F3671D52D3D7C3C0048D9AD /* ErrorBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671D42D3D7C3C0048D9AD /* ErrorBannerView.swift */; };
-		2F3671D72D3D7C730048D9AD /* MainButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671D62D3D7C730048D9AD /* MainButton.swift */; };
+		2F3671D72D3D7C730048D9AD /* MainTabButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671D62D3D7C730048D9AD /* MainTabButton.swift */; };
 		2F3671E12D3D946C0048D9AD /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671E02D3D946C0048D9AD /* Memory.swift */; };
 		2F3671E92D3D9A470048D9AD /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671E82D3D9A470048D9AD /* Category.swift */; };
 		2F3671EB2D3D9A8C0048D9AD /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671EA2D3D9A8C0048D9AD /* UserProfile.swift */; };
@@ -76,7 +76,7 @@
 		2F3671D02D3D7AF90048D9AD /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
 		2F3671D22D3D7BFC0048D9AD /* AddMemoryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMemoryButton.swift; sourceTree = "<group>"; };
 		2F3671D42D3D7C3C0048D9AD /* ErrorBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorBannerView.swift; sourceTree = "<group>"; };
-		2F3671D62D3D7C730048D9AD /* MainButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainButton.swift; sourceTree = "<group>"; };
+		2F3671D62D3D7C730048D9AD /* MainTabButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabButton.swift; sourceTree = "<group>"; };
 		2F3671E02D3D946C0048D9AD /* Memory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Memory.swift; sourceTree = "<group>"; };
 		2F3671E82D3D9A470048D9AD /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		2F3671EA2D3D9A8C0048D9AD /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
@@ -160,7 +160,7 @@
 				2F3671CA2D3D78000048D9AD /* GradientBorderContainer.swift */,
 				2F3671D22D3D7BFC0048D9AD /* AddMemoryButton.swift */,
 				2F3671D42D3D7C3C0048D9AD /* ErrorBannerView.swift */,
-				2F3671D62D3D7C730048D9AD /* MainButton.swift */,
+				2F3671D62D3D7C730048D9AD /* MainTabButton.swift */,
 				2F3672312D3E650B0048D9AD /* HeaderView.swift */,
 				2F3672332D3E652C0048D9AD /* ErrorOvelayView.swift */,
 			);
@@ -513,7 +513,7 @@
 				2F3671B12D3D6A9E0048D9AD /* Color+.swift in Sources */,
 				2F3672222D3E1E410048D9AD /* LoginViewModel.swift in Sources */,
 				2F8800BA2D38CE6800220F89 /* AppModel.swift in Sources */,
-				2F3671D72D3D7C730048D9AD /* MainButton.swift in Sources */,
+				2F3671D72D3D7C730048D9AD /* MainTabButton.swift in Sources */,
 				2F36721E2D3E1A1F0048D9AD /* SettingView.swift in Sources */,
 				2F36721C2D3E1A030048D9AD /* ExploreView.swift in Sources */,
 				2F8800BB2D38CE6800220F89 /* CelestoriaApp.swift in Sources */,

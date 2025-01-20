@@ -31,6 +31,7 @@ struct ContentView: View {
             case .login:
                 GradientBorderContainer {
                     LoginView()
+                        .environmentObject(loginViewModel)
                         .transition(.opacity)
                         .onAppear {
                             Logger.info("Displaying Login View")
@@ -39,6 +40,7 @@ struct ContentView: View {
             case .main:
                 GradientBorderContainer {
                     MainView()
+                        .environmentObject(mainViewModel)
                         .transition(.opacity)
                         .onAppear {
                             Logger.info("Displaying Main View")

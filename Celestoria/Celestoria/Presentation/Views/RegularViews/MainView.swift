@@ -23,7 +23,7 @@ struct MainView: View {
                 AddMemoryButton {
                     activeScreen = .addMemory
                 }
-                .frame(maxWidth: .infinity, alignment: .center)
+                .frame(width: geometry.size.width * 0.28, height: geometry.size.height * 0.08 ,alignment: .center)
                 
                 Spacer()
                     .frame(height: geometry.size.height * 0.1)
@@ -58,18 +58,18 @@ struct MainView: View {
 private extension MainView {
     var tabMenu: some View {
         GeometryReader { geometry in
-            HStack(spacing: geometry.size.width * 0.1) {
-                MainButton(imageName: "GalaxyTabButton", text: "Galaxy") {
+            HStack(spacing: geometry.size.width * 0.05) {
+                MainTabButton(imageName: "GalaxyTabButton", text: "Galaxy") {
                     print("Galaxy Button Tapped")
                 }
                 .frame(width: geometry.size.width * 0.08, height: geometry.size.height * 0.2)
                 
-                MainButton(imageName: "ExploreTabButton", text: "Explore") {
+                MainTabButton(imageName: "ExploreTabButton", text: "Explore") {
                     print("Explore Button Tapped")
                 }
                 .frame(width: geometry.size.width * 0.08, height: geometry.size.height * 0.2)
                 
-                MainButton(imageName: "SettingTabButton", text: "Setting") {
+                MainTabButton(imageName: "SettingTabButton", text: "Setting") {
                     print("Setting Button Tapped")
                 }
                 .frame(width: geometry.size.width * 0.08, height: geometry.size.height * 0.2)

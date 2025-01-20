@@ -11,7 +11,7 @@ import AuthenticationServices
 struct LoginView: View {
     @EnvironmentObject private var appModel: AppModel
     @Environment(\.openImmersiveSpace) private var openImmersiveSpace
-    @StateObject private var viewModel = DIContainer.shared.loginViewModel
+    @EnvironmentObject var viewModel: LoginViewModel
 
     var body: some View {
         GeometryReader { geometry in
