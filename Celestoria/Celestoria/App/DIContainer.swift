@@ -11,13 +11,14 @@ import Supabase
 
 @MainActor
 final class DIContainer: ObservableObject {
+    static let shared = DIContainer()
     // ViewModels
     let mainViewModel: MainViewModel
     let spaceCoordinator: SpaceCoordinator
     let appModel: AppModel
 
     // Supabase Client
-    private let supabaseClient: SupabaseClient
+    let supabaseClient: SupabaseClient
 
     // Repositories
     private let memoryRepository: MemoryRepository
