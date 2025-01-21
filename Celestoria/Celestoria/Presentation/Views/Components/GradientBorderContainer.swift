@@ -20,18 +20,16 @@ struct GradientBorderContainer: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color.NebulaBlack)
                 .clipShape( 
-                    RoundedRectangle(cornerRadius: 46)
+                    RoundedRectangle(cornerRadius: 44)
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: 46)
+                    RoundedRectangle(cornerRadius: 44)
                         .stroke(
                             LinearGradient.GradientMain,
                             lineWidth: 8
                         )
                 )
-                .padding(.horizontal, 16)
-                .padding(.vertical, 20)
         }
-        .ignoresSafeArea(.all, edges: .bottom)
+        .padding(4)
     }
 }

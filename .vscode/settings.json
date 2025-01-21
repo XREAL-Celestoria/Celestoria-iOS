@@ -1,0 +1,19 @@
+{
+  "search.exclude": {
+    "Celestoria/Celestoria.xcodeproj": true,
+    "Celestoria/Packages": true,
+    "Celestoria/Celestoria/Assets.xcassets": true,
+    "Celestoria/Celestoria/Celestoria.entitlements": true,
+    "Celestoria/Celestoria/Preview Content": true
+  },
+  "files.exclude": {
+    "Celestoria/Celestoria.xcodeproj": true,
+    "Celestoria/Packages": true,
+    "Celestoria/Celestoria/Assets.xcassets": true,
+    "Celestoria/Celestoria/Celestoria.entitlements": true,
+    "Celestoria/Celestoria/Preview Content": true
+  }
+  // "[swift]": {
+  //   "editor.defaultFormatter": "sswg.swift-lang"
+  // }
+}
