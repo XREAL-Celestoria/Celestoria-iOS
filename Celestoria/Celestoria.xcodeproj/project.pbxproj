@@ -59,6 +59,7 @@
 		2F510CE82D413607004171E8 /* AddMemoryDoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F510CE72D413607004171E8 /* AddMemoryDoneView.swift */; };
 		2F510CEA2D41449A004171E8 /* AddMemoryMainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F510CE92D41449A004171E8 /* AddMemoryMainViewModel.swift */; };
 		2F510CEC2D414971004171E8 /* MediaRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F510CEB2D414971004171E8 /* MediaRepository.swift */; };
+		2F510CEE2D416532004171E8 /* CategoryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F510CED2D416532004171E8 /* CategoryButton.swift */; };
 		2F8800BA2D38CE6800220F89 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B22D38CE6800220F89 /* AppModel.swift */; };
 		2F8800BB2D38CE6800220F89 /* CelestoriaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B42D38CE6800220F89 /* CelestoriaApp.swift */; };
 		2F8800BC2D38CE6800220F89 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B52D38CE6800220F89 /* ContentView.swift */; };
@@ -117,6 +118,7 @@
 		2F510CE72D413607004171E8 /* AddMemoryDoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMemoryDoneView.swift; sourceTree = "<group>"; };
 		2F510CE92D41449A004171E8 /* AddMemoryMainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMemoryMainViewModel.swift; sourceTree = "<group>"; };
 		2F510CEB2D414971004171E8 /* MediaRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaRepository.swift; sourceTree = "<group>"; };
+		2F510CED2D416532004171E8 /* CategoryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryButton.swift; sourceTree = "<group>"; };
 		2F8800B02D38CE6800220F89 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		2F8800B22D38CE6800220F89 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		2F8800B32D38CE6800220F89 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -174,6 +176,7 @@
 				2F3672312D3E650B0048D9AD /* HeaderView.swift */,
 				2F3672332D3E652C0048D9AD /* ErrorOvelayView.swift */,
 				2F3672352D4111130048D9AD /* NavigationBar.swift */,
+				2F510CED2D416532004171E8 /* CategoryButton.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -554,6 +557,7 @@
 				2F8800BA2D38CE6800220F89 /* AppModel.swift in Sources */,
 				2F3671D72D3D7C730048D9AD /* MainTabButton.swift in Sources */,
 				2F36721E2D3E1A1F0048D9AD /* SettingView.swift in Sources */,
+				2F510CEE2D416532004171E8 /* CategoryButton.swift in Sources */,
 				2F36721C2D3E1A030048D9AD /* ExploreView.swift in Sources */,
 				2F8800BB2D38CE6800220F89 /* CelestoriaApp.swift in Sources */,
 				2F3671D32D3D7BFC0048D9AD /* AddMemoryButton.swift in Sources */,
