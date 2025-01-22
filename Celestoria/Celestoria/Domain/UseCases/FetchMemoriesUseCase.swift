@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 
 class FetchMemoriesUseCase {
     private let memoryRepository: MemoryRepository
@@ -15,7 +14,8 @@ class FetchMemoriesUseCase {
         self.memoryRepository = memoryRepository
     }
 
-    func execute(for userId: UUID) -> AnyPublisher<[Memory], Error> {
-        return memoryRepository.fetchMemories(for: userId)
+    func execute(for userId: UUID) async throws -> [Memory] {
+        return try await memoryRepository.fetchMemories(for: userId)
     }
 }
+

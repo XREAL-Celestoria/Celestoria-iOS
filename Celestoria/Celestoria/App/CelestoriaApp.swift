@@ -24,6 +24,14 @@ struct CelestoriaApp: App {
             SpaceImmersiveView()
                 .environmentObject(diContainer.spaceCoordinator)
         }
+        
+        WindowGroup("Add Memory", id: "Add-Memory") {
+            if diContainer.appModel.showAddMemoryView {
+                AddMemoryContentView()
+                    .environmentObject(diContainer.appModel)
+                    .environmentObject(diContainer.addMemoryMainViewModel)
+            }
+        }
     }
 }
 

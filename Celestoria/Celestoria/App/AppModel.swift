@@ -30,6 +30,18 @@ final class AppModel: ObservableObject {
         }
     }
     
+    @Published var showAddMemoryView: Bool = false {
+        didSet {
+            Logger.info("showAddMemoryView : \(showAddMemoryView)")
+        }
+    }
+    
+    @Published var addMemoryScreen: AddMemoryScreen = .main {
+        didSet {
+            Logger.info("Add Memro - Active Screen changed: \(activeScreen)")
+        }
+    }
+    
     let immersiveSpaceID = "SpaceEnvironment"
     
     init() {

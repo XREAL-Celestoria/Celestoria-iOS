@@ -20,8 +20,7 @@ struct AddMemoryButton: View {
                 Text("Add Memory Star")
                     .font(.system(size: 22, weight: .bold, design: .default))
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 10)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             .background(LinearGradient.GradientSub)
             .cornerRadius(16)
         }

@@ -32,7 +32,7 @@ struct LoginView: View {
                         }
                     }
                 })
-                .frame(width: geometry.size.width * 0.3, height: geometry.size.height * 0.08)
+                .frame(width: 376, height: 64)
                 .cornerRadius(16)
                 .signInWithAppleButtonStyle(.white)
             }

@@ -10,15 +10,6 @@ import RealityKit
 import RealityKitContent
 import os
 
-enum ActiveScreen {
-    case login
-    case main
-    case galaxy
-    case explore
-    case setting
-    case addMemory
-}
-
 struct ContentView: View {
     @EnvironmentObject var appModel: AppModel
     @EnvironmentObject var mainViewModel: MainViewModel
@@ -44,6 +35,7 @@ struct ContentView: View {
                         .transition(.opacity)
                         .onAppear {
                             Logger.info("Displaying Main View")
+                            appModel.showAddMemoryView = false
                         }
                 }
             case .galaxy:
@@ -68,14 +60,6 @@ struct ContentView: View {
                         .transition(.opacity)
                         .onAppear {
                             Logger.info("Setting Login View")
-                        }
-                }
-            case .addMemory:
-                GradientBorderContainer {
-                    MainView()
-                        .transition(.opacity)
-                        .onAppear {
-                            Logger.info("Displaying Add memory View")
                         }
                 }
             }

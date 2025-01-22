@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 
 class DeleteMemoryUseCase {
     private let memoryRepository: MemoryRepository
@@ -15,7 +14,7 @@ class DeleteMemoryUseCase {
         self.memoryRepository = memoryRepository
     }
     
-    func execute(memoryId: UUID) -> AnyPublisher<Void, Error> {
-        return memoryRepository.deleteMemory(memoryId)
+    func execute(memoryId: UUID) async throws {
+        try await memoryRepository.deleteMemory(memoryId)
     }
 }

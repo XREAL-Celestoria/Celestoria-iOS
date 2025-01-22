@@ -4,8 +4,8 @@
 //
 //  Created by Park Seyoung on 1/20/25.
 //
+
 import Foundation
-import Combine
 
 @MainActor
 class MainViewModel: ObservableObject {
@@ -13,64 +13,40 @@ class MainViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
     
-    private var cancellables = Set<AnyCancellable>()
-    
     private let fetchMemoriesUseCase: FetchMemoriesUseCase
-    private let createMemoryUseCase: CreateMemoryUseCase
     private let deleteMemoryUseCase: DeleteMemoryUseCase
     
     init(
         fetchMemoriesUseCase: FetchMemoriesUseCase,
-        createMemoryUseCase: CreateMemoryUseCase,
         deleteMemoryUseCase: DeleteMemoryUseCase
     ) {
         self.fetchMemoriesUseCase = fetchMemoriesUseCase
-        self.createMemoryUseCase = createMemoryUseCase
         self.deleteMemoryUseCase = deleteMemoryUseCase
     }
     
-    func fetchMemories(for userId: UUID) {
+    /// Fetch memories for the given user ID
+    func fetchMemories(for userId: UUID) async {
         isLoading = true
-        fetchMemoriesUseCase.execute(for: userId)
-            .receive(on: DispatchQueue.main) 
-            .sink(receiveCompletion: { [weak self] completion in
-                self?.isLoading = false
-                if case .failure(let error) = completion {
-                    self?.errorMessage = error.localizedDescription
-                }
-            }, receiveValue: { [weak self] memories in
-                self?.memories = memories
-            })
-            .store(in: &cancellables)
+        defer { isLoading = false }
+        
+        do {
+            memories = try await fetchMemoriesUseCase.execute(for: userId)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
     }
     
-    func createMemory(_ memory: Memory) {
+    /// Delete a memory by its ID
+    func deleteMemory(_ memoryId: UUID) async {
         isLoading = true
-        createMemoryUseCase.execute(memory: memory)
-            .receive(on: DispatchQueue.main)  // 메인 스레드에서 처리
-            .sink(receiveCompletion: { [weak self] completion in
-                self?.isLoading = false
-                if case .failure(let error) = completion {
-                    self?.errorMessage = error.localizedDescription
-                }
-            }, receiveValue: { [weak self] in
-                self?.fetchMemories(for: memory.userId)
-            })
-            .store(in: &cancellables)
-    }
-    
-    func deleteMemory(_ memoryId: UUID) {
-        isLoading = true
-        deleteMemoryUseCase.execute(memoryId: memoryId)
-            .receive(on: DispatchQueue.main)  // 메인 스레드에서 처리
-            .sink(receiveCompletion: { [weak self] completion in
-                self?.isLoading = false
-                if case .failure(let error) = completion {
-                    self?.errorMessage = error.localizedDescription
-                }
-            }, receiveValue: { [weak self] in
-                self?.memories.removeAll { $0.id == memoryId }
-            })
-            .store(in: &cancellables)
+        defer { isLoading = false }
+        
+        do {
+            try await deleteMemoryUseCase.execute(memoryId: memoryId)
+            memories.removeAll { $0.id == memoryId }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
     }
 }
+

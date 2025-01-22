@@ -55,7 +55,7 @@ struct MainTabButton: View {
                         Image(imageName)
                             .resizable()
                             .scaledToFit()
-                            .frame(width: geometry.size.width * 2, height: geometry.size.height * 2)
+                            .frame(width: 50, height: 50)
                             .foregroundColor(.NebulaWhite)
                     }
                     .frame(width: geometry.size.width, height: geometry.size.width)
@@ -63,7 +63,7 @@ struct MainTabButton: View {
                 .buttonStyle(MainTabButtonStyle())
                 
                 Spacer()
-                    .frame(height: geometry.size.height * 1)  
+                    .frame(height: 16)  
                 
                 Text(text)
                     .font(.system(size: 19, weight: .bold))
@@ -75,7 +75,6 @@ struct MainTabButton: View {
     }
 }
 
-// 새로운 커스텀 ButtonStyle 추가
 struct MainTabButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label

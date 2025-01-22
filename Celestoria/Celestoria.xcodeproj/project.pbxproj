@@ -52,6 +52,13 @@
 		2F36722E2D3E35830048D9AD /* DeleteAccountUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F36722D2D3E35830048D9AD /* DeleteAccountUseCase.swift */; };
 		2F3672322D3E650B0048D9AD /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672312D3E650B0048D9AD /* HeaderView.swift */; };
 		2F3672342D3E652C0048D9AD /* ErrorOvelayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672332D3E652C0048D9AD /* ErrorOvelayView.swift */; };
+		2F3672362D4111130048D9AD /* NavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672352D4111130048D9AD /* NavigationBar.swift */; };
+		2F510CE02D413489004171E8 /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F510CDF2D413489004171E8 /* Screen.swift */; };
+		2F510CE22D4134EE004171E8 /* AddMemoryContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F510CE12D4134EE004171E8 /* AddMemoryContentView.swift */; };
+		2F510CE62D4135D3004171E8 /* AddMemoryMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F510CE52D4135D3004171E8 /* AddMemoryMainView.swift */; };
+		2F510CE82D413607004171E8 /* AddMemoryDoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F510CE72D413607004171E8 /* AddMemoryDoneView.swift */; };
+		2F510CEA2D41449A004171E8 /* AddMemoryMainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F510CE92D41449A004171E8 /* AddMemoryMainViewModel.swift */; };
+		2F510CEC2D414971004171E8 /* MediaRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F510CEB2D414971004171E8 /* MediaRepository.swift */; };
 		2F8800BA2D38CE6800220F89 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B22D38CE6800220F89 /* AppModel.swift */; };
 		2F8800BB2D38CE6800220F89 /* CelestoriaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B42D38CE6800220F89 /* CelestoriaApp.swift */; };
 		2F8800BC2D38CE6800220F89 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B52D38CE6800220F89 /* ContentView.swift */; };
@@ -103,6 +110,13 @@
 		2F36722D2D3E35830048D9AD /* DeleteAccountUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteAccountUseCase.swift; sourceTree = "<group>"; };
 		2F3672312D3E650B0048D9AD /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
 		2F3672332D3E652C0048D9AD /* ErrorOvelayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorOvelayView.swift; sourceTree = "<group>"; };
+		2F3672352D4111130048D9AD /* NavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBar.swift; sourceTree = "<group>"; };
+		2F510CDF2D413489004171E8 /* Screen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Screen.swift; sourceTree = "<group>"; };
+		2F510CE12D4134EE004171E8 /* AddMemoryContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMemoryContentView.swift; sourceTree = "<group>"; };
+		2F510CE52D4135D3004171E8 /* AddMemoryMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMemoryMainView.swift; sourceTree = "<group>"; };
+		2F510CE72D413607004171E8 /* AddMemoryDoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMemoryDoneView.swift; sourceTree = "<group>"; };
+		2F510CE92D41449A004171E8 /* AddMemoryMainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMemoryMainViewModel.swift; sourceTree = "<group>"; };
+		2F510CEB2D414971004171E8 /* MediaRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaRepository.swift; sourceTree = "<group>"; };
 		2F8800B02D38CE6800220F89 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		2F8800B22D38CE6800220F89 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		2F8800B32D38CE6800220F89 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -144,12 +158,8 @@
 		2F3671A92D3D61880048D9AD /* RegularViews */ = {
 			isa = PBXGroup;
 			children = (
-				2F8800B52D38CE6800220F89 /* ContentView.swift */,
-				2F3671CE2D3D7A660048D9AD /* MainView.swift */,
-				2F3672192D3E19A30048D9AD /* GalaxyView.swift */,
-				2F36721B2D3E1A030048D9AD /* ExploreView.swift */,
-				2F36721D2D3E1A1F0048D9AD /* SettingView.swift */,
-				2F36721F2D3E1C2F0048D9AD /* LoginView.swift */,
+				2F510CE32D413588004171E8 /* Main */,
+				2F510CE42D4135A1004171E8 /* AddMemory */,
 			);
 			path = RegularViews;
 			sourceTree = "<group>";
@@ -163,6 +173,7 @@
 				2F3671D62D3D7C730048D9AD /* MainTabButton.swift */,
 				2F3672312D3E650B0048D9AD /* HeaderView.swift */,
 				2F3672332D3E652C0048D9AD /* ErrorOvelayView.swift */,
+				2F3672352D4111130048D9AD /* NavigationBar.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -220,6 +231,7 @@
 				2F3671C82D3D76ED0048D9AD /* SpaceCoordinator.swift */,
 				2F3671D02D3D7AF90048D9AD /* MainViewModel.swift */,
 				2F3672212D3E1E410048D9AD /* LoginViewModel.swift */,
+				2F510CE92D41449A004171E8 /* AddMemoryMainViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -240,6 +252,29 @@
 				2F3672242D3E35110048D9AD /* AuthRepositoryProtocol.swift */,
 			);
 			path = Protocol;
+			sourceTree = "<group>";
+		};
+		2F510CE32D413588004171E8 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				2F8800B52D38CE6800220F89 /* ContentView.swift */,
+				2F36721F2D3E1C2F0048D9AD /* LoginView.swift */,
+				2F3671CE2D3D7A660048D9AD /* MainView.swift */,
+				2F3672192D3E19A30048D9AD /* GalaxyView.swift */,
+				2F36721B2D3E1A030048D9AD /* ExploreView.swift */,
+				2F36721D2D3E1A1F0048D9AD /* SettingView.swift */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
+		2F510CE42D4135A1004171E8 /* AddMemory */ = {
+			isa = PBXGroup;
+			children = (
+				2F510CE12D4134EE004171E8 /* AddMemoryContentView.swift */,
+				2F510CE52D4135D3004171E8 /* AddMemoryMainView.swift */,
+				2F510CE72D413607004171E8 /* AddMemoryDoneView.swift */,
+			);
+			path = AddMemory;
 			sourceTree = "<group>";
 		};
 		2F8800B12D38CE6800220F89 /* Preview Content */ = {
@@ -293,6 +328,7 @@
 				2F3671E02D3D946C0048D9AD /* Memory.swift */,
 				2F3671E82D3D9A470048D9AD /* Category.swift */,
 				2F3671EA2D3D9A8C0048D9AD /* UserProfile.swift */,
+				2F510CDF2D413489004171E8 /* Screen.swift */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -325,6 +361,7 @@
 			children = (
 				2F3672022D3DA1F00048D9AD /* MemoryRepository.swift */,
 				2F3672262D3E35310048D9AD /* AuthRepository.swift */,
+				2F510CEB2D414971004171E8 /* MediaRepository.swift */,
 			);
 			path = Repositories;
 			sourceTree = "<group>";
@@ -511,6 +548,8 @@
 				2F36722C2D3E35750048D9AD /* SignOutUseCase.swift in Sources */,
 				2F3671E12D3D946C0048D9AD /* Memory.swift in Sources */,
 				2F3671B12D3D6A9E0048D9AD /* Color+.swift in Sources */,
+				2F510CEC2D414971004171E8 /* MediaRepository.swift in Sources */,
+				2F510CE02D413489004171E8 /* Screen.swift in Sources */,
 				2F3672222D3E1E410048D9AD /* LoginViewModel.swift in Sources */,
 				2F8800BA2D38CE6800220F89 /* AppModel.swift in Sources */,
 				2F3671D72D3D7C730048D9AD /* MainTabButton.swift in Sources */,
@@ -519,8 +558,10 @@
 				2F8800BB2D38CE6800220F89 /* CelestoriaApp.swift in Sources */,
 				2F3671D32D3D7BFC0048D9AD /* AddMemoryButton.swift in Sources */,
 				2F3671C92D3D76ED0048D9AD /* SpaceCoordinator.swift in Sources */,
+				2F510CE62D4135D3004171E8 /* AddMemoryMainView.swift in Sources */,
 				2F3672132D3DAAD00048D9AD /* MemoryStarEntity.swift in Sources */,
 				2F3671CB2D3D78000048D9AD /* GradientBorderContainer.swift in Sources */,
+				2F510CE82D413607004171E8 /* AddMemoryDoneView.swift in Sources */,
 				2F3672072D3DA3170048D9AD /* CreateMemoryUseCase.swift in Sources */,
 				2F3672252D3E35110048D9AD /* AuthRepositoryProtocol.swift in Sources */,
 				2F36722A2D3E35670048D9AD /* SignInWithAppleUseCase.swift in Sources */,
@@ -539,12 +580,15 @@
 				2F3671CD2D3D7A150048D9AD /* Logger.swift in Sources */,
 				2F3672342D3E652C0048D9AD /* ErrorOvelayView.swift in Sources */,
 				2F36722E2D3E35830048D9AD /* DeleteAccountUseCase.swift in Sources */,
+				2F510CE22D4134EE004171E8 /* AddMemoryContentView.swift in Sources */,
 				2F8800BD2D38CE6800220F89 /* SpaceImmersiveView.swift in Sources */,
 				2F3672092D3DA32B0048D9AD /* DeleteMemoryUseCase.swift in Sources */,
 				2F36720F2D3DAA6E0048D9AD /* ConstellationBackGroundEntity.swift in Sources */,
 				2F36720B2D3DA3F20048D9AD /* Config.swift in Sources */,
 				2F8800C42D38D3AE00220F89 /* DIContainer.swift in Sources */,
+				2F510CEA2D41449A004171E8 /* AddMemoryMainViewModel.swift in Sources */,
 				2F3671D52D3D7C3C0048D9AD /* ErrorBannerView.swift in Sources */,
+				2F3672362D4111130048D9AD /* NavigationBar.swift in Sources */,
 				2F3671CF2D3D7A660048D9AD /* MainView.swift in Sources */,
 				2F3672202D3E1C2F0048D9AD /* LoginView.swift in Sources */,
 				2F3671D12D3D7AF90048D9AD /* MainViewModel.swift in Sources */,

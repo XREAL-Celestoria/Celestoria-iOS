@@ -17,6 +17,7 @@ final class DIContainer: ObservableObject {
     // ViewModels
     let mainViewModel: MainViewModel
     let loginViewModel: LoginViewModel
+    let addMemoryMainViewModel: AddMemoryMainViewModel
     let spaceCoordinator: SpaceCoordinator
     let appModel: AppModel
 
@@ -25,6 +26,7 @@ final class DIContainer: ObservableObject {
 
     // Repositories
     private let memoryRepository: MemoryRepository
+    private let mediaRepository: MediaRepository
     private let authRepository: AuthRepositoryProtocol
 
     // Use Cases
@@ -45,21 +47,22 @@ final class DIContainer: ObservableObject {
 
         // Initialize Repositories
         self.memoryRepository = MemoryRepository(supabase: supabaseClient)
+        self.mediaRepository = MediaRepository(supabase: supabaseClient)
         self.authRepository = AuthRepository(supabase: supabaseClient)
 
         // Initialize Use Cases
         self.fetchMemoriesUseCase = FetchMemoriesUseCase(memoryRepository: memoryRepository)
-        self.createMemoryUseCase = CreateMemoryUseCase(memoryRepository: memoryRepository)
+        self.createMemoryUseCase = CreateMemoryUseCase(memoryRepository: memoryRepository, mediaRepository: mediaRepository)
         self.deleteMemoryUseCase = DeleteMemoryUseCase(memoryRepository: memoryRepository)
         self.signInWithAppleUseCase = SignInWithAppleUseCase(repository: authRepository)
 
         // Initialize ViewModels and Coordinators
         self.mainViewModel = MainViewModel(
             fetchMemoriesUseCase: fetchMemoriesUseCase,
-            createMemoryUseCase: createMemoryUseCase,
             deleteMemoryUseCase: deleteMemoryUseCase
         )
         self.loginViewModel = LoginViewModel(signInUseCase: signInWithAppleUseCase)
+        self.addMemoryMainViewModel = AddMemoryMainViewModel(createMemoryUseCase: createMemoryUseCase)
         self.spaceCoordinator = SpaceCoordinator()
     }
 }
