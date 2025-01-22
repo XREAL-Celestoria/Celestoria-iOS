@@ -59,17 +59,17 @@ private extension MainView {
     var tabMenu: some View {
         GeometryReader { geometry in
             HStack(spacing: geometry.size.width * 0.05) {
-                MainTabButton(imageName: "GalaxyTabButton", text: "Galaxy") {
+                MainTabButton(imageName: "Nebula", text: "Galaxy") {
                     print("Galaxy Button Tapped")
                 }
                 .frame(width: geometry.size.width * 0.08, height: geometry.size.height * 0.2)
                 
-                MainTabButton(imageName: "ExploreTabButton", text: "Explore") {
+                MainTabButton(imageName: "Explore", text: "Explore") {
                     print("Explore Button Tapped")
                 }
                 .frame(width: geometry.size.width * 0.08, height: geometry.size.height * 0.2)
                 
-                MainTabButton(imageName: "SettingTabButton", text: "Setting") {
+                MainTabButton(imageName: "Setting", text: "Setting") {
                     print("Setting Button Tapped")
                 }
                 .frame(width: geometry.size.width * 0.08, height: geometry.size.height * 0.2)

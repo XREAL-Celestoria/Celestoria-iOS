@@ -13,9 +13,9 @@ struct MainTabButton: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
-            GeometryReader { geometry in
-                VStack {
+        GeometryReader { geometry in
+            VStack {
+                Button(action: action) {
                     ZStack {
                         Circle()
                             .fill(
@@ -52,26 +52,34 @@ struct MainTabButton: View {
                                     )
                             )
                         
-                        Image(systemName: imageName)
+                        Image(imageName)
                             .resizable()
                             .scaledToFit()
-                            .frame(width: geometry.size.width * 0.48, height: geometry.size.height * 0.48)
+                            .frame(width: geometry.size.width * 2, height: geometry.size.height * 2)
                             .foregroundColor(.NebulaWhite)
                     }
                     .frame(width: geometry.size.width, height: geometry.size.width)
-                    
-                    Spacer()
-                        .frame(height: geometry.size.height * 1)  
-                    
-                    Text(text)
-                        .font(.system(size: 19, weight: .bold))
-                        .foregroundColor(.NebulaWhite)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .buttonStyle(MainTabButtonStyle())
+                
+                Spacer()
+                    .frame(height: geometry.size.height * 1)  
+                
+                Text(text)
+                    .font(.system(size: 19, weight: .bold))
+                    .foregroundColor(.NebulaWhite)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.NebulaBlack)
         }
-        .background(Color.NebulaBlack)
-        .buttonStyle(PlainButtonStyle())
     }
 }
 
+// 새로운 커스텀 ButtonStyle 추가
+struct MainTabButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.9 : 1.0)
+            .animation(.easeInOut(duration: 0.2), value: configuration.isPressed)
+    }
+}
