@@ -62,7 +62,9 @@ class SpaceEntity: Entity {
     }
     
     private func createNewStars(from memories: [Memory]) async {
+        print("[DEBUG] Creating new stars for \(memories.count) memories.")
         for memory in memories {
+            print("   → Memory ID=\(memory.id), title=\(memory.title), videoURL=\(memory.videoURL ?? "nil")")
             let star = await createStar(for: memory)
             addChild(star)
             starEntities.append(star)

@@ -39,12 +39,14 @@ struct SpaceImmersiveView: View {
                 os.Logger.info("Star tapped!")
                 if let modelEntity = value.entity as? ModelEntity,
                    let starEntity = modelEntity.parent as? MemoryStarEntity {
+                    let mem = starEntity.memory
+                    print("[DEBUG] Tapped Star's Memory => id: \(mem.id), title: \(mem.title), video: \(mem.videoURL ?? "nil")")
+                    
                     Task { @MainActor in
                         await openMemoryDetailView(for: starEntity)
                     }
                 } else {
                     os.Logger.error("Failed to cast entity to MemoryStarEntity")
-                    os.Logger.info("Actual entity type: \(type(of: value.entity))")
                 }
             }
     }

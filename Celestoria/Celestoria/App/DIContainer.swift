@@ -72,12 +72,13 @@ final class DIContainer: ObservableObject {
         self.signInWithAppleUseCase = SignInWithAppleUseCase(repository: authRepository)
 
         // Initialize ViewModels and Coordinators
+        self.spaceCoordinator = SpaceCoordinator()
         self.mainViewModel = MainViewModel(
             fetchMemoriesUseCase: fetchMemoriesUseCase,
-            deleteMemoryUseCase: deleteMemoryUseCase
+            deleteMemoryUseCase: deleteMemoryUseCase,
+            spaceCoordinator: spaceCoordinator
         )
         self.loginViewModel = LoginViewModel(signInUseCase: signInWithAppleUseCase)
         self.addMemoryMainViewModel = AddMemoryMainViewModel(createMemoryUseCase: createMemoryUseCase)
-        self.spaceCoordinator = SpaceCoordinator()
     }
 }

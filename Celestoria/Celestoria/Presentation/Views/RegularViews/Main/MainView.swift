@@ -39,10 +39,11 @@ struct MainView: View {
         .background(Color.NebulaBlack.ignoresSafeArea())
         .overlay(loadingOverlay)
         .onAppear {
-            guard let _ = appModel.userId else { return }
+            guard let userId = appModel.userId else { return }
             Task {
                 await openImmersiveSpace(id: appModel.immersiveSpaceID)
                 appModel.isImmersiveViewActive = true
+                await viewModel.fetchMemories(for: userId)
             }
         }
     }
