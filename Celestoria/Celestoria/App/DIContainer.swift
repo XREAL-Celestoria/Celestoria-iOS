@@ -5,8 +5,6 @@
 //  Created by Park Seyoung on 1/16/25.
 //
 
-// 의존성을 관리하고 주입, 객체 생성 및 관리
-
 import Foundation
 import Supabase
 import os
@@ -51,11 +49,14 @@ final class DIContainer: ObservableObject {
             )
         )
         
-        if let currentUser = supabaseClient.auth.currentUser {
-            // 세션이 존재한다면 -> 자동 로그인 상태
+        // 자동 로그인 체크
+        if let currentUser = self.supabaseClient.auth.currentUser {
+            // 세션 존재 -> 이미 로그인 상태
             self.appModel.userId = currentUser.id
             self.appModel.activeScreen = .main
         } else {
+            // 세션 없음 -> 로그인 필요
+            self.appModel.userId = nil
             self.appModel.activeScreen = .login
         }
 

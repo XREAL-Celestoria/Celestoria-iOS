@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import AudioToolbox
+import UIKit
 
 struct MainTabButton: View {
     let imageName: String
@@ -59,5 +61,10 @@ struct MainTabButtonStyle: ButtonStyle {
         configuration.label
             .scaleEffect(configuration.isPressed ? 0.9 : 1.0)
             .animation(.easeInOut(duration: 0.2), value: configuration.isPressed)
+            .onChange(of: configuration.isPressed) { oldValue, newValue in
+                if newValue {
+                    AudioServicesPlaySystemSound(1104)
+                }
+            }
     }
 }

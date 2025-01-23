@@ -25,9 +25,8 @@ struct LoginView: View {
                 }, onCompletion: { result in
                     viewModel.handleAuthorization(result: result) { userId in
                         if let userId = userId {
+                            // 로그인 성공
                             appModel.userId = userId
-                            startImmersiveExperience()
-                            appModel.isImmersiveViewActive = true
                             appModel.activeScreen = .main
                         }
                     }
@@ -49,24 +48,4 @@ struct LoginView: View {
             }
         }
     }
-
-    private func startImmersiveExperience() {
-        Task {
-            await openImmersiveSpace(id: appModel.immersiveSpaceID)
-        }
-    }
-    //close
-    private var errorOverlay: some View {
-        Group {
-            if let error = viewModel.errorMessage {
-                ErrorBannerView(message: error) {
-                    viewModel.errorMessage = nil
-                }
-                .padding(.top, 10)
-            } else {
-                EmptyView()
-            }
-        }
-    }
 }
-

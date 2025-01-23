@@ -52,7 +52,7 @@ class MediaRepository {
     // Supabase에 업로드
     private func uploadToSupabase(_ data: Data, folder: String) async throws -> (url: String, path: String) {
         let fileName = "\(UUID().uuidString)"
-        let path = "\(folder)/\(fileName)"
+        let path = "\(fileName)"
         
         try await supabase.storage.from(folder).upload(path, data: data, options: .init(upsert: true))
         

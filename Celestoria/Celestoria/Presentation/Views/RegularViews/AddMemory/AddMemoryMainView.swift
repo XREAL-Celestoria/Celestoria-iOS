@@ -114,11 +114,12 @@ private struct RightView: View {
             NoteInputSection()
             
             UploadButton {
+                guard let userId = appModel.userId else { return }
                 Task {
                     await viewModel.saveMemory(
                         note: viewModel.note,
                         title: viewModel.title,
-                        userId: appModel.userId
+                        userId: userId
                     )
                 }
             }

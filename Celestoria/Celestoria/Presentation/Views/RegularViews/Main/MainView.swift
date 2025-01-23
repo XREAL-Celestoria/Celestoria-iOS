@@ -12,6 +12,7 @@ struct MainView: View {
     @EnvironmentObject var viewModel: MainViewModel
     @EnvironmentObject var appModel: AppModel
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.openImmersiveSpace) private var openImmersiveSpace
     
     var body: some View {
         VStack {
@@ -38,8 +39,10 @@ struct MainView: View {
         .background(Color.NebulaBlack.ignoresSafeArea())
         .overlay(loadingOverlay)
         .onAppear {
+            guard let _ = appModel.userId else { return }
             Task {
-                await viewModel.fetchMemories(for: appModel.userId)
+                await openImmersiveSpace(id: appModel.immersiveSpaceID)
+                appModel.isImmersiveViewActive = true
             }
         }
     }
