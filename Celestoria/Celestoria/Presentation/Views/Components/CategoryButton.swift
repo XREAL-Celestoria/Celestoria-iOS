@@ -9,21 +9,41 @@ import SwiftUI
 
 // MARK: - Category Button
 struct CategoryButton: View {
-    let title: String
-    let icon: String
-
+    let category: Category
+    let isSelected: Bool
+    let action: () -> Void
+    
     var body: some View {
         VStack {
-            Image(systemName: icon)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 30, height: 30)
-                .foregroundColor(.white)
-            Text(title)
-                .foregroundColor(.white)
-                .font(.caption)
+            Button(action: action) {
+                ZStack {
+                    Circle()
+                        .fill(
+                            isSelected ? AnyShapeStyle(LinearGradient.GradientSub):
+                            AnyShapeStyle(Color(hex:"1B212A")))
+                        .stroke(
+                            isSelected ?
+                            AnyShapeStyle(LinearGradient.GradientSub) :
+                            AnyShapeStyle(Color(hex:"1B212A")) ,
+                            lineWidth: 0.5)
+                        .frame(width: 50, height: 50)
+                    Image(category.iconName)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(.NebulaWhite)
+                }
+            }
+            Text(category.displayName)
+                .fixedSize(horizontal: true, vertical: false)
+                .foregroundStyle(
+                    isSelected
+                        ? AnyShapeStyle(LinearGradient.GradientSub)
+                        : AnyShapeStyle(Color.NebulaWhite)
+                )
+                .font(.system(size: 15, weight: .regular))
+                .padding(.top, 4)
         }
-        .padding()
-        .background(Color.gray.opacity(0.2).cornerRadius(10))
+        .frame(width: 50)
     }
 }

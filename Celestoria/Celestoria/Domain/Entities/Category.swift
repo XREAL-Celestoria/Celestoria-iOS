@@ -25,19 +25,19 @@ enum Category: String, CaseIterable, Codable {
     
     var iconName: String {
         switch self {
-        case .ENTERTAINMENT: return "party.popper"          // 엔터테인먼트/취미
-        case .FAMILY: return "figure.2.and.child.holdinghands"  // 가족
-        case .PET: return "pawprint.fill"                   // 반려동물
-        case .TRAVEL: return "airplane"                     // 여행
+        case .ENTERTAINMENT: return "Entertainment"          // 엔터테인먼트/취미
+        case .FAMILY: return "Family"  // 가족
+        case .PET: return "Pet"                   // 반려동물
+        case .TRAVEL: return "Travel"                     // 여행
         }
     }
     
     var displayName: String {
         switch self {
-        case .ENTERTAINMENT: return "ENTERTAINMENT"
-        case .FAMILY: return "FAMILY"
-        case .PET: return "PET"
-        case .TRAVEL: return "TRAVEL"
+        case .ENTERTAINMENT: return "Entertainment"
+        case .FAMILY: return "Family"
+        case .PET: return "Pet"
+        case .TRAVEL: return "Travel"
         }
     }
     

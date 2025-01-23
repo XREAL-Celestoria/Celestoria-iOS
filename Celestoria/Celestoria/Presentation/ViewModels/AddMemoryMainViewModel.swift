@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import SwiftUI
 import PhotosUI
+import os
 
 @MainActor
 class AddMemoryMainViewModel: ObservableObject {
@@ -45,10 +46,10 @@ class AddMemoryMainViewModel: ObservableObject {
             return
         }
         
-//        guard let category = selectedCategory else {
-//            errorMessage = "카테고리를 선택해주세요."
-//            return
-//        }
+        guard let category = selectedCategory else {
+            errorMessage = "카테고리를 선택해주세요."
+            return
+        }
         
         isUploading = true // 업로드 시작 상태 표시
         defer { // 작업 종료 후 반드시 실행
@@ -66,8 +67,7 @@ class AddMemoryMainViewModel: ObservableObject {
             let memory = try await createMemoryUseCase.execute(
                 note: note,
                 title: title,
-                category: .ENTERTAINMENT,
-//                category: category,
+                category: category,
                 videoData: videoData,
                 thumbnailImage: thumbnailImage,
                 userId: userId
@@ -77,6 +77,15 @@ class AddMemoryMainViewModel: ObservableObject {
             print("메모리 생성 완료: \(memory)")
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+    
+    func toggleCategory(_ category: Category) {
+        if selectedCategory == category {
+            selectedCategory = nil
+        } else {
+            os.Logger.info("\(category) is selected")
+            selectedCategory = category
         }
     }
 }
