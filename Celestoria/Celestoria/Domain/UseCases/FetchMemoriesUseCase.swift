@@ -13,6 +13,10 @@ class FetchMemoriesUseCase {
     init(memoryRepository: MemoryRepository) {
         self.memoryRepository = memoryRepository
     }
+    
+    func executeAll() async throws -> [Memory] {
+        return try await memoryRepository.fetchAllMemories()
+    }
 
     func execute(for userId: UUID) async throws -> [Memory] {
         return try await memoryRepository.fetchMemories(for: userId)

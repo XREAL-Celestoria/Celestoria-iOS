@@ -10,6 +10,7 @@
 import Foundation
 import Supabase
 import os
+import Auth
 
 @MainActor
 final class DIContainer: ObservableObject {
@@ -38,12 +39,25 @@ final class DIContainer: ObservableObject {
     init() {
         Logger.info("Initializing DIContainer...")
         self.appModel = AppModel()
-        
+
         // Initialize Supabase Client
         self.supabaseClient = SupabaseClient(
             supabaseURL: Config.supabaseURL,
-            supabaseKey: Config.supabaseAnonKey
+            supabaseKey: Config.supabaseAnonKey,
+            options: SupabaseClientOptions(
+                auth: SupabaseClientOptions.AuthOptions(
+                    autoRefreshToken: true
+                )
+            )
         )
+        
+        if let currentUser = supabaseClient.auth.currentUser {
+            // 세션이 존재한다면 -> 자동 로그인 상태
+            self.appModel.userId = currentUser.id
+            self.appModel.activeScreen = .main
+        } else {
+            self.appModel.activeScreen = .login
+        }
 
         // Initialize Repositories
         self.memoryRepository = MemoryRepository(supabase: supabaseClient)

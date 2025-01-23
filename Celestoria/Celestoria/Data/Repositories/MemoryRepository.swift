@@ -15,6 +15,7 @@ class MemoryRepository {
         self.supabase = supabase
     }
 
+    /// 특정 유저의 메모리
     func fetchMemories(for userId: UUID) async throws -> [Memory] {
         try await supabase
             .from("memories")
@@ -24,6 +25,15 @@ class MemoryRepository {
             .value
     }
 
+    /// 모든 유저의 메모리
+    func fetchAllMemories() async throws -> [Memory] {
+        try await supabase
+            .from("memories")
+            .select("*")
+            .execute()
+            .value
+    }
+    
     func createMemory(_ memory: Memory) async throws {
         try await supabase
             .from("memories")

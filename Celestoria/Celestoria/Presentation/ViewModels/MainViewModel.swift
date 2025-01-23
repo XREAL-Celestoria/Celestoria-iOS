@@ -24,6 +24,17 @@ class MainViewModel: ObservableObject {
         self.deleteMemoryUseCase = deleteMemoryUseCase
     }
     
+    func fetchAllMemories() async {
+        isLoading = true
+        defer { isLoading = false }
+        
+        do {
+            memories = try await fetchMemoriesUseCase.executeAll()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+    
     /// Fetch memories for the given user ID
     func fetchMemories(for userId: UUID) async {
         isLoading = true

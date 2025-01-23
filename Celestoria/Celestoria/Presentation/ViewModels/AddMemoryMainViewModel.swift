@@ -45,6 +45,11 @@ class AddMemoryMainViewModel: ObservableObject {
             return
         }
         
+//        guard let category = selectedCategory else {
+//            errorMessage = "카테고리를 선택해주세요."
+//            return
+//        }
+        
         isUploading = true // 업로드 시작 상태 표시
         defer { // 작업 종료 후 반드시 실행
             isUploading = false
@@ -62,6 +67,7 @@ class AddMemoryMainViewModel: ObservableObject {
                 note: note,
                 title: title,
                 category: .ENTERTAINMENT,
+//                category: category,
                 videoData: videoData,
                 thumbnailImage: thumbnailImage,
                 userId: userId
