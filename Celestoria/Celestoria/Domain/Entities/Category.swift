@@ -34,10 +34,10 @@ enum Category: String, CaseIterable, Codable {
     
     var displayName: String {
         switch self {
-        case .ENTERTAINMENT: return "ENTERTAINMENT"
-        case .FAMILY: return "FAMILY"
-        case .PET: return "PET"
-        case .TRAVEL: return "TRAVEL"
+        case .ENTERTAINMENT: return "Entertainment"
+        case .FAMILY: return "Family"
+        case .PET: return "Pet"
+        case .TRAVEL: return "Travel"
         }
     }
     

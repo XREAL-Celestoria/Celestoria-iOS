@@ -110,16 +110,22 @@ private struct RightView: View {
     @EnvironmentObject private var appModel: AppModel
     
     var body: some View {
-        VStack(spacing: 24) {
+        VStack() {
             // Category Section
             Text("Category")
                 .foregroundColor(.NebulaWhite)
                 .font(.system(size: 22, weight: .bold))
                 .padding(.top, 64)
             
+            Spacer()
+            
             CategoryButtons()
             
+            Spacer()
+            
             NoteInputSection()
+            
+            Spacer()
             
             UploadButton {
                 Task {
@@ -130,8 +136,9 @@ private struct RightView: View {
                     )
                 }
             }
+            
+            Spacer()
         }
-        .padding()
     }
 }
 
@@ -170,7 +177,7 @@ private struct CategoryButtons: View {
                 }
             )
         }
-        .frame(maxWidth: .infinity, alignment: .center)
+        .frame(width: 140, height: 75, alignment: .center)
         .padding()
     }
 }
@@ -212,6 +219,7 @@ private struct NoteInputSection: View {
                     .padding(.top, 4)
             }
         }
+        .frame(width: 560, height: 320, alignment: .center)
     }
 }
 
