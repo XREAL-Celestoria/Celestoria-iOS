@@ -18,8 +18,8 @@ extension LinearGradient {
     
     static let GradientSub = LinearGradient(
         gradient: Gradient(colors: [Color.Sub1, Color.Sub2]),
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
+        startPoint: .top,
+        endPoint: .bottom
     )
     
     static let GradientStroke = LinearGradient(

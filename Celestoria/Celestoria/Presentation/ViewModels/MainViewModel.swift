@@ -35,7 +35,7 @@ class MainViewModel: ObservableObject {
         }
     }
     
-    /// Fetch memories for the given user ID
+    // Fetch memories for the given user ID
     func fetchMemories(for userId: UUID) async {
         isLoading = true
         defer { isLoading = false }
@@ -47,7 +47,7 @@ class MainViewModel: ObservableObject {
         }
     }
     
-    /// Delete a memory by its ID
+    // Delete a memory by its ID
     func deleteMemory(_ memoryId: UUID) async {
         isLoading = true
         defer { isLoading = false }
