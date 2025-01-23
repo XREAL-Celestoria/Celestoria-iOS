@@ -30,6 +30,7 @@ struct CelestoriaApp: App {
                 AddMemoryContentView()
                     .environmentObject(diContainer.appModel)
                     .environmentObject(diContainer.addMemoryMainViewModel)
+                    .environmentObject(diContainer.mainViewModel)
             }
         }
         

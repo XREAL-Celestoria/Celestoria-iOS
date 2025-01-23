@@ -78,6 +78,7 @@ final class DIContainer: ObservableObject {
             deleteMemoryUseCase: deleteMemoryUseCase,
             spaceCoordinator: spaceCoordinator
         )
+        
         self.loginViewModel = LoginViewModel(signInUseCase: signInWithAppleUseCase)
         self.addMemoryMainViewModel = AddMemoryMainViewModel(createMemoryUseCase: createMemoryUseCase)
     }

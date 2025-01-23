@@ -8,11 +8,13 @@
 import SwiftUI
 import PhotosUI
 import AVFoundation
+import os
 
 struct AddMemoryMainView: View {
     @EnvironmentObject var viewModel: AddMemoryMainViewModel
+    @EnvironmentObject var mainViewModel : MainViewModel
     @EnvironmentObject private var appModel: AppModel
-    
+
     var body: some View {
         GeometryReader { geometry in
             HStack(spacing: 0) {
@@ -107,7 +109,9 @@ private struct LeftView: View {
 // MARK: - Right View
 private struct RightView: View {
     @EnvironmentObject var viewModel: AddMemoryMainViewModel
+    @EnvironmentObject var mainViewModel : MainViewModel
     @EnvironmentObject private var appModel: AppModel
+    @Environment(\.dismissWindow) private var dismissWindow
     
     var body: some View {
         VStack() {
@@ -130,11 +134,20 @@ private struct RightView: View {
             UploadButton {
                 guard let userId = appModel.userId else { return }
                 Task {
-                    await viewModel.saveMemory(
-                        note: viewModel.note,
-                        title: viewModel.title,
-                        userId: userId
-                    )
+                    do {
+                        await viewModel.saveMemory(
+                            note: viewModel.note,
+                            title: viewModel.title,
+                            userId: userId
+                        )
+                        
+                        await mainViewModel.fetchMemories(for: userId)
+                        
+                        dismissWindow(id: "Add-Memory")
+                    } catch {
+                        os.Logger.error("Failed to save memory: \(error)")
+                    }
+                    
                 }
             }
             
