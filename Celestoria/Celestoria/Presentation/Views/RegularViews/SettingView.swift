@@ -110,7 +110,7 @@ private struct LeftSettingView: View {
                     .cornerRadius(20)
             }
             .buttonStyle(.plain)
-            .padding(.bottom, 40)
+            .padding(.bottom, 50)
         }
         .alert("오류", isPresented: $showError) {
             Button("확인", role: .cancel) { }
