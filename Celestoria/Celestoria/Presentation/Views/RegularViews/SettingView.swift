@@ -194,11 +194,29 @@ private struct ProfileSettingView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            Text("Profile")
-                .font(.system(size: 29, weight: .bold))
-                .foregroundColor(.NebulaWhite)
-                .padding(.top, 35)
-                .padding(.leading, 55)
+            HStack {
+                Text("Profile")
+                    .font(.system(size: 29, weight: .bold))
+                    .foregroundColor(.NebulaWhite)
+                
+                Spacer()
+                
+                if isEditing {
+                    Button(action: {
+                        withAnimation {
+                            // TODO: 저장 로직 구현
+                            isEditing = false
+                        }
+                    }) {
+                        Text("DONE")
+                            .font(.system(size: 29, weight: .bold))
+                            .foregroundStyle(LinearGradient.GradientMain)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.top, 35)
+            .padding(.horizontal, 55)
             
             VStack(spacing: 70) {
                 if isEditing {
@@ -297,13 +315,16 @@ private struct ProfileSettingView: View {
             
             Button(action: {
                 withAnimation {
-                    isEditing.toggle()
                     if isEditing {
+                        // 취소 로직: 변경사항 되돌리기
+                        isEditing = false
+                    } else {
+                        isEditing = true
                         isNicknameFocused = true
                     }
                 }
             }) {
-                Text(isEditing ? "Save" : "Edit")
+                Text(isEditing ? "Cancel" : "Edit")
                     .font(.system(size: 24, weight: .semibold))
             }
             .frame(maxWidth: .infinity)
