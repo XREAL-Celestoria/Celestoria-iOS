@@ -227,13 +227,13 @@ private struct ProfileSettingView: View {
                                 if let profileImage = profileImage {
                                     Image(uiImage: profileImage)
                                         .resizable()
-                                        .scaledToFit()
+                                        .scaledToFill()
                                         .frame(width: 330, height: 330)
                                         .clipShape(Circle())
                                 } else {
                                     Image(systemName: "person.circle.fill")
                                         .resizable()
-                                        .scaledToFit()
+                                        .scaledToFill()
                                         .frame(width: 330, height: 330)
                                         .clipShape(Circle())
                                 }
@@ -279,13 +279,13 @@ private struct ProfileSettingView: View {
                     if let profileImage = profileImage {
                         Image(uiImage: profileImage)
                             .resizable()
-                            .scaledToFit()
+                            .scaledToFill()
                             .frame(width: 330, height: 330)
                             .clipShape(Circle())
                     } else {
                         Image(systemName: "person.circle.fill")
                             .resizable()
-                            .scaledToFit()
+                            .scaledToFill()
                             .frame(width: 330, height: 330)
                             .clipShape(Circle())
                     }
@@ -339,6 +339,7 @@ private struct ProfileSettingView: View {
 private struct ThumbnailSettingView: View {
     @State private var showThumbnailSelector = false
     @State private var selectedThumbnail: Int = 0
+    @State private var isEditing = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -348,105 +349,175 @@ private struct ThumbnailSettingView: View {
                 .padding(.top, 40)
                 .padding(.leading, 40)
             
-            Image("CurrentThumbnail") // 현재 썸네일 이미지
-                .resizable()
-                .scaledToFit()
-                .frame(width: 200, height: 200)
-                .cornerRadius(12)
-                .frame(maxWidth: .infinity)
-                .padding(.top, 40)
+            Button(action: {
+                if isEditing {
+                    showThumbnailSelector = true
+                }
+            }) {
+                ZStack {
+                    Image("Thumbnail1")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 434, height: 456)
+                        .cornerRadius(19)
+                    if isEditing {
+                        // 오버레이 레이어
+                        RoundedRectangle(cornerRadius: 19)
+                            .fill(Color.black.opacity(0.5))
+                            .frame(width: 434, height: 456)
+                        
+                        // Change Photo 텍스트
+                        Text("Change Photo")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundColor(.white)
+                    }
+                }
+            }
+            .buttonStyle(.plain)
+            .frame(maxWidth: .infinity)
+            .padding(.top, 40)
             
             Button(action: {
-                showThumbnailSelector = true
+                isEditing.toggle()
             }) {
-                Text("Edit")
-                    .font(.system(size: 18, weight: .semibold))
+                Text(isEditing ? "Cancel" : "Edit")
+                    .font(.system(size: 24, weight: .semibold))
                     .foregroundColor(.NebulaWhite)
-                    .frame(width: 100, height: 40)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.NebulaWhite.opacity(0.3), lineWidth: 2)
-                    )
             }
             .frame(maxWidth: .infinity)
+            .buttonStyle(.plain)
             
             Spacer()
         }
         .sheet(isPresented: $showThumbnailSelector) {
-            ThumbnailSelectorView(selectedThumbnail: $selectedThumbnail)
+            ThumbnailSelectorView(
+                selectedThumbnail: $selectedThumbnail, 
+                isPresented: $showThumbnailSelector,
+                isEditing: $isEditing
+            )
         }
     }
 }
 
 // MARK: - Thumbnail Selector View
 private struct ThumbnailSelectorView: View {
-    @Environment(\.dismiss) private var dismiss
     @Binding var selectedThumbnail: Int
-    @State private var tempSelection: Int?
+    @Binding var isPresented: Bool
+    @Binding var isEditing: Bool
+    @State private var initialThumbnail: Int
     
-    let thumbnails = ["thumb1", "thumb2", "thumb3", "thumb4", "thumb5", "thumb6"]
+    let thumbnails = ["Thumbnail1", "Thumbnail2", "Thumbnail3", "Thumbnail4", "Thumbnail5", "Thumbnail6"]
+    
+    init(selectedThumbnail: Binding<Int>, isPresented: Binding<Bool>, isEditing: Binding<Bool>) {
+        self._selectedThumbnail = selectedThumbnail
+        self._isPresented = isPresented
+        self._isEditing = isEditing
+        self._initialThumbnail = State(initialValue: selectedThumbnail.wrappedValue)
+    }
     
     var body: some View {
-        VStack {
-            // 헤더
-            HStack {
-                Text("Change Thumbnail")
-                    .font(.system(size: 29, weight: .bold))
-                    .foregroundColor(.NebulaWhite)
-                
-                Spacer()
-                
-                Button(action: { dismiss() }) {
-                    Image(systemName: "xmark")
+        ZStack {
+            VStack(spacing: 30) {
+                HStack {
+                    Text("Change Thumbnail")
+                        .font(.system(size: 24, weight: .bold))
                         .foregroundColor(.NebulaWhite)
-                        .font(.system(size: 20))
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        isPresented = false
+                    }) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 24))
+                            .foregroundColor(.NebulaWhite)
+                    }
                 }
-            }
-            .padding()
-            
-            // 썸네일 그리드
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 20), count: 3), spacing: 20) {
-                ForEach(0..<6) { index in
-                    Image(thumbnails[index])
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 120)
-                        .cornerRadius(12)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(tempSelection == index ? Color.blue : Color.clear, lineWidth: 3)
-                        )
-                        .onTapGesture {
-                            tempSelection = index
+                .padding(.horizontal, 40)
+                .padding(.top, 40)
+                
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 25), count: 3), spacing: 25) {
+                    ForEach(0..<6) { index in
+                        Button(action: {
+                            selectedThumbnail = index
+                        }) {
+                            ZStack {
+                                Image(thumbnails[index])
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 210, height: 240)
+                                    .cornerRadius(8)
+                                
+                                if selectedThumbnail == index {
+                                    Rectangle()
+                                        .fill(Color.black.opacity(0.5))
+                                        .cornerRadius(8)
+                                    
+                                    Image("Check-Circle/Variant2")
+                                        .frame(width: 30, height: 30)
+                                        .position(x: 195, y: 25)
+                                }
+                            }
                         }
+                        .buttonStyle(.plain)
+                    }
                 }
-            }
-            .padding()
-            
-            Spacer()
-            
-            // Save 버튼
-            Button(action: {
-                if let selection = tempSelection {
-                    selectedThumbnail = selection
-                    dismiss()
+                .padding(.horizontal, 40)
+                
+                Button(action: {
+                    isPresented = false
+                    isEditing = false
+                }) {
+                    Text("SAVE")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(
+                            selectedThumbnail != initialThumbnail ?
+                            LinearGradient(
+                                stops: [
+                                    Gradient.Stop(color: Color(red: 0.65, green: 0.91, blue: 1), location: 0.00),
+                                    Gradient.Stop(color: Color(red: 0.71, green: 0.79, blue: 1), location: 1.00),
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            ) :
+                            LinearGradient(
+                                stops: [
+                                    Gradient.Stop(color: Color(red: 0.67, green: 0.72, blue: 0.78), location: 0.00),
+                                    Gradient.Stop(color: Color(red: 0.51, green: 0.62, blue: 0.73), location: 1.00),
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                        .cornerRadius(16)
                 }
-            }) {
-                Text("Save")
-                    .font(.system(size: 22, weight: .semibold))
-                    .foregroundColor(.NebulaBlack)
-                    .frame(width: 200, height: 50)
-                    .background(
-                        tempSelection != nil ?
-                            AnyShapeStyle(LinearGradient.GradientSub) :
-                            AnyShapeStyle(Color.gray)
-                    )
-                    .cornerRadius(12)
+                .disabled(selectedThumbnail == initialThumbnail)
+                .padding(.horizontal, 40)
+                .padding(.bottom, 40)
             }
-            .disabled(tempSelection == nil)
-            .padding(.bottom, 40)
         }
-        .background(Color.NebulaBlack)
+        .frame(width: 778, height: 849)
+        .background(
+            LinearGradient(
+                stops: [
+                    Gradient.Stop(color: Color(red: 0.09, green: 0.09, blue: 0.09).opacity(0.2), location: 0.00),
+                    Gradient.Stop(color: Color(red: 0.29, green: 0.29, blue: 0.29).opacity(0.2), location: 0.65),
+                    Gradient.Stop(color: Color(red: 0.33, green: 0.77, blue: 1).opacity(0.5), location: 1.00),
+                ],
+                startPoint: UnitPoint(x: 0.5, y: 0),
+                endPoint: UnitPoint(x: 0.5, y: 1)
+            )
+        )
+        .cornerRadius(46)
+        .shadow(color: Color(red: 0.42, green: 0.73, blue: 1), radius: 15)
+        .overlay(
+            RoundedRectangle(cornerRadius: 46)
+                .inset(by: 1.5)
+                .stroke(.white, lineWidth: 3)
+        )
     }
 }
 
