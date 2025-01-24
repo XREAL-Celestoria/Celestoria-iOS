@@ -14,12 +14,7 @@ struct MemoryDetailView: View {
     var body: some View {
         GradientBorderContainer {
             VStack {
-                NavigationBar(
-                    title: "Memory Detail",
-                    buttonImageString: "xmark"
-                ) {
-                    dismiss()
-                }
+                NavigationBar(title: "Memory Detail", action: {dismiss()}, buttonImageString: "xmark")
                 
                 videoPlayerSection
                     .frame(height: 300)

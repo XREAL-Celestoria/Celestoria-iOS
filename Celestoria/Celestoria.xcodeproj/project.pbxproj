@@ -67,6 +67,10 @@
 		2F8800BF2D38CE6800220F89 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F8800B02D38CE6800220F89 /* Preview Assets.xcassets */; };
 		2F8800C02D38CE6800220F89 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F8800B32D38CE6800220F89 /* Assets.xcassets */; };
 		2F8800C42D38D3AE00220F89 /* DIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800C32D38D3AE00220F89 /* DIContainer.swift */; };
+		2FE857F72D43425B0055902B /* PopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE857F62D43425B0055902B /* PopupView.swift */; };
+		2FE857F92D4344740055902B /* CircularButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE857F82D4344740055902B /* CircularButton.swift */; };
+		2FE857FF2D434ABA0055902B /* PopupData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE857FE2D434ABA0055902B /* PopupData.swift */; };
+		2FE858032D437BF20055902B /* VisualEffectBlur.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE858022D437BF20055902B /* VisualEffectBlur.swift */; };
 		A21E477E2D38CD55002B60FA /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = A21E477D2D38CD55002B60FA /* RealityKitContent */; };
 		A2B8DB412D42AEC7001B5663 /* MemoryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */; };
 		A2B8DB782D42B409001B5663 /* CelestoriaVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */; };
@@ -129,6 +133,10 @@
 		2F8800B62D38CE6800220F89 /* SpaceImmersiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceImmersiveView.swift; sourceTree = "<group>"; };
 		2F8800B72D38CE6800220F89 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2F8800C32D38D3AE00220F89 /* DIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DIContainer.swift; sourceTree = "<group>"; };
+		2FE857F62D43425B0055902B /* PopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupView.swift; sourceTree = "<group>"; };
+		2FE857F82D4344740055902B /* CircularButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularButton.swift; sourceTree = "<group>"; };
+		2FE857FE2D434ABA0055902B /* PopupData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupData.swift; sourceTree = "<group>"; };
+		2FE858022D437BF20055902B /* VisualEffectBlur.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualEffectBlur.swift; sourceTree = "<group>"; };
 		A21E47782D38CD55002B60FA /* Celestoria.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Celestoria.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A21E477C2D38CD55002B60FA /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
 		A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryDetailView.swift; sourceTree = "<group>"; };
@@ -175,6 +183,7 @@
 			children = (
 				2F3671CA2D3D78000048D9AD /* GradientBorderContainer.swift */,
 				2F3671D22D3D7BFC0048D9AD /* AddMemoryButton.swift */,
+				2FE857F82D4344740055902B /* CircularButton.swift */,
 				2F3671D42D3D7C3C0048D9AD /* ErrorBannerView.swift */,
 				2F3671D62D3D7C730048D9AD /* MainTabButton.swift */,
 				2F3672312D3E650B0048D9AD /* HeaderView.swift */,
@@ -182,6 +191,7 @@
 				2F3672352D4111130048D9AD /* NavigationBar.swift */,
 				2F510CED2D416532004171E8 /* CategoryButton.swift */,
 				A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */,
+				2FE857F62D43425B0055902B /* PopupView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -338,6 +348,7 @@
 				2F3671E82D3D9A470048D9AD /* Category.swift */,
 				2F3671EA2D3D9A8C0048D9AD /* UserProfile.swift */,
 				2F510CDF2D413489004171E8 /* Screen.swift */,
+				2FE857FE2D434ABA0055902B /* PopupData.swift */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -428,6 +439,7 @@
 		2F8800D52D38D76F00220F89 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				2FE858022D437BF20055902B /* VisualEffectBlur.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -570,6 +582,7 @@
 				2F3671D32D3D7BFC0048D9AD /* AddMemoryButton.swift in Sources */,
 				A2B8DB412D42AEC7001B5663 /* MemoryDetailView.swift in Sources */,
 				2F3671C92D3D76ED0048D9AD /* SpaceCoordinator.swift in Sources */,
+				2FE857F92D4344740055902B /* CircularButton.swift in Sources */,
 				2F510CE62D4135D3004171E8 /* AddMemoryMainView.swift in Sources */,
 				2F3672132D3DAAD00048D9AD /* MemoryStarEntity.swift in Sources */,
 				2F3671CB2D3D78000048D9AD /* GradientBorderContainer.swift in Sources */,
@@ -596,12 +609,15 @@
 				2F8800BD2D38CE6800220F89 /* SpaceImmersiveView.swift in Sources */,
 				2F3672092D3DA32B0048D9AD /* DeleteMemoryUseCase.swift in Sources */,
 				2F36720F2D3DAA6E0048D9AD /* ConstellationBackGroundEntity.swift in Sources */,
+				2FE857F72D43425B0055902B /* PopupView.swift in Sources */,
 				2F36720B2D3DA3F20048D9AD /* Config.swift in Sources */,
 				2F8800C42D38D3AE00220F89 /* DIContainer.swift in Sources */,
 				2F510CEA2D41449A004171E8 /* AddMemoryMainViewModel.swift in Sources */,
 				2F3671D52D3D7C3C0048D9AD /* ErrorBannerView.swift in Sources */,
 				2F3672362D4111130048D9AD /* NavigationBar.swift in Sources */,
+				2FE857FF2D434ABA0055902B /* PopupData.swift in Sources */,
 				2F3671CF2D3D7A660048D9AD /* MainView.swift in Sources */,
+				2FE858032D437BF20055902B /* VisualEffectBlur.swift in Sources */,
 				2F3672202D3E1C2F0048D9AD /* LoginView.swift in Sources */,
 				2F3671D12D3D7AF90048D9AD /* MainViewModel.swift in Sources */,
 			);

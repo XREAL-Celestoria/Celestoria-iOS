@@ -14,25 +14,64 @@ struct AddMemoryMainView: View {
     @EnvironmentObject var viewModel: AddMemoryMainViewModel
     @EnvironmentObject var mainViewModel : MainViewModel
     @EnvironmentObject private var appModel: AppModel
-
+    
+    @State private var isHovered: Bool = false
+    
     var body: some View {
         GeometryReader { geometry in
             HStack(spacing: 0) {
                 // Left View
-                LeftView()
+                LeftView(isHovered: $isHovered)
                     .frame(width: geometry.size.width / 2, height: geometry.size.height)
+                    .onHover { isHovering in
+                        withAnimation {
+                            isHovered = isHovering
+                        }
+                    }
+                    .contentShape(Rectangle())
                 
-                // Right View
+                // Right Viewr
                 RightView()
                     .frame(width: geometry.size.width / 2, height: geometry.size.height)
-                    .background(
-                        Rectangle()
-                            .fill(Color.NebulaBlack.shadow(.inner(color: Color.NebulaWhite.opacity(0.2), radius: 24)))
-                            .frame(width: geometry.size.width / 2, height: geometry.size.height)
-                        )
-            
             }
-            .background(Color.NebulaBlack)
+            .background(
+                Group {
+                    if let thumbnail = viewModel.thumbnailImage {
+                        Image(uiImage: thumbnail)
+                            .resizable()
+                            .scaledToFill()
+                            .clipped()
+                    } else {
+                        Color.NebulaBlack
+                    }
+                }
+            )
+            .overlay(
+                Group {
+                    if let popupData = viewModel.popupData {
+                        ZStack {
+                            Color.black.opacity(0.6) // 어두운 배경
+                                .ignoresSafeArea()
+                            PopupView(
+                                title: popupData.title,
+                                notes: popupData.notes,
+                                leadingButtonText: popupData.leadingButtonText,
+                                trailingButtonText: popupData.trailingButtonText,
+                                circularAction: popupData.circularAction,
+                                leadingButtonAction: popupData.leadingButtonAction,
+                                trailingButtonAction: popupData.trailingButtonAction,
+                                buttonImageString: popupData.buttonImageString
+                            )
+                            .frame(width: 644, height: 324)
+                            .cornerRadius(20)
+                        }
+                    }
+                }
+            )
+        }
+        .onDisappear {
+            viewModel.handleViewDisappearance()
+            appModel.showAddMemoryView = false
         }
         // Alert for Success
         .alert(isPresented: $viewModel.showSuccessAlert) {
@@ -48,6 +87,7 @@ struct AddMemoryMainView: View {
             print("Error: \(message)")
         }
     }
+    
 }
 
 // MARK: - Left View
@@ -56,53 +96,71 @@ private struct LeftView: View {
     @Environment(\.dismissWindow) private var dismissWindow
     @EnvironmentObject private var appModel: AppModel
     
+    @Binding var isHovered: Bool
+    
     var body: some View {
         VStack {
-            // Navigation Bar
+            // 네비게이션 바
             NavigationBar(
                 title: "Add Memory Star",
-                buttonImageString: "xmark",
                 action: {
                     appModel.showAddMemoryView = false
                     dismissWindow(id: "Add-Memory")
-                }
+                },
+                buttonImageString: "xmark"
             )
             .padding(.horizontal, 28)
             .padding(.top, 28)
             
             Spacer()
             
-            // Video Picker
+            // 비디오 선택 UI
             ZStack {
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(.clear)
-                    .stroke(Color(hex: "9D9D9D"), lineWidth: 2)
+                if viewModel.thumbnailImage == nil || isHovered {
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Color.NebulaBlack.opacity(0.5))
+                        .stroke(Color(hex: "9D9D9D"), lineWidth: 2)
+                        .frame(width: 260, height: 132)
+                    
+                    PhotosPicker(selection: $viewModel.selectedVideoItem, matching: .spatialMedia) {
+                        VStack {
+                            Image("AddMemoryVideoIcon")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 24, height: 24)
+                            Text("Select your spatial video")
+                                .foregroundColor(.white)
+                                .font(.system(size: 17))
+                                .padding(.top, 4)
+                        }
+                    }
                     .frame(width: 260, height: 132)
-                
-                PhotosPicker(selection: $viewModel.selectedVideoItem, matching: .spatialMedia){
-                    VStack {
-                        Image("AddMemoryVideoIcon")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 24, height: 24)
-                        Text("Select your spatial video")
-                            .foregroundColor(.white)
-                            .font(.system(size: 17))
-                            .padding(.top, 4)
+                    .cornerRadius(20)
+                    .buttonStyle(PlainButtonStyle())
+                    .disabled(viewModel.isPickerBlocked)
+                    .onChange(of: viewModel.selectedVideoItem) { newItem in
+                        viewModel.handleVideoSelection(item: newItem)
+                    }
+                    
+                    // 포토피커 활성화 버튼
+                    if viewModel.isPickerBlocked {
+                        Button(action: {
+                            viewModel.showPhotosPickerPopup {
+                                dismissWindow(id: "Add-Memory")
+                            }
+                        }) {
+                            Color.NebulaBlack.opacity(0.5)
+                        }
+                        .frame(width: 260, height: 132)
+                        .cornerRadius(20)
+                        .buttonStyle(UploadButtonStyle())
                     }
                 }
-                .frame(width: 260, height: 132)
-                .cornerRadius(20)
-                .background(.clear)
-                .buttonStyle(PlainButtonStyle())
-                
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            .frame(width: 260, height: 132)
             
             Spacer()
         }
-        .background(Color.NebulaBlack)
-        
     }
 }
 
@@ -114,44 +172,62 @@ private struct RightView: View {
     @Environment(\.dismissWindow) private var dismissWindow
     
     var body: some View {
-        VStack() {
-            // Category Section
-            Text("Category")
-                .foregroundColor(.NebulaWhite)
-                .font(.system(size: 22, weight: .bold))
-                .padding(.top, 64)
+        ZStack {
+            // Background blur layer
+            VisualEffectBlur(style: .systemMaterial)
+                .edgesIgnoringSafeArea(.all)
             
-            Spacer()
+            // Inner shadow and transparent background
+            Rectangle()
+                .fill(Color.clear)
+                .overlay(
+                    Color.NebulaBlack.opacity(0.3)
+                        .shadow(.inner(color: Color.NebulaWhite.opacity(0.8), radius: 24))
+                )
+                .edgesIgnoringSafeArea(.all)
             
-            CategoryButtons()
-            
-            Spacer()
-            
-            NoteInputSection()
-            
-            Spacer()
-            
-            UploadButton {
-                guard let userId = appModel.userId else { return }
-                Task {
-                    do {
-                        await viewModel.saveMemory(
-                            note: viewModel.note,
-                            title: viewModel.title,
-                            userId: userId
-                        )
-                        
-                        await mainViewModel.fetchMemories(for: userId)
-                        
-                        dismissWindow(id: "Add-Memory")
-                    } catch {
-                        os.Logger.error("Failed to save memory: \(error)")
-                    }
-                    
-                }
+            VStack() {
+                // Category Section
+                Text("Category")
+                    .foregroundColor(.NebulaWhite)
+                    .font(.system(size: 22, weight: .bold))
+                    .padding(.top, 64)
+                
+                Spacer()
+                
+                CategoryButtons()
+                
+                Spacer()
+                
+                NoteInputSection()
+                
+                Spacer()
+                
+                UploadButton(
+                    action: {
+                        guard let userId = appModel.userId else { return }
+                        Task {
+                            do {
+                                await viewModel.saveMemory(
+                                    note: viewModel.note,
+                                    title: viewModel.title,
+                                    userId: userId
+                                )
+                                
+                                await mainViewModel.fetchMemories(for: userId)
+                                
+                                dismissWindow(id: "Add-Memory")
+                            } catch {
+                                os.Logger.error("Failed to save memory: \(error)")
+                            }
+                        }
+                    },
+                    isEnabled: viewModel.isUploadEnabled
+                )
+                .disabled(!viewModel.isUploadEnabled)
+                
+                Spacer()
             }
-            
-            Spacer()
         }
     }
 }
@@ -220,6 +296,11 @@ private struct NoteInputSection: View {
                 
                 // Note Input
                 TextField("Write the note", text: $viewModel.note, axis: .vertical)
+                    .onChange(of: viewModel.note) { newValue in
+                        if newValue.count > 500 {
+                            viewModel.note = String(newValue.prefix(500))
+                        }
+                    }
                     .font(.system(size: 19, weight: .bold))
                     .foregroundColor(.NebulaWhite)
                     .padding(.top, 12)
@@ -240,14 +321,17 @@ private struct NoteInputSection: View {
 // MARK: - Upload Button
 private struct UploadButton: View {
     let action: () -> Void
+    let isEnabled: Bool
     
     var body: some View {
         Button(action: action) {
             Text("Upload")
                 .font(.system(size: 22, weight: .semibold))
-                .foregroundColor(.NebulaWhite)
+                .foregroundColor(isEnabled ? .NebulaWhite : .NebulaBlack)
                 .frame(width: 380, height: 64)
-                .background(Color(hex: "1F1F29").cornerRadius(16))
+                .background(isEnabled ?
+                            AnyShapeStyle(LinearGradient.GradientSub) :
+                                AnyShapeStyle(Color(hex:"1F1F29"))).cornerRadius(16)
         }
         .buttonStyle(UploadButtonStyle())
         .padding(.bottom, 60)

@@ -35,9 +35,19 @@ extension LinearGradient {
     )
     
     static let BackgroundPopup = LinearGradient(
-        gradient: Gradient(colors: [Color.Popup1, Color.Popup2]),
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
+        gradient: Gradient(stops: [
+            Gradient.Stop(color: Color.Popup1, location: 0.0),
+            Gradient.Stop(color: Color.Popup2, location: 0.65),
+            Gradient.Stop(color: Color.Popup3, location: 1.0)
+        ]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let StrokePopup = LinearGradient(
+        gradient: Gradient(colors: [Color.NebulaWhite, Color(hex: "CCCCCC")]),
+        startPoint: .top,
+        endPoint: .bottom
     )
     
     static let BackgroundSearch = LinearGradient(
@@ -58,7 +68,7 @@ extension LinearGradient {
             Gradient.Stop(color: Color(hex: "#C8C8C8", opacity: 0.13), location: 0.59),
             Gradient.Stop(color: Color(hex: "#C4C4C4", opacity: 0.10), location: 0.67),
         ]),
-        startPoint: .topLeading, 
+        startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
     

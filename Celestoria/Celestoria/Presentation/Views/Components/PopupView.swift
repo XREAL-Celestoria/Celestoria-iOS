@@ -1,0 +1,89 @@
+//
+//  PopupView.swift
+//  Celestoria
+//
+//  Created by Park Seyoung on 1/24/25.
+//
+
+import SwiftUI
+
+struct PopupView: View {
+    let title: String
+    let notes: String
+    let leadingButtonText: String
+    let trailingButtonText: String
+    
+    let circularAction: () -> Void
+    let leadingButtonAction: () -> Void
+    let trailingButtonAction : () -> Void
+    
+    let buttonImageString : String
+    
+    var body: some View {
+        RoundedRectangle(cornerRadius: 44)
+            .fill(LinearGradient.BackgroundPopup)
+            .frame(width: 644, height: 324)
+            .blur(radius: 100)
+            .background(Color.NebulaBlack)
+            .overlay(
+                RoundedRectangle(cornerRadius: 44)
+                    .stroke(LinearGradient.StrokePopup, lineWidth: 3)
+            )
+            .shadow(radius: 10)
+            .overlay(
+                VStack(alignment: .leading) {
+                    // 상단 제목 및 버튼
+                    HStack {
+                        Text(title)
+                            .font(.system(size: 29, weight: .bold))
+                            .foregroundColor(.NebulaWhite)
+                            .padding(.leading, 52)
+                            .padding(.top, 48)
+                        
+                        Spacer()
+                        
+                        CircularButton(action: circularAction, buttonImageString: buttonImageString)
+                            .padding(.trailing, 52)
+                            .padding(.top, 48)
+                    }
+                    
+                    // 내용 텍스트
+                    Text(notes)
+                        .font(.system(size: 17, weight: .medium))
+                        .foregroundColor(.NebulaWhite)
+                        .padding(.top, 8)
+                        .padding(.horizontal, 52)
+                    
+                    Spacer()
+                    
+                    // 하단 버튼들
+                    HStack {
+                        Button(action: leadingButtonAction) {
+                            Text(leadingButtonText)
+                                .font(.system(size: 22, weight: .bold))
+                                .foregroundColor(.NebulaWhite)
+                                .frame(width: 240, height: 76)
+                                .background(Color.NebulaWhite.opacity(0.1).cornerRadius(16))
+                        }
+                        .buttonStyle(UploadButtonStyle())
+                        
+                        Spacer()
+                            .frame(width: 24)
+                        
+                        Button(action: trailingButtonAction) {
+                            Text(trailingButtonText)
+                                .font(.system(size: 22, weight: .bold))
+                                .foregroundColor(.NebulaBlack)
+                                .frame(width: 240, height: 76)
+                                .background(LinearGradient.GradientSub.cornerRadius(16))
+                        }
+                        .buttonStyle(UploadButtonStyle())
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.horizontal, 52)
+                    .padding(.bottom, 56)
+                }
+            )
+    }
+}
+

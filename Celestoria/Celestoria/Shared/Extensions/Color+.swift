@@ -19,8 +19,9 @@ extension Color {
     static let Icon2 = Color(hex: "BABCFF")
     
     // Background
-    static let Popup1 = Color(hex: "171717")
-    static let Popup2 = Color(hex: "54C3FF")
+    static let Popup1 = Color(hex: "171717", opacity: 0.2)
+    static let Popup2 = Color(hex: "4B4B4b", opacity: 0.2)
+    static let Popup3 = Color(hex: "54C3FF", opacity: 0.5)
     static let Profile = Color(hex: "272938")
     static let Search1 = Color(hex: "A7E9FE")
     static let Search2 = Color(hex: "515768")
