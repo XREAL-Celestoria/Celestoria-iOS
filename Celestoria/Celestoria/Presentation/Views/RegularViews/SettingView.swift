@@ -190,91 +190,124 @@ private struct ProfileSettingView: View {
     @State private var nickname = "User Name"
     @State private var profileImage: UIImage? = nil
     @State private var selectedItem: PhotosPickerItem? = nil
+    @FocusState private var isNicknameFocused: Bool
     
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             Text("Profile")
                 .font(.system(size: 29, weight: .bold))
                 .foregroundColor(.NebulaWhite)
-                .padding(.top, 40)
-                .padding(.leading, 40)
+                .padding(.top, 35)
+                .padding(.leading, 55)
             
-            VStack(spacing: 20) {
+            VStack(spacing: 70) {
                 if isEditing {
-                    // 프로필 이미지 선택기
-                    PhotosPicker(selection: $selectedItem, matching: .images) {
-                        if let profileImage = profileImage {
-                            Image(uiImage: profileImage)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 120, height: 120)
-                                .clipShape(Circle())
-                        } else {
-                            Image(systemName: "person.circle.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 120, height: 120)
-                                .clipShape(Circle())
+                    ZStack {
+                        // 프로필 이미지 선택기
+                        PhotosPicker(selection: $selectedItem, matching: .images) {
+                            ZStack {
+                                if let profileImage = profileImage {
+                                    Image(uiImage: profileImage)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 330, height: 330)
+                                        .clipShape(Circle())
+                                } else {
+                                    Image(systemName: "person.circle.fill")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 330, height: 330)
+                                        .clipShape(Circle())
+                                }
+                                
+                                // 오버레이 레이어
+                                Circle()
+                                    .fill(Color.black.opacity(0.5))
+                                    .frame(width: 330, height: 330)
+                                
+                                // Change Photo 텍스트
+                                Text("Change Photo")
+                                    .font(.system(size: 20, weight: .semibold))
+                                    .foregroundColor(.white)
+                            }
+                            .frame(width: 330, height: 330)
+                            .contentShape(Circle())
                         }
-                    }
-                    .onChange(of: selectedItem) { newItem in
-                        Task {
-                            if let data = try? await newItem?.loadTransferable(type: Data.self),
-                               let image = UIImage(data: data) {
-                                profileImage = image
+                        .buttonStyle(.plain)
+                        .onChange(of: selectedItem) { newItem in
+                            Task {
+                                if let data = try? await newItem?.loadTransferable(type: Data.self),
+                                   let image = UIImage(data: data) {
+                                    profileImage = image
+                                }
                             }
                         }
+                        
+                        // 삭제 버튼
+                        if profileImage != nil {
+                            Button(action: {
+                                profileImage = nil
+                            }) {
+                                Image("Close-Circle")
+                                    .resizable()
+                                    .frame(width: 46, height: 46)
+                            }
+                            .buttonStyle(.plain)
+                            .position(x: 290, y: 40)
+                        }
                     }
+                    .frame(width: 330, height: 330)
                 } else {
                     if let profileImage = profileImage {
                         Image(uiImage: profileImage)
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 120, height: 120)
+                            .frame(width: 330, height: 330)
                             .clipShape(Circle())
                     } else {
                         Image(systemName: "person.circle.fill")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 120, height: 120)
+                            .frame(width: 330, height: 330)
                             .clipShape(Circle())
                     }
                 }
                 
-                if isEditing {
-                    TextField("Nickname", text: $nickname)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .frame(width: 200)
-                } else {
-                    Text(nickname)
-                        .font(.system(size: 22))
-                        .foregroundColor(.NebulaWhite)
+                ZStack {
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.Profile)
+                        .frame(width: 600, height: 90)
+                    
+                    if isEditing {
+                        TextField("Nickname", text: $nickname)
+                            .font(.system(size: 28, weight: .bold))
+                            .foregroundColor(.NebulaWhite)
+                            .multilineTextAlignment(.center)
+                            .frame(width: 580)
+                            .focused($isNicknameFocused)
+                    } else {
+                        Text(nickname)
+                            .font(.system(size: 28, weight: .bold))
+                            .foregroundColor(.NebulaWhite)
+                    }
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.top, 40)
+            .padding(.top, 23)
             
             Button(action: {
                 withAnimation {
                     isEditing.toggle()
+                    if isEditing {
+                        isNicknameFocused = true
+                    }
                 }
             }) {
                 Text(isEditing ? "Save" : "Edit")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(isEditing ? .NebulaBlack : .NebulaWhite)
-                    .frame(width: 100, height: 40)
-                    .background(
-                        isEditing ?
-                            AnyShapeStyle(LinearGradient.GradientSub) :
-                            AnyShapeStyle(Color.clear)
-                    )
-                    .cornerRadius(8)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.NebulaWhite.opacity(0.3), lineWidth: isEditing ? 0 : 2)
-                    )
+                    .font(.system(size: 24, weight: .semibold))
             }
             .frame(maxWidth: .infinity)
+            .buttonStyle(.plain)
             
             Spacer()
         }
