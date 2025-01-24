@@ -10,7 +10,7 @@ import os
 
 @MainActor
 final class AppModel: ObservableObject {
-    /// 로그인 전에는 nil, 로그인 후에는 서버 UUID
+    // 로그인 전에는 nil, 로그인 후에는 서버 UUID
     @Published var userId: UUID? = nil {
         didSet {
             os.Logger.info("User ID changed: \(String(describing: userId))")

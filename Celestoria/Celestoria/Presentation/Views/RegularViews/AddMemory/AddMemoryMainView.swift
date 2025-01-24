@@ -104,7 +104,6 @@ private struct LeftView: View {
             NavigationBar(
                 title: "Add Memory Star",
                 action: {
-                    appModel.showAddMemoryView = false
                     dismissWindow(id: "Add-Memory")
                 },
                 buttonImageString: "xmark"
@@ -129,7 +128,7 @@ private struct LeftView: View {
                                 .scaledToFit()
                                 .frame(width: 24, height: 24)
                             Text("Select your spatial video")
-                                .foregroundColor(.white)
+                                .foregroundColor(Color.NebulaWhite)
                                 .font(.system(size: 17))
                                 .padding(.top, 4)
                         }
@@ -214,9 +213,7 @@ private struct RightView: View {
                                     userId: userId
                                 )
                                 
-                                await mainViewModel.fetchMemories(for: userId)
-                                
-                                dismissWindow(id: "Add-Memory")
+                                appModel.addMemoryScreen = .done
                             } catch {
                                 os.Logger.error("Failed to save memory: \(error)")
                             }
@@ -281,18 +278,20 @@ private struct NoteInputSection: View {
         let isTitleEmpty = viewModel.title.trimmingCharacters(in: .whitespaces).isEmpty
         let isNoteEmpty = viewModel.note.isEmpty
         let isBothEmpty = isTitleEmpty && isNoteEmpty
-        let isTitleValid = !isTitleEmpty && viewModel.title.trimmingCharacters(in: .whitespaces).count <= 50
-        let isNoteValid = !isNoteEmpty && viewModel.note.count <= 500
+        let isTitleValid = !isTitleEmpty && viewModel.title.trimmingCharacters(in: .whitespaces).count < 50
+        let isNoteValid = !isNoteEmpty && viewModel.note.count < 500
+        
+        let isExceedingLimit = viewModel.title.count >= 50 || viewModel.note.count >= 500
         
         let overallColor: AnyShapeStyle = {
-                    if isBothEmpty {
-                        return AnyShapeStyle(Color(hex:"9D9D9D"))
-                    } else if !isTitleValid || !isNoteValid {
-                        return AnyShapeStyle(Color.NebulaRed)
-                    } else {
-                        return AnyShapeStyle(LinearGradient.GradientStroke)
-                    }
-                }()
+            if isBothEmpty {
+                return AnyShapeStyle(Color(hex:"9D9D9D"))
+            } else if !isTitleValid || !isNoteValid {
+                return AnyShapeStyle(Color.NebulaRed)
+            } else {
+                return AnyShapeStyle(LinearGradient.GradientStroke)
+            }
+        }()
         
         ZStack {
             RoundedRectangle(cornerRadius: 36)
@@ -303,7 +302,7 @@ private struct NoteInputSection: View {
                 // Title Input
                 TextField("Write the title", text: $viewModel.title)
                     .onChange(of: viewModel.title) { newValue in
-                        if newValue.count > 50 {
+                        if newValue.count >= 50 {
                             viewModel.title = String(newValue.prefix(50))
                         }
                     }
@@ -319,7 +318,7 @@ private struct NoteInputSection: View {
                 // Note Input
                 TextField("Write the note", text: $viewModel.note, axis: .vertical)
                     .onChange(of: viewModel.note) { newValue in
-                        if newValue.count > 500 {
+                        if newValue.count >= 500 {
                             viewModel.note = String(newValue.prefix(500))
                         }
                     }
@@ -328,12 +327,22 @@ private struct NoteInputSection: View {
                     .padding(.top, 12)
                     .frame(width: 504, height: 228, alignment: .topLeading)
                 
-                // Character Count
-                Text("\(viewModel.note.count) / 500")
-                    .font(.system(size: 17, weight: .medium))
-                    .foregroundStyle(overallColor)
-                    .frame(width: 560, alignment: .trailing)
-                    .padding(.top, 4)
+                HStack {
+                    Text("The content exceeds the character limit.")
+                        .font(.system(size: 17, weight: .medium))
+                        .foregroundColor(.NebulaRed)
+                        .padding(.leading, 4)
+                        .opacity(isExceedingLimit ? 1 : 0)
+                
+                    Spacer()
+                                 
+                    Text("\(viewModel.note.count) / 500")
+                        .font(.system(size: 17, weight: .medium))
+                        .foregroundStyle(overallColor)
+                        .padding(.trailing, 4)
+                }
+                .frame(width: 560, alignment: .bottom)
+                .padding(.top, 4)
             }
         }
         .frame(width: 560, height: 320, alignment: .center)
@@ -349,7 +358,7 @@ private struct UploadButton: View {
         Button(action: action) {
             Text("Upload")
                 .font(.system(size: 22, weight: .semibold))
-                .foregroundColor(isEnabled ? .NebulaWhite : .NebulaBlack)
+                .foregroundColor(isEnabled ? .NebulaBlack : .NebulaWhite)
                 .frame(width: 380, height: 64)
                 .background(isEnabled ?
                             AnyShapeStyle(LinearGradient.GradientSub) :

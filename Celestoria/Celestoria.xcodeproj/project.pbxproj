@@ -72,6 +72,7 @@
 		2FE857FF2D434ABA0055902B /* PopupData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE857FE2D434ABA0055902B /* PopupData.swift */; };
 		2FE858032D437BF20055902B /* VisualEffectBlur.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE858022D437BF20055902B /* VisualEffectBlur.swift */; };
 		2FE858052D43D3980055902B /* TextField+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE858042D43D3980055902B /* TextField+.swift */; };
+		2FE858072D43E5FB0055902B /* AppMemoryDoneViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE858062D43E5FB0055902B /* AppMemoryDoneViewModel.swift */; };
 		A21E477E2D38CD55002B60FA /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = A21E477D2D38CD55002B60FA /* RealityKitContent */; };
 		A2B8DB412D42AEC7001B5663 /* MemoryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */; };
 		A2B8DB782D42B409001B5663 /* CelestoriaVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */; };
@@ -139,6 +140,7 @@
 		2FE857FE2D434ABA0055902B /* PopupData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupData.swift; sourceTree = "<group>"; };
 		2FE858022D437BF20055902B /* VisualEffectBlur.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualEffectBlur.swift; sourceTree = "<group>"; };
 		2FE858042D43D3980055902B /* TextField+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TextField+.swift"; sourceTree = "<group>"; };
+		2FE858062D43E5FB0055902B /* AppMemoryDoneViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMemoryDoneViewModel.swift; sourceTree = "<group>"; };
 		A21E47782D38CD55002B60FA /* Celestoria.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Celestoria.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A21E477C2D38CD55002B60FA /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
 		A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryDetailView.swift; sourceTree = "<group>"; };
@@ -252,6 +254,7 @@
 				2F3671D02D3D7AF90048D9AD /* MainViewModel.swift */,
 				2F3672212D3E1E410048D9AD /* LoginViewModel.swift */,
 				2F510CE92D41449A004171E8 /* AddMemoryMainViewModel.swift */,
+				2FE858062D43E5FB0055902B /* AppMemoryDoneViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -612,6 +615,7 @@
 				2F510CE22D4134EE004171E8 /* AddMemoryContentView.swift in Sources */,
 				2F8800BD2D38CE6800220F89 /* SpaceImmersiveView.swift in Sources */,
 				2F3672092D3DA32B0048D9AD /* DeleteMemoryUseCase.swift in Sources */,
+				2FE858072D43E5FB0055902B /* AppMemoryDoneViewModel.swift in Sources */,
 				2F36720F2D3DAA6E0048D9AD /* ConstellationBackGroundEntity.swift in Sources */,
 				2FE857F72D43425B0055902B /* PopupView.swift in Sources */,
 				2F36720B2D3DA3F20048D9AD /* Config.swift in Sources */,
