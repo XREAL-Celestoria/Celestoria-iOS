@@ -24,8 +24,8 @@ extension LinearGradient {
     
     static let GradientStroke = LinearGradient(
         gradient: Gradient(colors: [Color.Stroke1, Color.Stroke2]),
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
+        startPoint: .top,
+        endPoint: .bottom
     )
     
     static let GradientIcon = LinearGradient(

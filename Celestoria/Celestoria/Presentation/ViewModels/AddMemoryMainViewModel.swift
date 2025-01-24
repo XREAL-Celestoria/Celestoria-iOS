@@ -35,13 +35,7 @@ class AddMemoryMainViewModel: ObservableObject {
     @Published var isUploading = false
     
     @Published var title: String = ""
-    @Published var note: String = "" {
-        didSet {
-            if note.count > 500 {
-                note = String(note.prefix(500))
-            }
-        }
-    }
+    @Published var note: String = ""
     
     var isUploadEnabled: Bool {
         return selectedVideoItem != nil &&

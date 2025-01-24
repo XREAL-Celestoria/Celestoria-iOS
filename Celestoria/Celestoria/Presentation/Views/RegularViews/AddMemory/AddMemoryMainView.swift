@@ -50,7 +50,7 @@ struct AddMemoryMainView: View {
                 Group {
                     if let popupData = viewModel.popupData {
                         ZStack {
-                            Color.black.opacity(0.6) // 어두운 배경
+                            Color.black.opacity(0.6)
                                 .ignoresSafeArea()
                             PopupView(
                                 title: popupData.title,
@@ -277,21 +277,43 @@ private struct NoteInputSection: View {
     @EnvironmentObject var viewModel: AddMemoryMainViewModel
     
     var body: some View {
+        
+        let isTitleEmpty = viewModel.title.trimmingCharacters(in: .whitespaces).isEmpty
+        let isNoteEmpty = viewModel.note.isEmpty
+        let isBothEmpty = isTitleEmpty && isNoteEmpty
+        let isTitleValid = !isTitleEmpty && viewModel.title.trimmingCharacters(in: .whitespaces).count <= 50
+        let isNoteValid = !isNoteEmpty && viewModel.note.count <= 500
+        
+        let overallColor: AnyShapeStyle = {
+                    if isBothEmpty {
+                        return AnyShapeStyle(Color(hex:"9D9D9D"))
+                    } else if !isTitleValid || !isNoteValid {
+                        return AnyShapeStyle(Color.NebulaRed)
+                    } else {
+                        return AnyShapeStyle(LinearGradient.GradientStroke)
+                    }
+                }()
+        
         ZStack {
             RoundedRectangle(cornerRadius: 36)
-                .stroke(Color(hex: "9D9D9D"), lineWidth: 1)
+                .stroke(overallColor, lineWidth: 1)
                 .frame(width: 560, height: 288)
             
             VStack() {
                 // Title Input
                 TextField("Write the title", text: $viewModel.title)
+                    .onChange(of: viewModel.title) { newValue in
+                        if newValue.count > 50 {
+                            viewModel.title = String(newValue.prefix(50))
+                        }
+                    }
                     .font(.system(size: 19, weight: .bold))
                     .foregroundColor(.NebulaWhite)
                     .padding(.top, 28)
                     .frame(width: 504, height: 64, alignment: .bottomLeading)
                 
                 Divider()
-                    .background(Color(hex: "9D9D9D"))
+                    .background(overallColor)
                     .frame(width: 560, height: 1)
                 
                 // Note Input
@@ -309,7 +331,7 @@ private struct NoteInputSection: View {
                 // Character Count
                 Text("\(viewModel.note.count) / 500")
                     .font(.system(size: 17, weight: .medium))
-                    .foregroundColor(Color(hex: "9D9D9D"))
+                    .foregroundStyle(overallColor)
                     .frame(width: 560, alignment: .trailing)
                     .padding(.top, 4)
             }
