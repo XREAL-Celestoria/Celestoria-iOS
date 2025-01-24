@@ -103,6 +103,8 @@ class AddMemoryMainViewModel: ObservableObject {
     }
     
     func handleViewDisappearance() {
+        selectedVideoItem = nil
+        isPickerBlocked = true
         resetVideoData()
     }
     
@@ -140,12 +142,12 @@ class AddMemoryMainViewModel: ObservableObject {
     }
     
     private func resetVideoData() {
+//        selectedVideoItem = nil
         thumbnailImage = nil
         errorMessage = nil
         selectedCategory = nil
         title = ""
         note = ""
-        isPickerBlocked = true
     }
 
     
