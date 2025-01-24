@@ -96,15 +96,13 @@ private struct LeftSettingView: View {
             }) {
                 Text("Sign Out")
                     .font(.system(size: 22, weight: .semibold))
-                    .foregroundColor(.red)
-                    .frame(width: 200, height: 50)
-                    .background(Color.NebulaBlack)
-                    .cornerRadius(12)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color.red, lineWidth: 2)
-                    )
+                    .foregroundColor(.NebulaRed)
+                    .padding(.vertical, 18)
+                    .frame(maxWidth: 380, alignment: .center)
+                    .background(Color(hex: "#1B212A"))
+                    .cornerRadius(20)
             }
+            .buttonStyle(.plain)
             .padding(.bottom, 40)
         }
         .alert("오류", isPresented: $showError) {
@@ -163,7 +161,7 @@ private struct SettingButton: View {
                     .frame(width: 40, height: 40)
                 Text(title)
                     .font(
-                        .system(size: 22, weight: .bold)
+                        .system(size: 22, weight: .semibold)
                     )
                     .foregroundStyle(
                         isSelected 
