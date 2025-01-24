@@ -76,6 +76,7 @@
 		A21E477E2D38CD55002B60FA /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = A21E477D2D38CD55002B60FA /* RealityKitContent */; };
 		A2B8DB412D42AEC7001B5663 /* MemoryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */; };
 		A2B8DB782D42B409001B5663 /* CelestoriaVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */; };
+		A2B8DB812D43CE39001B5663 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB802D43CE39001B5663 /* SettingsViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -145,6 +146,7 @@
 		A21E477C2D38CD55002B60FA /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
 		A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryDetailView.swift; sourceTree = "<group>"; };
 		A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CelestoriaVideoPlayerView.swift; sourceTree = "<group>"; };
+		A2B8DB802D43CE39001B5663 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -255,6 +257,7 @@
 				2F3672212D3E1E410048D9AD /* LoginViewModel.swift */,
 				2F510CE92D41449A004171E8 /* AddMemoryMainViewModel.swift */,
 				2FE858062D43E5FB0055902B /* AppMemoryDoneViewModel.swift */,
+				A2B8DB802D43CE39001B5663 /* SettingsViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -603,6 +606,7 @@
 				2F3672112D3DAAA40048D9AD /* ConstellationSpaceEntity.swift in Sources */,
 				2F3672272D3E35310048D9AD /* AuthRepository.swift in Sources */,
 				2F3671E92D3D9A470048D9AD /* Category.swift in Sources */,
+				A2B8DB812D43CE39001B5663 /* SettingsViewModel.swift in Sources */,
 				2F3671B32D3D6B660048D9AD /* Gradient+.swift in Sources */,
 				2F8800BC2D38CE6800220F89 /* ContentView.swift in Sources */,
 				2F36721A2D3E19A30048D9AD /* GalaxyView.swift in Sources */,

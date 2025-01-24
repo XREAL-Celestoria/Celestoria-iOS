@@ -18,6 +18,7 @@ struct CelestoriaApp: App {
                 .environmentObject(diContainer.appModel)
                 .environmentObject(diContainer.mainViewModel)
                 .environmentObject(diContainer.loginViewModel)
+                .environmentObject(diContainer.settingViewModel)
         }
         
         ImmersiveSpace(id: diContainer.appModel.immersiveSpaceID) {

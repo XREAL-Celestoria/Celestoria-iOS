@@ -64,7 +64,7 @@ private extension MainView {
             .frame(width: 104, height: 152)
             
             MainTabButton(imageName: "Setting", text: "Setting") {
-                print("Setting Button Tapped")
+                appModel.activeScreen = .setting
             }
             .frame(width: 104, height: 152)
         }

@@ -7,7 +7,8 @@
 
 import Foundation
 
-struct DeleteAccountUseCase {
+@MainActor
+final class DeleteAccountUseCase: ObservableObject {
     private let repository: AuthRepositoryProtocol
 
     init(repository: AuthRepositoryProtocol) {
