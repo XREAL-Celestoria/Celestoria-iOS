@@ -35,6 +35,7 @@ final class DIContainer: ObservableObject {
     private let deleteMemoryUseCase: DeleteMemoryUseCase
     private let signInWithAppleUseCase: SignInWithAppleUseCase
     private let deleteAccountUseCase: DeleteAccountUseCase
+    private let signOutUseCase: SignOutUseCase
 
     init() {
         Logger.info("Initializing DIContainer...")
@@ -73,6 +74,7 @@ final class DIContainer: ObservableObject {
         self.deleteMemoryUseCase = DeleteMemoryUseCase(memoryRepository: memoryRepository)
         self.signInWithAppleUseCase = SignInWithAppleUseCase(repository: authRepository)
         self.deleteAccountUseCase = DeleteAccountUseCase(repository: authRepository)
+        self.signOutUseCase = SignOutUseCase(repository: authRepository)
 
         // Initialize ViewModels and Coordinators
         self.spaceCoordinator = SpaceCoordinator()
@@ -84,6 +86,10 @@ final class DIContainer: ObservableObject {
         
         self.loginViewModel = LoginViewModel(signInUseCase: signInWithAppleUseCase)
         self.addMemoryMainViewModel = AddMemoryMainViewModel(createMemoryUseCase: createMemoryUseCase, appModel: appModel)
-        self.settingViewModel = SettingViewModel(deleteAccountUseCase: deleteAccountUseCase)
+        self.settingViewModel = SettingViewModel(
+            deleteAccountUseCase: deleteAccountUseCase,
+            signOutUseCase: signOutUseCase,
+            appModel: appModel
+        )
     }
 }

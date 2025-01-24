@@ -42,7 +42,6 @@
 		2F3672172D3DAB120048D9AD /* SpaceEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672162D3DAB120048D9AD /* SpaceEntity.swift */; };
 		2F36721A2D3E19A30048D9AD /* GalaxyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672192D3E19A30048D9AD /* GalaxyView.swift */; };
 		2F36721C2D3E1A030048D9AD /* ExploreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F36721B2D3E1A030048D9AD /* ExploreView.swift */; };
-		2F36721E2D3E1A1F0048D9AD /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F36721D2D3E1A1F0048D9AD /* SettingView.swift */; };
 		2F3672202D3E1C2F0048D9AD /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F36721F2D3E1C2F0048D9AD /* LoginView.swift */; };
 		2F3672222D3E1E410048D9AD /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672212D3E1E410048D9AD /* LoginViewModel.swift */; };
 		2F3672252D3E35110048D9AD /* AuthRepositoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672242D3E35110048D9AD /* AuthRepositoryProtocol.swift */; };
@@ -76,7 +75,8 @@
 		A21E477E2D38CD55002B60FA /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = A21E477D2D38CD55002B60FA /* RealityKitContent */; };
 		A2B8DB412D42AEC7001B5663 /* MemoryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */; };
 		A2B8DB782D42B409001B5663 /* CelestoriaVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */; };
-		A2B8DB812D43CE39001B5663 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB802D43CE39001B5663 /* SettingsViewModel.swift */; };
+		A2B8DB832D43FA0C001B5663 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB822D43FA0C001B5663 /* SettingView.swift */; };
+		A2B8DB852D440536001B5663 /* SettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB842D440536001B5663 /* SettingViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -110,7 +110,6 @@
 		2F3672182D3E14200048D9AD /* Celestoria.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Celestoria.entitlements; sourceTree = "<group>"; };
 		2F3672192D3E19A30048D9AD /* GalaxyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalaxyView.swift; sourceTree = "<group>"; };
 		2F36721B2D3E1A030048D9AD /* ExploreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreView.swift; sourceTree = "<group>"; };
-		2F36721D2D3E1A1F0048D9AD /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		2F36721F2D3E1C2F0048D9AD /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		2F3672212D3E1E410048D9AD /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		2F3672242D3E35110048D9AD /* AuthRepositoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthRepositoryProtocol.swift; sourceTree = "<group>"; };
@@ -146,7 +145,8 @@
 		A21E477C2D38CD55002B60FA /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
 		A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryDetailView.swift; sourceTree = "<group>"; };
 		A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CelestoriaVideoPlayerView.swift; sourceTree = "<group>"; };
-		A2B8DB802D43CE39001B5663 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		A2B8DB822D43FA0C001B5663 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
+		A2B8DB842D440536001B5663 /* SettingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -180,6 +180,7 @@
 			children = (
 				2F510CE32D413588004171E8 /* Main */,
 				2F510CE42D4135A1004171E8 /* AddMemory */,
+				A2B8DB822D43FA0C001B5663 /* SettingView.swift */,
 			);
 			path = RegularViews;
 			sourceTree = "<group>";
@@ -257,7 +258,7 @@
 				2F3672212D3E1E410048D9AD /* LoginViewModel.swift */,
 				2F510CE92D41449A004171E8 /* AddMemoryMainViewModel.swift */,
 				2FE858062D43E5FB0055902B /* AppMemoryDoneViewModel.swift */,
-				A2B8DB802D43CE39001B5663 /* SettingsViewModel.swift */,
+				A2B8DB842D440536001B5663 /* SettingViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -289,7 +290,6 @@
 				2F3672192D3E19A30048D9AD /* GalaxyView.swift */,
 				A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */,
 				2F36721B2D3E1A030048D9AD /* ExploreView.swift */,
-				2F36721D2D3E1A1F0048D9AD /* SettingView.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -576,6 +576,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2F36722C2D3E35750048D9AD /* SignOutUseCase.swift in Sources */,
+				A2B8DB852D440536001B5663 /* SettingViewModel.swift in Sources */,
 				2F3671E12D3D946C0048D9AD /* Memory.swift in Sources */,
 				2F3671B12D3D6A9E0048D9AD /* Color+.swift in Sources */,
 				2F510CEC2D414971004171E8 /* MediaRepository.swift in Sources */,
@@ -585,7 +586,6 @@
 				2FE858052D43D3980055902B /* TextField+.swift in Sources */,
 				2F8800BA2D38CE6800220F89 /* AppModel.swift in Sources */,
 				2F3671D72D3D7C730048D9AD /* MainTabButton.swift in Sources */,
-				2F36721E2D3E1A1F0048D9AD /* SettingView.swift in Sources */,
 				2F510CEE2D416532004171E8 /* CategoryButton.swift in Sources */,
 				2F36721C2D3E1A030048D9AD /* ExploreView.swift in Sources */,
 				2F8800BB2D38CE6800220F89 /* CelestoriaApp.swift in Sources */,
@@ -606,7 +606,6 @@
 				2F3672112D3DAAA40048D9AD /* ConstellationSpaceEntity.swift in Sources */,
 				2F3672272D3E35310048D9AD /* AuthRepository.swift in Sources */,
 				2F3671E92D3D9A470048D9AD /* Category.swift in Sources */,
-				A2B8DB812D43CE39001B5663 /* SettingsViewModel.swift in Sources */,
 				2F3671B32D3D6B660048D9AD /* Gradient+.swift in Sources */,
 				2F8800BC2D38CE6800220F89 /* ContentView.swift in Sources */,
 				2F36721A2D3E19A30048D9AD /* GalaxyView.swift in Sources */,
@@ -624,6 +623,7 @@
 				2FE857F72D43425B0055902B /* PopupView.swift in Sources */,
 				2F36720B2D3DA3F20048D9AD /* Config.swift in Sources */,
 				2F8800C42D38D3AE00220F89 /* DIContainer.swift in Sources */,
+				A2B8DB832D43FA0C001B5663 /* SettingView.swift in Sources */,
 				2F510CEA2D41449A004171E8 /* AddMemoryMainViewModel.swift in Sources */,
 				2F3671D52D3D7C3C0048D9AD /* ErrorBannerView.swift in Sources */,
 				2F3672362D4111130048D9AD /* NavigationBar.swift in Sources */,

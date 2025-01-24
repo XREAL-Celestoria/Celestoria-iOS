@@ -10,7 +10,10 @@ import PhotosUI
 
 struct SettingView: View {
     @EnvironmentObject var appModel: AppModel
+    @EnvironmentObject var settingViewModel: SettingViewModel
     @State private var selectedSection: SettingSection = .profile
+    @State private var showError: Bool = false
+    @State private var errorMessage: String = ""
     
     var body: some View {
         GeometryReader { geometry in
@@ -25,6 +28,11 @@ struct SettingView: View {
             }
         }
         .background(Color.NebulaBlack.ignoresSafeArea())
+        .alert("오류", isPresented: $showError) {
+            Button("확인", role: .cancel) { }
+        } message: {
+            Text(errorMessage)
+        }
     }
 }
 
@@ -32,7 +40,9 @@ struct SettingView: View {
 private struct LeftSettingView: View {
     @Binding var selectedSection: SettingSection
     @EnvironmentObject var appModel: AppModel
-    @Environment(\.dismissWindow) private var dismissWindow
+    @EnvironmentObject var settingViewModel: SettingViewModel
+    @State private var showError: Bool = false
+    @State private var errorMessage: String = ""
     
     var body: some View {
         VStack(spacing: 20) {
@@ -44,8 +54,8 @@ private struct LeftSettingView: View {
                 },
                 buttonImageString: "chevron.left"
             )
-            .padding(.horizontal, 28)
-            .padding(.top, 28)
+            .padding(.horizontal, 4)
+            .padding(.top, 4)
             
             Spacer()
                 .frame(height: 40)
@@ -75,9 +85,14 @@ private struct LeftSettingView: View {
             
             // Sign Out 버튼
             Button(action: {
-                // TODO: 로그아웃 처리
-                appModel.activeScreen = .login
-                appModel.userId = nil
+                Task {
+                    do {
+                        try await settingViewModel.signOut()
+                    } catch {
+                        errorMessage = error.localizedDescription
+                        showError = true
+                    }
+                }
             }) {
                 Text("Sign Out")
                     .font(.system(size: 22, weight: .semibold))
@@ -91,6 +106,11 @@ private struct LeftSettingView: View {
                     )
             }
             .padding(.bottom, 40)
+        }
+        .alert("오류", isPresented: $showError) {
+            Button("확인", role: .cancel) { }
+        } message: {
+            Text(errorMessage)
         }
     }
 }
@@ -135,21 +155,34 @@ private struct SettingButton: View {
     
     var body: some View {
         Button(action: action) {
-            Text(title)
-                .font(.system(size: 22, weight: .semibold))
-                .foregroundColor(isSelected ? .NebulaBlack : .NebulaWhite)
-                .frame(width: 200, height: 50)
-                .background(
-                    isSelected ? 
-                        AnyShapeStyle(LinearGradient.GradientSub) :
-                        AnyShapeStyle(Color.clear)
-                )
-                .cornerRadius(12)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.NebulaWhite.opacity(0.3), lineWidth: isSelected ? 0 : 2)
-                )
+            HStack(alignment: .center, spacing: 40) {
+                Image(title == "Profile" ? (isSelected ? "settings-profile-on" : "settings-profile-off") :
+                      title == "Thumbnail" ? (isSelected ? "settings-thumbnail-on" : "settings-thumbnail-off") :
+                      isSelected ? "settings-account-on" : "settings-account-off")
+                    .resizable()
+                    .frame(width: 40, height: 40)
+                Text(title)
+                    .font(
+                        .system(size: 22, weight: .bold)
+                    )
+                    .foregroundStyle(
+                        isSelected 
+                            ? LinearGradient.GradientMain 
+                            : LinearGradient(colors: [.white.opacity(0.6)], startPoint: .leading, endPoint: .trailing)
+                    )
+            }
+            .padding(.leading, 10)
+            .padding(.trailing, 20)
+            .padding(.vertical, 12)
+            .frame(maxWidth: 380, alignment: .leading)
+            .background(
+                isSelected
+                    ? .white.opacity(0.1)
+                    : .clear
+            )
+            .cornerRadius(20)
         }
+        .buttonStyle(.plain)
     }
 }
 
@@ -433,3 +466,4 @@ enum SettingSection {
 #Preview {
     SettingView()
 }
+
