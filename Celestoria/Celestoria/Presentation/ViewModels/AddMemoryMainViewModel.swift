@@ -170,11 +170,13 @@ class AddMemoryMainViewModel: ObservableObject {
                         os.Logger.info("Thumbnail successfully generated.")
                         DispatchQueue.main.async {
                             self.thumbnailImage = thumbnail
+                            self.isPickerBlocked = false
                         }
                     } else {
                         os.Logger.error("Failed to generate thumbnail.")
                         DispatchQueue.main.async {
                             self.errorMessage = "썸네일 생성에 실패했습니다."
+                            self.isPickerBlocked = false
                         }
                     }
                 }
@@ -229,6 +231,33 @@ class AddMemoryMainViewModel: ObservableObject {
             }
         }
     }
-
-
+    
+    private func extractPixelBuffer(videoOutput: AVPlayerItemVideoOutput, player: AVPlayer, completion: @escaping (UIImage?) -> Void) {
+        let currentTime = player.currentItem?.currentTime() ?? CMTime(seconds: 1.0, preferredTimescale: 600)
+        os.Logger.info("Checking for new pixel buffer at time: \(currentTime.seconds) seconds.")
+        
+        guard videoOutput.hasNewPixelBuffer(forItemTime: currentTime),
+              let pixelBuffer = videoOutput.copyPixelBuffer(forItemTime: currentTime, itemTimeForDisplay: nil) else {
+            os.Logger.error("Failed to extract pixel buffer for thumbnail. Retrying...")
+            DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 0.5) {
+                self.extractPixelBuffer(videoOutput: videoOutput, player: player, completion: completion)
+            }
+            return
+        }
+        
+        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+        let context = CIContext()
+        if let cgImage = context.createCGImage(ciImage, from: ciImage.extent) {
+            let thumbnail = UIImage(cgImage: cgImage)
+            os.Logger.info("Thumbnail successfully created.")
+            DispatchQueue.main.async {
+                completion(thumbnail)
+            }
+        } else {
+            os.Logger.error("Failed to generate thumbnail from pixel buffer.")
+            DispatchQueue.main.async {
+                completion(nil)
+            }
+        }
+    }
 }

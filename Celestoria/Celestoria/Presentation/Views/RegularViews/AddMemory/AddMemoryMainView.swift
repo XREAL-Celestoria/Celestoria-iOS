@@ -62,7 +62,7 @@ struct AddMemoryMainView: View {
                                 trailingButtonAction: popupData.trailingButtonAction,
                                 buttonImageString: popupData.buttonImageString
                             )
-                            .frame(width: 644, height: 324)
+                            .frame(width: 644, height: 328)
                             .cornerRadius(20)
                         }
                     }
@@ -72,14 +72,6 @@ struct AddMemoryMainView: View {
         .onDisappear {
             viewModel.handleViewDisappearance()
             appModel.showAddMemoryView = false
-        }
-        // Alert for Success
-        .alert(isPresented: $viewModel.showSuccessAlert) {
-            Alert(
-                title: Text("Success"),
-                message: Text("Memory saved successfully!"),
-                dismissButton: .default(Text("OK"))
-            )
         }
         // Handle Error Messages
         .onChange(of: viewModel.errorMessage) {
