@@ -180,7 +180,6 @@
 			children = (
 				2F510CE32D413588004171E8 /* Main */,
 				2F510CE42D4135A1004171E8 /* AddMemory */,
-				A2B8DB822D43FA0C001B5663 /* SettingView.swift */,
 			);
 			path = RegularViews;
 			sourceTree = "<group>";
@@ -287,6 +286,7 @@
 				2F8800B52D38CE6800220F89 /* ContentView.swift */,
 				2F36721F2D3E1C2F0048D9AD /* LoginView.swift */,
 				2F3671CE2D3D7A660048D9AD /* MainView.swift */,
+				A2B8DB822D43FA0C001B5663 /* SettingView.swift */,
 				2F3672192D3E19A30048D9AD /* GalaxyView.swift */,
 				A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */,
 				2F36721B2D3E1A030048D9AD /* ExploreView.swift */,
