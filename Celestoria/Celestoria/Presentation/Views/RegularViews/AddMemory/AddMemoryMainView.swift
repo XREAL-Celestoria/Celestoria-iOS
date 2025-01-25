@@ -193,7 +193,7 @@ private struct RightView: View {
                 Spacer()
                 
                 MainButton (
-                    action: {
+                    title: "Upload", action: {
                         guard let userId = appModel.userId else { return }
                         Task {
                             do {

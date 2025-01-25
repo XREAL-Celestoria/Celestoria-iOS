@@ -179,7 +179,7 @@ private struct GalaxyButtonGrid: View {
             Spacer()
             
             MainButton(
-                action: {
+                title: "Save", action: {
                     galaxyViewModel.saveSelectedImage()
                 },
                 isEnabled: galaxyViewModel.isUploadEnabled 
