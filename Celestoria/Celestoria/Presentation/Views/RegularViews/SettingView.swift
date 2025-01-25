@@ -65,7 +65,7 @@ private struct LeftSettingView: View {
             .padding(.top, 4)
             
             Spacer()
-                .frame(height: 40)
+                .frame(height: 20)
             
             // 메뉴 버튼들
             VStack(spacing: 24) {
@@ -353,8 +353,8 @@ private struct ThumbnailSettingView: View {
             Text("Thumbnail")
                 .font(.system(size: 29, weight: .bold))
                 .foregroundColor(.NebulaWhite)
-                .padding(.top, 40)
-                .padding(.leading, 40)
+                .padding(.top, 35)
+                .padding(.horizontal, 55)
             
             Button(action: {
                 if isEditing {
@@ -570,29 +570,41 @@ private struct AccountSettingView: View {
     @State private var showDeleteConfirmation = false
     @State private var showError = false
     @State private var errorMessage = ""
+    @State private var isHovered = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             Text("Account Setting")
                 .font(.system(size: 29, weight: .bold))
                 .foregroundColor(.NebulaWhite)
-                .padding(.top, 40)
-                .padding(.leading, 40)
+                .padding(.top, 35)
+                .padding(.horizontal, 55)
             
             Button(action: {
                 showDeleteConfirmation = true
             }) {
-                Text("Delete Account")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.red)
-                    .frame(width: 200, height: 50)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color.red, lineWidth: 2)
-                    )
+                HStack(alignment: .center, spacing: 40) {
+                    Text("Delete Account")
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(
+                            LinearGradient(colors: [.white], startPoint: .leading, endPoint: .trailing)
+                        )
+                }
+                .padding(.vertical, 18)
+                .padding(.horizontal, 20)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(
+                    Color.white.opacity(0.1)
+                        .opacity(isHovered ? 1 : 0)
+                )
+                .cornerRadius(20)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.top, 40)
+            .buttonStyle(.plain)
+            .padding(.horizontal, 35)
+            .padding(.top, 30)
+            .onHover { hovering in
+                isHovered = hovering
+            }
             
             Spacer()
         }
