@@ -56,12 +56,12 @@ private extension MainView {
             MainTabButton(imageName: "Nebula", text: "Galaxy") {
                 appModel.activeScreen = .galaxy
                 os.Logger.info("Move to Galaxy View")
-                print("Galaxy Button Tapped")
             }
             .frame(width: 104, height: 152)
             
             MainTabButton(imageName: "Explore", text: "Explore") {
-                print("Explore Button Tapped")
+                appModel.activeScreen = .explore
+                os.Logger.info("Move to Galaxy View")
             }
             .frame(width: 104, height: 152)
             
