@@ -191,7 +191,7 @@ private struct ProfileSettingView: View {
                                         .frame(width: 330, height: 330)
                                         .clipShape(Circle())
                                 } else {
-                                    Image(systemName: "person.circle.fill")
+                                    Image("ProfileImage")
                                         .resizable()
                                         .scaledToFill()
                                         .frame(width: 330, height: 330)
@@ -243,7 +243,7 @@ private struct ProfileSettingView: View {
                             .frame(width: 330, height: 330)
                             .clipShape(Circle())
                     } else {
-                        Image(systemName: "person.circle.fill")
+                        Image("ProfileImage")
                             .resizable()
                             .scaledToFill()
                             .frame(width: 330, height: 330)
