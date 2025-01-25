@@ -25,13 +25,11 @@ struct SettingView: View {
     var body: some View {
         GeometryReader { geometry in
             HStack(spacing: 0) {
-                // 왼쪽 영역 (2)
                 LeftSettingView(selectedSection: $selectedSection)
-                    .frame(width: geometry.size.width * 0.4)
+                    .frame(width: geometry.size.width * 0.38)
                 
-                // 오른쪽 영역 (3)
                 RightSettingView(selectedSection: selectedSection)
-                    .frame(width: geometry.size.width * 0.6)
+                    .frame(width: geometry.size.width * 0.62)
             }
         }
         .background(Color.NebulaBlack.ignoresSafeArea())
