@@ -54,6 +54,8 @@ private extension MainView {
     var tabMenu: some View {
         HStack(spacing: 40) {
             MainTabButton(imageName: "Nebula", text: "Galaxy") {
+                appModel.activeScreen = .galaxy
+                os.Logger.info("Move to Galaxy View")
                 print("Galaxy Button Tapped")
             }
             .frame(width: 104, height: 152)
@@ -65,6 +67,7 @@ private extension MainView {
             
             MainTabButton(imageName: "Setting", text: "Setting") {
                 appModel.activeScreen = .setting
+                os.Logger.info("Move to Setting View")
             }
             .frame(width: 104, height: 152)
         }

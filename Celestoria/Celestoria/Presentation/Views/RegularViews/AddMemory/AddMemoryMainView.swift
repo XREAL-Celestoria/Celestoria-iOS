@@ -152,7 +152,7 @@ private struct LeftView: View {
                         }
                         .frame(width: 260, height: 132)
                         .cornerRadius(20)
-                        .buttonStyle(UploadButtonStyle())
+                        .buttonStyle(MainButtonStyle())
                     }
                 }
             }
@@ -172,11 +172,9 @@ private struct RightView: View {
     
     var body: some View {
         ZStack {
-            // Background blur layer
             VisualEffectBlur(style: .systemMaterial)
                 .edgesIgnoringSafeArea(.all)
-            
-            // Inner shadow and transparent background
+        
             Rectangle()
                 .fill(Color.clear)
                 .overlay(
@@ -202,7 +200,7 @@ private struct RightView: View {
                 
                 Spacer()
                 
-                UploadButton(
+                MainButton (
                     action: {
                         guard let userId = appModel.userId else { return }
                         Task {
@@ -346,35 +344,6 @@ private struct NoteInputSection: View {
             }
         }
         .frame(width: 560, height: 320, alignment: .center)
-    }
-}
-
-// MARK: - Upload Button
-private struct UploadButton: View {
-    let action: () -> Void
-    let isEnabled: Bool
-    
-    var body: some View {
-        Button(action: action) {
-            Text("Upload")
-                .font(.system(size: 22, weight: .semibold))
-                .foregroundColor(isEnabled ? .NebulaBlack : .NebulaWhite)
-                .frame(width: 380, height: 64)
-                .background(isEnabled ?
-                            AnyShapeStyle(LinearGradient.GradientSub) :
-                                AnyShapeStyle(Color(hex:"1F1F29"))).cornerRadius(16)
-        }
-        .buttonStyle(UploadButtonStyle())
-        .padding(.bottom, 60)
-    }
-}
-
-
-struct UploadButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.9 : 1.0)
-            .animation(.easeInOut(duration: 0.2), value: configuration.isPressed)
     }
 }
 

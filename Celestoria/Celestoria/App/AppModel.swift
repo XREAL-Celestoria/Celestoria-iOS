@@ -10,7 +10,19 @@ import os
 
 @MainActor
 final class AppModel: ObservableObject {
-    // 로그인 전에는 nil, 로그인 후에는 서버 UUID
+    
+    @Published var randomBackground: String
+    
+    @Published var selectedStarfield: StarField? {
+        didSet {
+            if let starfield = selectedStarfield {
+                Logger.info("Starfield Changed: \(starfield.rawValue)")
+            } else {
+                Logger.info("Starfield Changed: nil")
+            }
+        }
+    }
+
     @Published var userId: UUID? = nil {
         didSet {
             os.Logger.info("User ID changed: \(String(describing: userId))")
@@ -44,6 +56,10 @@ final class AppModel: ObservableObject {
     let immersiveSpaceID = "SpaceEnvironment"
     
     init() {
+        let randomField = StarField.random()
+        randomBackground = randomField.imageName
+        selectedStarfield = nil
+        Logger.info("AppModel initialized with random background: \(randomBackground)")
         Logger.info("AppModel initialized with immersiveSpaceID: \(immersiveSpaceID)")
     }
 }

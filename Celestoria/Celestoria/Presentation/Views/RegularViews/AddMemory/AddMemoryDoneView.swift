@@ -52,7 +52,7 @@ struct AddMemoryDoneView: View {
                     .background(LinearGradient.GradientSub
                         .cornerRadius(16))
             }
-            .buttonStyle(UploadButtonStyle())
+            .buttonStyle(MainButtonStyle())
             .padding(.bottom, 96)
         }
         .onDisappear {

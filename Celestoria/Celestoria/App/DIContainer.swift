@@ -20,6 +20,7 @@ final class DIContainer: ObservableObject {
     let spaceCoordinator: SpaceCoordinator
     let appModel: AppModel
     let settingViewModel: SettingViewModel
+    let galaxyViewModel: GalaxyViewModel
 
     // Supabase Client
     let supabaseClient: SupabaseClient
@@ -77,7 +78,7 @@ final class DIContainer: ObservableObject {
         self.signOutUseCase = SignOutUseCase(repository: authRepository)
 
         // Initialize ViewModels and Coordinators
-        self.spaceCoordinator = SpaceCoordinator()
+        self.spaceCoordinator = SpaceCoordinator(appModel: appModel)
         self.mainViewModel = MainViewModel(
             fetchMemoriesUseCase: fetchMemoriesUseCase,
             deleteMemoryUseCase: deleteMemoryUseCase,
@@ -91,5 +92,6 @@ final class DIContainer: ObservableObject {
             signOutUseCase: signOutUseCase,
             appModel: appModel
         )
+        self.galaxyViewModel = GalaxyViewModel(appModel: appModel, spaceCoordinator: spaceCoordinator)
     }
 }

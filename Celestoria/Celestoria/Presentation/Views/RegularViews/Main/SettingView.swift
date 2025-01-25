@@ -67,23 +67,17 @@ private struct LeftSettingView: View {
             
             // 메뉴 버튼들
             VStack(spacing: 24) {
-                SettingButton(
-                    title: "Profile",
-                    isSelected: selectedSection == .profile,
-                    action: { selectedSection = .profile }
-                )
-                
-                SettingButton(
-                    title: "Thumbnail",
-                    isSelected: selectedSection == .thumbnail,
-                    action: { selectedSection = .thumbnail }
-                )
-                
-                SettingButton(
-                    title: "Account Setting",
-                    isSelected: selectedSection == .account,
-                    action: { selectedSection = .account }
-                )
+                ForEach(settingsMenuItems, id: \.title) { item in
+                    NavigationMenuButton(
+                        menuItem: item,
+                        isSelected: selectedSection.rawValue == item.title,
+                        action: {
+                            if let section = SettingSection(rawValue: item.title) {
+                                selectedSection = section
+                            }
+                        }
+                    )
+                }
             }
             
             Spacer()
@@ -147,45 +141,6 @@ private struct RightSettingView: View {
                 AccountSettingView()
             }
         }
-    }
-}
-
-// MARK: - Setting Button
-private struct SettingButton: View {
-    let title: String
-    let isSelected: Bool
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            HStack(alignment: .center, spacing: 40) {
-                Image(title == "Profile" ? (isSelected ? "settings-profile-on" : "settings-profile-off") :
-                      title == "Thumbnail" ? (isSelected ? "settings-thumbnail-on" : "settings-thumbnail-off") :
-                      isSelected ? "settings-account-on" : "settings-account-off")
-                    .resizable()
-                    .frame(width: 40, height: 40)
-                Text(title)
-                    .font(
-                        .system(size: 22, weight: .semibold)
-                    )
-                    .foregroundStyle(
-                        isSelected 
-                            ? LinearGradient.GradientMain 
-                            : LinearGradient(colors: [.white.opacity(0.6)], startPoint: .leading, endPoint: .trailing)
-                    )
-            }
-            .padding(.leading, 10)
-            .padding(.trailing, 20)
-            .padding(.vertical, 12)
-            .frame(maxWidth: 380, alignment: .leading)
-            .background(
-                isSelected
-                    ? .white.opacity(0.1)
-                    : .clear
-            )
-            .cornerRadius(20)
-        }
-        .buttonStyle(.plain)
     }
 }
 
@@ -632,10 +587,10 @@ private struct AccountSettingView: View {
 }
 
 // MARK: - Enums
-enum SettingSection {
-    case profile
-    case thumbnail
-    case account
+enum SettingSection: String {
+    case profile = "Profile"
+    case thumbnail = "Thumbnail"
+    case account = "Account"
 }
 
 #Preview {

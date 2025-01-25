@@ -65,7 +65,7 @@ struct PopupView: View {
                                 .frame(width: 240, height: 76)
                                 .background(Color.NebulaWhite.opacity(0.1).cornerRadius(16))
                         }
-                        .buttonStyle(UploadButtonStyle())
+                        .buttonStyle(MainButtonStyle())
                         
                         Spacer()
                             .frame(width: 24)
@@ -77,7 +77,7 @@ struct PopupView: View {
                                 .frame(width: 240, height: 76)
                                 .background(LinearGradient.GradientSub.cornerRadius(16))
                         }
-                        .buttonStyle(UploadButtonStyle())
+                        .buttonStyle(MainButtonStyle())
                     }
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.horizontal, 52)

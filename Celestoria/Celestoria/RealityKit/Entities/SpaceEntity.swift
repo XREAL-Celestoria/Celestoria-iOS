@@ -9,58 +9,78 @@ import SwiftUI
 import Combine
 import RealityKit
 import RealityKitContent
-
+import os
 
 class SpaceEntity: Entity {
     // MARK: - Properties
     private weak var coordinator: SpaceCoordinator?
     private var starEntities: [MemoryStarEntity] = []
     private var isProcessingVideo = false
-    
+    private var backgroundEntity: SpaceBackgroundEntity? // 배경 엔티티 참조
+    private let backgroundImageName: String
+
     // MARK: - Constants
     private enum Constants {
         static let positionRange: ClosedRange<Float> = -4...4
         static let defaultScale: Float = 1.0
     }
-    
+
     // MARK: - Initialization
-    init(coordinator: SpaceCoordinator) {
+    init(coordinator: SpaceCoordinator, backgroundImageName: String) {
         self.coordinator = coordinator
+        self.backgroundImageName = backgroundImageName
         super.init()
-        print("SpaceEntity: Initialized with coordinator")
+        os.Logger.info("Space Entity initialized with background: \(backgroundImageName)")
         setupSpaceEnvironment()
     }
-    
+
     required init() {
         fatalError("init() has not been implemented")
     }
-    
+
     // MARK: - Setup Methods
     private func setupSpaceEnvironment() {
-        addSpaceBackground()
+        addSpaceBackground(imageName: backgroundImageName)
     }
-    
-    private func addSpaceBackground() {
-        let spaceBackground = SpaceBackgroundEntity()
+
+    private func addSpaceBackground(imageName: String) {
+        // 기존 배경 제거
+        backgroundEntity?.removeFromParent()
+
+        // 새로운 배경 엔티티 생성
+        let spaceBackground = SpaceBackgroundEntity(backgroundImageName: imageName)
         addChild(spaceBackground)
+        backgroundEntity = spaceBackground
     }
-    
+
+    // MARK: - Update Background
+    func updateBackground(with imageName: String) {
+        guard let backgroundEntity = backgroundEntity else {
+            os.Logger.error("SpaceEntity: Background entity not found. Creating a new one.")
+            addSpaceBackground(imageName: imageName)
+            return
+        }
+        
+        backgroundEntity.updateTexture(with: imageName)
+        os.Logger.info("SpaceEntity: Background updated to \(imageName)")
+    }
+
     // MARK: - Star Management
     func updateStars(with memories: [Memory]) async {
         cleanupExistingContent()
         await createNewStars(from: memories)
         print("Star update completed. Total stars: \(starEntities.count)")
     }
-    
+
     private func cleanupExistingContent() {
         removeExistingStars()
     }
-    
+
     private func removeExistingStars() {
         starEntities.forEach { $0.removeFromParent() }
         starEntities.removeAll()
     }
-    
+
     private func createNewStars(from memories: [Memory]) async {
         print("[DEBUG] Creating new stars for \(memories.count) memories.")
         for memory in memories {
@@ -70,16 +90,16 @@ class SpaceEntity: Entity {
             starEntities.append(star)
         }
     }
-    
+
     private func createStar(for memory: Memory) async -> MemoryStarEntity {
         let position = generateRandomPosition()
         let star = MemoryStarEntity(memory: memory, position: position)
-        
+
         await star.loadModel(for: memory.category)
-        
+
         return star
     }
-    
+
     private func generateRandomPosition() -> SIMD3<Float> {
         return SIMD3<Float>(
             Float.random(in: Constants.positionRange),
@@ -87,14 +107,14 @@ class SpaceEntity: Entity {
             Float.random(in: -6...1)
         )
     }
-    
+
     private func findStarEntity(for memory: Memory) throws -> MemoryStarEntity {
         guard let starEntity = starEntities.first(where: { $0.memory.id == memory.id }) else {
             throw VideoError.starNotFound
         }
         return starEntity
     }
-    
+
     private func getVideoURL(from memory: Memory) throws -> URL {
         guard let videoURLString = memory.videoURL,
               let videoURL = URL(string: videoURLString) else {
@@ -110,7 +130,7 @@ enum VideoError: Error {
     case processingInProgress
     case invalidEntity
     case starNotFound
-    
+
     var localizedDescription: String {
         switch self {
         case .invalidURL:
@@ -124,3 +144,4 @@ enum VideoError: Error {
         }
     }
 }
+
