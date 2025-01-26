@@ -146,11 +146,13 @@ class AddMemoryMainViewModel: ObservableObject {
 
                 await generateThumbnail(from: tempURL) { [weak self] thumbnail in
                     guard let self = self else { return }
+                    self.isPickerBlocked = false
                     self.thumbnailImage = thumbnail
                     self.setThumbnailGeneratingFalseWithDelay()
                 }
             } catch {
                 errorMessage = error.localizedDescription
+                isPickerBlocked = false
                 setThumbnailGeneratingFalseWithDelay()
             }
         }
