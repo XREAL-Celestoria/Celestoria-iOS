@@ -25,7 +25,6 @@ struct MainButton: View {
                 .cornerRadius(16)
         }
         .buttonStyle(MainButtonStyle())
-        .padding(.bottom, 60)
     }
 }
 

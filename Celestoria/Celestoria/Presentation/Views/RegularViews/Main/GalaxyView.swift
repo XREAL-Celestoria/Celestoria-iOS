@@ -184,6 +184,7 @@ private struct GalaxyButtonGrid: View {
                 },
                 isEnabled: galaxyViewModel.isUploadEnabled 
             )
+            .padding(.bottom, 60)
             .disabled(!galaxyViewModel.isUploadEnabled)
 
         }

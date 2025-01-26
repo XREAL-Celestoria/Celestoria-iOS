@@ -26,7 +26,7 @@ struct AddMemoryDoneView: View {
             Image("AddMemoryDone")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 248, height: 248, alignment: .center)
+                .frame(width: 320, height: 320, alignment: .center)
                 .padding(.top, 64)
             
             Text("The memory star upload has been completed.")

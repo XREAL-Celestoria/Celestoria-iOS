@@ -34,6 +34,18 @@ extension LinearGradient {
         endPoint: .bottomTrailing
     )
     
+    static let GradientCard = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "A7E9FE"), Color(hex: "515768")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let GradientCardOverlay = LinearGradient(
+        gradient: Gradient(colors: [Color.NebulaWhite.opacity(0), Color.NebulaBlack.opacity(0.7)]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
     static let BackgroundPopup = LinearGradient(
         gradient: Gradient(stops: [
             Gradient.Stop(color: Color.Popup1, location: 0.0),

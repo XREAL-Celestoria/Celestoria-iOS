@@ -70,6 +70,7 @@
 		2FB501D52D455130005FB0B6 /* NavigationMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB501D42D455130005FB0B6 /* NavigationMenuButton.swift */; };
 		2FB501D82D45577D005FB0B6 /* StarField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB501D72D45577D005FB0B6 /* StarField.swift */; };
 		2FB501DC2D456280005FB0B6 /* MainButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB501DB2D456280005FB0B6 /* MainButton.swift */; };
+		2FB501E02D4655D9005FB0B6 /* ExploreUserCardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB501DF2D4655D9005FB0B6 /* ExploreUserCardItem.swift */; };
 		2FE857F72D43425B0055902B /* PopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE857F62D43425B0055902B /* PopupView.swift */; };
 		2FE857F92D4344740055902B /* CircularButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE857F82D4344740055902B /* CircularButton.swift */; };
 		2FE857FF2D434ABA0055902B /* PopupData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE857FE2D434ABA0055902B /* PopupData.swift */; };
@@ -143,6 +144,7 @@
 		2FB501D42D455130005FB0B6 /* NavigationMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationMenuButton.swift; sourceTree = "<group>"; };
 		2FB501D72D45577D005FB0B6 /* StarField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarField.swift; sourceTree = "<group>"; };
 		2FB501DB2D456280005FB0B6 /* MainButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainButton.swift; sourceTree = "<group>"; };
+		2FB501DF2D4655D9005FB0B6 /* ExploreUserCardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreUserCardItem.swift; sourceTree = "<group>"; };
 		2FE857F62D43425B0055902B /* PopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupView.swift; sourceTree = "<group>"; };
 		2FE857F82D4344740055902B /* CircularButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularButton.swift; sourceTree = "<group>"; };
 		2FE857FE2D434ABA0055902B /* PopupData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupData.swift; sourceTree = "<group>"; };
@@ -479,6 +481,7 @@
 			isa = PBXGroup;
 			children = (
 				2FB501D72D45577D005FB0B6 /* StarField.swift */,
+				2FB501DF2D4655D9005FB0B6 /* ExploreUserCardItem.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -631,6 +634,7 @@
 				2F3671B32D3D6B660048D9AD /* Gradient+.swift in Sources */,
 				2F8800BC2D38CE6800220F89 /* ContentView.swift in Sources */,
 				2F36721A2D3E19A30048D9AD /* GalaxyView.swift in Sources */,
+				2FB501E02D4655D9005FB0B6 /* ExploreUserCardItem.swift in Sources */,
 				2F3672322D3E650B0048D9AD /* HeaderView.swift in Sources */,
 				2F3672172D3DAB120048D9AD /* SpaceEntity.swift in Sources */,
 				2F3672052D3DA2FE0048D9AD /* FetchMemoriesUseCase.swift in Sources */,
