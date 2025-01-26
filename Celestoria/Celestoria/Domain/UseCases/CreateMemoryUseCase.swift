@@ -40,9 +40,9 @@ class CreateMemoryUseCase {
             note: note,
             createdAt: Date(),
             position: Memory.Position(
-                x: Double.random(in: -5...5),
-                y: Double.random(in: -5...5),
-                z: Double.random(in: -5...5)
+                x: Double.random(in: Bool.random() ? -5...(-1) : 1...5),
+                y: Double.random(in: -1...3),
+                z: Double.random(in: Bool.random() ? -5...(-1) : 1...5)
             ),
             videoURL: videoURL,
             thumbnailURL: thumbnailURL,
