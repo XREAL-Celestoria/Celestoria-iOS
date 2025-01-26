@@ -202,7 +202,7 @@ class AddMemoryMainViewModel: ObservableObject {
         player.play()
         
         DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 1.0) { // 1초 후 프레임 추출
-            let currentTime = player.currentItem?.currentTime() ?? CMTime(seconds: 1.0, preferredTimescale: 600)
+            let currentTime = player.currentItem?.currentTime() ?? CMTime(seconds: 1.5, preferredTimescale: 600)
             os.Logger.info("Checking for new pixel buffer at time: \(currentTime.seconds) seconds.")
             
             guard videoOutput.hasNewPixelBuffer(forItemTime: currentTime),
