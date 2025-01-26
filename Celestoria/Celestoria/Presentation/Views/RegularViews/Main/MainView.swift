@@ -53,7 +53,7 @@ struct MainView: View {
 private extension MainView {
     var tabMenu: some View {
         HStack(spacing: 40) {
-            MainTabButton(imageName: "Nebula", text: "Galaxy") {
+            MainTabButton(imageName: "Galaxy", text: "Galaxy") {
                 appModel.activeScreen = .galaxy
                 os.Logger.info("Move to Galaxy View")
             }
