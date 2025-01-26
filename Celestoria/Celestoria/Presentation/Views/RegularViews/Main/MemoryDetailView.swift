@@ -17,6 +17,7 @@ struct MemoryDetailView: View {
                 NavigationBar(title: "Memory Detail", action: {dismiss()}, buttonImageString: "xmark")
                 
                 videoPlayerSection
+                    .frame(maxWidth: .infinity)
                     .frame(height: 300)
                 
                 Text(memory.title)
@@ -43,11 +44,13 @@ struct MemoryDetailView: View {
 
             // 2) AVPlayerViewController로 재생
             CelestoriaVideoPlayerView(videoURL: url)
+                .aspectRatio(contentMode: .fit)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
         } else {
             ZStack {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(Color.gray.opacity(0.3))
+                    .frame(maxWidth: .infinity)
                 Text("No Video")
                     .foregroundColor(.white.opacity(0.8))
             }
