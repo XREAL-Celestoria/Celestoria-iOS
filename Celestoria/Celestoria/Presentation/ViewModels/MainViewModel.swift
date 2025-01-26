@@ -12,6 +12,7 @@ class MainViewModel: ObservableObject {
     @Published var memories: [Memory] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
+    @Published var hasLoadedInitialMemories: Bool = false
     
     private let fetchMemoriesUseCase: FetchMemoriesUseCase
     private let deleteMemoryUseCase: DeleteMemoryUseCase

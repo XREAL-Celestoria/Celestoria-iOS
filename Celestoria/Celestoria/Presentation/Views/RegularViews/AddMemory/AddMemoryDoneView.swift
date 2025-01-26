@@ -11,6 +11,7 @@ struct AddMemoryDoneView: View {
     @EnvironmentObject private var appModel: AppModel
     @EnvironmentObject var viewModel: AddMemoryMainViewModel
     @Environment(\.dismissWindow) private var dismissWindow
+    @EnvironmentObject var spaceCoordinator: SpaceCoordinator
     
     var body: some View {
         VStack {
@@ -44,7 +45,6 @@ struct AddMemoryDoneView: View {
             Spacer()
             
             Button(action: {
-
                 dismissWindow(id: "Add-Memory")
             }) {
                 Text("View Memory Star")
@@ -58,6 +58,9 @@ struct AddMemoryDoneView: View {
             .padding(.bottom, 96)
         }
         .onDisappear {
+            if let memory = viewModel.getLastUploadedMemory() {
+                spaceCoordinator.handleNewMemory(memory)
+            }
             viewModel.handleViewDisappearance()
             appModel.showAddMemoryView = false
             appModel.addMemoryScreen = .main

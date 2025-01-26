@@ -53,8 +53,9 @@ final class SpaceCoordinator: ObservableObject {
         
         memories.append(memory)
         os.Logger.info("SpaceCoordinator: Added new memory. Total count: \(self.memories.count)")
+        
         Task { @MainActor in
-            await spaceEntity?.updateStars(with: memories)
+            await spaceEntity?.addStar(for: memory)
         }
     }
 }

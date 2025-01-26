@@ -12,75 +12,94 @@ import os
 
 struct AddMemoryMainView: View {
     @EnvironmentObject var viewModel: AddMemoryMainViewModel
-    @EnvironmentObject var mainViewModel : MainViewModel
+    @EnvironmentObject var mainViewModel: MainViewModel
     @EnvironmentObject private var appModel: AppModel
     
     @State private var isHovered: Bool = false
     
     var body: some View {
-        GeometryReader { geometry in
-            HStack(spacing: 0) {
-                // Left View
-                LeftView(isHovered: $isHovered)
-                    .frame(width: geometry.size.width / 2, height: geometry.size.height)
-                    .onHover { isHovering in
-                        withAnimation {
-                            isHovered = isHovering
+        ZStack {
+            // 기존 UI
+            GeometryReader { geometry in
+                HStack(spacing: 0) {
+                    // Left View
+                    LeftView(isHovered: $isHovered)
+                        .frame(width: geometry.size.width / 2, height: geometry.size.height)
+                        .onHover { isHovering in
+                            withAnimation {
+                                isHovered = isHovering
+                            }
+                        }
+                        .contentShape(Rectangle())
+                    
+                    // Right View
+                    RightView()
+                        .frame(width: geometry.size.width / 2, height: geometry.size.height)
+                }
+                .background(
+                    Group {
+                        if let thumbnail = viewModel.thumbnailImage {
+                            Image(uiImage: thumbnail)
+                                .resizable()
+                                .scaledToFill()
+                                .clipped()
+                        } else {
+                            Color.NebulaBlack
                         }
                     }
-                    .contentShape(Rectangle())
-                
-                // Right Viewr
-                RightView()
-                    .frame(width: geometry.size.width / 2, height: geometry.size.height)
+                )
+                .overlay(
+                    Group {
+                        if let popupData = viewModel.popupData {
+                            ZStack {
+                                Color.black.opacity(0.6)
+                                    .ignoresSafeArea()
+                                PopupView(
+                                    title: popupData.title,
+                                    notes: popupData.notes,
+                                    leadingButtonText: popupData.leadingButtonText,
+                                    trailingButtonText: popupData.trailingButtonText,
+                                    circularAction: popupData.circularAction,
+                                    leadingButtonAction: popupData.leadingButtonAction,
+                                    trailingButtonAction: popupData.trailingButtonAction,
+                                    buttonImageString: popupData.buttonImageString
+                                )
+                                .frame(width: 652, height: 328, alignment: .center)
+                                .cornerRadius(20)
+                            }
+                        }
+                    }
+                )
             }
-            .background(
-                Group {
-                    if let thumbnail = viewModel.thumbnailImage {
-                        Image(uiImage: thumbnail)
-                            .resizable()
-                            .scaledToFill()
-                            .clipped()
-                    } else {
-                        Color.NebulaBlack
+            .onDisappear {
+                viewModel.handleViewDisappearance()
+                appModel.showAddMemoryView = false
+            }
+            .onChange(of: viewModel.errorMessage) { _ in
+                if let message = viewModel.errorMessage {
+                    print("Error: \(message)")
+                }
+            }
+            
+            if viewModel.isThumbnailGenerating || viewModel.isUploading {
+                ZStack {
+                    Color.black.opacity(0.5)
+                        .ignoresSafeArea()
+                    
+                    VStack {
+                        ProgressView("Loading...")
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .foregroundColor(.white)
+                            .padding()
                     }
                 }
-            )
-            .overlay(
-                Group {
-                    if let popupData = viewModel.popupData {
-                        ZStack {
-                            Color.black.opacity(0.6)
-                                .ignoresSafeArea()
-                            PopupView(
-                                title: popupData.title,
-                                notes: popupData.notes,
-                                leadingButtonText: popupData.leadingButtonText,
-                                trailingButtonText: popupData.trailingButtonText,
-                                circularAction: popupData.circularAction,
-                                leadingButtonAction: popupData.leadingButtonAction,
-                                trailingButtonAction: popupData.trailingButtonAction,
-                                buttonImageString: popupData.buttonImageString
-                            )
-                            .frame(width: 652, height: 328, alignment: .center)
-                            .cornerRadius(20)
-                        }
-                    }
-                }
-            )
+                .transition(.opacity)
+            }
         }
-        .onDisappear {
-            viewModel.handleViewDisappearance()
-            appModel.showAddMemoryView = false
-        }
-        // Handle Error Messages
-        .onChange(of: viewModel.errorMessage) {
-            guard let message = viewModel.errorMessage else { return }
-            print("Error: \(message)")
-        }
+        .animation(.easeInOut, value: viewModel.isThumbnailGenerating)
     }
-    
 }
+
 
 // MARK: - Left View
 private struct LeftView: View {
@@ -193,7 +212,7 @@ private struct RightView: View {
                 Spacer()
                 
                 MainButton(
-                    title: viewModel.isUploading ? "Uploading..." : "Upload", // 
+                    title: "Upload",
                     action: {
                         guard let userId = appModel.userId else { return }
                         Task {

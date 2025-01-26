@@ -43,7 +43,11 @@ struct MainView: View {
             Task {
                 await openImmersiveSpace(id: appModel.immersiveSpaceID)
                 appModel.isImmersiveViewActive = true
-                await viewModel.fetchMemories(for: userId)
+                
+                if !viewModel.hasLoadedInitialMemories {
+                    await viewModel.fetchMemories(for: userId)
+                    viewModel.hasLoadedInitialMemories = true
+                }
             }
         }
     }

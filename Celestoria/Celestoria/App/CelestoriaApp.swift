@@ -35,6 +35,7 @@ struct CelestoriaApp: App {
                     .environmentObject(diContainer.appModel)
                     .environmentObject(diContainer.addMemoryMainViewModel)
                     .environmentObject(diContainer.mainViewModel)
+                    .environmentObject(diContainer.spaceCoordinator)
             }
         }
         

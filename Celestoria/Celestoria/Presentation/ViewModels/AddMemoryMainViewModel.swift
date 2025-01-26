@@ -20,17 +20,16 @@ class AddMemoryMainViewModel: ObservableObject {
     
     @Published var popupData: PopupData?
     @Published var isPickerBlocked = true
-    @Published var showSuccessAlert = false
+    @Published var isThumbnailGenerating: Bool = false
     @Published var errorMessage: String?
     @Published var selectedCategory: Category?
     @Published var selectedVideoItem: PhotosPickerItem? {
-            didSet {
-                // 선택된 비디오가 변경될 때 처리
-                resetVideoData() // 기존 데이터 초기화
-                handleVideoSelection(item: selectedVideoItem)
-            }
+        didSet {
+            resetVideoData()
+            handleVideoSelection(item: selectedVideoItem)
         }
-    
+    }
+    @Published private(set) var lastUploadedMemory: Memory?
     @Published var thumbnailImage: UIImage?
     @Published var isUploading = false
     
@@ -38,7 +37,7 @@ class AddMemoryMainViewModel: ObservableObject {
     @Published var note: String = ""
     
     var isUploadEnabled: Bool {
-        return selectedVideoItem != nil &&
+        selectedVideoItem != nil &&
         thumbnailImage != nil &&
         selectedCategory != nil &&
         !title.trimmingCharacters(in: .whitespaces).isEmpty &&
@@ -52,74 +51,49 @@ class AddMemoryMainViewModel: ObservableObject {
     }
     
     func saveMemory(note: String, title: String, userId: UUID) async {
-        
         guard !isUploading else {
             os.Logger.info("Save operation is already in progress.")
             return
         }
 
-        guard !title.trimmingCharacters(in: .whitespaces).isEmpty else {
-            errorMessage = "타이틀을 입력해주세요."
-            return
-        }
-        
-        guard let thumbnailImage = thumbnailImage else {
-            errorMessage = "썸네일 사진을 선택해주세요."
+        guard isUploadEnabled else {
+            errorMessage = "모든 필드를 올바르게 입력해주세요."
             return
         }
 
-        guard let videoItem = selectedVideoItem else {
-            errorMessage = "비디오를 선택해주세요."
-            return
-        }
-
-        guard let category = selectedCategory else {
-            errorMessage = "카테고리를 선택해주세요."
-            return
-        }
-
-        isUploading = true // 업로드 시작 상태 표시
-        defer { // 작업 종료 후 반드시 실행
-            isUploading = false
-        }
+        isUploading = true
+        defer { isUploading = false }
 
         do {
-            // 비디오 데이터 로드
-            guard let videoData = try await videoItem.loadTransferable(type: Data.self) else {
+            guard let videoItem = selectedVideoItem,
+                  let videoData = try await videoItem.loadTransferable(type: Data.self) else {
                 errorMessage = "비디오 데이터를 불러올 수 없습니다."
                 return
             }
 
-            // 메모리 생성 실행
             let memory = try await createMemoryUseCase.execute(
                 note: note,
                 title: title,
-                category: category,
+                category: selectedCategory!,
                 videoData: videoData,
-                thumbnailImage: thumbnailImage,
+                thumbnailImage: thumbnailImage!,
                 userId: userId
             )
 
-            showSuccessAlert = true
-            print("메모리 생성 완료: \(memory)")
+            lastUploadedMemory = memory
+            os.Logger.info("Memory uploaded successfully: \(memory)")
         } catch {
             errorMessage = error.localizedDescription
         }
     }
     
     func handleViewDisappearance() {
-        selectedVideoItem = nil
-        isPickerBlocked = true
         resetVideoData()
+        isPickerBlocked = true
     }
     
     func toggleCategory(_ category: Category) {
-        if selectedCategory == category {
-            selectedCategory = nil
-        } else {
-            os.Logger.info("\(category) is selected")
-            selectedCategory = category
-        }
+        selectedCategory = (selectedCategory == category) ? nil : category
     }
     
     func showPhotosPickerPopup(dismissWindow: @escaping () -> Void) {
@@ -134,7 +108,6 @@ class AddMemoryMainViewModel: ObservableObject {
                 self?.isPickerBlocked = true
             },
             leadingButtonAction: { [weak self] in
-                self?.appModel.showAddMemoryView = false
                 self?.popupData = nil
                 self?.isPickerBlocked = true
                 dismissWindow()
@@ -147,14 +120,12 @@ class AddMemoryMainViewModel: ObservableObject {
     }
     
     private func resetVideoData() {
-//        selectedVideoItem = nil
         thumbnailImage = nil
         errorMessage = nil
         selectedCategory = nil
         title = ""
         note = ""
     }
-
     
     func handleVideoSelection(item: PhotosPickerItem?) {
         guard let item = item else {
@@ -162,115 +133,70 @@ class AddMemoryMainViewModel: ObservableObject {
             return
         }
 
+        isThumbnailGenerating = true
         Task {
             do {
-                os.Logger.info("Attempting to load video data from selected item.")
                 guard let videoData = try await item.loadTransferable(type: Data.self) else {
-                    os.Logger.error("Unable to load video data from PhotosPickerItem.")
-                    errorMessage = "비디오 데이터를 불러올 수 없습니다."
-                    return
+                    throw NSError(domain: "Thumbnail Error", code: -1, userInfo: [NSLocalizedDescriptionKey: "비디오 데이터를 불러올 수 없습니다."])
                 }
 
                 let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).mov")
                 try videoData.write(to: tempURL)
-                os.Logger.info("Video data written to temporary URL: \(tempURL)")
+                os.Logger.info("Video data saved to temporary URL.")
 
-                generateThumbnailWithVideoOutput(from: tempURL) { [weak self] thumbnail in
+                await generateThumbnail(from: tempURL) { [weak self] thumbnail in
                     guard let self = self else { return }
-                    if let thumbnail = thumbnail {
-                        os.Logger.info("Thumbnail successfully generated.")
-                        DispatchQueue.main.async {
-                            self.thumbnailImage = thumbnail
-                            self.isPickerBlocked = false
-                        }
-                    } else {
-                        os.Logger.error("Failed to generate thumbnail.")
-                        DispatchQueue.main.async {
-                            self.errorMessage = "썸네일 생성에 실패했습니다."
-                            self.isPickerBlocked = false
-                        }
-                    }
+                    self.thumbnailImage = thumbnail
+                    self.setThumbnailGeneratingFalseWithDelay()
                 }
             } catch {
-                os.Logger.error("Failed to process video selection. \(error.localizedDescription)")
-                errorMessage = "Failed to load video: \(error.localizedDescription)"
+                errorMessage = error.localizedDescription
+                setThumbnailGeneratingFalseWithDelay()
             }
         }
     }
 
-    func generateThumbnailWithVideoOutput(from url: URL, completion: @escaping (UIImage?) -> Void) {
-        os.Logger.info("Starting thumbnail generation using AVPlayerItemVideoOutput.")
-        
+    private func setThumbnailGeneratingFalseWithDelay() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.isThumbnailGenerating = false
+        }
+    }
+
+    private func generateThumbnail(from url: URL, completion: @escaping (UIImage?) -> Void) async {
         let asset = AVAsset(url: url)
-        let playerItem = AVPlayerItem(asset: asset)
-        
         let videoOutput = AVPlayerItemVideoOutput(pixelBufferAttributes: [
             kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA
         ])
+        let playerItem = AVPlayerItem(asset: asset)
         playerItem.add(videoOutput)
         
         let player = AVPlayer(playerItem: playerItem)
         player.isMuted = true
         player.play()
-        
-        DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 1.0) { // 1초 후 프레임 추출
-            let currentTime = player.currentItem?.currentTime() ?? CMTime(seconds: 1.5, preferredTimescale: 600)
-            os.Logger.info("Checking for new pixel buffer at time: \(currentTime.seconds) seconds.")
-            
-            guard videoOutput.hasNewPixelBuffer(forItemTime: currentTime),
-                  let pixelBuffer = videoOutput.copyPixelBuffer(forItemTime: currentTime, itemTimeForDisplay: nil) else {
-                os.Logger.error("Failed to extract pixel buffer for thumbnail.")
-                DispatchQueue.main.async {
-                    completion(nil)
-                }
-                return
-            }
-            
-            // PixelBuffer를 UIImage로 변환
-            let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
-            let context = CIContext()
-            if let cgImage = context.createCGImage(ciImage, from: ciImage.extent) {
-                let thumbnail = UIImage(cgImage: cgImage)
-                os.Logger.info("Thumbnail successfully created.")
-                DispatchQueue.main.async {
-                    completion(thumbnail)
-                }
-            } else {
-                os.Logger.error("Failed to generate thumbnail from pixel buffer.")
-                DispatchQueue.main.async {
-                    completion(nil)
-                }
-            }
-        }
-    }
 
-    
-    private func extractPixelBuffer(videoOutput: AVPlayerItemVideoOutput, player: AVPlayer, completion: @escaping (UIImage?) -> Void) {
-        let currentTime = player.currentItem?.currentTime() ?? CMTime(seconds: 1.0, preferredTimescale: 600)
-        os.Logger.info("Checking for new pixel buffer at time: \(currentTime.seconds) seconds.")
-        
+        await Task.sleep(1_000_000_000) // 1초 대기
+
+        let currentTime = CMTime(seconds: 2.0, preferredTimescale: 600)
         guard videoOutput.hasNewPixelBuffer(forItemTime: currentTime),
               let pixelBuffer = videoOutput.copyPixelBuffer(forItemTime: currentTime, itemTimeForDisplay: nil) else {
-            os.Logger.error("Failed to extract pixel buffer for thumbnail. Retrying...")
-            DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 0.5) {
-                self.extractPixelBuffer(videoOutput: videoOutput, player: player, completion: completion)
-            }
+            os.Logger.error("Failed to extract pixel buffer for thumbnail.")
+            completion(nil)
             return
         }
-        
+
         let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
         let context = CIContext()
         if let cgImage = context.createCGImage(ciImage, from: ciImage.extent) {
             let thumbnail = UIImage(cgImage: cgImage)
-            os.Logger.info("Thumbnail successfully created.")
-            DispatchQueue.main.async {
-                completion(thumbnail)
-            }
+            os.Logger.info("Thumbnail generated successfully.")
+            completion(thumbnail)
         } else {
-            os.Logger.error("Failed to generate thumbnail from pixel buffer.")
-            DispatchQueue.main.async {
-                completion(nil)
-            }
+            os.Logger.error("Failed to convert pixel buffer to UIImage.")
+            completion(nil)
         }
+    }
+    
+    func getLastUploadedMemory() -> Memory? {
+        return lastUploadedMemory
     }
 }

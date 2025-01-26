@@ -104,6 +104,23 @@ class SpaceEntity: Entity {
 
         return star
     }
+    
+    func addStar(for memory: Memory) async {
+        os.Logger.info("SpaceEntity: Adding a new star for Memory ID=\(memory.id)")
+        
+        let position = SIMD3<Float>(
+            Float(memory.position.x),
+            Float(memory.position.y),
+            Float(memory.position.z)
+        )
+        
+        let star = await createStar(for: memory)
+        starEntities.append(star)
+        addChild(star)
+        
+        os.Logger.info("SpaceEntity: Star added for Memory ID=\(memory.id). Total stars: \(starEntities.count)")
+    }
+
 
     private func findStarEntity(for memory: Memory) throws -> MemoryStarEntity {
         guard let starEntity = starEntities.first(where: { $0.memory.id == memory.id }) else {
