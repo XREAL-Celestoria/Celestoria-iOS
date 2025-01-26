@@ -39,10 +39,9 @@ struct CelestoriaApp: App {
             }
         }
         
-        // ** 새로 추가되는 부분: Memory를 인자로 받는 WindowGroup **
-        WindowGroup(for: Memory.self) { $memory in
-            /// - Swift 5.7~5.8 이후에는 `$memory.wrappedValue` 형태 사용.
-            /// - `$memory`가 Binding<Memory?> 형태이므로 옵셔널 처리
+        WindowGroup(id: "Memory-Detail", for: Memory.self) { $memory in
+            // - Swift 5.7~5.8 이후에는 `$memory.wrappedValue` 형태 사용.
+            // - `$memory`가 Binding<Memory?> 형태이므로 옵셔널 처리
             if let unwrappedMemory = $memory.wrappedValue {
                 MemoryDetailView(memory: unwrappedMemory)
                     .environmentObject(diContainer.appModel)

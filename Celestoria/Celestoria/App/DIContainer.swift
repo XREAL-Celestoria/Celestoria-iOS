@@ -93,5 +93,6 @@ final class DIContainer: ObservableObject {
             appModel: appModel
         )
         self.galaxyViewModel = GalaxyViewModel(appModel: appModel, spaceCoordinator: spaceCoordinator)
+        
     }
 }

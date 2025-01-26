@@ -1,17 +1,15 @@
 {
   "images" : [
     {
-      "filename" : "기본1 1.png",
+      "filename" : "Starfield-yellow.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "기본1 2.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "기본1 3.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
