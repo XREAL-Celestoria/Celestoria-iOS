@@ -92,20 +92,17 @@ class SpaceEntity: Entity {
     }
 
     private func createStar(for memory: Memory) async -> MemoryStarEntity {
-        let position = generateRandomPosition()
+        // memory에 저장된 position을 SIMD3<Float>로 변환
+        let position = SIMD3<Float>(
+            Float(memory.position.x),
+            Float(memory.position.y),
+            Float(memory.position.z)
+        )
         let star = MemoryStarEntity(memory: memory, position: position)
 
         await star.loadModel(for: memory.category)
 
         return star
-    }
-
-    private func generateRandomPosition() -> SIMD3<Float> {
-        return SIMD3<Float>(
-            Float.random(in: Constants.positionRange),
-            Float.random(in: Constants.positionRange),
-            Float.random(in: -6...1)
-        )
     }
 
     private func findStarEntity(for memory: Memory) throws -> MemoryStarEntity {
