@@ -212,7 +212,7 @@ private struct RightView: View {
                     isEnabled: viewModel.isUploadEnabled
                 )
                 .disabled(!viewModel.isUploadEnabled)
-                .padding(.top, 60)
+                .padding(.bottom, 60)
                 
                 Spacer()
             }
