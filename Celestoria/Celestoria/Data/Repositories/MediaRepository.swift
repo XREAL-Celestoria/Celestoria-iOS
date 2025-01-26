@@ -21,18 +21,18 @@ class MediaRepository {
     // UploadingVideo
     func uploadVideo(data: Data) async throws -> (url: String, metadata: Memory.SpatialMetadata?) {
         let (validatedData, metadata) = try await validateAndExtractMetadata(from: data)
-        let uploadResult = try await uploadToSupabase(validatedData, folder: "spatial_videos")
-        
+        let uploadResult = try await uploadToSupabase(validatedData, folder: "spatial_videos", fileExtension: "mov")
         return (url: uploadResult.url, metadata: metadata)
     }
     
     // 썸네일 업로드
     func uploadThumbnail(image: UIImage) async throws -> String {
-        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+        guard let imageData = image.pngData() else { 
             throw MemoryError.invalidImageData
         }
-        return try await uploadToSupabase(imageData, folder: "thumbnails").url
+        return try await uploadToSupabase(imageData, folder: "thumbnails", fileExtension: "png").url
     }
+
     
     // 비디오 검증 및 메타데이터 추출
     private func validateAndExtractMetadata(from data: Data) async throws -> (Data, Memory.SpatialMetadata?) {
@@ -50,8 +50,8 @@ class MediaRepository {
     }
     
     // Supabase에 업로드
-    private func uploadToSupabase(_ data: Data, folder: String) async throws -> (url: String, path: String) {
-        let fileName = "\(UUID().uuidString).mov"
+    private func uploadToSupabase(_ data: Data, folder: String, fileExtension: String) async throws -> (url: String, path: String) {
+        let fileName = "\(UUID().uuidString).\(fileExtension)"
         let path = "\(fileName)"
         
         try await supabase.storage.from(folder).upload(path, data: data, options: .init(upsert: true))
@@ -59,6 +59,7 @@ class MediaRepository {
         let publicURL = try await supabase.storage.from(folder).createSignedURL(path: path, expiresIn: 604800)
         return (url: publicURL.absoluteString, path: path)
     }
+
     
     // 임시 파일 생성
     private func createTempFile(with data: Data) async throws -> URL {

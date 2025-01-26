@@ -79,7 +79,7 @@ struct PopupView: View {
                         }
                         .buttonStyle(MainButtonStyle())
                     }
-                    .frame(maxWidth: .infinity, alignment: .center)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                     .padding(.horizontal, 52)
                     .padding(.bottom, 56)
                 }

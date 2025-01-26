@@ -52,33 +52,44 @@ class AddMemoryMainViewModel: ObservableObject {
     }
     
     func saveMemory(note: String, title: String, userId: UUID) async {
+        
+        guard !isUploading else {
+            os.Logger.info("Save operation is already in progress.")
+            return
+        }
+
         guard !title.trimmingCharacters(in: .whitespaces).isEmpty else {
             errorMessage = "타이틀을 입력해주세요."
             return
         }
         
+        guard let thumbnailImage = thumbnailImage else {
+            errorMessage = "썸네일 사진을 선택해주세요."
+            return
+        }
+
         guard let videoItem = selectedVideoItem else {
             errorMessage = "비디오를 선택해주세요."
             return
         }
-        
+
         guard let category = selectedCategory else {
             errorMessage = "카테고리를 선택해주세요."
             return
         }
-        
+
         isUploading = true // 업로드 시작 상태 표시
         defer { // 작업 종료 후 반드시 실행
             isUploading = false
         }
-        
+
         do {
             // 비디오 데이터 로드
             guard let videoData = try await videoItem.loadTransferable(type: Data.self) else {
                 errorMessage = "비디오 데이터를 불러올 수 없습니다."
                 return
             }
-            
+
             // 메모리 생성 실행
             let memory = try await createMemoryUseCase.execute(
                 note: note,
@@ -88,7 +99,7 @@ class AddMemoryMainViewModel: ObservableObject {
                 thumbnailImage: thumbnailImage,
                 userId: userId
             )
-            
+
             showSuccessAlert = true
             print("메모리 생성 완료: \(memory)")
         } catch {
@@ -199,6 +210,7 @@ class AddMemoryMainViewModel: ObservableObject {
         playerItem.add(videoOutput)
         
         let player = AVPlayer(playerItem: playerItem)
+        player.isMuted = true
         player.play()
         
         DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 1.0) { // 1초 후 프레임 추출
@@ -231,6 +243,7 @@ class AddMemoryMainViewModel: ObservableObject {
             }
         }
     }
+
     
     private func extractPixelBuffer(videoOutput: AVPlayerItemVideoOutput, player: AVPlayer, completion: @escaping (UIImage?) -> Void) {
         let currentTime = player.currentItem?.currentTime() ?? CMTime(seconds: 1.0, preferredTimescale: 600)

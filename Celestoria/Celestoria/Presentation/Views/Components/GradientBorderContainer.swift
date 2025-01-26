@@ -16,9 +16,8 @@ struct GradientBorderContainer: View {
     
     var body: some View {
         ZStack {
-            // 가끔 배경 투명해지는 버그 있어서 순서 이렇게
-            Color.NebulaBlack
-                .ignoresSafeArea()
+//            Color.NebulaBlack
+//                .ignoresSafeArea()
 
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -33,6 +32,8 @@ struct GradientBorderContainer: View {
                         )
                 )
         }
+        .background(Color.NebulaBlack.cornerRadius(44))
         .padding(4)
     }
 }
+

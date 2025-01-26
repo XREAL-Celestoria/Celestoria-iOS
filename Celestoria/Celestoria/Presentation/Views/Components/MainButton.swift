@@ -21,7 +21,7 @@ struct MainButton: View {
                 .frame(width: 380, height: 64)
                 .background(isEnabled ?
                             AnyShapeStyle(LinearGradient.GradientSub) :
-                            AnyShapeStyle(Color(hex:"1F1F29")))
+                                AnyShapeStyle(Color.NebulaWhite.opacity(0.1)))
                 .cornerRadius(16)
         }
         .buttonStyle(MainButtonStyle())

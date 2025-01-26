@@ -11,6 +11,7 @@ import SwiftUI
 @main
 struct CelestoriaApp: App {
     @StateObject private var diContainer = DIContainer()
+    @State private var gazePoint: CGPoint = .zero
     
     var body: some Scene {
         WindowGroup {
@@ -26,6 +27,7 @@ struct CelestoriaApp: App {
             SpaceImmersiveView()
                 .environmentObject(diContainer.spaceCoordinator)
         }
+        
         
         WindowGroup("Add Memory", id: "Add-Memory") {
             if diContainer.appModel.showAddMemoryView {

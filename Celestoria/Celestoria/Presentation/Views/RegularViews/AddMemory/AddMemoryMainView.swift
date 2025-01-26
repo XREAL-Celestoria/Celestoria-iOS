@@ -62,7 +62,7 @@ struct AddMemoryMainView: View {
                                 trailingButtonAction: popupData.trailingButtonAction,
                                 buttonImageString: popupData.buttonImageString
                             )
-                            .frame(width: 644, height: 328)
+                            .frame(width: 652, height: 328, alignment: .center)
                             .cornerRadius(20)
                         }
                     }
@@ -192,8 +192,9 @@ private struct RightView: View {
                 
                 Spacer()
                 
-                MainButton (
-                    title: "Upload", action: {
+                MainButton(
+                    title: viewModel.isUploading ? "Uploading..." : "Upload", // 
+                    action: {
                         guard let userId = appModel.userId else { return }
                         Task {
                             do {
@@ -202,17 +203,18 @@ private struct RightView: View {
                                     title: viewModel.title,
                                     userId: userId
                                 )
-                                
+
                                 appModel.addMemoryScreen = .done
                             } catch {
                                 os.Logger.error("Failed to save memory: \(error)")
                             }
                         }
                     },
-                    isEnabled: viewModel.isUploadEnabled
+                    isEnabled: viewModel.isUploadEnabled && !viewModel.isUploading
                 )
-                .disabled(!viewModel.isUploadEnabled)
+                .disabled(!viewModel.isUploadEnabled || viewModel.isUploading)
                 .padding(.bottom, 60)
+
                 
                 Spacer()
             }

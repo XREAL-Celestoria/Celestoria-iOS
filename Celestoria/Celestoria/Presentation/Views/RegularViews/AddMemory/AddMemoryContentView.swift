@@ -9,7 +9,6 @@ import SwiftUI
 
 struct AddMemoryContentView: View {
     @EnvironmentObject var appModel: AppModel
-    @State private var AddMemoryActiveScreen: AddMemoryScreen = .main
     
 
     var body: some View {

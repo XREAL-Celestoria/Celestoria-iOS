@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AddMemoryDoneView: View {
     @EnvironmentObject private var appModel: AppModel
+    @EnvironmentObject var viewModel: AddMemoryMainViewModel
     @Environment(\.dismissWindow) private var dismissWindow
     
     var body: some View {
@@ -23,16 +24,18 @@ struct AddMemoryDoneView: View {
             .padding(.horizontal, 28)
             .padding(.top, 28)
             
+            Spacer()
+            
             Image("AddMemoryDone")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 320, height: 320, alignment: .center)
-                .padding(.top, 64)
+            
+            Spacer()
             
             Text("The memory star upload has been completed.")
                 .foregroundColor(Color.NebulaWhite)
                 .font(.system(size: 17, weight: .medium))
-                .padding(.top, 32)
             
             Text("Why not take a moment to explore the memory star you created?")
                 .foregroundColor(Color.NebulaWhite)
@@ -41,8 +44,7 @@ struct AddMemoryDoneView: View {
             Spacer()
             
             Button(action: {
-               // 해당 별의 위치로 카메라 이동 
-                
+
                 dismissWindow(id: "Add-Memory")
             }) {
                 Text("View Memory Star")
@@ -56,8 +58,9 @@ struct AddMemoryDoneView: View {
             .padding(.bottom, 96)
         }
         .onDisappear {
-//            viewModel.handleViewDisappearance()
+            viewModel.handleViewDisappearance()
             appModel.showAddMemoryView = false
+            appModel.addMemoryScreen = .main
         }
     }
 }
