@@ -2,13 +2,13 @@
 //  ProfileUseCase.swift
 //  Celestoria
 //
-//  Created by Minjun Kim on 1/27/25.
+//  Created by Park Seyoung on 1/20/25.
 //
 
 import Foundation
 import UIKit
 
-class ProfileUseCase {
+struct ProfileUseCase {
     private let authRepository: AuthRepositoryProtocol
     private let mediaRepository: MediaRepository
     
@@ -17,21 +17,32 @@ class ProfileUseCase {
         self.mediaRepository = mediaRepository
     }
     
-    func updateProfile(name: String?, image: UIImage?, spaceThumbnailId: String? = nil) async throws -> UserProfile {
-        var profileImageURL: String? = nil
-        
-        if let image = image {
-            profileImageURL = try await mediaRepository.uploadProfileImage(image).url
-        }
-        
-        return try await authRepository.updateProfile(
-            name: name,
-            profileImageURL: profileImageURL,
-            spaceThumbnailId: spaceThumbnailId
-        )
+    func fetchProfile() async throws -> UserProfile {
+        try await authRepository.fetchProfile()
     }
     
-    func fetchProfile() async throws -> UserProfile {
-        return try await authRepository.fetchProfile()
+    func updateProfile(
+        name: String? = nil,
+        image: UIImage? = nil,
+        spaceThumbnailId: String? = nil,
+        starfield: String? = nil
+    ) async throws -> UserProfile {
+        var profileImageURL: String? = nil
+        
+        // 프로필 이미지가 있으면 업로드
+        if let image = image {
+            let (url, _) = try await mediaRepository.uploadProfileImage(image)
+            profileImageURL = url
+        }
+        
+        // 수정 사항 DB 업데이트
+        let updatedProfile = try await authRepository.updateProfile(
+            name: name,
+            profileImageURL: profileImageURL,
+            spaceThumbnailId: spaceThumbnailId,
+            starfield: starfield
+        )
+        
+        return updatedProfile
     }
 }

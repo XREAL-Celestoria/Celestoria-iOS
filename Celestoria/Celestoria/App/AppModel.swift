@@ -10,8 +10,20 @@ import os
 
 @MainActor
 final class AppModel: ObservableObject {
-    
-    @Published var randomBackground: String
+
+    // ★ userProfile 추가: DB에서 가져온 값
+    @Published var userProfile: UserProfile? {
+        didSet {
+            // userProfile가 업데이트될 때 starfield 동기화
+            if let sfName = userProfile?.starfield,
+               let starfieldEnum = StarField(imageName: sfName) {
+                self.selectedStarfield = starfieldEnum
+            } else {
+                // ★ 로그인 안되거나 starfield가 없다면 Gray로 고정
+                self.selectedStarfield = .GRAY
+            }
+        }
+    }
     
     @Published var selectedStarfield: StarField? {
         didSet {
@@ -56,10 +68,8 @@ final class AppModel: ObservableObject {
     let immersiveSpaceID = "SpaceEnvironment"
     
     init() {
-        let randomField = StarField.random()
-        randomBackground = randomField.imageName
         selectedStarfield = nil
-        Logger.info("AppModel initialized with random background: \(randomBackground)")
+        
         Logger.info("AppModel initialized with immersiveSpaceID: \(immersiveSpaceID)")
     }
 }
