@@ -82,6 +82,7 @@
 		A2B8DB782D42B409001B5663 /* CelestoriaVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */; };
 		A2B8DB832D43FA0C001B5663 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB822D43FA0C001B5663 /* SettingView.swift */; };
 		A2B8DB852D440536001B5663 /* SettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB842D440536001B5663 /* SettingViewModel.swift */; };
+		A2FB5B5E2D47881D00294178 /* ProfileUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2FB5B5D2D47881D00294178 /* ProfileUseCase.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -157,6 +158,7 @@
 		A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CelestoriaVideoPlayerView.swift; sourceTree = "<group>"; };
 		A2B8DB822D43FA0C001B5663 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		A2B8DB842D440536001B5663 /* SettingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewModel.swift; sourceTree = "<group>"; };
+		A2FB5B5D2D47881D00294178 /* ProfileUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileUseCase.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -380,6 +382,7 @@
 			children = (
 				2F3672042D3DA2FE0048D9AD /* FetchMemoriesUseCase.swift */,
 				2F3672062D3DA3170048D9AD /* CreateMemoryUseCase.swift */,
+				A2FB5B5D2D47881D00294178 /* ProfileUseCase.swift */,
 				2F3672082D3DA32B0048D9AD /* DeleteMemoryUseCase.swift */,
 				2F3672292D3E35670048D9AD /* SignInWithAppleUseCase.swift */,
 				2F36722B2D3E35750048D9AD /* SignOutUseCase.swift */,
@@ -614,6 +617,7 @@
 				2F8800BB2D38CE6800220F89 /* CelestoriaApp.swift in Sources */,
 				2F3671D32D3D7BFC0048D9AD /* AddMemoryButton.swift in Sources */,
 				A2B8DB412D42AEC7001B5663 /* MemoryDetailView.swift in Sources */,
+				A2FB5B5E2D47881D00294178 /* ProfileUseCase.swift in Sources */,
 				2FB501D82D45577D005FB0B6 /* StarField.swift in Sources */,
 				2F3671C92D3D76ED0048D9AD /* SpaceCoordinator.swift in Sources */,
 				2FE857F92D4344740055902B /* CircularButton.swift in Sources */,

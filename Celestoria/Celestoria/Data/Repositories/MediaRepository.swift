@@ -10,6 +10,7 @@ import Foundation
 import Supabase
 import UIKit
 import AVFoundation
+import os
 
 class MediaRepository {
     private let supabase: SupabaseClient
@@ -33,6 +34,45 @@ class MediaRepository {
         return try await uploadToSupabase(imageData, folder: "thumbnails", fileExtension: "png").url
     }
 
+    // 프로필 이미지 업로드를 위한 public 메서드
+    func uploadProfileImage(_ image: UIImage) async throws -> (url: String, path: String) {
+        Logger.info("Starting profile image upload")
+        guard let imageData = image.pngData() else { 
+            Logger.error("Failed to convert image to PNG data")
+            throw MemoryError.invalidImageData
+        }
+        
+        do {
+            let fileName = "\(UUID().uuidString).png"
+            let path = fileName
+            
+            // storage에 업로드
+            try await supabase.storage
+                .from("profiles")
+                .upload(
+                    path,
+                    data: imageData,
+                    options: .init(
+                        contentType: "image/png",
+                        upsert: true
+                    )
+                )
+            
+            // public URL 생성
+            let publicURL = try await supabase.storage
+                .from("profiles")
+                .createSignedURL(
+                    path: path,
+                    expiresIn: 365 * 24 * 60 * 60 // 1년
+                )
+            
+            Logger.info("Profile image uploaded successfully - URL: \(publicURL)")
+            return (url: publicURL.absoluteString, path: path)
+        } catch {
+            Logger.error("Error uploading profile image: \(error.localizedDescription)")
+            throw error
+        }
+    }
     
     // 비디오 검증 및 메타데이터 추출
     private func validateAndExtractMetadata(from data: Data) async throws -> (Data, Memory.SpatialMetadata?) {

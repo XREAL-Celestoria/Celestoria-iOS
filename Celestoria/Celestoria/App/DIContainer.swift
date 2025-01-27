@@ -37,6 +37,7 @@ final class DIContainer: ObservableObject {
     private let signInWithAppleUseCase: SignInWithAppleUseCase
     private let deleteAccountUseCase: DeleteAccountUseCase
     private let signOutUseCase: SignOutUseCase
+    private let profileUseCase: ProfileUseCase
 
     init() {
         Logger.info("Initializing DIContainer...")
@@ -76,6 +77,10 @@ final class DIContainer: ObservableObject {
         self.signInWithAppleUseCase = SignInWithAppleUseCase(repository: authRepository)
         self.deleteAccountUseCase = DeleteAccountUseCase(repository: authRepository)
         self.signOutUseCase = SignOutUseCase(repository: authRepository)
+        self.profileUseCase = ProfileUseCase(
+            authRepository: authRepository,
+            mediaRepository: mediaRepository
+        )
 
         // Initialize ViewModels and Coordinators
         self.spaceCoordinator = SpaceCoordinator(appModel: appModel)
@@ -90,6 +95,7 @@ final class DIContainer: ObservableObject {
         self.settingViewModel = SettingViewModel(
             deleteAccountUseCase: deleteAccountUseCase,
             signOutUseCase: signOutUseCase,
+            profileUseCase: profileUseCase,
             appModel: appModel
         )
         self.galaxyViewModel = GalaxyViewModel(appModel: appModel, spaceCoordinator: spaceCoordinator)

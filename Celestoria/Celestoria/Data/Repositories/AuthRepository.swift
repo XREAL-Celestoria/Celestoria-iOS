@@ -7,6 +7,7 @@
 
 import Foundation
 import Supabase
+import os
 
 class AuthRepository: AuthRepositoryProtocol {
     private let supabase: SupabaseClient
@@ -63,5 +64,64 @@ class AuthRepository: AuthRepositoryProtocol {
 
     func deleteAccount() async throws {
         try await supabase.rpc("delete_current_user").execute()
+    }
+
+    func updateProfile(name: String?, profileImageURL: String?) async throws -> UserProfile {
+        guard let userId = supabase.auth.currentUser?.id else {
+            Logger.error("User not found when updating profile")
+            throw NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not found."])
+        }
+        
+        Logger.info("Updating profile for user \(userId) - Name: \(String(describing: name)), ImageURL: \(String(describing: profileImageURL))")
+        
+        struct ProfileUpdate: Encodable {
+            var name: String?
+            var profile_image_url: String?
+        }
+        
+        let updates = ProfileUpdate(
+            name: name,
+            profile_image_url: profileImageURL
+        )
+        
+        do {
+            let updatedProfiles: [UserProfile] = try await supabase
+                .from("user_profiles")
+                .update(updates)
+                .eq("user_id", value: userId.uuidString)
+                .select()
+                .execute()
+                .value
+            
+            guard let profile = updatedProfiles.first else {
+                Logger.error("No profile returned after update")
+                throw NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to update profile."])
+            }
+            
+            Logger.info("Profile updated successfully: \(profile)")
+            return profile
+        } catch {
+            Logger.error("Error updating profile in Supabase: \(error.localizedDescription)")
+            throw error
+        }
+    }
+
+    func fetchProfile() async throws -> UserProfile {
+        guard let userId = supabase.auth.currentUser?.id else {
+            throw NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not found."])
+        }
+        
+        let profiles: [UserProfile] = try await supabase
+            .from("user_profiles")
+            .select()
+            .eq("user_id", value: userId.uuidString)
+            .execute()
+            .value
+        
+        guard let profile = profiles.first else {
+            throw NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Profile not found."])
+        }
+        
+        return profile
     }
 }

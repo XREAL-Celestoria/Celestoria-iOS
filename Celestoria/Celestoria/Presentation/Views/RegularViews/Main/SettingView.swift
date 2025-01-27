@@ -146,8 +146,9 @@ private struct RightSettingView: View {
 
 // MARK: - Profile Setting View
 private struct ProfileSettingView: View {
+    @EnvironmentObject var viewModel: SettingViewModel
     @State private var isEditing = false
-    @State private var nickname = "User Name"
+    @State private var nickname: String = ""
     @State private var profileImage: UIImage? = nil
     @State private var selectedItem: PhotosPickerItem? = nil
     @FocusState private var isNicknameFocused: Bool
@@ -163,8 +164,8 @@ private struct ProfileSettingView: View {
                 
                 if isEditing {
                     Button(action: {
-                        withAnimation {
-                            // TODO: 저장 로직 구현
+                        Task {
+                            await viewModel.updateProfile(name: nickname, image: profileImage)
                             isEditing = false
                         }
                     }) {
@@ -190,6 +191,21 @@ private struct ProfileSettingView: View {
                                         .scaledToFill()
                                         .frame(width: 330, height: 330)
                                         .clipShape(Circle())
+                                } else if let profileURL = viewModel.profile?.profileImageURL,
+                                          let url = URL(string: profileURL) {
+                                    AsyncImage(url: url) { image in
+                                        image
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 330, height: 330)
+                                            .clipShape(Circle())
+                                    } placeholder: {
+                                        Image("ProfileImage")
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 330, height: 330)
+                                            .clipShape(Circle())
+                                    }
                                 } else {
                                     Image("ProfileImage")
                                         .resizable()
@@ -216,7 +232,9 @@ private struct ProfileSettingView: View {
                             Task {
                                 if let data = try? await newItem?.loadTransferable(type: Data.self),
                                    let image = UIImage(data: data) {
-                                    profileImage = image
+                                    await MainActor.run {
+                                        profileImage = image
+                                    }
                                 }
                             }
                         }
@@ -236,12 +254,21 @@ private struct ProfileSettingView: View {
                     }
                     .frame(width: 330, height: 330)
                 } else {
-                    if let profileImage = profileImage {
-                        Image(uiImage: profileImage)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 330, height: 330)
-                            .clipShape(Circle())
+                    if let profileImageURL = viewModel.profile?.profileImageURL,
+                       let url = URL(string: profileImageURL) {
+                        AsyncImage(url: url) { image in
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 330, height: 330)
+                                .clipShape(Circle())
+                        } placeholder: {
+                            Image("ProfileImage")
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 330, height: 330)
+                                .clipShape(Circle())
+                        }
                     } else {
                         Image("ProfileImage")
                             .resizable()
@@ -264,7 +291,7 @@ private struct ProfileSettingView: View {
                             .frame(width: 580)
                             .focused($isNicknameFocused)
                     } else {
-                        Text(nickname)
+                        Text(viewModel.profile?.name ?? "User")
                             .font(.system(size: 28, weight: .bold))
                             .foregroundColor(.NebulaWhite)
                     }
@@ -276,21 +303,32 @@ private struct ProfileSettingView: View {
             Button(action: {
                 withAnimation {
                     if isEditing {
-                        // 취소 로직: 변경사항 되돌리기
-                        isEditing = false
+                        Task {
+                            await viewModel.updateProfile(name: nickname, image: profileImage)
+                            isEditing = false
+                        }
                     } else {
+                        nickname = viewModel.profile?.name ?? ""
                         isEditing = true
                         isNicknameFocused = true
                     }
                 }
             }) {
-                Text(isEditing ? "Cancel" : "Edit")
+                Text("Edit")
                     .font(.system(size: 24, weight: .semibold))
+                    .foregroundColor(isEditing ? .gray : .primary)
+                    .disabled(isEditing)
             }
             .frame(maxWidth: .infinity)
             .buttonStyle(.plain)
             
             Spacer()
+        }
+        .onAppear {
+            Task {
+                await viewModel.fetchProfile()
+                nickname = viewModel.profile?.name ?? ""
+            }
         }
     }
 }
