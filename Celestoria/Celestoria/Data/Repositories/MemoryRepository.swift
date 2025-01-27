@@ -48,6 +48,12 @@ class MemoryRepository {
             .eq("id", value: memoryId.uuidString)
             .execute()
     }
+    
+    func deleteStorageFile(bucketName: String, path: String) async throws {
+        try await supabase.storage
+            .from(bucketName)
+            .remove(paths: [path])
+    }
 }
 
 enum MemoryError: Error, LocalizedError {

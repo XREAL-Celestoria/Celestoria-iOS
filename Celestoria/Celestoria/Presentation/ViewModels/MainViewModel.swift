@@ -12,8 +12,8 @@ class MainViewModel: ObservableObject {
     @Published var memories: [Memory] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
-    @Published var hasLoadedInitialMemories: Bool = false
-    
+    @Published var hasLoadedInitialMemories: Bool = false 
+
     private let fetchMemoriesUseCase: FetchMemoriesUseCase
     private let deleteMemoryUseCase: DeleteMemoryUseCase
     private let spaceCoordinator: SpaceCoordinator
@@ -65,9 +65,20 @@ class MainViewModel: ObservableObject {
     func deleteMemory(_ memoryId: UUID) async {
         isLoading = true
         defer { isLoading = false }
-        
+
+        // 삭제 대상 메모리 검색
+        guard let memory = memories.first(where: { $0.id == memoryId }) else {
+            errorMessage = "Memory not found."
+            return
+        }
+
         do {
-            try await deleteMemoryUseCase.execute(memoryId: memoryId)
+            try await deleteMemoryUseCase.execute(
+                memoryId: memoryId,
+                videoPath: memory.videoURL,
+                thumbnailPath: memory.thumbnailURL
+            )
+            // 로컬 상태에서 삭제
             memories.removeAll { $0.id == memoryId }
         } catch {
             errorMessage = error.localizedDescription

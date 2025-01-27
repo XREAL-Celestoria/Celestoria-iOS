@@ -61,7 +61,7 @@ final class MemoryDetailViewModel: ObservableObject {
         defer { isLoading = false }
         do {
             logger.info("Attempting to delete memory with ID: \(self.memory.id.uuidString)")
-            try await deleteMemoryUseCase.execute(memoryId: self.memory.id)
+            try await deleteMemoryUseCase.execute(memoryId: self.memory.id, videoPath: self.memory.videoURL, thumbnailPath: self.memory.thumbnailURL)
             logger.info("Memory successfully deleted.")
         } catch {
             logger.error("Failed to delete memory: \(error.localizedDescription)")
