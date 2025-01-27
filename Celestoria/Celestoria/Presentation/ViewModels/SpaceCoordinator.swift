@@ -23,7 +23,7 @@ final class SpaceCoordinator: ObservableObject {
     @MainActor
     func initialize() {
         if spaceEntity == nil {
-            let backgroundImageName = appModel.selectedStarfield?.imageName ?? appModel.randomBackground
+            let backgroundImageName = appModel.selectedStarfield?.imageName ?? "Starfield-gray"
             spaceEntity = SpaceEntity(coordinator: self, backgroundImageName: backgroundImageName)
             os.Logger.info("SpaceCoordinator: Created SpaceEntity with background \(backgroundImageName)")
         }
