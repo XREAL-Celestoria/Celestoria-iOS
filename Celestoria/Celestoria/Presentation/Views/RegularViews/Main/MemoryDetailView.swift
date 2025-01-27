@@ -1,3 +1,10 @@
+//
+//  MemoryDetailView.swift
+//  Celestoria
+//
+//  Created by Park Seyoung on 1/22/25.
+//
+
 import SwiftUI
 import os
 import AVKit
@@ -5,6 +12,9 @@ import AVKit
 struct MemoryDetailView: View {
     @StateObject private var viewModel: MemoryDetailViewModel
     @Environment(\.dismissWindow) private var dismissWindow
+    @State private var isHovered: Bool = false
+    @State private var showFullScreenVideo: Bool = false
+    @State private var thumbnailLoaded: Bool = false
     
     init(memory: Memory) {
         _viewModel = StateObject(wrappedValue: MemoryDetailViewModel(memory: memory))
@@ -14,8 +24,12 @@ struct MemoryDetailView: View {
         GradientBorderContainer {
             ZStack {
                 GeometryReader { geometry in
-                    videoPlayerSection
-                        .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height)
+                    thumbnailImageSection(geometry: geometry, isHovered: isHovered)
+                        .onHover { isHovering in
+                            withAnimation {
+                                isHovered = isHovering
+                            }
+                        }
                     
                     VStack {
                         NavigationBar(
@@ -36,26 +50,93 @@ struct MemoryDetailView: View {
                     }
                 }
             }
-        }
-    }
-
-    @ViewBuilder
-    private var videoPlayerSection: some View {
-        if let urlString = viewModel.memory.videoURL, let url = URL(string: urlString) {
-            CelestoriaVideoPlayerView(videoURL: url)
-                .aspectRatio(contentMode: .fit)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-        } else {
-            ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.gray.opacity(0.3))
-                    .frame(maxWidth: .infinity)
-                Text("No Video")
-                    .foregroundColor(.white.opacity(0.8))
+            .fullScreenCover(isPresented: $showFullScreenVideo) {
+                if let videoURL = viewModel.memory.videoURL, let url = URL(string: videoURL) {
+                    CelestoriaVideoPlayerView(videoURL: url)
+                        .edgesIgnoringSafeArea(.all)
+                        .background(Color.black)
+                        .onTapGesture {
+                            showFullScreenVideo = false
+                        }
+                } else {
+                    Text("Video not available")
+                        .font(.title)
+                        .foregroundColor(.white)
+                        .background(Color.black)
+                        .edgesIgnoringSafeArea(.all)
+                }
             }
         }
     }
+    
+    @ViewBuilder
+    private func thumbnailImageSection(geometry: GeometryProxy, isHovered: Bool) -> some View {
+        if let thumbnailURL = URL(string: viewModel.memory.thumbnailURL ?? "") {
+            AsyncImage(url: thumbnailURL) { phase in
+                switch phase {
+                case .empty:
+                    ProgressView()
+                        .frame(width: 44, height: 44)
+                        .position(x: geometry.size.width / 2, y: (geometry.size.height * 0.72) / 2)
+                        .onAppear {
+                            thumbnailLoaded = false
+                        }
+                case .success(let image):
+                    ZStack {
+                        image
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: geometry.size.width, height: geometry.size.height)
+                            .overlay(Color.NebulaBlack.opacity(0.6))
+                            .onAppear {
+                                thumbnailLoaded = true
+                            }
+                        
+                        if isHovered {
+                            CircularButton(action: {
+                                os.Logger.info("Playing")
+                                showFullScreenVideo = true
+                            }, buttonImageString: "play.fill")
+                            .frame(width: 60, height: 60)
+                            .position(x: geometry.size.width / 2, y: (geometry.size.height * 0.72) / 2)
+                            .opacity(isHovered ? 1 : 0)
+                        }
+                    }
+                case .failure:
+                    ZStack {
+                        Image(systemName: "Thumbnail1")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: geometry.size.width, height: geometry.size.height)
+                            .overlay(Color.NebulaBlack.opacity(0.6))
+                            .onAppear {
+                                thumbnailLoaded = true
+                            }
+                        if isHovered {
+                            CircularButton(action: {
+                                os.Logger.info("Playing")
+                                showFullScreenVideo = true
+                            }, buttonImageString: "play.fill")
+                            .frame(width: 60, height: 60)
+                            .position(x: geometry.size.width / 2, y: (geometry.size.height * 0.72) / 2)
+                            .opacity(isHovered ? 1 : 0)
+                        }
+                    }
+                    
+                @unknown default:
+                    EmptyView()
+                }
+            }
+        } else {
+            Color.gray.opacity(0.3)
+                .frame(width: geometry.size.width, height: geometry.size.height)
+                .onAppear {
+                    thumbnailLoaded = false
+                }
+        }
+    }
 }
+
 
 struct MemoryInfoView: View {
     @ObservedObject var viewModel: MemoryDetailViewModel
@@ -119,13 +200,18 @@ struct MemoryInfoView: View {
                 .padding(.top, 28)
             }
             
-            // DeleteButton을 ZStack의 오른쪽 상단에 고정
-            Image("DeleteButton")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 44, height: 44)
-                .padding(.trailing, 56)
-                .padding(.top, 32)
+            Button(action: {
+                os.Logger.info("Memory Delete...")
+            }
+            ) {
+                Image("DeleteButton")
+                    .resizable()
+                    .scaledToFit()
+            }
+            .frame(width: 44, height: 44)
+            .padding(.trailing, 56)
+            .padding(.top, 32)
+            .buttonStyle(MainButtonStyle())
         }
     }
 }

@@ -43,6 +43,7 @@ struct AddMemoryMainView: View {
                                 .resizable()
                                 .scaledToFill()
                                 .clipped()
+                                .overlay(Color.NebulaBlack.opacity(0.6))
                         } else {
                             Color.NebulaBlack
                         }
