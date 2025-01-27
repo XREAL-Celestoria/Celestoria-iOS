@@ -152,20 +152,24 @@ private struct ProfileSettingView: View {
     @State private var profileImage: UIImage? = nil
     @State private var selectedItem: PhotosPickerItem? = nil
     @FocusState private var isNicknameFocused: Bool
-    
+    @State private var isImageLoading: Bool = false // 이미지 로드 상태
+    @State private var isUpdating: Bool = false    // 업데이트 상태
+
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             HStack {
                 Text("Profile")
                     .font(.system(size: 29, weight: .bold))
                     .foregroundColor(.NebulaWhite)
-                
+
                 Spacer()
-                
+
                 if isEditing {
                     Button(action: {
                         Task {
+                            isUpdating = true
                             await viewModel.updateProfile(name: nickname, image: profileImage)
+                            isUpdating = false
                             isEditing = false
                         }
                     }) {
@@ -178,54 +182,33 @@ private struct ProfileSettingView: View {
             }
             .padding(.top, 35)
             .padding(.horizontal, 55)
-            
+
             VStack(spacing: 70) {
-                if isEditing {
-                    ZStack {
-                        // 프로필 이미지 선택기
-                        PhotosPicker(selection: $selectedItem, matching: .images) {
-                            ZStack {
-                                if let profileImage = profileImage {
-                                    Image(uiImage: profileImage)
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: 330, height: 330)
-                                        .clipShape(Circle())
-                                } else if let profileURL = viewModel.profile?.profileImageURL,
-                                          let url = URL(string: profileURL) {
-                                    AsyncImage(url: url) { image in
-                                        image
-                                            .resizable()
-                                            .scaledToFill()
-                                            .frame(width: 330, height: 330)
-                                            .clipShape(Circle())
-                                    } placeholder: {
-                                        Image("ProfileImage")
-                                            .resizable()
-                                            .scaledToFill()
-                                            .frame(width: 330, height: 330)
-                                            .clipShape(Circle())
-                                    }
-                                } else {
-                                    Image("ProfileImage")
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: 330, height: 330)
-                                        .clipShape(Circle())
-                                }
-                                
-                                // 오버레이 레이어
-                                Circle()
-                                    .fill(Color.black.opacity(0.5))
-                                    .frame(width: 330, height: 330)
-                                
-                                // Change Photo 텍스트
-                                Text("Change Photo")
-                                    .font(.system(size: 20, weight: .semibold))
-                                    .foregroundColor(.white)
-                            }
+                ZStack {
+                    // 프로필 이미지 뷰
+                    profileImageView
+                        .frame(width: 330, height: 330)
+                        .clipShape(Circle())
+
+                    // 이미지 로드 또는 업데이트 중일 때 ProgressView 표시
+                    if isImageLoading || isUpdating {
+                        ProgressView()
                             .frame(width: 330, height: 330)
-                            .contentShape(Circle())
+                            .background(Color.black.opacity(0.4))
+                            .clipShape(Circle())
+                    }
+
+                    if isEditing {
+                        // 이미지 선택기
+                        PhotosPicker(selection: $selectedItem, matching: .images) {
+                            Circle()
+                                .fill(Color.black.opacity(0.5))
+                                .frame(width: 330, height: 330)
+                                .overlay(
+                                    Text("Change Photo")
+                                        .font(.system(size: 20, weight: .semibold))
+                                        .foregroundColor(.white)
+                                )
                         }
                         .buttonStyle(.plain)
                         .onChange(of: selectedItem) { newItem in
@@ -238,51 +221,14 @@ private struct ProfileSettingView: View {
                                 }
                             }
                         }
-                        
-                        // 삭제 버튼
-                        if profileImage != nil {
-                            Button(action: {
-                                profileImage = nil
-                            }) {
-                                Image("Close-Circle")
-                                    .resizable()
-                                    .frame(width: 46, height: 46)
-                            }
-                            .buttonStyle(.plain)
-                            .position(x: 290, y: 40)
-                        }
-                    }
-                    .frame(width: 330, height: 330)
-                } else {
-                    if let profileImageURL = viewModel.profile?.profileImageURL,
-                       let url = URL(string: profileImageURL) {
-                        AsyncImage(url: url) { image in
-                            image
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 330, height: 330)
-                                .clipShape(Circle())
-                        } placeholder: {
-                            Image("ProfileImage")
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 330, height: 330)
-                                .clipShape(Circle())
-                        }
-                    } else {
-                        Image("ProfileImage")
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 330, height: 330)
-                            .clipShape(Circle())
                     }
                 }
-                
+
                 ZStack {
                     RoundedRectangle(cornerRadius: 16)
                         .fill(Color.Profile)
                         .frame(width: 600, height: 90)
-                    
+
                     if isEditing {
                         TextField("Nickname", text: $nickname)
                             .font(.system(size: 28, weight: .bold))
@@ -299,7 +245,7 @@ private struct ProfileSettingView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.top, 23)
-            
+
             Button(action: {
                 withAnimation {
                     if isEditing {
@@ -321,17 +267,55 @@ private struct ProfileSettingView: View {
             }
             .frame(maxWidth: .infinity)
             .buttonStyle(.plain)
-            
+
             Spacer()
         }
         .onAppear {
             Task {
+                isImageLoading = true // 로딩 시작
                 await viewModel.fetchProfile()
                 nickname = viewModel.profile?.name ?? ""
+
+                if let profileURL = viewModel.profile?.profileImageURL, let url = URL(string: profileURL) {
+                    do {
+                        let (data, _) = try await URLSession.shared.data(from: url)
+                        if let image = UIImage(data: data) {
+                            await MainActor.run {
+                                profileImage = image
+                            }
+                        } else {
+                            await MainActor.run {
+                                profileImage = UIImage(named: "ProfileImage")
+                            }
+                        }
+                    } catch {
+                        await MainActor.run {
+                            profileImage = UIImage(named: "ProfileImage")
+                        }
+                    }
+                } else {
+                    profileImage = UIImage(named: "ProfileImage")
+                }
+
+                isImageLoading = false // 로딩 완료
             }
         }
     }
+
+    @ViewBuilder
+    private var profileImageView: some View {
+        if let profileImage = profileImage {
+            Image(uiImage: profileImage)
+                .resizable()
+                .scaledToFill()
+        } else {
+            Image("ProfileImage")
+                .resizable()
+                .scaledToFill()
+        }
+    }
 }
+
 
 // MARK: - Thumbnail Setting View
 private struct ThumbnailSettingView: View {

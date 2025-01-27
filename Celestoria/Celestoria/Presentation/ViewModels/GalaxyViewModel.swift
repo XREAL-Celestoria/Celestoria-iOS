@@ -32,6 +32,8 @@ class GalaxyViewModel: ObservableObject {
             for await newProfile in appModel.$userProfile.values {
                 if let starfieldName = newProfile?.starfield {
                     self.selectedImage = starfieldName
+                    //배경 업데이트
+                    self.spaceCoordinator.updateBackground(with: starfieldName)
                 } else {
                     self.selectedImage = StarField.GRAY.imageName
                 }
