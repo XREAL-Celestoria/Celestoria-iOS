@@ -17,13 +17,13 @@ struct CelestoriaVideoPlayerView: UIViewControllerRepresentable {
         let playerViewController = AVPlayerViewController()
         playerViewController.player = player
         
-        // 3D Video 재생을 위해 필요한 설정이 있다면 여기서 추가
-        // ex) playerViewController.entersFullScreenWhenPlaybackBegins = true
+        // 전체 화면 자동 전환 설정
+        playerViewController.entersFullScreenWhenPlaybackBegins = true
         
         return playerViewController
     }
 
     func updateUIViewController(_ uiViewController: AVPlayerViewController, context: Context) {
-        // 필요 시, 재생 상태 동기화
+        // 업데이트 필요 없음
     }
 }
