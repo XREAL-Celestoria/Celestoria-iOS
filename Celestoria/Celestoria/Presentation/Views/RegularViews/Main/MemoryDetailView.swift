@@ -13,25 +13,20 @@ struct MemoryDetailView: View {
     @StateObject private var viewModel: MemoryDetailViewModel
     @EnvironmentObject var spaceCoordinator: SpaceCoordinator
     @Environment(\.dismissWindow) private var dismissWindow
-    @State private var isHovered: Bool = false
     @State private var showFullScreenVideo: Bool = false
     @State private var thumbnailLoaded: Bool = false
-
+    
     init(memory: Memory, memoryRepository: MemoryRepository) {
         _viewModel = StateObject(wrappedValue: MemoryDetailViewModel(memory: memory, memoryRepository: memoryRepository))
     }
-
+    
     var body: some View {
         GradientBorderContainer {
             ZStack {
                 GeometryReader { geometry in
-                    thumbnailImageSection(geometry: geometry, isHovered: isHovered)
-                        .onHover { isHovering in
-                            withAnimation {
-                                isHovered = isHovering
-                            }
-                        }
-
+                    thumbnailImageSection(geometry: geometry)
+                    
+                    
                     VStack {
                         NavigationBar(
                             title: "Memory Detail",
@@ -42,15 +37,15 @@ struct MemoryDetailView: View {
                         )
                         .padding(.horizontal, 28)
                         .padding(.top, 28)
-
+                        
                         Spacer()
-
+                        
                         MemoryInfoView(viewModel: viewModel, spaceCoordinator: _spaceCoordinator)
                             .frame(width: geometry.size.width, height: geometry.size.height * 0.4)
                             .padding(.bottom, 0)
                     }
                 }
-
+                
                 if viewModel.isLoading {
                     ProgressView("Deleting...")
                         .frame(width: 120, height: 120)
@@ -58,7 +53,7 @@ struct MemoryDetailView: View {
                         .cornerRadius(12)
                         .foregroundColor(.white)
                 }
-
+                
                 if let errorMessage = viewModel.errorMessage {
                     Text(errorMessage)
                         .foregroundColor(.red)
@@ -110,9 +105,9 @@ struct MemoryDetailView: View {
             }
         )
     }
-
+    
     @ViewBuilder
-    private func thumbnailImageSection(geometry: GeometryProxy, isHovered: Bool) -> some View {
+    private func thumbnailImageSection(geometry: GeometryProxy) -> some View {
         if let thumbnailURL = URL(string: viewModel.memory.thumbnailURL ?? "") {
             AsyncImage(url: thumbnailURL) { phase in
                 switch phase {
@@ -133,16 +128,16 @@ struct MemoryDetailView: View {
                             .onAppear {
                                 thumbnailLoaded = true
                             }
-
-                        if isHovered {
-                            CircularButton(action: {
-                                os.Logger.info("Playing")
-                                showFullScreenVideo = true
-                            }, buttonImageString: "play.fill")
-                            .frame(width: 60, height: 60)
-                            .position(x: geometry.size.width / 2, y: (geometry.size.height * 0.72) / 2)
-                            .opacity(isHovered ? 1 : 0)
-                        }
+                        
+                        
+                        CircularButton(action: {
+                            os.Logger.info("Playing")
+                            showFullScreenVideo = true
+                        }, buttonImageString: "play.fill")
+                        .frame(width: 60, height: 60)
+                        .position(x: geometry.size.width / 2, y: (geometry.size.height * 0.72) / 2)
+                        
+                        
                     }
                 case .failure:
                     Color.gray
@@ -162,12 +157,12 @@ struct MemoryInfoView: View {
     @ObservedObject var viewModel: MemoryDetailViewModel
     @Environment(\.dismissWindow) private var dismissWindow
     @EnvironmentObject var spaceCoordinator: SpaceCoordinator
-
+    
     var body: some View {
         ZStack(alignment: .topTrailing) {
             VisualEffectBlur(style: .systemMaterial)
                 .edgesIgnoringSafeArea(.all)
-
+            
             Rectangle()
                 .fill(Color.clear)
                 .overlay(
@@ -175,7 +170,7 @@ struct MemoryInfoView: View {
                         .shadow(.inner(color: Color.NebulaWhite.opacity(0.8), radius: 24))
                 )
                 .edgesIgnoringSafeArea(.all)
-
+            
             HStack(alignment: .top) {
                 Image("CardUserProfileImage")
                     .resizable()
@@ -183,38 +178,38 @@ struct MemoryInfoView: View {
                     .frame(width: 52, height: 52, alignment: .leading)
                     .padding(.leading, 60)
                     .padding(.top, 28)
-
+                
                 Spacer()
-
+                
                 VStack(alignment: .leading) {
                     HStack {
                         Text("Seoul")
                             .foregroundColor(.NebulaWhite)
                             .font(.system(size: 12, weight: .medium))
-
+                        
                         Circle()
                             .fill(Color.NebulaWhite.opacity(0.6))
                             .frame(width: 4, height: 4)
                             .padding(.leading, 8)
-
+                        
                         Text(viewModel.formattedDate)
                             .foregroundColor(.NebulaWhite)
                             .font(.system(size: 12, weight: .medium))
                             .padding(.leading, 8)
-
+                        
                         Spacer()
                     }
                     Text(viewModel.memory.title)
                         .foregroundColor(.NebulaWhite)
                         .font(.system(size: 24, weight: .bold))
                         .padding(.top, 0)
-
+                    
                     Text(viewModel.memory.note)
                         .foregroundColor(.white)
                         .font(.system(size: 14, weight: .medium))
                         .frame(maxWidth: 1075, alignment: .topLeading)
                         .padding(.top, 8)
-
+                    
                     Spacer()
                 }
                 .padding(.leading, 8)
