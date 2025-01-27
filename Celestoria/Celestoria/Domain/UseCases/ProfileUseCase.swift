@@ -17,14 +17,18 @@ class ProfileUseCase {
         self.mediaRepository = mediaRepository
     }
     
-    func updateProfile(name: String?, image: UIImage?) async throws -> UserProfile {
+    func updateProfile(name: String?, image: UIImage?, spaceThumbnailId: String? = nil) async throws -> UserProfile {
         var profileImageURL: String? = nil
         
         if let image = image {
             profileImageURL = try await mediaRepository.uploadProfileImage(image).url
         }
         
-        return try await authRepository.updateProfile(name: name, profileImageURL: profileImageURL)
+        return try await authRepository.updateProfile(
+            name: name,
+            profileImageURL: profileImageURL,
+            spaceThumbnailId: spaceThumbnailId
+        )
     }
     
     func fetchProfile() async throws -> UserProfile {

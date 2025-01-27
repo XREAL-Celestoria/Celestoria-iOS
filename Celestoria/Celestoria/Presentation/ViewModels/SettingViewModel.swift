@@ -70,4 +70,30 @@ class SettingViewModel: ObservableObject {
         appModel.userId = nil
         appModel.activeScreen = .login
     }
+    
+    func updateThumbnail(thumbnailId: String) async {
+        isLoading = true
+        do {
+            Logger.info("Updating thumbnail ID: \(thumbnailId)")
+            profile = try await profileUseCase.updateProfile(
+                name: profile?.name,
+                image: nil,
+                spaceThumbnailId: thumbnailId
+            )
+            Logger.info("Thumbnail updated successfully")
+        } catch {
+            self.error = error
+            Logger.error("Error updating thumbnail: \(error.localizedDescription)")
+        }
+        isLoading = false
+    }
+    
+    // Helper function to convert between thumbnail formats
+    func getThumbnailImageName(from id: String?) -> String {
+        return "Thumbnail\(id ?? "1")"
+    }
+    
+    func getThumbnailId(from imageName: String) -> String {
+        return imageName.replacingOccurrences(of: "Thumbnail", with: "")
+    }
 }

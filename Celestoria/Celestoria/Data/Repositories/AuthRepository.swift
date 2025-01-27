@@ -66,7 +66,7 @@ class AuthRepository: AuthRepositoryProtocol {
         try await supabase.rpc("delete_current_user").execute()
     }
 
-    func updateProfile(name: String?, profileImageURL: String?) async throws -> UserProfile {
+    func updateProfile(name: String?, profileImageURL: String?, spaceThumbnailId: String? = nil) async throws -> UserProfile {
         guard let userId = supabase.auth.currentUser?.id else {
             Logger.error("User not found when updating profile")
             throw NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not found."])
@@ -77,11 +77,13 @@ class AuthRepository: AuthRepositoryProtocol {
         struct ProfileUpdate: Encodable {
             var name: String?
             var profile_image_url: String?
+            var space_thumbnail_id: String?
         }
         
         let updates = ProfileUpdate(
             name: name,
-            profile_image_url: profileImageURL
+            profile_image_url: profileImageURL,
+            space_thumbnail_id: spaceThumbnailId
         )
         
         do {

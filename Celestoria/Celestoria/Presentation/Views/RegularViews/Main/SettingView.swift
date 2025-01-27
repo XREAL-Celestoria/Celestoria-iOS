@@ -335,6 +335,7 @@ private struct ProfileSettingView: View {
 
 // MARK: - Thumbnail Setting View
 private struct ThumbnailSettingView: View {
+    @EnvironmentObject var viewModel: SettingViewModel
     @State private var showThumbnailSelector = false
     @State private var selectedThumbnail: Int = 0
     @State private var isEditing = false
@@ -353,7 +354,7 @@ private struct ThumbnailSettingView: View {
                 }
             }) {
                 ZStack {
-                    Image("Thumbnail1")
+                    Image(viewModel.getThumbnailImageName(from: viewModel.profile?.spaceThumbnailId))
                         .resizable()
                         .scaledToFill()
                         .frame(width: 434, height: 456)
@@ -389,10 +390,17 @@ private struct ThumbnailSettingView: View {
         }
         .sheet(isPresented: $showThumbnailSelector) {
             ThumbnailSelectorView(
-                selectedThumbnail: $selectedThumbnail, 
+                selectedThumbnail: $selectedThumbnail,
                 isPresented: $showThumbnailSelector,
-                isEditing: $isEditing
+                isEditing: $isEditing,
+                viewModel: viewModel
             )
+        }
+        .onAppear {
+            if let currentId = viewModel.profile?.spaceThumbnailId,
+               let intId = Int(currentId) {
+                selectedThumbnail = intId - 1
+            }
         }
     }
 }
@@ -403,14 +411,16 @@ private struct ThumbnailSelectorView: View {
     @Binding var isPresented: Bool
     @Binding var isEditing: Bool
     @State private var initialThumbnail: Int
+    let viewModel: SettingViewModel
     
     let thumbnails = ["Thumbnail1", "Thumbnail2", "Thumbnail3", "Thumbnail4", "Thumbnail5", "Thumbnail6"]
     
-    init(selectedThumbnail: Binding<Int>, isPresented: Binding<Bool>, isEditing: Binding<Bool>) {
+    init(selectedThumbnail: Binding<Int>, isPresented: Binding<Bool>, isEditing: Binding<Bool>, viewModel: SettingViewModel) {
         self._selectedThumbnail = selectedThumbnail
         self._isPresented = isPresented
         self._isEditing = isEditing
         self._initialThumbnail = State(initialValue: selectedThumbnail.wrappedValue)
+        self.viewModel = viewModel
     }
     
     var body: some View {
@@ -465,8 +475,12 @@ private struct ThumbnailSelectorView: View {
                 .padding(.top, 20)
                 
                 Button(action: {
-                    isPresented = false
-                    isEditing = false
+                    Task {
+                        // Convert thumbnail index to ID (adding 1 because IDs start from 1)
+                        await viewModel.updateThumbnail(thumbnailId: String(selectedThumbnail + 1))
+                        isPresented = false
+                        isEditing = false
+                    }
                 }) {
                     Text("SAVE")
                         .font(.system(size: 22, weight: .bold))
