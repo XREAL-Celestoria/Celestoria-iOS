@@ -65,8 +65,7 @@ struct AddMemoryMainView: View {
                                     trailingButtonAction: popupData.trailingButtonAction,
                                     buttonImageString: popupData.buttonImageString
                                 )
-                                .frame(width: 652, height: 328, alignment: .center)
-                                .cornerRadius(20)
+                                .frame(width: 656, height: 332, alignment: .center)
                             }
                         }
                     }
@@ -218,6 +217,7 @@ private struct RightView: View {
                         guard let userId = appModel.userId else { return }
                         Task {
                             do {
+                                os.Logger.info("executing saveMemory")
                                 await viewModel.saveMemory(
                                     note: viewModel.note,
                                     title: viewModel.title,

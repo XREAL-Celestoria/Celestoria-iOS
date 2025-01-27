@@ -21,24 +21,50 @@ class MediaRepository {
     
     // UploadingVideo
     func uploadVideo(data: Data) async throws -> (url: String, metadata: Memory.SpatialMetadata?) {
-        let (validatedData, metadata) = try await validateAndExtractMetadata(from: data)
-        let uploadResult = try await uploadToSupabase(validatedData, folder: "spatial_videos", fileExtension: "mov")
-        return (url: uploadResult.url, metadata: metadata)
+        os.Logger.info("Uploading video... Size: \(data.count) bytes")
+        
+        do {
+            os.Logger.info("Validating video format and extracting metadata...")
+            let (validatedData, metadata) = try await validateAndExtractMetadata(from: data)
+            os.Logger.info("Validation and metadata extraction completed.")
+            
+            os.Logger.info("Starting upload to Supabase...")
+            let uploadResult = try await uploadToSupabase(validatedData, folder: "spatial_videos", fileExtension: "mov")
+            os.Logger.info("Video uploaded successfully. URL: \(uploadResult.url)")
+            return (url: uploadResult.url, metadata: metadata)
+        } catch let error as MediaError {
+            os.Logger.error("MediaError during video upload: \(error.localizedDescription)")
+            throw error
+        } catch {
+            os.Logger.error("Unexpected error during video upload: \(error.localizedDescription)")
+            throw error
+        }
     }
-    
+
     // 썸네일 업로드
     func uploadThumbnail(image: UIImage) async throws -> String {
-        guard let imageData = image.pngData() else { 
-            throw MemoryError.invalidImageData
+        os.Logger.info("Uploading thumbnail...")
+            guard let imageData = image.pngData() else {
+                let error = MediaError.invalidFormat
+                os.Logger.error("Failed to convert image to PNG: \(error.localizedDescription)")
+                throw error
+            }
+            
+            do {
+                let uploadResult = try await uploadToSupabase(imageData, folder: "thumbnails", fileExtension: "png")
+                os.Logger.info("Thumbnail uploaded successfully. URL: \(uploadResult.url)")
+                return uploadResult.url
+            } catch {
+                os.Logger.error("Thumbnail upload failed: \(error.localizedDescription)")
+                throw error
+            }
         }
-        return try await uploadToSupabase(imageData, folder: "thumbnails", fileExtension: "png").url
-    }
 
     // 프로필 이미지 업로드를 위한 public 메서드
     func uploadProfileImage(_ image: UIImage) async throws -> (url: String, path: String) {
-        Logger.info("Starting profile image upload")
-        guard let imageData = image.pngData() else { 
-            Logger.error("Failed to convert image to PNG data")
+        os.Logger.info("Starting profile image upload")
+        guard let imageData = image.pngData() else {
+            os.Logger.error("Failed to convert image to PNG data")
             throw MemoryError.invalidImageData
         }
         
@@ -76,29 +102,51 @@ class MediaRepository {
     
     // 비디오 검증 및 메타데이터 추출
     private func validateAndExtractMetadata(from data: Data) async throws -> (Data, Memory.SpatialMetadata?) {
-        let tempFileURL = try await createTempFile(with: data)
-        defer { try? FileManager.default.removeItem(at: tempFileURL) }
-        
-        let asset = AVURLAsset(url: tempFileURL)
-        
-        guard try await validateMVHEVC(asset: asset) else {
-            throw MediaError.invalidFormat
+            do {
+                os.Logger.info("Validating video format...")
+                let tempFileURL = try await createTempFile(with: data)
+                defer { try? FileManager.default.removeItem(at: tempFileURL) }
+                
+                let asset = AVURLAsset(url: tempFileURL)
+                guard try await validateMVHEVC(asset: asset) else {
+                    let error = MediaError.invalidFormat
+                    os.Logger.error("Video validation failed: \(error.localizedDescription)")
+                    throw error
+                }
+                
+                os.Logger.info("Extracting metadata...")
+                let metadata = try await extractSpatialMetadata(from: asset)
+                os.Logger.info("Metadata extracted successfully")
+                return (data, metadata)
+            } catch {
+                os.Logger.error("Validation or metadata extraction failed: \(error.localizedDescription)")
+                throw error
+            }
         }
-        
-        let metadata = try await extractSpatialMetadata(from: asset)
-        return (data, metadata)
-    }
     
     // Supabase에 업로드
     private func uploadToSupabase(_ data: Data, folder: String, fileExtension: String) async throws -> (url: String, path: String) {
         let fileName = "\(UUID().uuidString).\(fileExtension)"
         let path = "\(fileName)"
         
-        try await supabase.storage.from(folder).upload(path, data: data, options: .init(upsert: true))
+        os.Logger.info("Uploading file: \(fileName), Size: \(data.count) bytes")
         
-        let publicURL = try await supabase.storage.from(folder).createSignedURL(path: path, expiresIn: 604800)
-        return (url: publicURL.absoluteString, path: path)
+        do {
+            try await supabase.storage.from(folder).upload(path, data: data, options: .init(upsert: true))
+            let publicURL = try await supabase.storage.from(folder).createSignedURL(path: path, expiresIn: 604800)
+            os.Logger.info("File uploaded successfully. Public URL: \(publicURL)")
+            return (url: publicURL.absoluteString, path: path)
+        } catch {
+            if let nsError = error as NSError? {
+                os.Logger.error("Supabase upload failed. Error Code: \(nsError.code), Domain: \(nsError.domain), Description: \(nsError.localizedDescription)")
+            } else {
+                os.Logger.error("Supabase upload failed with unknown error: \(error.localizedDescription)")
+            }
+            throw MediaError.uploadFailed
+        }
     }
+
+
 
     
     // 임시 파일 생성

@@ -2,7 +2,7 @@
 //  MemoryDetailView.swift
 //  Celestoria
 //
-//  Created by Park Seyoung on 1/22/25.
+//  Created by Park Seyoung on 1/27/25.
 //
 
 import SwiftUI
@@ -11,15 +11,16 @@ import AVKit
 
 struct MemoryDetailView: View {
     @StateObject private var viewModel: MemoryDetailViewModel
+    @EnvironmentObject var spaceCoordinator: SpaceCoordinator
     @Environment(\.dismissWindow) private var dismissWindow
     @State private var isHovered: Bool = false
     @State private var showFullScreenVideo: Bool = false
     @State private var thumbnailLoaded: Bool = false
-    
-    init(memory: Memory) {
-        _viewModel = StateObject(wrappedValue: MemoryDetailViewModel(memory: memory))
+
+    init(memory: Memory, memoryRepository: MemoryRepository) {
+        _viewModel = StateObject(wrappedValue: MemoryDetailViewModel(memory: memory, memoryRepository: memoryRepository))
     }
-    
+
     var body: some View {
         GradientBorderContainer {
             ZStack {
@@ -30,7 +31,7 @@ struct MemoryDetailView: View {
                                 isHovered = isHovering
                             }
                         }
-                    
+
                     VStack {
                         NavigationBar(
                             title: "Memory Detail",
@@ -41,13 +42,33 @@ struct MemoryDetailView: View {
                         )
                         .padding(.horizontal, 28)
                         .padding(.top, 28)
-                        
+
                         Spacer()
-                        
-                        MemoryInfoView(viewModel: viewModel)
+
+                        MemoryInfoView(viewModel: viewModel, spaceCoordinator: _spaceCoordinator)
                             .frame(width: geometry.size.width, height: geometry.size.height * 0.4)
                             .padding(.bottom, 0)
                     }
+                }
+
+                if viewModel.isLoading {
+                    ProgressView("Deleting...")
+                        .frame(width: 120, height: 120)
+                        .background(Color.black.opacity(0.7))
+                        .cornerRadius(12)
+                        .foregroundColor(.white)
+                }
+
+                if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .bold()
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(8)
+                        .shadow(radius: 4)
+                        .transition(.opacity)
+                        .zIndex(1)
                 }
             }
             .fullScreenCover(isPresented: $showFullScreenVideo) {
@@ -67,8 +88,29 @@ struct MemoryDetailView: View {
                 }
             }
         }
+        .overlay(
+            Group {
+                if let popupData = viewModel.popupData {
+                    ZStack {
+                        Color.black.opacity(0.6)
+                            .ignoresSafeArea()
+                        PopupView(
+                            title: popupData.title,
+                            notes: popupData.notes,
+                            leadingButtonText: popupData.leadingButtonText,
+                            trailingButtonText: popupData.trailingButtonText,
+                            circularAction: popupData.circularAction,
+                            leadingButtonAction: popupData.leadingButtonAction,
+                            trailingButtonAction: popupData.trailingButtonAction,
+                            buttonImageString: popupData.buttonImageString
+                        )
+                        .frame(width: 656, height: 332, alignment: .center)
+                    }
+                }
+            }
+        )
     }
-    
+
     @ViewBuilder
     private func thumbnailImageSection(geometry: GeometryProxy, isHovered: Bool) -> some View {
         if let thumbnailURL = URL(string: viewModel.memory.thumbnailURL ?? "") {
@@ -91,7 +133,7 @@ struct MemoryDetailView: View {
                             .onAppear {
                                 thumbnailLoaded = true
                             }
-                        
+
                         if isHovered {
                             CircularButton(action: {
                                 os.Logger.info("Playing")
@@ -103,49 +145,29 @@ struct MemoryDetailView: View {
                         }
                     }
                 case .failure:
-                    ZStack {
-                        Image(systemName: "Thumbnail1")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: geometry.size.width, height: geometry.size.height)
-                            .overlay(Color.NebulaBlack.opacity(0.6))
-                            .onAppear {
-                                thumbnailLoaded = true
-                            }
-                        if isHovered {
-                            CircularButton(action: {
-                                os.Logger.info("Playing")
-                                showFullScreenVideo = true
-                            }, buttonImageString: "play.fill")
-                            .frame(width: 60, height: 60)
-                            .position(x: geometry.size.width / 2, y: (geometry.size.height * 0.72) / 2)
-                            .opacity(isHovered ? 1 : 0)
-                        }
-                    }
-                    
+                    Color.gray
+                        .opacity(0.3)
+                        .frame(width: geometry.size.width, height: geometry.size.height)
                 @unknown default:
                     EmptyView()
                 }
             }
         } else {
             Color.gray.opacity(0.3)
-                .frame(width: geometry.size.width, height: geometry.size.height)
-                .onAppear {
-                    thumbnailLoaded = false
-                }
         }
     }
 }
 
-
 struct MemoryInfoView: View {
     @ObservedObject var viewModel: MemoryDetailViewModel
-    
+    @Environment(\.dismissWindow) private var dismissWindow
+    @EnvironmentObject var spaceCoordinator: SpaceCoordinator
+
     var body: some View {
-        ZStack(alignment: .topTrailing) { // ZStack에 alignment 지정
+        ZStack(alignment: .topTrailing) {
             VisualEffectBlur(style: .systemMaterial)
                 .edgesIgnoringSafeArea(.all)
-            
+
             Rectangle()
                 .fill(Color.clear)
                 .overlay(
@@ -153,8 +175,7 @@ struct MemoryInfoView: View {
                         .shadow(.inner(color: Color.NebulaWhite.opacity(0.8), radius: 24))
                 )
                 .edgesIgnoringSafeArea(.all)
-            
-            // HStack으로 메인 콘텐츠 구성
+
             HStack(alignment: .top) {
                 Image("CardUserProfileImage")
                     .resizable()
@@ -162,38 +183,38 @@ struct MemoryInfoView: View {
                     .frame(width: 52, height: 52, alignment: .leading)
                     .padding(.leading, 60)
                     .padding(.top, 28)
-                
+
                 Spacer()
-                
+
                 VStack(alignment: .leading) {
                     HStack {
                         Text("Seoul")
                             .foregroundColor(.NebulaWhite)
                             .font(.system(size: 12, weight: .medium))
-                        
+
                         Circle()
                             .fill(Color.NebulaWhite.opacity(0.6))
                             .frame(width: 4, height: 4)
                             .padding(.leading, 8)
-                        
+
                         Text(viewModel.formattedDate)
                             .foregroundColor(.NebulaWhite)
                             .font(.system(size: 12, weight: .medium))
                             .padding(.leading, 8)
-                        
+
                         Spacer()
                     }
                     Text(viewModel.memory.title)
                         .foregroundColor(.NebulaWhite)
                         .font(.system(size: 24, weight: .bold))
                         .padding(.top, 0)
-                    
+
                     Text(viewModel.memory.note)
                         .foregroundColor(.white)
                         .font(.system(size: 14, weight: .medium))
                         .frame(maxWidth: 1075, alignment: .topLeading)
                         .padding(.top, 8)
-                    
+
                     Spacer()
                 }
                 .padding(.leading, 8)
@@ -201,9 +222,12 @@ struct MemoryInfoView: View {
             }
             
             Button(action: {
-                os.Logger.info("Memory Delete...")
-            }
-            ) {
+                viewModel.showDeletePopup(dismissWindow: {
+                    dismissWindow(id: "Memory-Detail")
+                }, onMemoryDeleted: { deletedMemory in
+                    spaceCoordinator.removeMemoryStar(with: viewModel.memory.id)
+                })
+            }) {
                 Image("DeleteButton")
                     .resizable()
                     .scaledToFit()
@@ -215,4 +239,3 @@ struct MemoryInfoView: View {
         }
     }
 }
-

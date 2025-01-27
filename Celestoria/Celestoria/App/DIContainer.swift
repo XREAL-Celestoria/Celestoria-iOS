@@ -21,14 +21,15 @@ final class DIContainer: ObservableObject {
     let appModel: AppModel
     let settingViewModel: SettingViewModel
     let galaxyViewModel: GalaxyViewModel
+    var memoryDetailViewModel: MemoryDetailViewModel?
 
     // Supabase Client
     let supabaseClient: SupabaseClient
 
     // Repositories
-    private let memoryRepository: MemoryRepository
-    private let mediaRepository: MediaRepository
-    private let authRepository: AuthRepositoryProtocol
+    let memoryRepository: MemoryRepository
+    let mediaRepository: MediaRepository
+    let authRepository: AuthRepositoryProtocol
 
     // Use Cases
     private let fetchMemoriesUseCase: FetchMemoriesUseCase
@@ -99,6 +100,5 @@ final class DIContainer: ObservableObject {
             appModel: appModel
         )
         self.galaxyViewModel = GalaxyViewModel(appModel: appModel, spaceCoordinator: spaceCoordinator)
-        
     }
 }

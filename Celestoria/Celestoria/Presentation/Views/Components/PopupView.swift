@@ -24,15 +24,14 @@ struct PopupView: View {
             .fill(LinearGradient.BackgroundPopup)
             .frame(width: 644, height: 324)
             .blur(radius: 100)
-            .background(Color.NebulaBlack)
+            .background(Color.NebulaBlack.cornerRadius(44))
             .overlay(
                 RoundedRectangle(cornerRadius: 44)
                     .stroke(LinearGradient.StrokePopup, lineWidth: 3)
             )
-            .shadow(radius: 10)
+            .shadow(color: Color(hex: "6BBAFF"), radius: 30)
             .overlay(
                 VStack(alignment: .leading) {
-                    // 상단 제목 및 버튼
                     HStack {
                         Text(title)
                             .font(.system(size: 29, weight: .bold))
@@ -47,7 +46,6 @@ struct PopupView: View {
                             .padding(.top, 48)
                     }
                     
-                    // 내용 텍스트
                     Text(notes)
                         .font(.system(size: 17, weight: .medium))
                         .foregroundColor(.NebulaWhite)
@@ -56,7 +54,6 @@ struct PopupView: View {
                     
                     Spacer()
                     
-                    // 하단 버튼들
                     HStack {
                         Button(action: leadingButtonAction) {
                             Text(leadingButtonText)

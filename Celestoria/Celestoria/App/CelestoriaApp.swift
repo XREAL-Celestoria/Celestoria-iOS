@@ -11,8 +11,7 @@ import SwiftUI
 @main
 struct CelestoriaApp: App {
     @StateObject private var diContainer = DIContainer()
-    @State private var gazePoint: CGPoint = .zero
-    
+
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -24,12 +23,12 @@ struct CelestoriaApp: App {
                 .environmentObject(diContainer.galaxyViewModel)
         }
         .windowResizability(.contentSize)
-        
+
         ImmersiveSpace(id: diContainer.appModel.immersiveSpaceID) {
             SpaceImmersiveView()
                 .environmentObject(diContainer.spaceCoordinator)
         }
-        
+
         WindowGroup("Add Memory", id: "Add-Memory") {
             if diContainer.appModel.showAddMemoryView {
                 AddMemoryContentView()
@@ -41,12 +40,13 @@ struct CelestoriaApp: App {
             }
         }
         .windowResizability(.contentSize)
-        
+
         WindowGroup(id: "Memory-Detail", for: Memory.self) { $memory in
             if let unwrappedMemory = $memory.wrappedValue {
-                MemoryDetailView(memory: unwrappedMemory)
+                MemoryDetailView(memory: unwrappedMemory, memoryRepository: diContainer.memoryRepository)
                     .frame(width: 1280, height: 720)
                     .environmentObject(diContainer.appModel)
+                    .environmentObject(diContainer.spaceCoordinator)
             } else {
                 Text("No memory provided.")
                     .frame(width: 1280, height: 720)
@@ -55,4 +55,3 @@ struct CelestoriaApp: App {
         .windowResizability(.contentSize)
     }
 }
-

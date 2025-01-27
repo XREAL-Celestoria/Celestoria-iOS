@@ -80,6 +80,18 @@ class SpaceEntity: Entity {
         starEntities.forEach { $0.removeFromParent() }
         starEntities.removeAll()
     }
+    
+    func removeStar(for memory: Memory) async {
+        guard let starIndex = starEntities.firstIndex(where: { $0.memory.id == memory.id }) else {
+            os.Logger.warning("SpaceEntity: No star found for Memory ID=\(memory.id)")
+            return
+        }
+        
+        let starToRemove = starEntities.remove(at: starIndex)
+        starToRemove.removeFromParent()
+        
+        os.Logger.info("SpaceEntity: Removed star for Memory ID=\(memory.id). Remaining stars: \(starEntities.count)")
+    }
 
     private func createNewStars(from memories: [Memory]) async {
         print("[DEBUG] Creating new stars for \(memories.count) memories.")

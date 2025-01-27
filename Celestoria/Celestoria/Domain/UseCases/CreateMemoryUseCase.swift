@@ -11,27 +11,30 @@ import UIKit
 class CreateMemoryUseCase {
     private let memoryRepository: MemoryRepository
     private let mediaRepository: MediaRepository
-    
+
     init(memoryRepository: MemoryRepository, mediaRepository: MediaRepository) {
         self.memoryRepository = memoryRepository
         self.mediaRepository = mediaRepository
     }
-    
-    func execute(note: String, title: String, category: Category, videoData: Data, thumbnailImage: UIImage?, userId: UUID) async throws -> Memory {
-        // 비디오와 썸네일 업로드
-        async let uploadVideoTask = mediaRepository.uploadVideo(data: videoData)
-        async let uploadThumbnailTask = thumbnailImage != nil ? mediaRepository.uploadThumbnail(image: thumbnailImage!) : nil
-        
-        let (videoResult, thumbnailResult) = try await (uploadVideoTask, uploadThumbnailTask)
-        
-        // 비디오 업로드 결과
-        let videoURL = videoResult.url
-        let metadata = videoResult.metadata
-        
-        // 썸네일 업로드 결과
-        let thumbnailURL = thumbnailResult ?? ""
-        
-        // 새로운 메모리 생성
+
+    func execute(
+        note: String,
+        title: String,
+        category: Category,
+        videoData: Data,
+        thumbnailImage: UIImage?,
+        userId: UUID
+    ) async throws -> Memory {
+        // 비디오 업로드
+        let videoUploadResult = try await mediaRepository.uploadVideo(data: videoData)
+
+        // 썸네일 업로드 (옵션 처리)
+        var thumbnailURL: String = ""
+        if let thumbnailImage = thumbnailImage {
+            thumbnailURL = try await mediaRepository.uploadThumbnail(image: thumbnailImage)
+        }
+
+        // 메모리 객체 생성
         let memory = Memory(
             id: UUID(),
             userId: userId,
@@ -39,18 +42,24 @@ class CreateMemoryUseCase {
             title: title,
             note: note,
             createdAt: Date(),
-            position: Memory.Position(
-                x: Double.random(in: Bool.random() ? -5...(-1) : 1...5),
-                y: Double.random(in: -1...3),
-                z: Double.random(in: Bool.random() ? -5...(-1) : 1...5)
-            ),
-            videoURL: videoURL,
+            position: generateRandomPosition(),
+            videoURL: videoUploadResult.url,
             thumbnailURL: thumbnailURL,
-            spatialMetadata: metadata
+            spatialMetadata: videoUploadResult.metadata
         )
-        
+
         // 메모리 저장
         try await memoryRepository.createMemory(memory)
+
         return memory
+    }
+
+    // 랜덤 위치 생성 (중복된 로직 분리)
+    private func generateRandomPosition() -> Memory.Position {
+        return Memory.Position(
+            x: Double.random(in: Bool.random() ? -5...(-1) : 1...5),
+            y: Double.random(in: -1...3),
+            z: Double.random(in: Bool.random() ? -5...(-1) : 1...5)
+        )
     }
 }

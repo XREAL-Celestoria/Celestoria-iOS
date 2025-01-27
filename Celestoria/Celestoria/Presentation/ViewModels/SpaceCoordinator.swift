@@ -8,6 +8,7 @@
 import Combine
 import RealityKit
 import os
+import Foundation
 
 final class SpaceCoordinator: ObservableObject {
     private let appModel: AppModel
@@ -35,6 +36,20 @@ final class SpaceCoordinator: ObservableObject {
             return
         }
         spaceEntity.updateBackground(with: imageName)
+    }
+    
+    @MainActor
+    func removeMemoryStar(with memoryID: UUID) {
+        if let index = memories.firstIndex(where: { $0.id == memoryID }) {
+            let removedMemory = memories.remove(at: index)
+            os.Logger.info("SpaceCoordinator: Removed memory star for memory ID: \(memoryID)")
+            
+            Task { @MainActor in
+                await spaceEntity?.removeStar(for: removedMemory)
+            }
+        } else {
+            os.Logger.warning("SpaceCoordinator: Memory star with ID \(memoryID) not found.")
+        }
     }
     
     
