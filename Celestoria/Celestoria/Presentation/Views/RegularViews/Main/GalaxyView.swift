@@ -129,68 +129,86 @@ private struct GalaxyButtonGrid: View {
     
     var body: some View {
         let gridItems = Array(repeating: GridItem(.fixed(215), spacing: 20), count: columns)
-        
-        VStack {
-            HStack {
+
+        ZStack(alignment: .bottom) {
+            // Scrollable Content
+            VStack(alignment: .leading, spacing: 0) {
+                // Title
                 Text("Galaxy Background")
                     .font(.system(size: 29, weight: .bold))
                     .foregroundColor(.NebulaWhite)
                     .padding(.leading, 55)
-                Spacer()
-            }
-            .padding(.top, 35)
-            
-            LazyVGrid(columns: gridItems, spacing: 20) {
-                ForEach(items) { item in
-                    Button(action: {
-                        galaxyViewModel.selectImage(with: item.imageName)
-                    }) {
-                        ZStack {
-                            Image(item.imageName)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 215, height: 195)
-                                .clipped()
-                                .cornerRadius(20)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 20)
-                                        .stroke(
-                                            galaxyViewModel.isSelected(image: item.imageName)
-                                            ? AnyShapeStyle(LinearGradient.GradientSub)
-                                            : AnyShapeStyle(Color(hex: "9D9D9D")),
-                                            lineWidth: galaxyViewModel.isSelected(image: item.imageName)
-                                            ? 2
-                                            : 1
+                    .padding(.top, 28)
+                
+                // Scrollable Grid
+                ScrollView {
+                    LazyVGrid(columns: gridItems, spacing: 20) {
+                        ForEach(items) { item in
+                            Button(action: {
+                                galaxyViewModel.selectImage(with: item.imageName)
+                            }) {
+                                ZStack {
+                                    Image(item.imageName)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 215, height: 195)
+                                        .clipped()
+                                        .cornerRadius(20)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 20)
+                                                .stroke(
+                                                    galaxyViewModel.isSelected(image: item.imageName)
+                                                    ? AnyShapeStyle(LinearGradient.GradientSub)
+                                                    : AnyShapeStyle(Color(hex: "9D9D9D")),
+                                                    lineWidth: galaxyViewModel.isSelected(image: item.imageName) ? 2 : 1
+                                                )
                                         )
-                                )
-                            
-                            if galaxyViewModel.isSelected(image: item.imageName) {
-                                Image("Check-Circle")
-                                    .frame(width: 30, height: 30)
-                                    .offset(x: 80, y: -72)
+                                    
+                                    if galaxyViewModel.isSelected(image: item.imageName) {
+                                        Image("Check-Circle")
+                                            .frame(width: 30, height: 30)
+                                            .offset(x: 80, y: -72)
+                                    }
+                                }
                             }
+                            .frame(width: 215, height: 195)
                         }
                     }
-                    .frame(width: 215, height: 195)
+                    .padding(.top, 30)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 156)
                 }
+                .padding(.top, 30)
             }
-            .padding(.top, 30)
             
-            Spacer()
+            Rectangle()
+                .fill(LinearGradient.GradientCardOverlay)
+                .frame(height: 100)
+                .frame(maxWidth: .infinity)
+                .padding(.bottom, 0)
+                .allowsHitTesting(false)
             
-            MainButton(
-                title: "Save", action: {
-                    galaxyViewModel.saveSelectedImage()
-                },
-                isEnabled: galaxyViewModel.isUploadEnabled 
-            )
+            Button(action:
+                    {galaxyViewModel.saveSelectedImage()
+            }) {
+                Text("Save")
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundColor(galaxyViewModel.isUploadEnabled ? .NebulaBlack : .NebulaBlack.opacity(0.3))
+                    .frame(width: 380, height: 64)
+                    .background(galaxyViewModel.isUploadEnabled ?
+                                AnyShapeStyle(LinearGradient.GradientSub) :
+                                    AnyShapeStyle(LinearGradient.GradienBeforeSelect))
+                    .cornerRadius(16)
+            }
+            .buttonStyle(MainButtonStyle())
             .padding(.bottom, 60)
             .disabled(!galaxyViewModel.isUploadEnabled)
-
+            .frame(maxWidth: .infinity)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .ignoresSafeArea(edges: .bottom)
     }
 }
+
 
 // MARK: - Enums
 struct GridButtonItem: Identifiable {

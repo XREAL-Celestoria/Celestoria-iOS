@@ -15,6 +15,12 @@ enum StarField: String, CaseIterable {
     case PURPLEGREEN
     case PURPLE
     case GRAY
+    case ORORABLUE
+    case ORORABLUEGREEN
+    case ORORABLUEPURPLE
+    case ORORAGREEN
+    case ORORAPURPLE
+    case ORORAPINK
 
     var imageName: String {
         switch self {
@@ -30,6 +36,18 @@ enum StarField: String, CaseIterable {
             return "Starfield-purple"
         case .GRAY:
             return "Starfield-gray"
+        case .ORORABLUE:
+            return "Starfield-orora-blue"
+        case .ORORABLUEGREEN:
+            return "Starfield-orora-blueGray"
+        case .ORORABLUEPURPLE:
+            return "Starfield-orora-bluePurple"
+        case .ORORAGREEN:
+            return "Starfield-orora-green"
+        case .ORORAPURPLE:
+            return "Starfield-orora-purple"
+        case .ORORAPINK:
+            return "Starfield-orora-pink"
         }
     }
 

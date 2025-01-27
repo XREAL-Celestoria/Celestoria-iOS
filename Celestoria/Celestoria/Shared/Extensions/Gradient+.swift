@@ -22,6 +22,12 @@ extension LinearGradient {
         endPoint: .bottom
     )
     
+    static let GradienBeforeSelect = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "AAB8C6"), Color(hex: "839DBA")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
     static let GradientStroke = LinearGradient(
         gradient: Gradient(colors: [Color.Stroke1, Color.Stroke2]),
         startPoint: .top,

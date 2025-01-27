@@ -29,7 +29,7 @@ struct PopupView: View {
                 RoundedRectangle(cornerRadius: 44)
                     .stroke(LinearGradient.StrokePopup, lineWidth: 3)
             )
-            .shadow(color: Color(hex: "6BBAFF"), radius: 30)
+            .shadow(color: Color(hex: "6BBAFF").opacity(0.3), radius: 30)
             .overlay(
                 VStack(alignment: .leading) {
                     HStack {
