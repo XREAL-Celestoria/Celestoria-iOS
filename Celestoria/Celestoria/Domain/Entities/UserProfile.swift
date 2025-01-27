@@ -12,7 +12,8 @@ struct UserProfile: Identifiable, Codable, Hashable {
     let userId: UUID
     let name: String
     let profileImageURL: String?
-    let spaceThumbnailURL: String?
+    let spaceThumbnailId: String?
+    let createdAt: Date
     
     static func == (lhs: UserProfile, rhs: UserProfile) -> Bool {
         lhs.id == rhs.id
@@ -27,6 +28,7 @@ struct UserProfile: Identifiable, Codable, Hashable {
         case userId = "user_id"
         case name
         case profileImageURL = "profile_image_url"
-        case spaceThumbnailURL = "space_thumbnail_url"
+        case spaceThumbnailId = "space_thumbnail_id"
+        case createdAt = "created_at"
     }
 }
