@@ -9,15 +9,24 @@ import Foundation
 import Combine
 import AuthenticationServices
 
+@MainActor
 class LoginViewModel: NSObject, ObservableObject {
     private let signInUseCase: SignInWithAppleUseCase
     private var cancellables = Set<AnyCancellable>()
+    private let profileUseCase: ProfileUseCase
+    private let appModel: AppModel
     
     @Published var errorMessage: String?
     @Published var userId: UUID?
 
-    init(signInUseCase: SignInWithAppleUseCase) {
+    init(
+        signInUseCase: SignInWithAppleUseCase,
+        profileUseCase: ProfileUseCase,
+        appModel: AppModel
+    ) {
         self.signInUseCase = signInUseCase
+        self.profileUseCase = profileUseCase
+        self.appModel = appModel
     }
 
     func prepareRequest(request: ASAuthorizationAppleIDRequest) {
@@ -35,9 +44,30 @@ class LoginViewModel: NSObject, ObservableObject {
                         completion(nil)
                     }
                 }, receiveValue: { [weak self] userId in
-                    self?.userId = userId
+                    // 1) 애플 로그인(토큰) 인증 성공 → userId 얻음
                     self?.errorMessage = nil
-                    completion(userId)
+                    self?.userId = userId
+
+                    // 2) 이제 Supabase에서 프로필도 가져와 AppModel에 반영
+                    Task {
+                        do {
+                            guard let self = self else { return }
+                            let fetchedProfile = try await self.profileUseCase.fetchProfile()
+
+                            // AppModel에 넣어주면 starfield가 didSet에서 업데이트됨
+                            self.appModel.userId = userId
+                            self.appModel.userProfile = fetchedProfile
+
+                            // 로그인 완료 후 메인 화면으로 전환
+                            self.appModel.activeScreen = .main
+
+                            // 끝
+                            completion(userId)
+                        } catch {
+                            self?.errorMessage = error.localizedDescription
+                            completion(nil)
+                        }
+                    }
                 })
                 .store(in: &cancellables)
         case .failure(let error):
