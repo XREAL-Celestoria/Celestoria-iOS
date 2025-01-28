@@ -20,7 +20,7 @@ class MediaRepository {
     }
     
     // UploadingVideo
-    func uploadVideo(data: Data) async throws -> (url: String, metadata: Memory.SpatialMetadata?) {
+    func uploadVideo(data: Data, userId: UUID) async throws -> (url: String, metadata: Memory.SpatialMetadata?) {
         os.Logger.info("Uploading video... Size: \(data.count) bytes")
         
         do {
@@ -29,7 +29,7 @@ class MediaRepository {
             os.Logger.info("Validation and metadata extraction completed.")
             
             os.Logger.info("Starting upload to Supabase...")
-            let uploadResult = try await uploadToSupabase(validatedData, folder: "spatial_videos", fileExtension: "mov")
+            let uploadResult = try await uploadToSupabase(validatedData, folder: "spatial_videos", fileExtension: "mov", userId: userId)
             os.Logger.info("Video uploaded successfully. URL: \(uploadResult.url)")
             return (url: uploadResult.url, metadata: metadata)
         } catch let error as MediaError {
@@ -42,26 +42,27 @@ class MediaRepository {
     }
 
     // 썸네일 업로드
-    func uploadThumbnail(image: UIImage) async throws -> String {
+    func uploadThumbnail(image: UIImage, userId: UUID) async throws -> String {
         os.Logger.info("Uploading thumbnail...")
-            guard let imageData = image.pngData() else {
-                let error = MediaError.invalidFormat
-                os.Logger.error("Failed to convert image to PNG: \(error.localizedDescription)")
-                throw error
-            }
-            
-            do {
-                let uploadResult = try await uploadToSupabase(imageData, folder: "thumbnails", fileExtension: "png")
-                os.Logger.info("Thumbnail uploaded successfully. URL: \(uploadResult.url)")
-                return uploadResult.url
-            } catch {
-                os.Logger.error("Thumbnail upload failed: \(error.localizedDescription)")
-                throw error
-            }
+        guard let imageData = image.pngData() else
+        {
+            let error = MediaError.invalidFormat
+            os.Logger.error("Failed to convert image to PNG: \(error.localizedDescription)")
+            throw error
         }
+        
+        do {
+            let uploadResult = try await uploadToSupabase(imageData, folder: "thumbnails", fileExtension: "png", userId: userId)
+            os.Logger.info("Thumbnail uploaded successfully. URL: \(uploadResult.url)")
+            return uploadResult.url
+        } catch {
+            os.Logger.error("Thumbnail upload failed: \(error.localizedDescription)")
+            throw error
+        }
+    }
 
     // 프로필 이미지 업로드를 위한 public 메서드
-    func uploadProfileImage(_ image: UIImage) async throws -> (url: String, path: String) {
+    func uploadProfileImage(_ image: UIImage, userId: UUID) async throws -> (url: String, path: String) {
         os.Logger.info("Starting profile image upload")
         guard let imageData = image.pngData() else {
             os.Logger.error("Failed to convert image to PNG data")
@@ -70,7 +71,7 @@ class MediaRepository {
         
         do {
             let fileName = "\(UUID().uuidString).png"
-            let path = fileName
+            let path = "\(userId.uuidString)/\(fileName)"
             
             // storage에 업로드
             try await supabase.storage
@@ -125,9 +126,9 @@ class MediaRepository {
         }
     
     // Supabase에 업로드
-    private func uploadToSupabase(_ data: Data, folder: String, fileExtension: String) async throws -> (url: String, path: String) {
+    private func uploadToSupabase(_ data: Data, folder: String, fileExtension: String, userId: UUID) async throws -> (url: String, path: String) {
         let fileName = "\(UUID().uuidString).\(fileExtension)"
-        let path = "\(fileName)"
+        let path = "\(userId.uuidString)/\(fileName)"
         
         os.Logger.info("Uploading file: \(fileName), Size: \(data.count) bytes")
         

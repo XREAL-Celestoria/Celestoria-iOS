@@ -56,7 +56,7 @@ class GalaxyViewModel: ObservableObject {
         Logger.info("GalaxyViewModel saveSelectedImage: \(imageName)")
         
         // 비로그인 상태면 갱신 불가 -> 그냥 리턴(원하면 Alert 처리 등)
-        guard appModel.userId != nil else {
+        guard let userId = appModel.userId else {
             Logger.info("GalaxyViewModel: no user -> cannot update DB.")
             return
         }
@@ -65,7 +65,8 @@ class GalaxyViewModel: ObservableObject {
             do {
                 // DB의 starfield 업데이트
                 let updatedProfile = try await profileUseCase.updateProfile(
-                    starfield: imageName
+                    starfield: imageName,
+                    userId: userId
                 )
                 
                 // AppModel에 반영 -> didSet에서 selectedStarfield 업데이트

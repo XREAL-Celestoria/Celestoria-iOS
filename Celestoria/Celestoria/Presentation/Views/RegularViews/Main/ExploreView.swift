@@ -103,16 +103,26 @@ struct ExploreView: View {
                                         .frame(width: 24, height: 24)
                                         .padding(.leading, 36)
 
-                                    TextField("Search user name", text: $exploreViewModel.searchText)
-                                        .submitLabel(.search) // 키보드 리턴키를 "Search"로 표시
-                                        .foregroundColor(.white)
-                                        .font(.system(size: 16))
-                                        .onSubmit {
-                                            Task {
-                                                await exploreViewModel.fetchExploreUsers()
-                                            }
+                                    ZStack(alignment: .leading) {
+                                        if exploreViewModel.searchText.isEmpty {
+                                            Text("Search user name")
+                                                .foregroundColor(Color.NebulaWhite)
+                                                .font(.system(size: 16))
+                                                .padding(.leading, 8)
                                         }
-                                        .padding(.leading, 8)
+                                        
+                                        TextField("", text: $exploreViewModel.searchText)
+                                            .submitLabel(.search)
+                                            .foregroundColor(Color.NebulaWhite)
+                                            .font(.system(size: 16))
+                                            .tint(Color.NebulaWhite)
+                                            .onSubmit {
+                                                Task {
+                                                    await exploreViewModel.fetchExploreUsers()
+                                                }
+                                            }
+                                            .padding(.leading, 8)
+                                    }
 
                                     Spacer()
                                 }

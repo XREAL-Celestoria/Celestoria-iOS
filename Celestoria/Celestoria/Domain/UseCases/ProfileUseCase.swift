@@ -29,13 +29,14 @@ struct ProfileUseCase {
         name: String? = nil,
         image: UIImage? = nil,
         spaceThumbnailId: String? = nil,
-        starfield: String? = nil
+        starfield: String? = nil,
+        userId: UUID
     ) async throws -> UserProfile {
         var profileImageURL: String? = nil
         
         // 프로필 이미지가 있으면 업로드
         if let image = image {
-            let (url, _) = try await mediaRepository.uploadProfileImage(image)
+            let (url, _) = try await mediaRepository.uploadProfileImage(image, userId: userId)
             profileImageURL = url
         }
         

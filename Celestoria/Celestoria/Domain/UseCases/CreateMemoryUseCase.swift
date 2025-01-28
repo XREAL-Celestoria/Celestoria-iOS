@@ -26,12 +26,12 @@ class CreateMemoryUseCase {
         userId: UUID
     ) async throws -> Memory {
         // 비디오 업로드
-        let videoUploadResult = try await mediaRepository.uploadVideo(data: videoData)
+        let videoUploadResult = try await mediaRepository.uploadVideo(data: videoData, userId: userId)
 
         // 썸네일 업로드 (옵션 처리)
         var thumbnailURL: String = ""
         if let thumbnailImage = thumbnailImage {
-            thumbnailURL = try await mediaRepository.uploadThumbnail(image: thumbnailImage)
+            thumbnailURL = try await mediaRepository.uploadThumbnail(image: thumbnailImage, userId: userId)
         }
 
         // 메모리 객체 생성
