@@ -25,8 +25,8 @@ struct MainButton: View {
                                 AnyShapeStyle(Color.NebulaWhite.opacity(0.1)))
                 .cornerRadius(16)
         }
-        .hoverEffect(.lift)
-        .buttonStyle(MainButtonStyle())
+        .hoverEffect(.automatic)
+//        .buttonStyle(MainButtonStyle())
     }
 }
 
