@@ -20,7 +20,7 @@ struct ExploreNavigatorView: View {
     @State private var isLoading: Bool = true
 
     var body: some View {
-        GradientBorderContainer {
+        GradientBorderContainerSmall {
             ZStack {
                 VStack(spacing: 10) {
                     NavigationBar(
@@ -69,7 +69,6 @@ struct ExploreNavigatorView: View {
                     
                     Spacer()
                 }
-                .frame(width: 717, height: 184)
                 
                 if isLoading {
                     ProgressView()

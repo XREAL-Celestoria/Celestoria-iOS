@@ -146,7 +146,7 @@ private struct LeftView: View {
                     }
                     .frame(width: 260, height: 132)
                     .cornerRadius(20)
-                    .buttonStyle(PlainButtonStyle())
+                    .buttonStyle(MainButtonStyle())
                     .disabled(viewModel.isPickerBlocked)
                     .onChange(of: viewModel.selectedVideoItem) { newItem in
                         viewModel.handleVideoSelection(item: newItem)
