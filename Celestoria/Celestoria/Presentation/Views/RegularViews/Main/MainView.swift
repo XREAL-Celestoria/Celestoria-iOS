@@ -41,6 +41,7 @@ struct MainView: View {
         .background(Color.NebulaBlack.ignoresSafeArea())
         .overlay(loadingOverlay)
         .onAppear {
+            spaceCoordinator.isLoading = true
             guard let userId = appModel.userId else { return }
             Task {
                 if !appModel.isImmersiveViewActive {

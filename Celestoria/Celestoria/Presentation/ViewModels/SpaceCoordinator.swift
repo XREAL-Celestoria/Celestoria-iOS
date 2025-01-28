@@ -15,7 +15,7 @@ final class SpaceCoordinator: ObservableObject {
     private let memoryRepository: MemoryRepository
     private let profileUseCase: ProfileUseCase
     
-    @Published var isLoading: Bool = false
+    @Published var isLoading: Bool = true
     @Published private(set) var spaceEntity: SpaceEntity?
     @Published var memories: [Memory] = []
     
@@ -39,7 +39,6 @@ final class SpaceCoordinator: ObservableObject {
             onCompletion()
             return
         }
-        defer { isLoading = false }
         
         do {
             // SpaceEntity 초기화
