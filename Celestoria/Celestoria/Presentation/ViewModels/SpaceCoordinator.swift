@@ -33,13 +33,12 @@ final class SpaceCoordinator: ObservableObject {
     /// 앱 첫 실행 시 불리는 함수 (내 우주 초기화)
     @MainActor
     func initialize(onCompletion: @escaping () -> Void = {}) async {
-        onCompletion()
+        isLoading = true
+//        onCompletion()
         guard spaceEntity == nil else {
             onCompletion()
             return
         }
-        
-        isLoading = true
         defer { isLoading = false }
         
         do {
@@ -48,16 +47,6 @@ final class SpaceCoordinator: ObservableObject {
             let newSpaceEntity = SpaceEntity(coordinator: self, backgroundImageName: backgroundImageName)
             self.spaceEntity = newSpaceEntity
             os.Logger.info("SpaceCoordinator: Created SpaceEntity with background \(backgroundImageName)")
-
-            // loadData 호출로 이 부분 필요 없음
-            // 초기 별 로딩
-            // let userId = appModel.userId ?? UUID()
-            // let userMemories = try await memoryRepository.fetchMemories(for: userId)
-            // memories = userMemories
-            // await spaceEntity?.updateStars(with: userMemories) { [weak self] in
-            //     os.Logger.info("SpaceCoordinator: Stars update completed for initialization")
-            //     onCompletion() // 별 생성 완료 후 클로저 호출
-            // }
             onCompletion() // 별 생성 완료 후 클로저 호출
         } catch {
             os.Logger.error("SpaceCoordinator initialize failed: \(error.localizedDescription)")
