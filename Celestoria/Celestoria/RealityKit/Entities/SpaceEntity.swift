@@ -65,11 +65,12 @@ class SpaceEntity: Entity {
     }
 
     // MARK: - Star Management
-    func updateStars(with memories: [Memory]) async {
-        cleanupExistingContent()
-        await createNewStars(from: memories)
-        print("Star update completed. Total stars: \(starEntities.count)")
-    }
+    func updateStars(with memories: [Memory], onCompletion: @escaping () -> Void) async {
+            cleanupExistingContent() // 기존 별 제거
+            await createNewStars(from: memories) // 새로운 별 생성
+            os.Logger.info("SpaceEntity: Star update completed. Total stars: \(starEntities.count)")
+            onCompletion() // 작업 완료 후 클로저 호출
+        }
 
     private func cleanupExistingContent() {
         removeExistingStars()

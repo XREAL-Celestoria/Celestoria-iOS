@@ -86,11 +86,15 @@ private extension MainView {
     
     var loadingOverlay: some View {
         Group {
-            if viewModel.isLoading {
-                ProgressView()
-                    .scaleEffect(1.5)
-                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    .zIndex(1)
+            if spaceCoordinator.isLoading {
+                ZStack {
+                    Color.black.opacity(0.5)
+                        .ignoresSafeArea()
+                    ProgressView("Loading Stars...")
+                        .scaleEffect(1.5)
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .zIndex(1)
+                }
             }
             
             if let errorMessage = viewModel.errorMessage {

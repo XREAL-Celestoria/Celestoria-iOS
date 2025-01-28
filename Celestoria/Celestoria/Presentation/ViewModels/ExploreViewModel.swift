@@ -53,4 +53,27 @@ final class ExploreViewModel: ObservableObject {
             self.errorMessage = "Fail to fetch user list"
         }
     }
+
+    
+    func getUser(by userId: UUID) -> ExploreUser? {
+        exploreUsers.first(where: { $0.profile.userId == userId })
+    }
+    
+    func getCardItem(by userId: UUID) -> ExploreUserCardItem? {
+        guard let user = getUser(by: userId) else { return nil }
+        return ExploreUserCardItem(
+            userName: user.profile.name,
+            userProfileImageName: user.profile.profileImageURL ?? "CardUserProfileImage",
+            memoryStars: user.memoryCount,
+            imageName: mapThumbnailIdToImageName(user.profile.spaceThumbnailId)
+        )
+    }
+    /// space_thumbnail_id -> 실제 썸네일 이미지 이름
+    func mapThumbnailIdToImageName(_ spaceThumbnailId: String?) -> String {
+        guard let thumbnailId = spaceThumbnailId else {
+            return "Thumbnail1"
+        }
+        // 예: "1"~"6" => Thumbnail1 ~ Thumbnail6
+        return "Thumbnail\(thumbnailId)"
+    }
 }

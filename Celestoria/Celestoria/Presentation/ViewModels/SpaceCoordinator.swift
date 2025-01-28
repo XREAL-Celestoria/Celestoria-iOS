@@ -14,10 +14,11 @@ final class SpaceCoordinator: ObservableObject {
     private let appModel: AppModel
     private let memoryRepository: MemoryRepository
     private let profileUseCase: ProfileUseCase
-
+    
+    @Published var isLoading: Bool = false
     @Published private(set) var spaceEntity: SpaceEntity?
     @Published var memories: [Memory] = []
-
+    
     private(set) var currentLoadedUserId: UUID? = nil
     
     init(appModel: AppModel,
@@ -31,14 +32,37 @@ final class SpaceCoordinator: ObservableObject {
     
     /// 앱 첫 실행 시 불리는 함수 (내 우주 초기화)
     @MainActor
-    func initialize() {
-        // 이미 있으면 재생성 안 함
-        guard spaceEntity == nil else { return }
+    func initialize(onCompletion: @escaping () -> Void = {}) async {
+        guard spaceEntity == nil else {
+            onCompletion()
+            return
+        }
+        
+        isLoading = true
+        defer { isLoading = false }
+        
+        do {
+            // SpaceEntity 초기화
+            let backgroundImageName = appModel.selectedStarfield?.imageName ?? "Starfield-gray"
+            let newSpaceEntity = SpaceEntity(coordinator: self, backgroundImageName: backgroundImageName)
+            self.spaceEntity = newSpaceEntity
+            os.Logger.info("SpaceCoordinator: Created SpaceEntity with background \(backgroundImageName)")
 
-        let backgroundImageName = appModel.selectedStarfield?.imageName ?? "Starfield-gray"
-        spaceEntity = SpaceEntity(coordinator: self, backgroundImageName: backgroundImageName)
-        os.Logger.info("SpaceCoordinator: Created SpaceEntity with background \(backgroundImageName)")
+            // 초기 별 로딩
+            let userId = appModel.userId ?? UUID()
+            let userMemories = try await memoryRepository.fetchMemories(for: userId)
+            memories = userMemories
+            
+            await spaceEntity?.updateStars(with: userMemories) { [weak self] in
+                os.Logger.info("SpaceCoordinator: Stars update completed for initialization")
+                onCompletion() // 별 생성 완료 후 클로저 호출
+            }
+        } catch {
+            os.Logger.error("SpaceCoordinator initialize failed: \(error.localizedDescription)")
+            onCompletion() // 에러 발생 시에도 호출
+        }
     }
+
     
     @MainActor
     func updateBackground(with imageName: String) {
@@ -64,12 +88,18 @@ final class SpaceCoordinator: ObservableObject {
     }
     
     
-    func setInitialMemories(_ newMemories: [Memory]) {
+    func setInitialMemories(_ newMemories: [Memory], onCompletion: @escaping () -> Void = {}) {
         memories = newMemories
         Task { @MainActor in
-            await spaceEntity?.updateStars(with: memories)
+            isLoading = true
+            await spaceEntity?.updateStars(with: memories) {
+                os.Logger.info("SpaceCoordinator: setInitialMemories - Stars updated for initial memories.")
+                self.isLoading = false
+                onCompletion()
+            }
         }
     }
+
     
     func handleNewMemory(_ memory: Memory) {
         guard !memories.contains(where: { $0.id == memory.id }) else {
@@ -84,39 +114,45 @@ final class SpaceCoordinator: ObservableObject {
             await spaceEntity?.addStar(for: memory)
         }
     }
-
+    
     /// 유저 ID를 받아서, 그 유저 우주(배경 + 메모리)로 전환
     @MainActor
     func loadData(for userId: UUID) async {
+        isLoading = true
+        defer { isLoading = false }
+
         os.Logger.info("SpaceCoordinator: loadData(for \(userId)) called")
 
         do {
             // 1) 유저 프로필 조회
             let profile = try await profileUseCase.fetchProfileByUserId(userId: userId)
             let starfieldName = profile.starfield ?? "Starfield-gray"
-            
-            // 2) spaceEntity가 없으면 만들고, 있으면 배경만 업데이트
+
+            // 2) SpaceEntity 초기화 또는 배경 업데이트
             if spaceEntity == nil {
                 spaceEntity = SpaceEntity(coordinator: self, backgroundImageName: starfieldName)
                 os.Logger.info("SpaceCoordinator: Created new SpaceEntity for user \(userId)")
             } else {
                 spaceEntity?.updateBackground(with: starfieldName)
-                os.Logger.info("SpaceCoordinator: Updated background to \(starfieldName) for user \(userId)")
             }
 
-            // 3) 해당 유저 메모리들 불러오기
+            // 3) 유저 메모리들 조회
             let userMemories = try await memoryRepository.fetchMemories(for: userId)
             memories = userMemories
             os.Logger.info("SpaceCoordinator: fetched \(userMemories.count) memories for user \(userId)")
 
-            // 4) 별(Star) 업데이트
-            await spaceEntity?.updateStars(with: userMemories)
-            os.Logger.info("SpaceCoordinator: updated stars. total = \(userMemories.count)")
+            // 4) 별 업데이트
+            isLoading = true
+            await spaceEntity?.updateStars(with: userMemories) { [weak self] in
+                Task { @MainActor in
+                    self?.isLoading = false
+                    os.Logger.info("SpaceCoordinator: Stars update completed for user \(userId)")
+                }
+            }
 
             self.currentLoadedUserId = userId
         } catch {
             os.Logger.error("SpaceCoordinator loadData(for: \(userId)) failed: \(error.localizedDescription)")
         }
     }
-
 }

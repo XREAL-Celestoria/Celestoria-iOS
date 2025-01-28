@@ -14,6 +14,7 @@ struct ExploreView: View {
     @EnvironmentObject var exploreViewModel: ExploreViewModel
 
     @Environment(\.dismissWindow) private var dismissWindow
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         NavigationStack {
@@ -60,15 +61,20 @@ struct ExploreView: View {
                                     userProfileImageName: user.profile.profileImageURL ?? "CardUserProfileImage",
                                     memoryStars: user.memoryCount,
                                     // constellations: 0, // Todo
-                                    imageName: mapThumbnailIdToImageName(user.profile.spaceThumbnailId)
+                                    imageName: exploreViewModel.mapThumbnailIdToImageName(user.profile.spaceThumbnailId)
                                 )
 
                                 ExploreUserCard(
                                     item: cardItem,
                                     onExploreGalaxy: {
-                                        Task {
-                                            await spaceCoordinator.loadData(for: user.profile.userId)
+                                        guard !appModel.showExploreNavigatorView else {
+                                            os.Logger.info("Explore Navigator View is already opened")
+                                            return
                                         }
+                                        
+                                        os.Logger.info("Displaying Explore Navigator View")
+                                        appModel.showExploreNavigatorView = true
+                                        openWindow(value: user.profile.userId)
                                     }
                                 )
                             }
@@ -147,15 +153,6 @@ struct ExploreView: View {
                 }
             }
         }
-    }
-
-    /// space_thumbnail_id -> 실제 썸네일 이미지 이름
-    private func mapThumbnailIdToImageName(_ spaceThumbnailId: String?) -> String {
-        guard let thumbnailId = spaceThumbnailId else {
-            return "Thumbnail1"
-        }
-        // 예: "1"~"6" => Thumbnail1 ~ Thumbnail6
-        return "Thumbnail\(thumbnailId)"
     }
 }
 

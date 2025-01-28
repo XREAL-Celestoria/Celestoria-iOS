@@ -18,16 +18,11 @@ struct SpaceImmersiveView: View {
             RealityView { content in
                 os.Logger.info("SpaceImmersiveView: Setting up RealityView")
                 content.entities.removeAll()
-
-                spaceCoordinator.initialize()
-
-
-                if let spaceEntity = spaceCoordinator.spaceEntity {
-                    content.add(spaceEntity)
-                    os.Logger.info("SpaceImmersiveView: Added spaceEntity to RealityView")
-                }
+                
+                // spaceCoordinator를 초기화하고 엔티티를 추가합니다.
+                initializeAndAddEntity(to: content)
             }
-            .gesture(starTapGesture) // Handle gestures for user interaction
+            .gesture(starTapGesture)
         }
     }
 
@@ -54,4 +49,15 @@ struct SpaceImmersiveView: View {
     private func openMemoryDetailView(for starEntity: MemoryStarEntity) async {
         openWindow(value: starEntity.memory)
     }
+    
+    private func initializeAndAddEntity(to content: RealityViewContent) {
+            Task {
+                await spaceCoordinator.initialize()
+
+                if let spaceEntity = spaceCoordinator.spaceEntity {
+                    content.add(spaceEntity)
+                    os.Logger.info("SpaceImmersiveView: Added spaceEntity to RealityView")
+                }
+            }
+        }
 }

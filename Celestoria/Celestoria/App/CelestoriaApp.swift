@@ -59,5 +59,18 @@ struct CelestoriaApp: App {
             }
         }
         .windowResizability(.contentSize)
+        
+        WindowGroup(id: "Explore-Navigator", for: UUID.self) { $profileId in
+            if let profileId = profileId {
+                ExploreNavigatorView(profileId: profileId)
+                    .environmentObject(diContainer.appModel)
+                    .environmentObject(diContainer.exploreViewModel)
+                    .environmentObject(diContainer.spaceCoordinator)
+            } else {
+                Text("No user selected.")
+                    .frame(width: 720, height: 188)
+            }
+        }
+        .windowResizability(.contentSize)
     }
 }

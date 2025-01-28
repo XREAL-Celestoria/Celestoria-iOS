@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ExploreUserCardItem: Identifiable {
+struct ExploreUserCardItem: Identifiable, Codable, Hashable {
     let id = UUID()
     let userName: String
     let userProfileImageName: String

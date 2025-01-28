@@ -59,6 +59,12 @@ final class AppModel: ObservableObject {
         }
     }
     
+    @Published var showExploreNavigatorView: Bool = false {
+        didSet {
+            Logger.info("showExploreNavigatorView : \(showExploreNavigatorView)")
+        }
+    }
+    
     @Published var addMemoryScreen: AddMemoryScreen = .main {
         didSet {
             Logger.info("Add Memory - Active Screen changed: \(activeScreen)")
