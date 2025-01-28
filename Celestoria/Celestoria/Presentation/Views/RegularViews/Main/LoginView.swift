@@ -10,7 +10,6 @@ import AuthenticationServices
 
 struct LoginView: View {
     @EnvironmentObject private var appModel: AppModel
-    @Environment(\.openImmersiveSpace) private var openImmersiveSpace
     @EnvironmentObject var viewModel: LoginViewModel
 
     var body: some View {

@@ -14,6 +14,7 @@ struct MainView: View {
     @Environment(\.openWindow) private var openWindow
     @Environment(\.openImmersiveSpace) private var openImmersiveSpace
     @EnvironmentObject var spaceCoordinator: SpaceCoordinator
+    @Environment(\.scenePhase) private var scenePhase
     
     var body: some View {
         VStack {
@@ -42,12 +43,30 @@ struct MainView: View {
         .onAppear {
             guard let userId = appModel.userId else { return }
             Task {
-                await openImmersiveSpace(id: appModel.immersiveSpaceID)
-                appModel.isImmersiveViewActive = true
-        
+                if !appModel.isImmersiveViewActive {
+                    await openImmersiveSpace(id: appModel.immersiveSpaceID)
+                    appModel.isImmersiveViewActive = true
+                }
                 if spaceCoordinator.currentLoadedUserId != userId {
                     await spaceCoordinator.loadData(for: userId)
                 }
+            }
+        }
+        .onChange(of: scenePhase) { newPhase in
+            switch newPhase {
+            case .background, .inactive:
+                os.Logger.info("App is moving to background/inactive. Closing Immersive Space.")
+                appModel.isImmersiveViewActive = false
+            case .active:
+                os.Logger.info("App is active. Checking Immersive Space.")
+                if appModel.userId != nil && !appModel.isImmersiveViewActive {
+                    Task {
+                        await openImmersiveSpace(id: appModel.immersiveSpaceID)
+                        appModel.isImmersiveViewActive = true
+                    }
+                }
+            default:
+                break
             }
         }
     }
