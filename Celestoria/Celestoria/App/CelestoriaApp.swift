@@ -11,6 +11,7 @@ import SwiftUI
 @main
 struct CelestoriaApp: App {
     @StateObject private var diContainer = DIContainer()
+    @State private var currentStyle: ImmersionStyle = .full
 
     var body: some Scene {
         WindowGroup("Main", id: "Main") {
@@ -29,7 +30,7 @@ struct CelestoriaApp: App {
         ImmersiveSpace(id: diContainer.appModel.immersiveSpaceID) {
             SpaceImmersiveView()
                 .environmentObject(diContainer.spaceCoordinator)
-        }
+        }.immersionStyle(selection: $currentStyle, in: .full)
 
         WindowGroup("Add Memory", id: "Add-Memory") {
             if diContainer.appModel.showAddMemoryView {
