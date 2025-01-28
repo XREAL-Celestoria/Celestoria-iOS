@@ -16,7 +16,7 @@ enum StarField: String, CaseIterable {
     case PURPLE
     case GRAY
     case ORORABLUE
-    case ORORABLUEGREEN
+    case ORORABLUEGRAY
     case ORORABLUEPURPLE
     case ORORAGREEN
     case ORORAPURPLE
@@ -38,7 +38,7 @@ enum StarField: String, CaseIterable {
             return "Starfield-gray"
         case .ORORABLUE:
             return "Starfield-orora-blue"
-        case .ORORABLUEGREEN:
+        case .ORORABLUEGRAY:
             return "Starfield-orora-blueGray"
         case .ORORABLUEPURPLE:
             return "Starfield-orora-bluePurple"

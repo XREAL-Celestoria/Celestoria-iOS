@@ -49,8 +49,17 @@ class SettingViewModel: ObservableObject {
     func updateProfile(name: String?, image: UIImage?) async {
         isLoading = true
         do {
+            guard let userId = appModel.userId else {
+                Logger.error("User ID not found")
+                return
+            }
+            
             Logger.info("Updating profile - Name: \(String(describing: name)), Has Image: \(image != nil)")
-            profile = try await profileUseCase.updateProfile(name: name, image: image)
+            profile = try await profileUseCase.updateProfile(
+                name: name,
+                image: image,
+                userId: userId
+            )
             Logger.info("Profile updated successfully: \(String(describing: profile))")
         } catch {
             self.error = error
@@ -74,11 +83,17 @@ class SettingViewModel: ObservableObject {
     func updateThumbnail(thumbnailId: String) async {
         isLoading = true
         do {
+            guard let userId = appModel.userId else {
+                Logger.error("User ID not found")
+                return
+            }
+            
             Logger.info("Updating thumbnail ID: \(thumbnailId)")
             profile = try await profileUseCase.updateProfile(
                 name: profile?.name,
                 image: nil,
-                spaceThumbnailId: thumbnailId
+                spaceThumbnailId: thumbnailId,
+                userId: userId
             )
             Logger.info("Thumbnail updated successfully")
         } catch {

@@ -65,6 +65,7 @@ class AuthRepository: AuthRepositoryProtocol {
 
     func deleteAccount() async throws {
         try await supabase.rpc("delete_current_user").execute()
+        try await supabase.auth.signOut()
     }
 
     func updateProfile(

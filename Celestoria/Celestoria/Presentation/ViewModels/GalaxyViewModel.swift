@@ -20,19 +20,28 @@ class GalaxyViewModel: ObservableObject {
         self.spaceCoordinator = spaceCoordinator
         self.profileUseCase = profileUseCase
         
-        // 초기 상태는 (로그인 안됐으면 gray, 됐으면 DB 값)
-        if let sfName = appModel.userProfile?.starfield {
-            self.selectedImage = sfName
-        } else {
-            self.selectedImage = StarField.GRAY.imageName
-        }
+        // 초기 상태 설정
+        self.selectedImage = StarField.GRAY.imageName
         
-        // ⭐ userProfile이 나중에라도 바뀌면, selectedImage 재설정
+        // userProfile 변경 관찰
         Task {
+            // 먼저 현재 프로필 가져오기 시도
+            if appModel.userId != nil {
+                do {
+                    let currentProfile = try await profileUseCase.fetchProfile()
+                    if let starfieldName = currentProfile.starfield {
+                        self.selectedImage = starfieldName
+                        self.spaceCoordinator.updateBackground(with: starfieldName)
+                    }
+                } catch {
+                    Logger.error("Failed to fetch initial profile: \(error.localizedDescription)")
+                }
+            }
+            
+            // 이후 변경사항 관찰
             for await newProfile in appModel.$userProfile.values {
                 if let starfieldName = newProfile?.starfield {
                     self.selectedImage = starfieldName
-                    //배경 업데이트
                     self.spaceCoordinator.updateBackground(with: starfieldName)
                 } else {
                     self.selectedImage = StarField.GRAY.imageName
@@ -56,7 +65,7 @@ class GalaxyViewModel: ObservableObject {
         Logger.info("GalaxyViewModel saveSelectedImage: \(imageName)")
         
         // 비로그인 상태면 갱신 불가 -> 그냥 리턴(원하면 Alert 처리 등)
-        guard appModel.userId != nil else {
+        guard let userId = appModel.userId else {
             Logger.info("GalaxyViewModel: no user -> cannot update DB.")
             return
         }
@@ -65,7 +74,8 @@ class GalaxyViewModel: ObservableObject {
             do {
                 // DB의 starfield 업데이트
                 let updatedProfile = try await profileUseCase.updateProfile(
-                    starfield: imageName
+                    starfield: imageName,
+                    userId: userId
                 )
                 
                 // AppModel에 반영 -> didSet에서 selectedStarfield 업데이트
