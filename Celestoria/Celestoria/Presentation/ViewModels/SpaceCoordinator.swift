@@ -96,7 +96,6 @@ final class SpaceCoordinator: ObservableObject {
             isLoading = true
             await spaceEntity?.updateStars(with: memories) {
                 os.Logger.info("SpaceCoordinator: setInitialMemories - Stars updated for initial memories.")
-                self.isLoading = false
                 onCompletion()
             }
         }

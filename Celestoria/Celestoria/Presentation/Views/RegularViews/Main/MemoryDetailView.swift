@@ -50,8 +50,8 @@ struct MemoryDetailView: View {
                     }
                 }
                 
-                if viewModel.isLoading {
-                    ProgressView("Deleting...")
+                if viewModel.isLoading || viewModel.isDeleting {
+                    ProgressView("Loading...")
                         .frame(width: 120, height: 120)
                         .background(Color.black.opacity(0.7))
                         .cornerRadius(12)
@@ -254,7 +254,7 @@ struct MemoryInfoView: View {
                 switch phase {
                 case .empty:
                     ProgressView()
-                        .frame(width: 52, height: 52)
+                        .frame(width: 24, height: 24)
                 case .success(let image):
                     image
                         .resizable()

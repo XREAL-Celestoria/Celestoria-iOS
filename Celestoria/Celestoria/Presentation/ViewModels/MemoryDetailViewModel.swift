@@ -23,6 +23,7 @@ final class MemoryDetailViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
     @Published var userProfile: UserProfile? = nil
+    @Published var isDeleting: Bool = false
     
     init(
         memory: Memory,
@@ -98,6 +99,7 @@ final class MemoryDetailViewModel: ObservableObject {
     }
 
     func showDeletePopup(dismissWindow: @escaping () -> Void, onMemoryDeleted: @escaping (Memory) -> Void) {
+        self.isDeleting = true
         popupData = PopupData(
             title: "Delete Memory Star",
             notes: "Are you sure you want to delete this?\nThis action cannot be undone.",
@@ -114,17 +116,24 @@ final class MemoryDetailViewModel: ObservableObject {
             },
             trailingButtonAction: { [weak self] in
                 Task {
-                    do {
-                        try await self?.deleteMemory()
-                        if let deletedMemory = self?.memory {
-                            onMemoryDeleted(deletedMemory)
+                        defer { self?.isDeleting = false }
+                        do {
+                            try await self?.deleteMemory()
+                            if let deletedMemory = self?.memory {
+                                onMemoryDeleted(deletedMemory)
+                            }
+                            self?.popupData = nil
+                            // 삭제 작업 완료 후에 뷰 닫기
+                            await MainActor.run {
+                                dismissWindow()
+                            }
+                        } catch {
+                            // 에러 처리
+                            await MainActor.run {
+                                self?.errorMessage = error.localizedDescription
+                            }
                         }
-                        self?.popupData = nil
-                        dismissWindow()
-                    } catch {
-                        // 에러 처리
                     }
-                }
             }
         )
     }
