@@ -13,4 +13,7 @@ protocol AuthRepositoryProtocol {
     func deleteAccount() async throws
     func updateProfile(name: String?, profileImageURL: String?, spaceThumbnailId: String?, starfield: String?) async throws -> UserProfile
     func fetchProfile() async throws -> UserProfile
+    func fetchProfileByUserId(userId: UUID) async throws -> UserProfile
+    func fetchAllProfiles(excludingUserId: UUID?) async throws -> [UserProfile]
+    func searchProfiles(keyword: String, excludingUserId: UUID?) async throws -> [UserProfile]
 }

@@ -10,16 +10,11 @@ import os
 
 struct ExploreView: View {
     @EnvironmentObject private var appModel: AppModel
+    @EnvironmentObject var spaceCoordinator: SpaceCoordinator
+    @EnvironmentObject var exploreViewModel: ExploreViewModel
+
     @Environment(\.dismissWindow) private var dismissWindow
-    @State private var searchText = ""
-    @State private var filteredItems: [ExploreUserCardItem] = []
-    
-    let allItems: [ExploreUserCardItem] = [
-        ExploreUserCardItem(userName: "User name", userProfileImageName: "CardUserProfileImage", memoryStars: 9, constellations: 2, imageName: "Thumbnail3"),
-        ExploreUserCardItem(userName: "User name 2", userProfileImageName: "CardUserProfileImage", memoryStars: 4, constellations: 1, imageName: "Thumbnail6"),
-        ExploreUserCardItem(userName: "User name 3", userProfileImageName: "CardUserProfileImage", memoryStars: 8, constellations: 2, imageName: "Thumbnail1")
-    ]
-    
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -33,31 +28,56 @@ struct ExploreView: View {
                 )
                 .padding(.horizontal, 28)
                 .padding(.top, 16)
-                
-                if filteredItems.isEmpty && searchText.isEmpty {
-                    // Default Content
+
+                if exploreViewModel.isLoading {
+                    // 로딩 중 표시
+                    ProgressView()
+                        .scaleEffect(1.5)
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .padding(.top, 50)
+                    
+                } else if exploreViewModel.exploreUsers.isEmpty {
+                    // 검색 결과 없음 (검색어 없으면 "모두 불러오기" + 0명일 경우 대비)
+                    // or 검색 결과가 0명일 때
                     Image("AddMemoryDone")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 320, height: 320, alignment: .center)
                         .padding(.top, 64)
-                    
+
                     Text("Explore other people’s Galaxy!")
                         .foregroundColor(Color.NebulaWhite)
                         .font(.system(size: 22, weight: .bold))
                         .padding(.top, 32)
+                    
                 } else {
+                    // 유저 카드 목록
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 20) {
-                            ForEach(filteredItems) { item in
-                                ExploreUserCard(item: item)
+                            ForEach(exploreViewModel.exploreUsers, id: \.profile.id) { user in
+                                let cardItem = ExploreUserCardItem(
+                                    userName: user.profile.name,
+                                    userProfileImageName: user.profile.profileImageURL ?? "CardUserProfileImage",
+                                    memoryStars: user.memoryCount,
+                                    // constellations: 0, // Todo
+                                    imageName: mapThumbnailIdToImageName(user.profile.spaceThumbnailId)
+                                )
+
+                                ExploreUserCard(
+                                    item: cardItem,
+                                    onExploreGalaxy: {
+                                        Task {
+                                            await spaceCoordinator.loadData(for: user.profile.userId)
+                                        }
+                                    }
+                                )
                             }
                         }
                         .padding(.horizontal, 48)
                     }
                     .padding(.top, 44)
                 }
-                
+
                 Spacer()
             }
             .toolbar {
@@ -67,7 +87,7 @@ struct ExploreView: View {
                         RoundedRectangle(cornerRadius: 42)
                             .fill(LinearGradient.GradientMain)
                             .frame(width: 920, height: 84)
-                        
+
                         HStack {
                             // Search Bar Background
                             ZStack {
@@ -75,32 +95,35 @@ struct ExploreView: View {
                                     .fill(Color.NebulaBlack)
                                     .frame(width: 832, height: 56)
                                     .padding(.leading, 16)
-                                
+
                                 HStack {
                                     Image("Explore")
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: 24, height: 24)
                                         .padding(.leading, 36)
-                                    
-                                    TextField("Search user name", text: $searchText)
+
+                                    TextField("Search user name", text: $exploreViewModel.searchText)
+                                        .submitLabel(.search) // 키보드 리턴키를 "Search"로 표시
                                         .foregroundColor(.white)
                                         .font(.system(size: 16))
-                                        .onChange(of: searchText) { _ in
-                                            filterItems()
+                                        .onSubmit {
+                                            Task {
+                                                await exploreViewModel.fetchExploreUsers()
+                                            }
                                         }
                                         .padding(.leading, 8)
-                                    
+
                                     Spacer()
                                 }
                                 .padding(.horizontal, 16)
                             }
-                            
+
                             Spacer()
-                            
+
                             Button(action: {
-                                searchText = ""
-                                filterItems()
+                                exploreViewModel.searchText = ""
+                                exploreViewModel.onChangeSearchText()
                             }) {
                                 Image("Close")
                                     .resizable()
@@ -117,23 +140,30 @@ struct ExploreView: View {
                     .padding(.vertical, -16)
                 }
             }
-        }
-        .onAppear {
-            filterItems()
+            .onAppear {
+                // 화면 진입 시 한번 불러오기
+                Task {
+                    await exploreViewModel.fetchExploreUsers()
+                }
+            }
         }
     }
-    
-    func filterItems() {
-        if searchText.isEmpty {
-            filteredItems = []
-        } else {
-            filteredItems = allItems.filter { $0.userName.lowercased().contains(searchText.lowercased()) }
+
+    /// space_thumbnail_id -> 실제 썸네일 이미지 이름
+    private func mapThumbnailIdToImageName(_ spaceThumbnailId: String?) -> String {
+        guard let thumbnailId = spaceThumbnailId else {
+            return "Thumbnail1"
         }
+        // 예: "1"~"6" => Thumbnail1 ~ Thumbnail6
+        return "Thumbnail\(thumbnailId)"
     }
 }
 
 struct ExploreUserCard: View {
     let item: ExploreUserCardItem
+
+    /// 버튼 액션을 부모가 주입할 수 있게 클로저 추가
+    let onExploreGalaxy: () -> Void
 
     var body: some View {
         VStack {
@@ -147,7 +177,7 @@ struct ExploreUserCard: View {
                     .frame(width: 400, height: 420)
                     .cornerRadius(16)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
-                    
+
                 LinearGradient(
                     gradient: Gradient(colors: [Color.black.opacity(0.7), Color.clear]),
                     startPoint: .bottom,
@@ -156,44 +186,77 @@ struct ExploreUserCard: View {
                 .frame(width: 400, height: 100)
                 .cornerRadius(16)
                 .padding(.top, 320)
-                
+
                 VStack {
                     HStack {
-                        Image(item.userProfileImageName)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 32, height: 32)
-                        
+                        if let url = URL(string: item.userProfileImageName),
+                        // 간단 예: "http"로 시작하면 외부 URL로 간주
+                        item.userProfileImageName.lowercased().hasPrefix("http") {
+                            // 외부 URL
+                            AsyncImage(url: url) { phase in
+                                switch phase {
+                                case .empty:
+                                    // 아직 로드되지 않은 상태
+                                    ProgressView()
+                                        .frame(width: 32, height: 32)
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 32, height: 32)
+                                        .clipShape(Circle())
+                                case .failure(_):
+                                    // 로드 실패 → 기본 이미지
+                                    Image("CardUserProfileImage")
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 32, height: 32)
+                                        .clipShape(Circle())
+                                }
+                            }
+                        } else {
+                            // 외부 URL이 아니면, 로컬 이미지로 처리
+                            Image("CardUserProfileImage")
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 32, height: 32)
+                                .clipShape(Circle())
+                        }
+
                         Text(item.userName)
                             .font(.system(size: 19, weight: .bold))
                             .foregroundColor(.NebulaWhite)
                             .padding(.leading, 12)
-                        
+
                         Spacer()
                     }
+
                     .padding(.leading, 28)
                     .padding(.top, 20)
-                    
+
                     Spacer()
-                    
-                    Text("\(item.memoryStars) Memory Stars, \(item.constellations) Constellations")
+
+                    // Text("\(item.memoryStars) Memory Stars, \(item.constellations) Constellations")
+                    Text("\(item.memoryStars) Memory Stars")
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundColor(.NebulaWhite)
                         .padding(.bottom, 24)
                         .frame(alignment: .center)
                 }
             }
-    
+
             Spacer()
                 .frame(height: 16)
-            
+
             MainButton(
-                title: "Explore Galaxy", action: {
+                title: "Explore Galaxy",
+                action: {
                     os.Logger.info("Go to \(item.userName)'s Galaxy!")
+                    onExploreGalaxy()
                 },
                 isEnabled: true
             )
-            
+
             Spacer()
                 .frame(height: 16)
         }

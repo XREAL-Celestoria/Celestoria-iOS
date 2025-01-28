@@ -26,11 +26,10 @@ class SpaceEntity: Entity {
     }
 
     // MARK: - Initialization
-    init(coordinator: SpaceCoordinator, backgroundImageName: String) {
+    init(coordinator: SpaceCoordinator? = nil, backgroundImageName: String) {
         self.coordinator = coordinator
         self.backgroundImageName = backgroundImageName
         super.init()
-        os.Logger.info("Space Entity initialized with background: \(backgroundImageName)")
         setupSpaceEnvironment()
     }
 

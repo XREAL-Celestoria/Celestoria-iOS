@@ -14,6 +14,7 @@ final class MemoryDetailViewModel: ObservableObject {
     private let memoryRepository: MemoryRepository
     private let deleteMemoryUseCase: DeleteMemoryUseCase
     private let logger = Logger(subsystem: "com.celestoria", category: "MemoryDetailViewModel")
+    private let profileUseCase: ProfileUseCase?
     
     @Published private(set) var memory: Memory
     @Published var popupData: PopupData? // Data for the popup
@@ -21,13 +22,25 @@ final class MemoryDetailViewModel: ObservableObject {
     @Published var videoURLStatus: String = ""
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
-
-    init(memory: Memory, memoryRepository: MemoryRepository) {
+    @Published var userProfile: UserProfile? = nil
+    
+    init(
+        memory: Memory,
+        memoryRepository: MemoryRepository,
+        profileUseCase: ProfileUseCase? = nil
+    ) {
         self.memory = memory
         self.memoryRepository = memoryRepository
         self.deleteMemoryUseCase = DeleteMemoryUseCase(memoryRepository: memoryRepository)
+        self.profileUseCase = profileUseCase
+
         formatDate()
         checkVideoURL()
+        
+        // ★ 메모리 작성자 프로필 가져오기
+        Task {
+            await fetchUserProfile()
+        }
     }
 
     private func formatDate() {
@@ -55,13 +68,27 @@ final class MemoryDetailViewModel: ObservableObject {
             }
         }
     }
+    
+    private func fetchUserProfile() async {
+        guard let profileUseCase = profileUseCase else { return }
+        do {
+            let fetchedProfile = try await profileUseCase.fetchProfileByUserId(userId: memory.userId)
+            self.userProfile = fetchedProfile
+        } catch {
+            logger.error("Failed to fetch user profile: \(error.localizedDescription)")
+        }
+    }
 
     func deleteMemory() async throws {
         isLoading = true
         defer { isLoading = false }
         do {
             logger.info("Attempting to delete memory with ID: \(self.memory.id.uuidString)")
-            try await deleteMemoryUseCase.execute(memoryId: self.memory.id, videoPath: self.memory.videoURL, thumbnailPath: self.memory.thumbnailURL)
+            try await deleteMemoryUseCase.execute(
+                memoryId: self.memory.id,
+                videoPath: self.memory.videoURL,
+                thumbnailPath: self.memory.thumbnailURL
+            )
             logger.info("Memory successfully deleted.")
         } catch {
             logger.error("Failed to delete memory: \(error.localizedDescription)")

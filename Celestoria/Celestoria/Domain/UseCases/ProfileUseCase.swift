@@ -20,6 +20,10 @@ struct ProfileUseCase {
     func fetchProfile() async throws -> UserProfile {
         try await authRepository.fetchProfile()
     }
+
+    func fetchProfileByUserId(userId: UUID) async throws -> UserProfile {
+        try await authRepository.fetchProfileByUserId(userId: userId)
+    }
     
     func updateProfile(
         name: String? = nil,

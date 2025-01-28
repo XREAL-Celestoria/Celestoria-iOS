@@ -12,6 +12,6 @@ struct ExploreUserCardItem: Identifiable {
     let userName: String
     let userProfileImageName: String
     let memoryStars: Int
-    let constellations: Int
+    // let constellations: Int
     let imageName: String
 }

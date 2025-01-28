@@ -77,6 +77,8 @@
 		2FE857FF2D434ABA0055902B /* PopupData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE857FE2D434ABA0055902B /* PopupData.swift */; };
 		2FE858032D437BF20055902B /* VisualEffectBlur.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE858022D437BF20055902B /* VisualEffectBlur.swift */; };
 		2FE858052D43D3980055902B /* TextField+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE858042D43D3980055902B /* TextField+.swift */; };
+		A2198CA32D48812500B0AF65 /* ExploreUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2198CA22D48812500B0AF65 /* ExploreUseCase.swift */; };
+		A2198CA52D48814300B0AF65 /* ExploreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2198CA42D48814300B0AF65 /* ExploreViewModel.swift */; };
 		A21E477E2D38CD55002B60FA /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = A21E477D2D38CD55002B60FA /* RealityKitContent */; };
 		A2B8DB412D42AEC7001B5663 /* MemoryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */; };
 		A2B8DB782D42B409001B5663 /* CelestoriaVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */; };
@@ -152,6 +154,8 @@
 		2FE857FE2D434ABA0055902B /* PopupData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupData.swift; sourceTree = "<group>"; };
 		2FE858022D437BF20055902B /* VisualEffectBlur.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualEffectBlur.swift; sourceTree = "<group>"; };
 		2FE858042D43D3980055902B /* TextField+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TextField+.swift"; sourceTree = "<group>"; };
+		A2198CA22D48812500B0AF65 /* ExploreUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreUseCase.swift; sourceTree = "<group>"; };
+		A2198CA42D48814300B0AF65 /* ExploreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewModel.swift; sourceTree = "<group>"; };
 		A21E47782D38CD55002B60FA /* Celestoria.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Celestoria.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A21E477C2D38CD55002B60FA /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
 		A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryDetailView.swift; sourceTree = "<group>"; };
@@ -268,6 +272,7 @@
 			children = (
 				2F3671C82D3D76ED0048D9AD /* SpaceCoordinator.swift */,
 				2F3671D02D3D7AF90048D9AD /* MainViewModel.swift */,
+				A2198CA42D48814300B0AF65 /* ExploreViewModel.swift */,
 				2F3672212D3E1E410048D9AD /* LoginViewModel.swift */,
 				2F510CE92D41449A004171E8 /* AddMemoryMainViewModel.swift */,
 				A2B8DB842D440536001B5663 /* SettingViewModel.swift */,
@@ -382,6 +387,7 @@
 			children = (
 				2F3672042D3DA2FE0048D9AD /* FetchMemoriesUseCase.swift */,
 				2F3672062D3DA3170048D9AD /* CreateMemoryUseCase.swift */,
+				A2198CA22D48812500B0AF65 /* ExploreUseCase.swift */,
 				A2FB5B5D2D47881D00294178 /* ProfileUseCase.swift */,
 				2F3672082D3DA32B0048D9AD /* DeleteMemoryUseCase.swift */,
 				2F3672292D3E35670048D9AD /* SignInWithAppleUseCase.swift */,
@@ -622,6 +628,7 @@
 				2F3671C92D3D76ED0048D9AD /* SpaceCoordinator.swift in Sources */,
 				2FE857F92D4344740055902B /* CircularButton.swift in Sources */,
 				2F510CE62D4135D3004171E8 /* AddMemoryMainView.swift in Sources */,
+				A2198CA52D48814300B0AF65 /* ExploreViewModel.swift in Sources */,
 				2F3672132D3DAAD00048D9AD /* MemoryStarEntity.swift in Sources */,
 				2F3671CB2D3D78000048D9AD /* GradientBorderContainer.swift in Sources */,
 				2FB501DC2D456280005FB0B6 /* MainButton.swift in Sources */,
@@ -656,6 +663,7 @@
 				A2B8DB832D43FA0C001B5663 /* SettingView.swift in Sources */,
 				2F510CEA2D41449A004171E8 /* AddMemoryMainViewModel.swift in Sources */,
 				2F3671D52D3D7C3C0048D9AD /* ErrorBannerView.swift in Sources */,
+				A2198CA32D48812500B0AF65 /* ExploreUseCase.swift in Sources */,
 				2FB501E62D46CDD6005FB0B6 /* MemoryDetailViewModel.swift in Sources */,
 				2F3672362D4111130048D9AD /* NavigationBar.swift in Sources */,
 				2FB501D52D455130005FB0B6 /* NavigationMenuButton.swift in Sources */,

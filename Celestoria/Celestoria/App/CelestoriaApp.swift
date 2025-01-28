@@ -16,11 +16,13 @@ struct CelestoriaApp: App {
         WindowGroup {
             ContentView()
                 .frame(width: 1280, height: 720)
+                .environmentObject(diContainer.spaceCoordinator)
                 .environmentObject(diContainer.appModel)
                 .environmentObject(diContainer.mainViewModel)
                 .environmentObject(diContainer.loginViewModel)
                 .environmentObject(diContainer.settingViewModel)
                 .environmentObject(diContainer.galaxyViewModel)
+                .environmentObject(diContainer.exploreViewModel)
         }
         .windowResizability(.contentSize)
 
@@ -43,10 +45,14 @@ struct CelestoriaApp: App {
 
         WindowGroup(id: "Memory-Detail", for: Memory.self) { $memory in
             if let unwrappedMemory = $memory.wrappedValue {
-                MemoryDetailView(memory: unwrappedMemory, memoryRepository: diContainer.memoryRepository)
-                    .frame(width: 1280, height: 720)
-                    .environmentObject(diContainer.appModel)
-                    .environmentObject(diContainer.spaceCoordinator)
+                MemoryDetailView(
+                    memory: unwrappedMemory,
+                    memoryRepository: diContainer.memoryRepository,
+                    profileUseCase: diContainer.profileUseCase
+                )
+                .frame(width: 1280, height: 720)
+                .environmentObject(diContainer.appModel)
+                .environmentObject(diContainer.spaceCoordinator)
             } else {
                 Text("No memory provided.")
                     .frame(width: 1280, height: 720)

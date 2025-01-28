@@ -22,6 +22,7 @@ final class DIContainer: ObservableObject {
     let settingViewModel: SettingViewModel
     let galaxyViewModel: GalaxyViewModel
     var memoryDetailViewModel: MemoryDetailViewModel?
+    let exploreViewModel: ExploreViewModel
 
     // Supabase Client
     let supabaseClient: SupabaseClient
@@ -38,7 +39,8 @@ final class DIContainer: ObservableObject {
     private let signInWithAppleUseCase: SignInWithAppleUseCase
     private let deleteAccountUseCase: DeleteAccountUseCase
     private let signOutUseCase: SignOutUseCase
-    private let profileUseCase: ProfileUseCase
+    let profileUseCase: ProfileUseCase
+    private let exploreUseCase: ExploreUseCase
 
     init() {
         Logger.info("Initializing DIContainer...")
@@ -71,15 +73,26 @@ final class DIContainer: ObservableObject {
             authRepository: authRepository,
             mediaRepository: mediaRepository
         )
+        self.exploreUseCase = ExploreUseCase(
+            authRepository: authRepository,
+            memoryRepository: memoryRepository
+        )
 
         // Initialize ViewModels and Coordinators
-        self.spaceCoordinator = SpaceCoordinator(appModel: appModel)
+         self.spaceCoordinator = SpaceCoordinator(
+            appModel: appModel,
+            memoryRepository: memoryRepository,
+            profileUseCase: profileUseCase
+        )
         self.mainViewModel = MainViewModel(
             fetchMemoriesUseCase: fetchMemoriesUseCase,
             deleteMemoryUseCase: deleteMemoryUseCase,
             spaceCoordinator: spaceCoordinator
         )
-        
+        self.exploreViewModel = ExploreViewModel(
+            exploreUseCase: exploreUseCase,
+            appModel: appModel
+        )
         self.loginViewModel = LoginViewModel(signInUseCase: signInWithAppleUseCase)
         self.addMemoryMainViewModel = AddMemoryMainViewModel(createMemoryUseCase: createMemoryUseCase, appModel: appModel)
         self.settingViewModel = SettingViewModel(

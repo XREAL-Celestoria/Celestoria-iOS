@@ -16,8 +16,12 @@ struct MemoryDetailView: View {
     @State private var showFullScreenVideo: Bool = false
     @State private var thumbnailLoaded: Bool = false
     
-    init(memory: Memory, memoryRepository: MemoryRepository) {
-        _viewModel = StateObject(wrappedValue: MemoryDetailViewModel(memory: memory, memoryRepository: memoryRepository))
+    init(memory: Memory, memoryRepository: MemoryRepository, profileUseCase: ProfileUseCase) {
+        _viewModel = StateObject(wrappedValue: MemoryDetailViewModel(
+            memory: memory,
+            memoryRepository: memoryRepository,
+            profileUseCase: profileUseCase
+        ))
     }
     
     var body: some View {
@@ -157,6 +161,7 @@ struct MemoryInfoView: View {
     @ObservedObject var viewModel: MemoryDetailViewModel
     @Environment(\.dismissWindow) private var dismissWindow
     @EnvironmentObject var spaceCoordinator: SpaceCoordinator
+    @EnvironmentObject var appModel: AppModel
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -172,10 +177,7 @@ struct MemoryInfoView: View {
                 .edgesIgnoringSafeArea(.all)
             
             HStack(alignment: .top) {
-                Image("CardUserProfileImage")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 52, height: 52, alignment: .leading)
+                profileImageSection
                     .padding(.leading, 60)
                     .padding(.top, 28)
                 
@@ -183,19 +185,18 @@ struct MemoryInfoView: View {
                 
                 VStack(alignment: .leading) {
                     HStack {
-                        Text("Seoul")
-                            .foregroundColor(.NebulaWhite)
-                            .font(.system(size: 12, weight: .medium))
-                        
-                        Circle()
-                            .fill(Color.NebulaWhite.opacity(0.6))
-                            .frame(width: 4, height: 4)
-                            .padding(.leading, 8)
+//                        Text("Seoul")
+//                            .foregroundColor(.NebulaWhite)
+//                            .font(.system(size: 12, weight: .medium))
+//                        Circle()
+//                            .fill(Color.NebulaWhite.opacity(0.6))
+//                            .frame(width: 4, height: 4)
+//                            .padding(.leading, 8)
                         
                         Text(viewModel.formattedDate)
                             .foregroundColor(.NebulaWhite)
                             .font(.system(size: 12, weight: .medium))
-                            .padding(.leading, 8)
+//                            .padding(.leading, 8)
                         
                         Spacer()
                     }
@@ -216,21 +217,65 @@ struct MemoryInfoView: View {
                 .padding(.top, 28)
             }
             
-            Button(action: {
-                viewModel.showDeletePopup(dismissWindow: {
-                    dismissWindow(id: "Memory-Detail")
-                }, onMemoryDeleted: { deletedMemory in
-                    spaceCoordinator.removeMemoryStar(with: viewModel.memory.id)
-                })
-            }) {
-                Image("DeleteButton")
-                    .resizable()
-                    .scaledToFit()
+            if let currentUserId = appModel.userId,
+               currentUserId == viewModel.memory.userId {
+                Button(action: {
+                    viewModel.showDeletePopup(
+                        dismissWindow: {
+                            dismissWindow(id: "Memory-Detail")
+                        },
+                        onMemoryDeleted: { deletedMemory in
+                            spaceCoordinator.removeMemoryStar(with: viewModel.memory.id)
+                        }
+                    )
+                }) {
+                    Image("DeleteButton")
+                        .resizable()
+                        .scaledToFit()
+                }
+                .frame(width: 44, height: 44)
+                .padding(.trailing, 56)
+                .padding(.top, 32)
+                .buttonStyle(MainButtonStyle())
             }
-            .frame(width: 44, height: 44)
-            .padding(.trailing, 56)
-            .padding(.top, 32)
-            .buttonStyle(MainButtonStyle())
+        }
+    }
+
+    // MARK: - 프로필 이미지 섹션
+    @ViewBuilder
+    private var profileImageSection: some View {
+        if let userProfile = viewModel.userProfile,
+           let urlString = userProfile.profileImageURL,
+           let url = URL(string: urlString) {
+            
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .empty:
+                    ProgressView()
+                        .frame(width: 52, height: 52)
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 52, height: 52)
+                        .clipShape(Circle())
+                case .failure(_):
+                    Image("CardUserProfileImage")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 52, height: 52)
+                        .clipShape(Circle())
+                @unknown default:
+                    EmptyView()
+                }
+            }
+        } else {
+            // 프로필이 없거나 URL이 없으면 기본 이미지
+            Image("CardUserProfileImage")
+                .resizable()
+                .scaledToFill()
+                .frame(width: 52, height: 52)
+                .clipShape(Circle())
         }
     }
 }

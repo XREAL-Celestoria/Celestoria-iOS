@@ -13,11 +13,12 @@ struct MainView: View {
     @EnvironmentObject var appModel: AppModel
     @Environment(\.openWindow) private var openWindow
     @Environment(\.openImmersiveSpace) private var openImmersiveSpace
+    @EnvironmentObject var spaceCoordinator: SpaceCoordinator
     
     var body: some View {
         VStack {
             HeaderView(title: "Celestoria", subtitle: "Spatial Video Social Network")
-                .padding(.top, 148)
+                .padding(.top, 108)
             
             Spacer()
                 .frame(height: 40)
@@ -28,7 +29,7 @@ struct MainView: View {
             .frame(width: 288, height: 60)
             
             Spacer()
-                .frame(height: 84)
+                .frame(height: 74)
             
             tabMenu
             
@@ -43,11 +44,16 @@ struct MainView: View {
             Task {
                 await openImmersiveSpace(id: appModel.immersiveSpaceID)
                 appModel.isImmersiveViewActive = true
-                
-                if !viewModel.hasLoadedInitialMemories {
-                    await viewModel.fetchMemories(for: userId)
-                    viewModel.hasLoadedInitialMemories = true
+        
+                // 현재 로드된 userId != 내 userId 면, 다시 "내 우주" 로드
+                if spaceCoordinator.currentLoadedUserId != userId {
+                    await spaceCoordinator.loadData(for: userId)
                 }
+                
+                // if !viewModel.hasLoadedInitialMemories {
+                //     await viewModel.fetchMemories(for: userId)
+                //     viewModel.hasLoadedInitialMemories = true
+                // }
             }
         }
     }
@@ -56,7 +62,7 @@ struct MainView: View {
 // MARK: - Subviews
 private extension MainView {
     var tabMenu: some View {
-        HStack(spacing: 40) {
+        HStack(spacing: 70) {
             MainTabButton(imageName: "Galaxy", text: "Galaxy") {
                 appModel.activeScreen = .galaxy
                 os.Logger.info("Move to Galaxy View")

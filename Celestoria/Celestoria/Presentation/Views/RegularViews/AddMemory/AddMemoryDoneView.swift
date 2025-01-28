@@ -11,6 +11,7 @@ struct AddMemoryDoneView: View {
     @EnvironmentObject private var appModel: AppModel
     @EnvironmentObject var viewModel: AddMemoryMainViewModel
     @Environment(\.dismissWindow) private var dismissWindow
+    @Environment(\.openWindow) private var openWindow
     @EnvironmentObject var spaceCoordinator: SpaceCoordinator
     
     var body: some View {
@@ -46,6 +47,9 @@ struct AddMemoryDoneView: View {
             
             Button(action: {
                 dismissWindow(id: "Add-Memory")
+                if let memory = viewModel.getLastUploadedMemory() {
+                    openWindow(value: memory)
+                }
             }) {
                 Text("View Memory Star")
                     .font(.system(size: 22, weight: .semibold))

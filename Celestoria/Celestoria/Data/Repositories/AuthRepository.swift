@@ -134,4 +134,44 @@ class AuthRepository: AuthRepositoryProtocol {
         
         return profile
     }
+
+    func fetchProfileByUserId(userId: UUID) async throws -> UserProfile {
+        let profiles: [UserProfile] = try await supabase
+            .from("user_profiles")
+            .select()
+            .eq("user_id", value: userId.uuidString)
+            .execute()
+            .value
+
+        guard let profile = profiles.first else {
+            throw NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Profile not found."])
+        }
+        
+        return profile
+    }
+
+    func fetchAllProfiles(excludingUserId: UUID?) async throws -> [UserProfile] {
+        var query = supabase
+            .from("user_profiles")
+            .select()
+
+        if let userId = excludingUserId {
+            query = query.neq("user_id", value: userId.uuidString)
+        }
+
+        return try await query.execute().value
+    }
+
+    func searchProfiles(keyword: String, excludingUserId: UUID?) async throws -> [UserProfile] {
+        var query = supabase
+            .from("user_profiles")
+            .select()
+            .ilike("name", value: "%\(keyword)%")
+
+        if let userId = excludingUserId {
+            query = query.neq("user_id", value: userId.uuidString)
+        }
+
+        return try await query.execute().value
+    }
 }
