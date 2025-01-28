@@ -164,7 +164,6 @@ class AddMemoryMainViewModel: ObservableObject {
         }
     }
 
-
     private func setThumbnailGeneratingFalseWithDelay() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.isThumbnailGenerating = false
