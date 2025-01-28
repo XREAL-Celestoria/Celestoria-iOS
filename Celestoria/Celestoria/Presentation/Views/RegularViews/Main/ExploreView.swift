@@ -46,7 +46,7 @@ struct ExploreView: View {
                         .frame(width: 320, height: 320, alignment: .center)
                         .padding(.top, 64)
 
-                    Text("Explore other people’s Galaxy!")
+                    Text("Explore other people's Galaxy!")
                         .foregroundColor(Color.NebulaWhite)
                         .font(.system(size: 22, weight: .bold))
                         .padding(.top, 32)
@@ -75,6 +75,7 @@ struct ExploreView: View {
                                         os.Logger.info("Displaying Explore Navigator View")
                                         appModel.showExploreNavigatorView = true
                                         openWindow(value: user.profile.userId)
+                                        dismissWindow()
                                     }
                                 )
                             }
