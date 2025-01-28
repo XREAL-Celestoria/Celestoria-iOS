@@ -45,15 +45,9 @@ struct MainView: View {
                 await openImmersiveSpace(id: appModel.immersiveSpaceID)
                 appModel.isImmersiveViewActive = true
         
-                // 현재 로드된 userId != 내 userId 면, 다시 "내 우주" 로드
                 if spaceCoordinator.currentLoadedUserId != userId {
                     await spaceCoordinator.loadData(for: userId)
                 }
-                
-                // if !viewModel.hasLoadedInitialMemories {
-                //     await viewModel.fetchMemories(for: userId)
-                //     viewModel.hasLoadedInitialMemories = true
-                // }
             }
         }
     }

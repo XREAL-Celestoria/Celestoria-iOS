@@ -43,10 +43,10 @@ enum Category: String, CaseIterable, Codable {
     
     var modelFileName: String {
         switch self {
-        case .ENTERTAINMENT: return "Uranus.usdz"
-        case .FAMILY: return "Neptune.usdz"
-        case .PET: return "Mars.usdz"
-        case .TRAVEL: return "Venus.usdz"
+        case .ENTERTAINMENT: return "Enter.usdc"
+        case .FAMILY: return "Family.usdz"
+        case .PET: return "Pet.usdz"
+        case .TRAVEL: return "Travel.usdc"
         }
     }
 }

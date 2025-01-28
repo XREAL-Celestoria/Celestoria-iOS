@@ -9,10 +9,6 @@
 /* Begin PBXBuildFile section */
 		2F3671B12D3D6A9E0048D9AD /* Color+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671B02D3D6A9E0048D9AD /* Color+.swift */; };
 		2F3671B32D3D6B660048D9AD /* Gradient+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671B22D3D6B660048D9AD /* Gradient+.swift */; };
-		2F3671BF2D3D751E0048D9AD /* Neptune.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 2F3671BA2D3D751E0048D9AD /* Neptune.usdz */; };
-		2F3671C02D3D751E0048D9AD /* Uranus.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 2F3671BD2D3D751E0048D9AD /* Uranus.usdz */; };
-		2F3671C12D3D751E0048D9AD /* Mars.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 2F3671B82D3D751E0048D9AD /* Mars.usdz */; };
-		2F3671C22D3D751E0048D9AD /* Venus.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 2F3671BE2D3D751E0048D9AD /* Venus.usdz */; };
 		2F3671C92D3D76ED0048D9AD /* SpaceCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671C82D3D76ED0048D9AD /* SpaceCoordinator.swift */; };
 		2F3671CB2D3D78000048D9AD /* GradientBorderContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671CA2D3D78000048D9AD /* GradientBorderContainer.swift */; };
 		2F3671CD2D3D7A150048D9AD /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671CC2D3D7A150048D9AD /* Logger.swift */; };
@@ -80,6 +76,10 @@
 		2FE858052D43D3980055902B /* TextField+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE858042D43D3980055902B /* TextField+.swift */; };
 		A2198CA32D48812500B0AF65 /* ExploreUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2198CA22D48812500B0AF65 /* ExploreUseCase.swift */; };
 		A2198CA52D48814300B0AF65 /* ExploreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2198CA42D48814300B0AF65 /* ExploreViewModel.swift */; };
+		A2198CAA2D49063800B0AF65 /* Family.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A2198CA72D49063800B0AF65 /* Family.usdz */; };
+		A2198CAC2D49063800B0AF65 /* Enter.usdc in Resources */ = {isa = PBXBuildFile; fileRef = A2198CA62D49063800B0AF65 /* Enter.usdc */; };
+		A2198CAD2D49063800B0AF65 /* Pet.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A2198CA82D49063800B0AF65 /* Pet.usdz */; };
+		A2198CB12D4909BF00B0AF65 /* Travel.usdc in Resources */ = {isa = PBXBuildFile; fileRef = A2198CB02D4909BF00B0AF65 /* Travel.usdc */; };
 		A21E477E2D38CD55002B60FA /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = A21E477D2D38CD55002B60FA /* RealityKitContent */; };
 		A2B8DB412D42AEC7001B5663 /* MemoryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */; };
 		A2B8DB782D42B409001B5663 /* CelestoriaVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */; };
@@ -91,10 +91,6 @@
 /* Begin PBXFileReference section */
 		2F3671B02D3D6A9E0048D9AD /* Color+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+.swift"; sourceTree = "<group>"; };
 		2F3671B22D3D6B660048D9AD /* Gradient+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Gradient+.swift"; sourceTree = "<group>"; };
-		2F3671B82D3D751E0048D9AD /* Mars.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = Mars.usdz; sourceTree = "<group>"; };
-		2F3671BA2D3D751E0048D9AD /* Neptune.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = Neptune.usdz; sourceTree = "<group>"; };
-		2F3671BD2D3D751E0048D9AD /* Uranus.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = Uranus.usdz; sourceTree = "<group>"; };
-		2F3671BE2D3D751E0048D9AD /* Venus.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = Venus.usdz; sourceTree = "<group>"; };
 		2F3671C82D3D76ED0048D9AD /* SpaceCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceCoordinator.swift; sourceTree = "<group>"; };
 		2F3671CA2D3D78000048D9AD /* GradientBorderContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientBorderContainer.swift; sourceTree = "<group>"; };
 		2F3671CC2D3D7A150048D9AD /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
@@ -158,6 +154,10 @@
 		2FE858042D43D3980055902B /* TextField+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TextField+.swift"; sourceTree = "<group>"; };
 		A2198CA22D48812500B0AF65 /* ExploreUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreUseCase.swift; sourceTree = "<group>"; };
 		A2198CA42D48814300B0AF65 /* ExploreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewModel.swift; sourceTree = "<group>"; };
+		A2198CA62D49063800B0AF65 /* Enter.usdc */ = {isa = PBXFileReference; lastKnownFileType = file; path = Enter.usdc; sourceTree = "<group>"; };
+		A2198CA72D49063800B0AF65 /* Family.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = Family.usdz; sourceTree = "<group>"; };
+		A2198CA82D49063800B0AF65 /* Pet.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = Pet.usdz; sourceTree = "<group>"; };
+		A2198CB02D4909BF00B0AF65 /* Travel.usdc */ = {isa = PBXFileReference; lastKnownFileType = file; path = Travel.usdc; sourceTree = "<group>"; };
 		A21E47782D38CD55002B60FA /* Celestoria.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Celestoria.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A21E477C2D38CD55002B60FA /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
 		A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryDetailView.swift; sourceTree = "<group>"; };
@@ -249,10 +249,10 @@
 		2F3671AE2D3D62070048D9AD /* Entities */ = {
 			isa = PBXGroup;
 			children = (
-				2F3671B82D3D751E0048D9AD /* Mars.usdz */,
-				2F3671BA2D3D751E0048D9AD /* Neptune.usdz */,
-				2F3671BD2D3D751E0048D9AD /* Uranus.usdz */,
-				2F3671BE2D3D751E0048D9AD /* Venus.usdz */,
+				A2198CA62D49063800B0AF65 /* Enter.usdc */,
+				A2198CA72D49063800B0AF65 /* Family.usdz */,
+				A2198CA82D49063800B0AF65 /* Pet.usdz */,
+				A2198CB02D4909BF00B0AF65 /* Travel.usdc */,
 				2F36720E2D3DAA6E0048D9AD /* ConstellationBackGroundEntity.swift */,
 				2F3672102D3DAAA40048D9AD /* ConstellationSpaceEntity.swift */,
 				2F3672122D3DAAD00048D9AD /* MemoryStarEntity.swift */,
@@ -596,10 +596,10 @@
 			files = (
 				2F8800BF2D38CE6800220F89 /* Preview Assets.xcassets in Resources */,
 				2F8800C02D38CE6800220F89 /* Assets.xcassets in Resources */,
-				2F3671BF2D3D751E0048D9AD /* Neptune.usdz in Resources */,
-				2F3671C02D3D751E0048D9AD /* Uranus.usdz in Resources */,
-				2F3671C12D3D751E0048D9AD /* Mars.usdz in Resources */,
-				2F3671C22D3D751E0048D9AD /* Venus.usdz in Resources */,
+				A2198CAA2D49063800B0AF65 /* Family.usdz in Resources */,
+				A2198CAC2D49063800B0AF65 /* Enter.usdc in Resources */,
+				A2198CAD2D49063800B0AF65 /* Pet.usdz in Resources */,
+				A2198CB12D4909BF00B0AF65 /* Travel.usdc in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
