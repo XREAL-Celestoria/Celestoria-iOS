@@ -24,7 +24,7 @@ struct AddMemoryButton: View {
             .background(LinearGradient.GradientSub)
             .cornerRadius(16)
         }
-        .buttonStyle(PlainButtonStyle())
+        .buttonStyle(MainButtonStyle())
         .foregroundColor(.NebulaBlack)
     }
 }

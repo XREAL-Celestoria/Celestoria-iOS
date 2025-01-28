@@ -22,15 +22,14 @@ struct GradientBorderContainer: View {
                     RoundedRectangle(cornerRadius: 44)
                         .stroke(
                             LinearGradient.GradientMain,
-                            lineWidth: 8
+                            lineWidth: 16
                         )
                 )
             
             content
-                .padding(16)
+                .padding(8)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .clipShape(RoundedRectangle(cornerRadius: 44))
+                .clipShape(RoundedRectangle(cornerRadius: 74))
         }
-        .padding(4)
     }
 }

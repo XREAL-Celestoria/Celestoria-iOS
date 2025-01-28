@@ -38,7 +38,6 @@ struct ContentView: View {
                             appModel.showAddMemoryView = false
                         }
                 }
-                
             case .galaxy:
                 GradientBorderContainer {
                     GalaxyView()

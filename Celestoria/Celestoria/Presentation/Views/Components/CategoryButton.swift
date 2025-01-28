@@ -34,6 +34,8 @@ struct CategoryButton: View {
                         .foregroundColor(.NebulaWhite)
                 }
             }
+            .buttonStyle(MainButtonStyle())
+            
             Text(category.displayName)
                 .fixedSize(horizontal: true, vertical: false)
                 .foregroundStyle(

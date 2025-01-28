@@ -8,13 +8,6 @@
 import SwiftUI
 import PhotosUI
 
-// MARK: - Button Styles
-private struct NoEffectButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-    }
-}
-
 struct SettingView: View {
     @EnvironmentObject var appModel: AppModel
     @EnvironmentObject var settingViewModel: SettingViewModel
@@ -447,7 +440,7 @@ private struct ThumbnailSelectorView: View {
                                 isSelected: selectedThumbnail == index
                             )
                         }
-                        .buttonStyle(NoEffectButtonStyle())
+                        .buttonStyle(MainButtonStyle())
                         .overlay(
                             RoundedRectangle(cornerRadius: 10)
                             .inset(by: 0.25)

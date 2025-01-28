@@ -171,6 +171,7 @@ private struct GalaxyButtonGrid: View {
                                     }
                                 }
                             }
+                            .buttonStyle(MainButtonStyle())
                             .frame(width: 215, height: 195)
                         }
                     }

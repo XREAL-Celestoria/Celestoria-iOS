@@ -34,7 +34,7 @@ struct AddMemoryMainView: View {
                     
                     // Right View
                     RightView()
-                        .frame(width: geometry.size.width / 2, height: geometry.size.height)
+                        .frame(width: geometry.size.width / 2, height: geometry.size.height )
                 }
                 .background(
                     Group {
