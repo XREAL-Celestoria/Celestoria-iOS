@@ -13,7 +13,7 @@ struct CelestoriaApp: App {
     @StateObject private var diContainer = DIContainer()
 
     var body: some Scene {
-        WindowGroup {
+        WindowGroup("Main", id: "Main") {
             ContentView()
                 .frame(width: 1280, height: 720)
                 .environmentObject(diContainer.spaceCoordinator)
@@ -63,6 +63,7 @@ struct CelestoriaApp: App {
         WindowGroup(id: "Explore-Navigator", for: UUID.self) { $profileId in
             if let profileId = profileId {
                 ExploreNavigatorView(profileId: profileId)
+                    .frame(width: 720, height: 188)
                     .environmentObject(diContainer.appModel)
                     .environmentObject(diContainer.exploreViewModel)
                     .environmentObject(diContainer.spaceCoordinator)

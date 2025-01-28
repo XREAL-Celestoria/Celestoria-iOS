@@ -14,37 +14,68 @@ struct ExploreNavigatorView: View {
     @EnvironmentObject var exploreViewModel: ExploreViewModel
     @EnvironmentObject var spaceCoordinator: SpaceCoordinator
     @Environment(\.dismissWindow) private var dismissWindow
+    @Environment(\.openWindow) private var openWindow
 
     @State private var cardItem: ExploreUserCardItem?
     @State private var isLoading: Bool = true
 
     var body: some View {
-        ZStack {
-            if let cardItem = cardItem {
-                VStack {
-                    Text("Exploring \(cardItem.userName)'s Galaxy")
-                        .font(.title2)
-                        .foregroundColor(.white)
-
-                    if isLoading {
-                        ProgressView("Loading...")
-                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+        GradientBorderContainer {
+            ZStack {
+                VStack(spacing: 10) {
+                    NavigationBar(
+                        title: "Explore",
+                        action: {
+                            Task {
+                                dismissWindow()
+                                appModel.activeScreen = .explore
+                                openWindow(id: "Main")
+                                if let userId = appModel.userId {
+                                    await spaceCoordinator.loadData(for: userId)
+                                }
+                            }
+                        },
+                        buttonImageString: "chevron.left"
+                    )
+                    .padding(.horizontal, 4)
+                    .padding(.top, 4)
+                    
+                    if let cardItem = cardItem {
+                        HStack(spacing: 16) {
+                            Text("\(cardItem.userName)'s Galaxy")
+                                .font(.system(size: 32, weight: .bold))
+                                .foregroundColor(.white)
+                                .offset(y: -4)
+                            Spacer()
+                                .frame(width: 10)
+                            Image("Memory-icon")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 24, height: 24)
+                            
+                            Text("\(cardItem.memoryStars) Memory Stars")
+                                .font(.system(size: 24))
+                                .foregroundStyle(LinearGradient.GradientMain)
+                        }
+                        .frame(height: 32)
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 24)
                     } else {
-                        Text("Galaxy Loaded!")
-                            .font(.headline)
-                            .foregroundColor(.green)
+                        Text("User not found")
+                            .font(.title)
+                            .foregroundColor(.white)
+                            .padding(.top, 32)
                     }
-
-                    Button("Close") {
-                        dismissWindow()
-                    }
-                    .padding(.top, 20)
+                    
+                    Spacer()
                 }
-                .padding()
-            } else {
-                Text("User not found")
-                    .font(.title)
-                    .foregroundColor(.white)
+                .frame(width: 717, height: 184)
+                
+                if isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .scaleEffect(1.5)
+                }
             }
         }
         .onAppear {
@@ -63,8 +94,6 @@ struct ExploreNavigatorView: View {
         .onDisappear {
             appModel.showExploreNavigatorView = false
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black.edgesIgnoringSafeArea(.all))
     }
 }
 
