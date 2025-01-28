@@ -225,7 +225,9 @@ struct MemoryInfoView: View {
                             dismissWindow(id: "Memory-Detail")
                         },
                         onMemoryDeleted: { deletedMemory in
-                            spaceCoordinator.removeMemoryStar(with: viewModel.memory.id)
+                            Task {
+                                await spaceCoordinator.loadData(for: currentUserId)
+                            }
                         }
                     )
                 }) {
