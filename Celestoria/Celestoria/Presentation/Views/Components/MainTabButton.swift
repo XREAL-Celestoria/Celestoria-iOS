@@ -41,7 +41,7 @@ struct MainTabButton: View {
                     }
                     .frame(width: geometry.size.width, height: geometry.size.width)
                 }
-                .buttonStyle(MainTabButtonStyle())
+                .buttonStyle(MainButtonStyle())
                 
                 Spacer()
                     .frame(height: 16)  
@@ -56,15 +56,15 @@ struct MainTabButton: View {
     }
 }
 
-struct MainTabButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.9 : 1.0)
-            .animation(.easeInOut(duration: 0.2), value: configuration.isPressed)
-            .onChange(of: configuration.isPressed) { oldValue, newValue in
-                if newValue {
-                    AudioServicesPlaySystemSound(1104)
-                }
-            }
-    }
-}
+//struct MainTabButtonStyle: ButtonStyle {
+//    func makeBody(configuration: Configuration) -> some View {
+//        configuration.label
+//            .scaleEffect(configuration.isPressed ? 0.9 : 1.0)
+//            .animation(.easeInOut(duration: 0.2), value: configuration.isPressed)
+//            .onChange(of: configuration.isPressed) { oldValue, newValue in
+//                if newValue {
+//                    AudioServicesPlaySystemSound(1104)
+//                }
+//            }
+//    }
+//}
