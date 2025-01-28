@@ -25,7 +25,6 @@ struct CircularButton: View {
                     .foregroundColor(.NebulaWhite)
             }
         }
-        .background(.clear)
         .buttonStyle(MainButtonStyle())
     }
 }

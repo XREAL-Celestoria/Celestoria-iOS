@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import AudioToolbox
 import SwiftUI
 
 struct MainButton: View {
@@ -36,5 +37,12 @@ struct MainButtonStyle: ButtonStyle {
             .hoverEffect { effect, isActive, _ in
                 effect.scaleEffect(isActive ? 1.05 : 1.0)
             }
+        
+            .onChange(of: configuration.isPressed) { oldValue, newValue in
+                if newValue {
+                    AudioServicesPlaySystemSound(1104)
+                }
+            }
+            .scaleEffect(configuration.isPressed ? 0.9 : 1.0)
     }
 }
