@@ -9,21 +9,15 @@ import SwiftUI
 
 struct GradientBorderContainer: View {
     let content: AnyView
-    
+
     init<Content: View>(@ViewBuilder content: () -> Content) {
         self.content = AnyView(content())
     }
-    
+
     var body: some View {
         ZStack {
-//            Color.NebulaBlack
-//                .ignoresSafeArea()
-
-            content
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .clipShape( 
-                    RoundedRectangle(cornerRadius: 44)
-                )
+            RoundedRectangle(cornerRadius: 44)
+                .fill(Color.NebulaBlack)
                 .overlay(
                     RoundedRectangle(cornerRadius: 44)
                         .stroke(
@@ -31,9 +25,12 @@ struct GradientBorderContainer: View {
                             lineWidth: 8
                         )
                 )
+            
+            content
+                .padding(16)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .clipShape(RoundedRectangle(cornerRadius: 44))
         }
-        .background(Color.NebulaBlack.cornerRadius(44))
         .padding(4)
     }
 }
-

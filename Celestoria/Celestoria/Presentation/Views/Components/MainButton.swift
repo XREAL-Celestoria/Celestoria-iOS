@@ -7,7 +7,6 @@
 
 import Foundation
 import SwiftUI
-import Vision
 
 struct MainButton: View {
     let title: String
@@ -24,8 +23,8 @@ struct MainButton: View {
                             AnyShapeStyle(LinearGradient.GradientSub) :
                                 AnyShapeStyle(Color.NebulaWhite.opacity(0.1)))
                 .cornerRadius(16)
-                .buttonStyle(MainButtonStyle())
         }
+        .buttonStyle(MainButtonStyle())
     }
 }
 
@@ -34,11 +33,6 @@ struct MainButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .scaleEffect(configuration.isPressed ? 0.9 : 1.0)
-            .hoverEffect(.highlight)
-            .hoverEffect { effect, isActive, _ in
-                effect.scaleEffect(isActive ? 1.05 : 1)
-            }
             .animation(.easeInOut(duration: 0.2), value: configuration.isPressed)
-        
     }
 }

@@ -432,7 +432,7 @@ private struct ThumbnailSelectorView: View {
                                 .foregroundColor(.NebulaWhite)
                         }
                     }
-                    .buttonStyle(CircularButtonStyle())
+                    .buttonStyle(MainButtonStyle())
                 }
                 .padding(.horizontal, 60)
                 .padding(.top, 40)
