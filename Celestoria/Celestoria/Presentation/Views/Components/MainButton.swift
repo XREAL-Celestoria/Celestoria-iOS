@@ -32,7 +32,9 @@ struct MainButton: View {
 struct MainButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .scaleEffect(configuration.isPressed ? 0.9 : 1.0)
-            .animation(.easeInOut(duration: 0.2), value: configuration.isPressed)
+            .hoverEffect(.highlight)
+            .hoverEffect { effect, isActive, _ in
+                effect.scaleEffect(isActive ? 1.05 : 1.0)
+            }
     }
 }
