@@ -88,24 +88,22 @@ class MemoryStarEntity: Entity, HasModel, HasCollision {
     func loadModel(for category: Category) async {
         let modelName = category.modelFileName
         do {
-            // Load model
             let modelEntity = try await ModelEntity(named: modelName)
             
-            // ENTERTAINMENT 카테고리인 경우 180도 회전
             if category == .ENTERTAINMENT {
-                modelEntity.orientation = simd_quatf(angle: .pi, axis: [0, 1, 0])  // Y축을 기준으로 180도 회전
+                modelEntity.orientation = simd_quatf(angle: .pi, axis: [0, 1, 0])
             }
             
-            // Add collision components & interaction effects
             modelEntity.generateCollisionShapes(recursive: true)
+
             modelEntity.components[HoverEffectComponent.self] = HoverEffectComponent(.spotlight(
                 HoverEffectComponent.SpotlightHoverEffectStyle(
-                    color: UIColor(Color(hex: "A7E9FE")), strength: 10.0
+                    color: UIColor(Color(hex: "A7E9FE")), strength: 15.0
                 )
             ))
+            
             modelEntity.components[InputTargetComponent.self] = InputTargetComponent(allowedInputTypes: .indirect)
             
-            // Attach to parent entity
             self.addChild(modelEntity)
         } catch {
             print("Failed to load model '\(modelName)': \(error.localizedDescription)")

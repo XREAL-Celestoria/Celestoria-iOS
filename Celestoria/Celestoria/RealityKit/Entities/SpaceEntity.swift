@@ -124,23 +124,20 @@ class SpaceEntity: Entity {
     }
     
     private func createDirectionalLight() -> Entity {
-        // DirectionalLight를 포함한 Entity 생성
         let lightEntity = Entity()
-        
-        // LightComponent 추가
-        var lightComponent = DirectionalLightComponent()
-        lightComponent.intensity = 2000 // 빛의 강도
-        lightComponent.color = .white // 빛의 색상
-        lightEntity.components[DirectionalLightComponent.self] = lightComponent
 
-        // 빛의 방향 설정
-        lightEntity.look(at: [0, 0, 0], from: [1, 1, 1], relativeTo: nil)
-        
+        var lightComponent = DirectionalLightComponent()
+        lightComponent.intensity = 5000
+        lightComponent.color = .white
+
+    
+        lightEntity.position = SIMD3(2, 5, -2) // 조명을 특정 방향에서 비추도록 배치
+        lightEntity.look(at: [0, 0, 0], from: [2, 5, -2], relativeTo: nil)
+
+        lightEntity.components[DirectionalLightComponent.self] = lightComponent
         return lightEntity
     }
-
-
-
+    
     func addStar(for memory: Memory) async {
         os.Logger.info("SpaceEntity: Adding a new star for Memory ID=\(memory.id)")
         

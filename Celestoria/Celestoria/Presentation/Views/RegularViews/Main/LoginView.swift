@@ -11,7 +11,7 @@ import AuthenticationServices
 struct LoginView: View {
     @EnvironmentObject private var appModel: AppModel
     @EnvironmentObject var viewModel: LoginViewModel
-
+    
     var body: some View {
         GeometryReader { geometry in
             VStack {
@@ -32,15 +32,42 @@ struct LoginView: View {
                 .signInWithAppleButtonStyle(.white)
             }
             .padding()
-            
-            if let errorMessage = viewModel.errorMessage {
-                ErrorBannerView(message: errorMessage) {
-                    viewModel.errorMessage = nil
+            .onChange(of: viewModel.errorMessage) { newValue in
+                if newValue != nil {
+                    viewModel.showErrorPopup = true
                 }
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal, 16)
-                .padding(.top, geometry.safeAreaInsets.top + 10)
-                .zIndex(1)
+            }
+            .onAppear {
+                viewModel.showErrorPopup = false
+                viewModel.errorMessage = nil
+            }
+            
+            .onDisappear {
+                viewModel.showErrorPopup = false
+                viewModel.errorMessage = nil
+            }
+            
+            if viewModel.showErrorPopup, let errorMessage = viewModel.errorMessage {
+                ZStack {
+                    Color.black.opacity(0.6)
+                        .ignoresSafeArea()
+                    
+                    PopupErrorView(
+                        title: "Login Error",
+                        notes: errorMessage,
+                        trailingButtonText: "Close",
+                        circularAction: {
+                            viewModel.showErrorPopup = false
+                            viewModel.errorMessage = nil
+                        },
+                        buttonAction: {
+                            viewModel.showErrorPopup = false
+                            viewModel.errorMessage = nil
+                        },
+                        buttonImageString: "xmark"
+                    )
+                    .frame(width: 644, height: 324)
+                }
             }
         }
     }

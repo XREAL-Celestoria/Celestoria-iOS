@@ -39,23 +39,19 @@ final class SpaceCoordinator: ObservableObject {
             onCompletion()
             return
         }
-        
         do {
             // SpaceEntity 초기화
             let backgroundImageName = appModel.selectedStarfield?.imageName ?? "Starfield-gray"
             let newSpaceEntity = SpaceEntity(coordinator: self, backgroundImageName: backgroundImageName)
             self.spaceEntity = newSpaceEntity
             os.Logger.info("SpaceCoordinator: Created SpaceEntity with background \(backgroundImageName)")
-            isLoading = false
             onCompletion() // 별 생성 완료 후 클로저 호출
         } catch {
             os.Logger.error("SpaceCoordinator initialize failed: \(error.localizedDescription)")
-            isLoading = false
             onCompletion() // 에러 발생 시에도 호출
         }
     }
 
-    
     @MainActor
     func updateBackground(with imageName: String) {
         guard let spaceEntity = spaceEntity else {
@@ -83,9 +79,9 @@ final class SpaceCoordinator: ObservableObject {
         memories = newMemories
         Task { @MainActor in
             isLoading = true
+            defer { isLoading = false }
             await spaceEntity?.updateStars(with: memories) {
                 os.Logger.info("Stars updated for initial memories.")
-                self.isLoading = false
                 onCompletion()
             }
         }

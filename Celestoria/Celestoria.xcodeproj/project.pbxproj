@@ -64,6 +64,7 @@
 		2F8800BF2D38CE6800220F89 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F8800B02D38CE6800220F89 /* Preview Assets.xcassets */; };
 		2F8800C02D38CE6800220F89 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F8800B32D38CE6800220F89 /* Assets.xcassets */; };
 		2F8800C42D38D3AE00220F89 /* DIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800C32D38D3AE00220F89 /* DIContainer.swift */; };
+		2FA858DF2D4A5D74005F131D /* PopupErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA858DE2D4A5D74005F131D /* PopupErrorView.swift */; };
 		2FB501D32D454FA3005FB0B6 /* GalaxyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB501D22D454FA3005FB0B6 /* GalaxyViewModel.swift */; };
 		2FB501D52D455130005FB0B6 /* NavigationMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB501D42D455130005FB0B6 /* NavigationMenuButton.swift */; };
 		2FB501D82D45577D005FB0B6 /* StarField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB501D72D45577D005FB0B6 /* StarField.swift */; };
@@ -143,6 +144,7 @@
 		2F8800B62D38CE6800220F89 /* SpaceImmersiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceImmersiveView.swift; sourceTree = "<group>"; };
 		2F8800B72D38CE6800220F89 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2F8800C32D38D3AE00220F89 /* DIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DIContainer.swift; sourceTree = "<group>"; };
+		2FA858DE2D4A5D74005F131D /* PopupErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupErrorView.swift; sourceTree = "<group>"; };
 		2FB501D22D454FA3005FB0B6 /* GalaxyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalaxyViewModel.swift; sourceTree = "<group>"; };
 		2FB501D42D455130005FB0B6 /* NavigationMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationMenuButton.swift; sourceTree = "<group>"; };
 		2FB501D72D45577D005FB0B6 /* StarField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarField.swift; sourceTree = "<group>"; };
@@ -218,6 +220,7 @@
 				2F510CED2D416532004171E8 /* CategoryButton.swift */,
 				A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */,
 				2FE857F62D43425B0055902B /* PopupView.swift */,
+				2FA858DE2D4A5D74005F131D /* PopupErrorView.swift */,
 				2FB501D42D455130005FB0B6 /* NavigationMenuButton.swift */,
 				2FB501DB2D456280005FB0B6 /* MainButton.swift */,
 				2F6738202D4945FF00882ADC /* GradientBorderSmall.swift */,
@@ -633,6 +636,7 @@
 				2FB501D82D45577D005FB0B6 /* StarField.swift in Sources */,
 				2F3671C92D3D76ED0048D9AD /* SpaceCoordinator.swift in Sources */,
 				2FE857F92D4344740055902B /* CircularButton.swift in Sources */,
+				2FA858DF2D4A5D74005F131D /* PopupErrorView.swift in Sources */,
 				2F510CE62D4135D3004171E8 /* AddMemoryMainView.swift in Sources */,
 				A2198CA52D48814300B0AF65 /* ExploreViewModel.swift in Sources */,
 				2F3672132D3DAAD00048D9AD /* MemoryStarEntity.swift in Sources */,

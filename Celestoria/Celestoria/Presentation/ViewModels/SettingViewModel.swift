@@ -11,6 +11,8 @@ import os
 
 @MainActor
 class SettingViewModel: ObservableObject {
+    @Environment(\.dismissImmersiveSpace) private var dismissImmersiveSpace
+    
     private let deleteAccountUseCase: DeleteAccountUseCase
     private let signOutUseCase: SignOutUseCase
     private let profileUseCase: ProfileUseCase
@@ -71,6 +73,8 @@ class SettingViewModel: ObservableObject {
     func signOut() async throws {
         try await signOutUseCase.execute()
         appModel.userId = nil
+        await dismissImmersiveSpace()
+        appModel.isImmersiveViewActive = false
         appModel.activeScreen = .login
     }
     

@@ -10,7 +10,7 @@ import Combine
 import AuthenticationServices
 
 @MainActor
-class LoginViewModel: NSObject, ObservableObject {
+class LoginViewModel: NSObject, ObservableObject, ASAuthorizationControllerDelegate {
     private let signInUseCase: SignInWithAppleUseCase
     private var cancellables = Set<AnyCancellable>()
     private let profileUseCase: ProfileUseCase
@@ -18,6 +18,7 @@ class LoginViewModel: NSObject, ObservableObject {
     
     @Published var errorMessage: String?
     @Published var userId: UUID?
+    @Published var showErrorPopup: Bool = false
 
     init(
         signInUseCase: SignInWithAppleUseCase,
@@ -40,13 +41,15 @@ class LoginViewModel: NSObject, ObservableObject {
                 .receive(on: DispatchQueue.main)
                 .sink(receiveCompletion: { [weak self] completionResult in
                     if case .failure(let error) = completionResult {
-                        self?.errorMessage = error.localizedDescription
+                        self?.errorMessage = "Please try again."
+                        self?.showErrorPopup = true
                         completion(nil)
                     }
                 }, receiveValue: { [weak self] userId in
                     // 1) 애플 로그인(토큰) 인증 성공 → userId 얻음
                     self?.errorMessage = nil
                     self?.userId = userId
+                    self?.showErrorPopup = false
 
                     // 2) 이제 Supabase에서 프로필도 가져와 AppModel에 반영
                     Task {
@@ -64,7 +67,8 @@ class LoginViewModel: NSObject, ObservableObject {
                             // 끝
                             completion(userId)
                         } catch {
-                            self?.errorMessage = error.localizedDescription
+                            self?.errorMessage = "Please try again."
+                            self?.showErrorPopup = true
                             completion(nil)
                         }
                     }
@@ -72,7 +76,8 @@ class LoginViewModel: NSObject, ObservableObject {
                 .store(in: &cancellables)
         case .failure(let error):
             DispatchQueue.main.async {
-                self.errorMessage = error.localizedDescription
+                self.errorMessage = "Please try again."
+                self.showErrorPopup = true
                 completion(nil)
             }
         }
