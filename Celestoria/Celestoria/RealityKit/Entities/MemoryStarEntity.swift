@@ -80,7 +80,7 @@ class MemoryStarEntity: Entity, HasModel, HasCollision {
             modelEntity.generateCollisionShapes(recursive: true)
             modelEntity.components[HoverEffectComponent.self] = HoverEffectComponent(.spotlight(
                 HoverEffectComponent.SpotlightHoverEffectStyle(
-                    color: .magenta, strength: 10.0
+                    color: UIColor(Color(hex: "A7E9FE")), strength: 10.0
                 )
             ))
             modelEntity.components[InputTargetComponent.self] = InputTargetComponent(allowedInputTypes: .indirect)

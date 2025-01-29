@@ -23,13 +23,7 @@ class AddMemoryMainViewModel: ObservableObject {
     @Published var isThumbnailGenerating: Bool = false
     @Published var errorMessage: String?
     @Published var selectedCategory: Category?
-    @Published var selectedVideoItem: PhotosPickerItem? {
-        didSet {
-            if selectedVideoItem != nil {
-                handleVideoSelection(item: selectedVideoItem)
-            }
-        }
-    }
+    @Published var selectedVideoItem: PhotosPickerItem?
     @Published private(set) var lastUploadedMemory: Memory?
     @Published var thumbnailImage: UIImage?
     @Published var isUploading = false
