@@ -37,6 +37,7 @@ struct SpaceImmersiveView: View {
                     let mem = starEntity.memory
                     print("[DEBUG] Tapped Star's Memory => id: \(mem.id), title: \(mem.title), video: \(mem.videoURL ?? "nil")")
                     
+                    AudioServicesPlaySystemSound(1104)
                     Task { @MainActor in
                         await openMemoryDetailView(for: starEntity)
                     }

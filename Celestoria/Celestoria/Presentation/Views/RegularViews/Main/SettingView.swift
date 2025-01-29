@@ -367,7 +367,7 @@ private struct ThumbnailSettingView: View {
                     }
                 }
             }
-            .buttonStyle(.plain)
+            .buttonStyle(MainButtonStyle())
             .frame(maxWidth: .infinity)
             .padding(.top, 20)
             
