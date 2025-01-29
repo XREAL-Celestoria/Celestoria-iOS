@@ -81,6 +81,8 @@ class SettingViewModel: ObservableObject {
     func deleteAccount() async throws {
         try await deleteAccountUseCase.execute()
         appModel.userId = nil
+        await dismissImmersiveSpace()
+        appModel.isImmersiveViewActive = false
         appModel.activeScreen = .login
     }
     
