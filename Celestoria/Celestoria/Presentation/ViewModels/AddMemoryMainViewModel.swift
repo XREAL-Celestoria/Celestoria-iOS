@@ -25,8 +25,9 @@ class AddMemoryMainViewModel: ObservableObject {
     @Published var selectedCategory: Category?
     @Published var selectedVideoItem: PhotosPickerItem? {
         didSet {
-            resetVideoData()
-            handleVideoSelection(item: selectedVideoItem)
+            if selectedVideoItem != nil {
+                handleVideoSelection(item: selectedVideoItem)
+            }
         }
     }
     @Published private(set) var lastUploadedMemory: Memory?
@@ -123,6 +124,7 @@ class AddMemoryMainViewModel: ObservableObject {
         thumbnailImage = nil
         errorMessage = nil
         selectedCategory = nil
+        selectedVideoItem = nil
         title = ""
         note = ""
     }
