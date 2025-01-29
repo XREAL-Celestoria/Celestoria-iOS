@@ -71,6 +71,11 @@ class MemoryStarEntity: Entity, HasModel, HasCollision {
             // Load model
             let modelEntity = try await ModelEntity(named: modelName)
             
+            // ENTERTAINMENT 카테고리인 경우 180도 회전
+            if category == .ENTERTAINMENT {
+                modelEntity.orientation = simd_quatf(angle: .pi, axis: [0, 1, 0])  // Y축을 기준으로 180도 회전
+            }
+            
             // Add collision components & interaction effects
             modelEntity.generateCollisionShapes(recursive: true)
             modelEntity.components[HoverEffectComponent.self] = HoverEffectComponent()
