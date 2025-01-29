@@ -8,6 +8,7 @@
 import SwiftUI
 import RealityKit
 import os
+import AudioToolbox
 
 struct SpaceImmersiveView: View {
     @Environment(\.openWindow) private var openWindow
