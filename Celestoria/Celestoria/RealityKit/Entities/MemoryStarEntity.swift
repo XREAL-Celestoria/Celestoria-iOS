@@ -78,7 +78,11 @@ class MemoryStarEntity: Entity, HasModel, HasCollision {
             
             // Add collision components & interaction effects
             modelEntity.generateCollisionShapes(recursive: true)
-            modelEntity.components[HoverEffectComponent.self] = HoverEffectComponent()
+            modelEntity.components[HoverEffectComponent.self] = HoverEffectComponent(.spotlight(
+                HoverEffectComponent.SpotlightHoverEffectStyle(
+                    color: .magenta, strength: 10.0
+                )
+            ))
             modelEntity.components[InputTargetComponent.self] = InputTargetComponent(allowedInputTypes: .indirect)
             
             // Attach to parent entity
