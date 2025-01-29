@@ -36,8 +36,8 @@ struct CategoryButton: View {
                         .scaledToFit()
                         .frame(width: 24, height: 24)
                         .foregroundStyle(isSelected ? 
-                            LinearGradient.GradientSub : 
-                            Color.NebulaWhite)
+                            AnyShapeStyle(LinearGradient.GradientSub) : 
+                            AnyShapeStyle(Color.NebulaWhite))
                         .id(isSelected)
                 }
             }
