@@ -110,9 +110,9 @@ private struct LeftSettingView: View {
                     .padding(.vertical, 18)
                     .frame(maxWidth: 380, alignment: .center)
                     .background(Color(hex: "#1B212A"))
-                    .cornerRadius(20)
             }
             .buttonStyle(.plain)
+            .cornerRadius(20)
             .padding(.bottom, 50)
         }
         .alert("오류", isPresented: $showError) {
