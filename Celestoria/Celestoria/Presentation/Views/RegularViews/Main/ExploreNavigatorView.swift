@@ -37,8 +37,8 @@ struct ExploreNavigatorView: View {
                         },
                         buttonImageString: "chevron.left"
                     )
-                    .padding(.horizontal, 4)
-                    .padding(.top, 4)
+                    .padding(.horizontal, -8)
+                    .padding(.top, -8)
                     
                     if let cardItem = cardItem {
                         HStack(spacing: 16) {

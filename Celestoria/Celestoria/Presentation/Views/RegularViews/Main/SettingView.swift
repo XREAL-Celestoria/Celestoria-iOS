@@ -15,6 +15,9 @@ struct SettingView: View {
     @State private var showError: Bool = false
     @State private var errorMessage: String = ""
     
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.openImmersiveSpace) private var openImmersiveSpace
+    
     var body: some View {
         GeometryReader { geometry in
             HStack(spacing: 0) {
@@ -30,6 +33,21 @@ struct SettingView: View {
             Button("확인", role: .cancel) { }
         } message: {
             Text(errorMessage)
+        }
+        .onChange(of: scenePhase) { newPhase in
+            switch newPhase {
+            case .background, .inactive:
+                appModel.isImmersiveViewActive = false
+            case .active:
+                if appModel.userId != nil && !appModel.isImmersiveViewActive {
+                    Task {
+                        await openImmersiveSpace(id: appModel.immersiveSpaceID)
+                        appModel.isImmersiveViewActive = true
+                    }
+                }
+            default:
+                break
+            }
         }
     }
 }

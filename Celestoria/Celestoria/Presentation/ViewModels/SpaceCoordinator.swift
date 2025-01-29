@@ -34,8 +34,8 @@ final class SpaceCoordinator: ObservableObject {
     @MainActor
     func initialize(onCompletion: @escaping () -> Void = {}) async {
         isLoading = true
-//        onCompletion()
         guard spaceEntity == nil else {
+            isLoading = false
             onCompletion()
             return
         }
@@ -46,9 +46,11 @@ final class SpaceCoordinator: ObservableObject {
             let newSpaceEntity = SpaceEntity(coordinator: self, backgroundImageName: backgroundImageName)
             self.spaceEntity = newSpaceEntity
             os.Logger.info("SpaceCoordinator: Created SpaceEntity with background \(backgroundImageName)")
+            isLoading = false
             onCompletion() // 별 생성 완료 후 클로저 호출
         } catch {
             os.Logger.error("SpaceCoordinator initialize failed: \(error.localizedDescription)")
+            isLoading = false
             onCompletion() // 에러 발생 시에도 호출
         }
     }
@@ -77,19 +79,18 @@ final class SpaceCoordinator: ObservableObject {
         }
     }
     
-    
     func setInitialMemories(_ newMemories: [Memory], onCompletion: @escaping () -> Void = {}) {
         memories = newMemories
         Task { @MainActor in
             isLoading = true
             await spaceEntity?.updateStars(with: memories) {
-                os.Logger.info("SpaceCoordinator: setInitialMemories - Stars updated for initial memories.")
+                os.Logger.info("Stars updated for initial memories.")
+                self.isLoading = false
                 onCompletion()
             }
         }
     }
 
-    
     func handleNewMemory(_ memory: Memory) {
         guard !memories.contains(where: { $0.id == memory.id }) else {
             os.Logger.info("SpaceCoordinator: Memory already exists: \(memory.id)")
@@ -108,40 +109,34 @@ final class SpaceCoordinator: ObservableObject {
     @MainActor
     func loadData(for userId: UUID) async {
         isLoading = true
-        defer { isLoading = false }
-
-        os.Logger.info("SpaceCoordinator: loadData(for \(userId)) called")
+        defer { isLoading = false }  // 이 함수 리턴 직전에 무조건 false로
+        
+        os.Logger.info("loadData(for: \(userId)) called")
 
         do {
-            // 1) 유저 프로필 조회
             let profile = try await profileUseCase.fetchProfileByUserId(userId: userId)
             let starfieldName = profile.starfield ?? "Starfield-gray"
 
-            // 2) SpaceEntity 초기화 또는 배경 업데이트
             if spaceEntity == nil {
                 spaceEntity = SpaceEntity(coordinator: self, backgroundImageName: starfieldName)
-                os.Logger.info("SpaceCoordinator: Created new SpaceEntity for user \(userId)")
             } else {
                 spaceEntity?.updateBackground(with: starfieldName)
             }
 
-            // 3) 유저 메모리들 조회
             let userMemories = try await memoryRepository.fetchMemories(for: userId)
             memories = userMemories
-            os.Logger.info("SpaceCoordinator: fetched \(userMemories.count) memories for user \(userId)")
 
-            // 4) 별 업데이트
-            isLoading = true
-            await spaceEntity?.updateStars(with: userMemories) { [weak self] in
-                Task { @MainActor in
-                    self?.isLoading = false
-                    os.Logger.info("SpaceCoordinator: Stars update completed for user \(userId)")
-                }
+            // updateStars는 completion 받는다고 해도, 여기서 기다려도 좋음
+            await spaceEntity?.updateStars(with: userMemories) {
+                os.Logger.info("Stars update completed for user \(userId)")
             }
 
             self.currentLoadedUserId = userId
+
         } catch {
-            os.Logger.error("SpaceCoordinator loadData(for: \(userId)) failed: \(error.localizedDescription)")
+            // defer가 있기 때문에 여기서도 직접 끌 필요가 없음
+            os.Logger.error("loadData(for: \(userId)) failed: \(error.localizedDescription)")
         }
     }
+
 }

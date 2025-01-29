@@ -41,13 +41,14 @@ struct MainView: View {
         .background(Color.NebulaBlack.ignoresSafeArea())
         .overlay(loadingOverlay)
         .onAppear {
-            spaceCoordinator.isLoading = true
             guard let userId = appModel.userId else { return }
             Task {
+                // ImmersiveSpace 열기 로직은 동일
                 if !appModel.isImmersiveViewActive {
                     await openImmersiveSpace(id: appModel.immersiveSpaceID)
                     appModel.isImmersiveViewActive = true
                 }
+                // userId 달라야만 loadData 호출
                 if spaceCoordinator.currentLoadedUserId != userId {
                     await spaceCoordinator.loadData(for: userId)
                 }
@@ -85,7 +86,7 @@ private extension MainView {
             
             MainTabButton(imageName: "Explore", text: "Explore") {
                 appModel.activeScreen = .explore
-                os.Logger.info("Move to Galaxy View")
+                os.Logger.info("Move to Explore View")
             }
             .frame(width: 104, height: 152)
             

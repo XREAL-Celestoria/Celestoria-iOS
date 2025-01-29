@@ -15,6 +15,8 @@ struct ExploreView: View {
 
     @Environment(\.dismissWindow) private var dismissWindow
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.openImmersiveSpace) private var openImmersiveSpace
 
     var body: some View {
         NavigationStack {
@@ -162,6 +164,21 @@ struct ExploreView: View {
                 Task {
                     await exploreViewModel.fetchExploreUsers()
                 }
+            }
+        }
+        .onChange(of: scenePhase) { newPhase in
+            switch newPhase {
+            case .background, .inactive:
+                appModel.isImmersiveViewActive = false
+            case .active:
+                if appModel.userId != nil && !appModel.isImmersiveViewActive {
+                    Task {
+                        await openImmersiveSpace(id: appModel.immersiveSpaceID)
+                        appModel.isImmersiveViewActive = true
+                    }
+                }
+            default:
+                break
             }
         }
     }
