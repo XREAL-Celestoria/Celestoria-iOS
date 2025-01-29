@@ -18,6 +18,8 @@ struct ExploreView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.openImmersiveSpace) private var openImmersiveSpace
 
+    @FocusState private var isSearchFieldFocused: Bool
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -125,6 +127,7 @@ struct ExploreView: View {
                                             .foregroundColor(Color.NebulaWhite)
                                             .font(.system(size: 16))
                                             .tint(Color.NebulaWhite)
+                                            .focused($isSearchFieldFocused)
                                             .onSubmit {
                                                 Task {
                                                     await exploreViewModel.fetchExploreUsers()
