@@ -53,16 +53,36 @@ class MemoryStarEntity: Entity, HasModel, HasCollision {
     
     // MARK: - Animation
     private func addBlinkingAnimation() {
-        var transform = self.transform
-        transform.scale = Constants.pulseScale
+        var transformStart = self.transform
+        transformStart.scale = Constants.initialScale
         
-        let animationDefinition = FromToByAnimation(
-            to: transform,
+        var transformEnd = self.transform
+        transformEnd.scale = Constants.pulseScale
+        
+        // 커지는 애니메이션
+        let scaleUpAnimation = FromToByAnimation(
+            from: transformStart,
+            to: transformEnd,
+            duration: 1.5,
             bindTarget: .transform
         )
         
-        let animationResource = try! AnimationResource.generate(with: animationDefinition)
-        self.playAnimation(animationResource.repeat(duration: .infinity))
+        // 작아지는 애니메이션
+        let scaleDownAnimation = FromToByAnimation(
+            from: transformEnd,
+            to: transformStart,
+            duration: 1.5,
+            bindTarget: .transform
+        )
+        
+        // 두 애니메이션을 연결
+        let sequence = try! AnimationResource.sequence(with: [
+            .generate(with: scaleUpAnimation),
+            .generate(with: scaleDownAnimation)
+        ])
+        
+        // 시퀀스를 반복 재생
+        self.playAnimation(sequence.repeat())
     }
     
     func loadModel(for category: Category) async {
