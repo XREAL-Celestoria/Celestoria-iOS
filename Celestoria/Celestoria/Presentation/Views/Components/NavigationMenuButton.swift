@@ -33,13 +33,13 @@ struct NavigationMenuButton: View {
             .padding(.trailing, 20)
             .padding(.vertical, 12)
             .frame(maxWidth: 380, alignment: .leading)
-            .background(
-                isSelected
-                    ? .white.opacity(0.1)
-                    : .clear
-            )
-            .cornerRadius(20)
         }
+        .background(
+            isSelected
+                ? .white.opacity(0.1)
+                : .clear
+        )
+        .cornerRadius(20)
         .buttonStyle(.plain)
     }
 }
