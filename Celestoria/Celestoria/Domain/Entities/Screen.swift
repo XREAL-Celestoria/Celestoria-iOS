@@ -18,4 +18,5 @@ enum ActiveScreen {
     case galaxy
     case explore
     case setting
+    case terms
 }

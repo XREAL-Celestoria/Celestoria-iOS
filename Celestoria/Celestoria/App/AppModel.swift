@@ -71,6 +71,12 @@ final class AppModel: ObservableObject {
         }
     }
     
+    @Published var hasAcceptedTerms: Bool = false {
+        didSet {
+            Logger.info("Terms Accepted: \(hasAcceptedTerms)")
+        }
+    }
+    
     let immersiveSpaceID = "SpaceEnvironment"
     
     init() {

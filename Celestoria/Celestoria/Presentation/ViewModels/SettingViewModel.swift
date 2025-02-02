@@ -75,6 +75,7 @@ class SettingViewModel: ObservableObject {
         appModel.userId = nil
         await dismissImmersiveSpace()
         appModel.isImmersiveViewActive = false
+        appModel.hasAcceptedTerms = false
         appModel.activeScreen = .login
     }
     
@@ -83,6 +84,7 @@ class SettingViewModel: ObservableObject {
         appModel.userId = nil
         await dismissImmersiveSpace()
         appModel.isImmersiveViewActive = false
+        appModel.hasAcceptedTerms = false
         appModel.activeScreen = .login
     }
     

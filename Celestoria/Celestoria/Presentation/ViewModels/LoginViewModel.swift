@@ -46,25 +46,27 @@ class LoginViewModel: NSObject, ObservableObject, ASAuthorizationControllerDeleg
                         completion(nil)
                     }
                 }, receiveValue: { [weak self] userId in
-                    // 1) 애플 로그인(토큰) 인증 성공 → userId 얻음
+                    // 로그인 성공 처리
                     self?.errorMessage = nil
                     self?.userId = userId
                     self?.showErrorPopup = false
 
-                    // 2) 이제 Supabase에서 프로필도 가져와 AppModel에 반영
                     Task {
                         do {
                             guard let self = self else { return }
                             let fetchedProfile = try await self.profileUseCase.fetchProfile()
-
-                            // AppModel에 넣어주면 starfield가 didSet에서 업데이트됨
+                            
+                            // AppModel 업데이트 (starfield 등 didSet을 통해 화면 전환 관련 로직이 있을 수 있음)
                             self.appModel.userId = userId
                             self.appModel.userProfile = fetchedProfile
-
-                            // 로그인 완료 후 메인 화면으로 전환
-                            self.appModel.activeScreen = .main
-
-                            // 끝
+                            
+                            // 아직 Terms 동의가 되어 있지 않으면 .terms로 전환
+                            if self.appModel.hasAcceptedTerms {
+                                self.appModel.activeScreen = .main
+                            } else {
+                                self.appModel.activeScreen = .terms
+                            }
+                            
                             completion(userId)
                         } catch {
                             self?.errorMessage = "Please try again."
@@ -74,7 +76,7 @@ class LoginViewModel: NSObject, ObservableObject, ASAuthorizationControllerDeleg
                     }
                 })
                 .store(in: &cancellables)
-        case .failure(let error):
+        case .failure:
             DispatchQueue.main.async {
                 self.errorMessage = "Please try again."
                 self.showErrorPopup = true

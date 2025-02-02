@@ -28,6 +28,14 @@ struct ContentView: View {
                             Logger.info("Displaying Login View")
                         }
                 }
+            case .terms:
+                GradientBorderContainer {
+                    TermsAndConditionsView()
+                        .transition(.opacity)
+                        .onAppear {
+                            Logger.info("Displaying Terms and Conditions View")
+                        }
+                }
             case .main:
                 GradientBorderContainer {
                     MainView()
