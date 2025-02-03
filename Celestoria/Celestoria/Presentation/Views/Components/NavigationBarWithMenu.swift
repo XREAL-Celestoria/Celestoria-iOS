@@ -45,7 +45,7 @@ struct NavigationBarWithMenu: View {
                             withAnimation { isMenuShown = false }
                         })
                         // 팝업의 위치는 메뉴 버튼을 기준으로 적절하게 오프셋 조정
-                        .offset(x: 0, y: 40)
+                        .offset(x: -20, y: 60)
                     }
                 },
                 alignment: .topTrailing

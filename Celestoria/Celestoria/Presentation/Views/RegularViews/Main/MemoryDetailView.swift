@@ -12,15 +12,17 @@ import AVKit
 struct MemoryDetailView: View {
     @StateObject private var viewModel: MemoryDetailViewModel
     @EnvironmentObject var spaceCoordinator: SpaceCoordinator
+    @EnvironmentObject var appModel: AppModel
     @Environment(\.dismissWindow) private var dismissWindow
     @State private var showFullScreenVideo: Bool = false
     @State private var thumbnailLoaded: Bool = false
     
-    init(memory: Memory, memoryRepository: MemoryRepository, profileUseCase: ProfileUseCase) {
+    init(memory: Memory, memoryRepository: MemoryRepository, profileUseCase: ProfileUseCase, authRepository: AuthRepositoryProtocol) {
         _viewModel = StateObject(wrappedValue: MemoryDetailViewModel(
             memory: memory,
             memoryRepository: memoryRepository,
-            profileUseCase: profileUseCase
+            profileUseCase: profileUseCase,
+            authRepository: authRepository
         ))
     }
     
@@ -38,12 +40,18 @@ struct MemoryDetailView: View {
                             },
                             leftButtonImageString: "xmark",
                             reportAction: {
-                                // Report Post 버튼 액션 구현
-                                print("Report Post tapped")
+                                if let currentUserId = appModel.userId {
+                                    Task {
+                                        await viewModel.reportMemory(reporterId: currentUserId)
+                                    }
+                                }
                             },
                             blockAction: {
-                                // Block User 버튼 액션 구현
-                                print("Block User tapped")
+                                if let currentUserId = appModel.userId {
+                                    Task {
+                                        await viewModel.blockUser(currentUserId: currentUserId)
+                                    }
+                                }
                             }
                         )
                         .padding(.horizontal, 28)
@@ -140,15 +148,12 @@ struct MemoryDetailView: View {
                                 thumbnailLoaded = true
                             }
                         
-                        
                         CircularButton(action: {
                             os.Logger.info("Playing")
                             showFullScreenVideo = true
                         }, buttonImageString: "play.fill")
                         .frame(width: 60, height: 60)
                         .position(x: geometry.size.width / 2, y: (geometry.size.height * 0.72) / 2)
-                        
-                        
                     }
                 case .failure:
                     Color.gray

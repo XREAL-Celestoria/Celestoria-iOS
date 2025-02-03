@@ -16,4 +16,5 @@ protocol AuthRepositoryProtocol {
     func fetchProfileByUserId(userId: UUID) async throws -> UserProfile
     func fetchAllProfiles(excludingUserId: UUID?) async throws -> [UserProfile]
     func searchProfiles(keyword: String, excludingUserId: UUID?) async throws -> [UserProfile]
+    func blockUser(reporterId: UUID, blockedUserId: UUID) async throws
 }

@@ -26,7 +26,6 @@ class AuthRepository: AuthRepositoryProtocol {
             throw NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not found after sign-in."])
         }
         
-        // 프로필이 이미 존재하는지 확인
         let existingProfile: [UserProfile] = try await supabase
             .from("user_profiles")
             .select("*")
@@ -34,7 +33,6 @@ class AuthRepository: AuthRepositoryProtocol {
             .execute()
             .value
         
-        // ★ 새 유저인 경우, 랜덤 starfield로 프로필 생성
         if existingProfile.isEmpty {
             let randomSuffix = String(format: "%04d", Int.random(in: 1000...9999))
             let username = "User_\(randomSuffix)"
@@ -68,12 +66,7 @@ class AuthRepository: AuthRepositoryProtocol {
         try await supabase.auth.signOut()
     }
 
-    func updateProfile(
-        name: String? = nil,
-        profileImageURL: String? = nil,
-        spaceThumbnailId: String? = nil,
-        starfield: String? = nil
-    ) async throws -> UserProfile {
+    func updateProfile(name: String? = nil, profileImageURL: String? = nil, spaceThumbnailId: String? = nil, starfield: String? = nil) async throws -> UserProfile {
         guard let userId = supabase.auth.currentUser?.id else {
             Logger.error("User not found when updating profile")
             throw NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not found."])
@@ -152,27 +145,92 @@ class AuthRepository: AuthRepositoryProtocol {
     }
 
     func fetchAllProfiles(excludingUserId: UUID?) async throws -> [UserProfile] {
-        var query = supabase
+    if let userId = excludingUserId {
+        // 1. 먼저 차단한 사용자 ID 목록을 가져옴
+        let blockedUsers: [Block] = try await supabase
+            .from("blocks")
+            .select()
+            .eq("reporter_id", value: userId.uuidString)
+            .execute()
+            .value
+        
+        let blockedUserIds = blockedUsers.map { $0.blockedUserId.uuidString }
+        
+        // 2. 차단된 사용자를 제외한 프로필 조회
+        let query = supabase
             .from("user_profiles")
             .select()
-
-        if let userId = excludingUserId {
-            query = query.neq("user_id", value: userId.uuidString)
+            .neq("user_id", value: userId.uuidString)  // 자신 제외
+        
+        if !blockedUserIds.isEmpty {
+            // 수정된 부분: 각 차단된 ID에 대해 개별적으로 neq 필터 적용
+            var filteredQuery = query
+            for blockedId in blockedUserIds {
+                filteredQuery = filteredQuery.neq("user_id", value: blockedId)
+            }
+            return try await filteredQuery.execute().value
+        } else {
+            return try await query.execute().value
         }
-
-        return try await query.execute().value
+    } else {
+        return try await supabase
+            .from("user_profiles")
+            .select()
+            .execute()
+            .value
+    }
     }
 
     func searchProfiles(keyword: String, excludingUserId: UUID?) async throws -> [UserProfile] {
-        var query = supabase
-            .from("user_profiles")
-            .select()
-            .ilike("name", value: "%\(keyword)%")
-
         if let userId = excludingUserId {
-            query = query.neq("user_id", value: userId.uuidString)
+            // 1. 먼저 차단한 사용자 ID 목록을 가져옴
+            let blockedUsers: [Block] = try await supabase
+                .from("blocks")
+                .select()
+                .eq("reporter_id", value: userId.uuidString)
+                .execute()
+                .value
+            
+            let blockedUserIds = blockedUsers.map { $0.blockedUserId.uuidString }
+            
+            // 2. 차단된 사용자를 제외한 프로필 검색
+            let query = supabase
+                .from("user_profiles")
+                .select()
+                .ilike("name", value: "%\(keyword)%")
+                .neq("user_id", value: userId.uuidString)  // 자신 제외
+            
+            if !blockedUserIds.isEmpty {
+                // 수정된 부분: 각 차단된 ID에 대해 개별적으로 neq 필터 적용
+                var filteredQuery = query
+                for blockedId in blockedUserIds {
+                    filteredQuery = filteredQuery.neq("user_id", value: blockedId)
+                }
+                return try await filteredQuery.execute().value
+            } else {
+                return try await query.execute().value
+            }
+        } else {
+            return try await supabase
+                .from("user_profiles")
+                .select()
+                .ilike("name", value: "%\(keyword)%")
+                .execute()
+                .value
         }
-
-        return try await query.execute().value
+    }
+    
+    func blockUser(reporterId: UUID, blockedUserId: UUID) async throws {
+        let blockData = Block(
+            id: UUID(),
+            reporterId: reporterId,
+            blockedUserId: blockedUserId,
+            createdAt: Date()
+        )
+        
+        try await supabase
+            .from("blocks")
+            .insert(blockData)
+            .execute()
     }
 }

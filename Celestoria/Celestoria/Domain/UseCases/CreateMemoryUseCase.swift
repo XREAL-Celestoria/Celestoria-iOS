@@ -45,7 +45,8 @@ class CreateMemoryUseCase {
             position: generateRandomPosition(),
             videoURL: videoUploadResult.url,
             thumbnailURL: thumbnailURL,
-            spatialMetadata: videoUploadResult.metadata
+            spatialMetadata: videoUploadResult.metadata,
+            isHidden: false
         )
 
         // 메모리 저장

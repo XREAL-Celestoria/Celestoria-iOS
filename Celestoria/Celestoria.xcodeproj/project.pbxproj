@@ -17,7 +17,6 @@
 		2F3671D32D3D7BFC0048D9AD /* AddMemoryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671D22D3D7BFC0048D9AD /* AddMemoryButton.swift */; };
 		2F3671D52D3D7C3C0048D9AD /* ErrorBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671D42D3D7C3C0048D9AD /* ErrorBannerView.swift */; };
 		2F3671D72D3D7C730048D9AD /* MainTabButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671D62D3D7C730048D9AD /* MainTabButton.swift */; };
-		2F3671E12D3D946C0048D9AD /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671E02D3D946C0048D9AD /* Memory.swift */; };
 		2F3671E92D3D9A470048D9AD /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671E82D3D9A470048D9AD /* Category.swift */; };
 		2F3671EB2D3D9A8C0048D9AD /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671EA2D3D9A8C0048D9AD /* UserProfile.swift */; };
 		2F3671F72D3DA1990048D9AD /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 2F3671F62D3DA1990048D9AD /* Auth */; };
@@ -86,6 +85,9 @@
 		A29437CB2D4FEA9F00982EAC /* TermsAndConditionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437CA2D4FEA9F00982EAC /* TermsAndConditionsView.swift */; };
 		A29437CD2D51135700982EAC /* NavigationBarWithMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437CC2D51135700982EAC /* NavigationBarWithMenu.swift */; };
 		A29437CF2D51136A00982EAC /* NavigationMenuPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437CE2D51136A00982EAC /* NavigationMenuPopup.swift */; };
+		A29437D12D513C4E00982EAC /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437D02D513C4E00982EAC /* Block.swift */; };
+		A29437D32D513C5B00982EAC /* ContentReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437D22D513C5B00982EAC /* ContentReport.swift */; };
+		A29437D52D513D3500982EAC /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437D42D513D3500982EAC /* Memory.swift */; };
 		A2B8DB412D42AEC7001B5663 /* MemoryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */; };
 		A2B8DB782D42B409001B5663 /* CelestoriaVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */; };
 		A2B8DB832D43FA0C001B5663 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB822D43FA0C001B5663 /* SettingView.swift */; };
@@ -104,7 +106,6 @@
 		2F3671D22D3D7BFC0048D9AD /* AddMemoryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMemoryButton.swift; sourceTree = "<group>"; };
 		2F3671D42D3D7C3C0048D9AD /* ErrorBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorBannerView.swift; sourceTree = "<group>"; };
 		2F3671D62D3D7C730048D9AD /* MainTabButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabButton.swift; sourceTree = "<group>"; };
-		2F3671E02D3D946C0048D9AD /* Memory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Memory.swift; sourceTree = "<group>"; };
 		2F3671E82D3D9A470048D9AD /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		2F3671EA2D3D9A8C0048D9AD /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
 		2F3672022D3DA1F00048D9AD /* MemoryRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryRepository.swift; sourceTree = "<group>"; };
@@ -170,6 +171,9 @@
 		A29437CA2D4FEA9F00982EAC /* TermsAndConditionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsAndConditionsView.swift; sourceTree = "<group>"; };
 		A29437CC2D51135700982EAC /* NavigationBarWithMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarWithMenu.swift; sourceTree = "<group>"; };
 		A29437CE2D51136A00982EAC /* NavigationMenuPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationMenuPopup.swift; sourceTree = "<group>"; };
+		A29437D02D513C4E00982EAC /* Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
+		A29437D22D513C5B00982EAC /* ContentReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentReport.swift; sourceTree = "<group>"; };
+		A29437D42D513D3500982EAC /* Memory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Memory.swift; sourceTree = "<group>"; };
 		A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryDetailView.swift; sourceTree = "<group>"; };
 		A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CelestoriaVideoPlayerView.swift; sourceTree = "<group>"; };
 		A2B8DB822D43FA0C001B5663 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
@@ -391,10 +395,12 @@
 		2F8800C62D38D42000220F89 /* Entities */ = {
 			isa = PBXGroup;
 			children = (
-				2F3671E02D3D946C0048D9AD /* Memory.swift */,
 				2F3671E82D3D9A470048D9AD /* Category.swift */,
+				A29437D42D513D3500982EAC /* Memory.swift */,
 				2F3671EA2D3D9A8C0048D9AD /* UserProfile.swift */,
 				2F510CDF2D413489004171E8 /* Screen.swift */,
+				A29437D22D513C5B00982EAC /* ContentReport.swift */,
+				A29437D02D513C4E00982EAC /* Block.swift */,
 				2FE857FE2D434ABA0055902B /* PopupData.swift */,
 			);
 			path = Entities;
@@ -627,13 +633,13 @@
 			files = (
 				2F36722C2D3E35750048D9AD /* SignOutUseCase.swift in Sources */,
 				A2B8DB852D440536001B5663 /* SettingViewModel.swift in Sources */,
-				2F3671E12D3D946C0048D9AD /* Memory.swift in Sources */,
 				2F3671B12D3D6A9E0048D9AD /* Color+.swift in Sources */,
 				2F510CEC2D414971004171E8 /* MediaRepository.swift in Sources */,
 				A2B8DB782D42B409001B5663 /* CelestoriaVideoPlayerView.swift in Sources */,
 				2F510CE02D413489004171E8 /* Screen.swift in Sources */,
 				2F3672222D3E1E410048D9AD /* LoginViewModel.swift in Sources */,
 				2FE858052D43D3980055902B /* TextField+.swift in Sources */,
+				A29437D32D513C5B00982EAC /* ContentReport.swift in Sources */,
 				2F8800BA2D38CE6800220F89 /* AppModel.swift in Sources */,
 				A29437CF2D51136A00982EAC /* NavigationMenuPopup.swift in Sources */,
 				2F3671D72D3D7C730048D9AD /* MainTabButton.swift in Sources */,
@@ -654,10 +660,12 @@
 				2FB501DC2D456280005FB0B6 /* MainButton.swift in Sources */,
 				2F510CE82D413607004171E8 /* AddMemoryDoneView.swift in Sources */,
 				2F3672072D3DA3170048D9AD /* CreateMemoryUseCase.swift in Sources */,
+				A29437D52D513D3500982EAC /* Memory.swift in Sources */,
 				2F3672252D3E35110048D9AD /* AuthRepositoryProtocol.swift in Sources */,
 				2F36722A2D3E35670048D9AD /* SignInWithAppleUseCase.swift in Sources */,
 				2F3672152D3DAAF20048D9AD /* SpaceBackgroundEntity.swift in Sources */,
 				2F3671EB2D3D9A8C0048D9AD /* UserProfile.swift in Sources */,
+				A29437D12D513C4E00982EAC /* Block.swift in Sources */,
 				2F3672032D3DA1F00048D9AD /* MemoryRepository.swift in Sources */,
 				2F3672112D3DAAA40048D9AD /* ConstellationSpaceEntity.swift in Sources */,
 				2F3672272D3E35310048D9AD /* AuthRepository.swift in Sources */,

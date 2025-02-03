@@ -18,6 +18,7 @@ struct Memory: Identifiable, Codable, Hashable {
     let videoURL: String?
     let thumbnailURL: String?
     let spatialMetadata: SpatialMetadata?
+    let isHidden: Bool      // DB에 저장된 값
 
     struct Position: Codable, Hashable {
         let x: Double
@@ -34,6 +35,14 @@ struct Memory: Identifiable, Codable, Hashable {
         let horizontalFieldOfView: Int
     }
 
+    static func == (lhs: Memory, rhs: Memory) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
     enum CodingKeys: String, CodingKey {
         case id
         case userId = "user_id"
@@ -45,5 +54,6 @@ struct Memory: Identifiable, Codable, Hashable {
         case videoURL = "video_url"
         case thumbnailURL = "thumbnail_url"
         case spatialMetadata = "spatial_metadata"
+        case isHidden = "is_hidden"
     }
 }

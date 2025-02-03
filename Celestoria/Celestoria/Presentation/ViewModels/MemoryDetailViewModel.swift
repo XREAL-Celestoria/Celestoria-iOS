@@ -15,6 +15,7 @@ final class MemoryDetailViewModel: ObservableObject {
     private let deleteMemoryUseCase: DeleteMemoryUseCase
     private let logger = Logger(subsystem: "com.celestoria", category: "MemoryDetailViewModel")
     private let profileUseCase: ProfileUseCase?
+    private let authRepository: AuthRepositoryProtocol?
     
     @Published private(set) var memory: Memory
     @Published var popupData: PopupData? // Data for the popup
@@ -28,12 +29,14 @@ final class MemoryDetailViewModel: ObservableObject {
     init(
         memory: Memory,
         memoryRepository: MemoryRepository,
-        profileUseCase: ProfileUseCase? = nil
+        profileUseCase: ProfileUseCase? = nil,
+        authRepository: AuthRepositoryProtocol? = nil
     ) {
         self.memory = memory
         self.memoryRepository = memoryRepository
         self.deleteMemoryUseCase = DeleteMemoryUseCase(memoryRepository: memoryRepository)
         self.profileUseCase = profileUseCase
+        self.authRepository = authRepository
 
         formatDate()
         checkVideoURL()
@@ -95,6 +98,50 @@ final class MemoryDetailViewModel: ObservableObject {
             logger.error("Failed to delete memory: \(error.localizedDescription)")
             errorMessage = "Failed to delete memory. Please try again."
             throw error
+        }
+    }
+
+    func reportMemory(reporterId: UUID) async {
+        isLoading = true
+        defer { isLoading = false }
+        
+        do {
+            // 이미 신고했는지 확인
+            if try await memoryRepository.hasReported(memoryId: memory.id, reporterId: reporterId) {
+                errorMessage = "이미 신고한 메모리입니다."
+                return
+            }
+            
+            // 신고 처리
+            try await memoryRepository.createReport(memoryId: memory.id, reporterId: reporterId)
+            errorMessage = "신고가 정상적으로 처리되었습니다."
+            
+            // 현재 메모리 상태 업데이트
+            if let updatedMemories: [Memory] = try? await memoryRepository.fetchMemories(for: memory.userId) {
+                if let updatedMemory = updatedMemories.first(where: { $0.id == memory.id }) {
+                    self.memory = updatedMemory
+                }
+            }
+        } catch {
+            errorMessage = "신고 처리에 실패했습니다: \(error.localizedDescription)"
+            logger.error("Report error: \(error.localizedDescription)")
+        }
+    }
+
+    func blockUser(currentUserId: UUID) async {
+        guard let authRepository = authRepository else {
+            errorMessage = "블록 기능을 사용할 수 없습니다."
+            return
+        }
+        isLoading = true
+        defer { isLoading = false }
+        do {
+            try await authRepository.blockUser(reporterId: currentUserId, blockedUserId: memory.userId)
+            // 성공 메시지 추가
+            errorMessage = "사용자 차단이 완료되었습니다."
+        } catch {
+            errorMessage = "블록 처리에 실패했습니다: \(error.localizedDescription)"
+            logger.error("Block error: \(error.localizedDescription)")
         }
     }
 
