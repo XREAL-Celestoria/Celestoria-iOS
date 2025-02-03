@@ -30,14 +30,21 @@ struct MemoryDetailView: View {
                 GeometryReader { geometry in
                     thumbnailImageSection(geometry: geometry)
                     
-                    
                     VStack {
-                        NavigationBar(
+                        NavigationBarWithMenu(
                             title: "Memory Detail",
-                            action: {
+                            leftAction: {
                                 dismissWindow(id: "Memory-Detail")
                             },
-                            buttonImageString: "xmark"
+                            leftButtonImageString: "xmark",
+                            reportAction: {
+                                // Report Post 버튼 액션 구현
+                                print("Report Post tapped")
+                            },
+                            blockAction: {
+                                // Block User 버튼 액션 구현
+                                print("Block User tapped")
+                            }
                         )
                         .padding(.horizontal, 28)
                         .padding(.top, 28)

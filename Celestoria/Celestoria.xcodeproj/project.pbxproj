@@ -84,6 +84,8 @@
 		A2198CB12D4909BF00B0AF65 /* Travel.usdc in Resources */ = {isa = PBXBuildFile; fileRef = A2198CB02D4909BF00B0AF65 /* Travel.usdc */; };
 		A21E477E2D38CD55002B60FA /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = A21E477D2D38CD55002B60FA /* RealityKitContent */; };
 		A29437CB2D4FEA9F00982EAC /* TermsAndConditionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437CA2D4FEA9F00982EAC /* TermsAndConditionsView.swift */; };
+		A29437CD2D51135700982EAC /* NavigationBarWithMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437CC2D51135700982EAC /* NavigationBarWithMenu.swift */; };
+		A29437CF2D51136A00982EAC /* NavigationMenuPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437CE2D51136A00982EAC /* NavigationMenuPopup.swift */; };
 		A2B8DB412D42AEC7001B5663 /* MemoryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */; };
 		A2B8DB782D42B409001B5663 /* CelestoriaVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */; };
 		A2B8DB832D43FA0C001B5663 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB822D43FA0C001B5663 /* SettingView.swift */; };
@@ -166,6 +168,8 @@
 		A21E47782D38CD55002B60FA /* Celestoria.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Celestoria.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A21E477C2D38CD55002B60FA /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
 		A29437CA2D4FEA9F00982EAC /* TermsAndConditionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsAndConditionsView.swift; sourceTree = "<group>"; };
+		A29437CC2D51135700982EAC /* NavigationBarWithMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarWithMenu.swift; sourceTree = "<group>"; };
+		A29437CE2D51136A00982EAC /* NavigationMenuPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationMenuPopup.swift; sourceTree = "<group>"; };
 		A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryDetailView.swift; sourceTree = "<group>"; };
 		A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CelestoriaVideoPlayerView.swift; sourceTree = "<group>"; };
 		A2B8DB822D43FA0C001B5663 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
@@ -219,6 +223,8 @@
 				2F3672312D3E650B0048D9AD /* HeaderView.swift */,
 				2F3672332D3E652C0048D9AD /* ErrorOvelayView.swift */,
 				2F3672352D4111130048D9AD /* NavigationBar.swift */,
+				A29437CC2D51135700982EAC /* NavigationBarWithMenu.swift */,
+				A29437CE2D51136A00982EAC /* NavigationMenuPopup.swift */,
 				2F510CED2D416532004171E8 /* CategoryButton.swift */,
 				A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */,
 				2FE857F62D43425B0055902B /* PopupView.swift */,
@@ -629,6 +635,7 @@
 				2F3672222D3E1E410048D9AD /* LoginViewModel.swift in Sources */,
 				2FE858052D43D3980055902B /* TextField+.swift in Sources */,
 				2F8800BA2D38CE6800220F89 /* AppModel.swift in Sources */,
+				A29437CF2D51136A00982EAC /* NavigationMenuPopup.swift in Sources */,
 				2F3671D72D3D7C730048D9AD /* MainTabButton.swift in Sources */,
 				2F510CEE2D416532004171E8 /* CategoryButton.swift in Sources */,
 				2F36721C2D3E1A030048D9AD /* ExploreView.swift in Sources */,
@@ -655,6 +662,7 @@
 				2F3672112D3DAAA40048D9AD /* ConstellationSpaceEntity.swift in Sources */,
 				2F3672272D3E35310048D9AD /* AuthRepository.swift in Sources */,
 				2F3671E92D3D9A470048D9AD /* Category.swift in Sources */,
+				A29437CD2D51135700982EAC /* NavigationBarWithMenu.swift in Sources */,
 				2F3671B32D3D6B660048D9AD /* Gradient+.swift in Sources */,
 				2F8800BC2D38CE6800220F89 /* ContentView.swift in Sources */,
 				2F36721A2D3E19A30048D9AD /* GalaxyView.swift in Sources */,
