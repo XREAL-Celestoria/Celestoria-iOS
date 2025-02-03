@@ -77,6 +77,10 @@ struct ExploreNavigatorView: View {
                 }
             }
         }
+        .overlay(
+            RoundedRectangle(cornerRadius: 44)
+                .stroke(Color(red: 0.73, green: 0.74, blue: 1), lineWidth: 16)
+        )
         .onAppear {
             cardItem = exploreViewModel.getCardItem(by: profileId)
             if cardItem == nil {

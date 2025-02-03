@@ -10,11 +10,11 @@ import SwiftUI
 struct PopupView: View {
     let title: String
     let notes: String
-    let leadingButtonText: String
+    let leadingButtonText: String?
     let trailingButtonText: String
     
     let circularAction: () -> Void
-    let leadingButtonAction: () -> Void
+    let leadingButtonAction: (() -> Void)?
     let trailingButtonAction : () -> Void
     
     let buttonImageString : String
@@ -55,23 +55,27 @@ struct PopupView: View {
                     Spacer()
                     
                     HStack {
-                        Button(action: leadingButtonAction) {
-                            Text(leadingButtonText)
-                                .font(.system(size: 22, weight: .bold))
-                                .foregroundColor(.NebulaWhite)
-                                .frame(width: 240, height: 76)
-                                .background(Color.NebulaWhite.opacity(0.1).cornerRadius(16))
+                        if let leadingButtonText = leadingButtonText,
+                           let leadingButtonAction = leadingButtonAction,
+                           !leadingButtonText.isEmpty {
+                            Button(action: leadingButtonAction) {
+                                Text(leadingButtonText)
+                                    .font(.system(size: 22, weight: .bold))
+                                    .foregroundColor(.NebulaWhite)
+                                    .frame(width: 240, height: 76)
+                                    .background(Color.NebulaWhite.opacity(0.1).cornerRadius(16))
+                            }
+                            .buttonStyle(MainButtonStyle())
+                            
+                            Spacer()
+                                .frame(width: 24)
                         }
-                        .buttonStyle(MainButtonStyle())
-                        
-                        Spacer()
-                            .frame(width: 24)
                         
                         Button(action: trailingButtonAction) {
                             Text(trailingButtonText)
                                 .font(.system(size: 22, weight: .bold))
                                 .foregroundColor(.NebulaBlack)
-                                .frame(width: 240, height: 76)
+                                .frame(width: leadingButtonText == nil || leadingButtonText?.isEmpty == true ? 504 : 240, height: 76)
                                 .background(LinearGradient.GradientSub.cornerRadius(16))
                         }
                         .buttonStyle(MainButtonStyle())

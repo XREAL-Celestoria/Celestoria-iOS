@@ -14,15 +14,22 @@ struct MemoryDetailView: View {
     @EnvironmentObject var spaceCoordinator: SpaceCoordinator
     @EnvironmentObject var appModel: AppModel
     @Environment(\.dismissWindow) private var dismissWindow
+    @Environment(\.openWindow) private var openWindow
     @State private var showFullScreenVideo: Bool = false
     @State private var thumbnailLoaded: Bool = false
     
-    init(memory: Memory, memoryRepository: MemoryRepository, profileUseCase: ProfileUseCase, authRepository: AuthRepositoryProtocol) {
+    // 노티피케이션 옵저버를 static으로 관리
+    private static var memoryDetailObserver: NSObjectProtocol?
+    private static var mainObserver: NSObjectProtocol?
+    
+    init(memory: Memory, memoryRepository: MemoryRepository, profileUseCase: ProfileUseCase, authRepository: AuthRepositoryProtocol, appModel: AppModel, spaceCoordinator: SpaceCoordinator) {
         _viewModel = StateObject(wrappedValue: MemoryDetailViewModel(
             memory: memory,
             memoryRepository: memoryRepository,
             profileUseCase: profileUseCase,
-            authRepository: authRepository
+            authRepository: authRepository,
+            appModel: appModel,
+            spaceCoordinator: spaceCoordinator
         ))
     }
     
@@ -40,18 +47,10 @@ struct MemoryDetailView: View {
                             },
                             leftButtonImageString: "xmark",
                             reportAction: {
-                                if let currentUserId = appModel.userId {
-                                    Task {
-                                        await viewModel.reportMemory(reporterId: currentUserId)
-                                    }
-                                }
+                                viewModel.showReportPopup()
                             },
                             blockAction: {
-                                if let currentUserId = appModel.userId {
-                                    Task {
-                                        await viewModel.blockUser(currentUserId: currentUserId)
-                                    }
-                                }
+                                viewModel.showBlockPopup()
                             }
                         )
                         .padding(.horizontal, 28)
@@ -123,6 +122,57 @@ struct MemoryDetailView: View {
                 }
             }
         )
+        .onAppear {
+            // 기존 옵저버 제거
+            if let observer = Self.memoryDetailObserver {
+                NotificationCenter.default.removeObserver(observer)
+            }
+            if let observer = Self.mainObserver {
+                NotificationCenter.default.removeObserver(observer)
+            }
+            
+            // Report 완료 시 MemoryDetailView만 닫기
+            Self.memoryDetailObserver = NotificationCenter.default.addObserver(
+                forName: .dismissMemoryDetailViewOnly,
+                object: nil,
+                queue: .main
+            ) { _ in
+                dismissWindow(id: "Memory-Detail")
+            }
+            
+            // Block 완료 시 모든 창 닫고 메인으로 이동
+            Self.mainObserver = NotificationCenter.default.addObserver(
+                forName: .dismissAllAndGoMain,
+                object: nil,
+                queue: .main
+            ) { _ in
+                dismissWindow(id: "Memory-Detail")
+                appModel.showExploreNavigatorView = false
+                dismissWindow(id: "Explore-Navigator")
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    appModel.activeScreen = .explore
+                    openWindow(id: "Main")
+                    
+                    Task {
+                        if let userId = appModel.userId {
+                            await spaceCoordinator.loadData(for: userId)
+                        }
+                    }
+                }
+            }
+        }
+        .onDisappear {
+            // 뷰가 사라질 때 노티피케이션 옵저버 제거
+            if let observer = Self.memoryDetailObserver {
+                NotificationCenter.default.removeObserver(observer)
+                Self.memoryDetailObserver = nil
+            }
+            if let observer = Self.mainObserver {
+                NotificationCenter.default.removeObserver(observer)
+                Self.mainObserver = nil
+            }
+        }
     }
     
     @ViewBuilder

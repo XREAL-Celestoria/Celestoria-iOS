@@ -50,7 +50,9 @@ struct CelestoriaApp: App {
                     memory: unwrappedMemory,
                     memoryRepository: diContainer.memoryRepository,
                     profileUseCase: diContainer.profileUseCase,
-                    authRepository: diContainer.authRepository
+                    authRepository: diContainer.authRepository,
+                    appModel: diContainer.appModel,
+                    spaceCoordinator: diContainer.spaceCoordinator
                 )
                 .frame(width: 1280, height: 720)
                 .environmentObject(diContainer.appModel)

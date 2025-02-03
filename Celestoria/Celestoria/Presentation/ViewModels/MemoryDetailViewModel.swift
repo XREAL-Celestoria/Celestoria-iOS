@@ -16,6 +16,8 @@ final class MemoryDetailViewModel: ObservableObject {
     private let logger = Logger(subsystem: "com.celestoria", category: "MemoryDetailViewModel")
     private let profileUseCase: ProfileUseCase?
     private let authRepository: AuthRepositoryProtocol?
+    private let appModel: AppModel
+    private let spaceCoordinator: SpaceCoordinator
     
     @Published private(set) var memory: Memory
     @Published var popupData: PopupData? // Data for the popup
@@ -30,13 +32,17 @@ final class MemoryDetailViewModel: ObservableObject {
         memory: Memory,
         memoryRepository: MemoryRepository,
         profileUseCase: ProfileUseCase? = nil,
-        authRepository: AuthRepositoryProtocol? = nil
+        authRepository: AuthRepositoryProtocol? = nil,
+        appModel: AppModel,
+        spaceCoordinator: SpaceCoordinator
     ) {
         self.memory = memory
         self.memoryRepository = memoryRepository
         self.deleteMemoryUseCase = DeleteMemoryUseCase(memoryRepository: memoryRepository)
         self.profileUseCase = profileUseCase
         self.authRepository = authRepository
+        self.appModel = appModel
+        self.spaceCoordinator = spaceCoordinator
 
         formatDate()
         checkVideoURL()
@@ -101,20 +107,47 @@ final class MemoryDetailViewModel: ObservableObject {
         }
     }
 
-    func reportMemory(reporterId: UUID) async {
+    func showReportPopup() {
+        popupData = PopupData(
+            title: "Do you want to report this post?",
+            notes: "Are you sure you report this post?\nThis action cannot be undone.",
+            leadingButtonText: "No",
+            trailingButtonText: "Yes",
+            buttonImageString: "xmark",
+            circularAction: { [weak self] in
+                self?.popupData = nil
+            },
+            leadingButtonAction: { [weak self] in
+                self?.popupData = nil
+            },
+            trailingButtonAction: { [weak self] in
+                guard let self = self else { return }
+                Task {
+                    if let currentUserId = self.appModel.userId {
+                        await self.processReport(reporterId: currentUserId)
+                    }
+                }
+            }
+        )
+    }
+    
+    private func processReport(reporterId: UUID) async {
         isLoading = true
         defer { isLoading = false }
         
         do {
             // 이미 신고했는지 확인
             if try await memoryRepository.hasReported(memoryId: memory.id, reporterId: reporterId) {
-                errorMessage = "이미 신고한 메모리입니다."
+                showReportCompletionPopup(
+                    title: "Already Reported",
+                    message: "You have already reported this post.\nThank you for helping us maintain a safe environment.",
+                    buttonText: "OK"
+                )
                 return
             }
             
             // 신고 처리
             try await memoryRepository.createReport(memoryId: memory.id, reporterId: reporterId)
-            errorMessage = "신고가 정상적으로 처리되었습니다."
             
             // 현재 메모리 상태 업데이트
             if let updatedMemories: [Memory] = try? await memoryRepository.fetchMemories(for: memory.userId) {
@@ -122,26 +155,118 @@ final class MemoryDetailViewModel: ObservableObject {
                     self.memory = updatedMemory
                 }
             }
+            
+            showReportCompletionPopup(
+                title: "The report has been completed.",
+                message: "Thank you for sending us your report for better service!\nWe will take your valuable comments into consideration.",
+                buttonText: "Complete"
+            )
+            
         } catch {
-            errorMessage = "신고 처리에 실패했습니다: \(error.localizedDescription)"
+            showReportCompletionPopup(
+                title: "Report Failed",
+                message: "Failed to process your report: \(error.localizedDescription)",
+                buttonText: "OK"
+            )
             logger.error("Report error: \(error.localizedDescription)")
         }
     }
+    
+    private func showReportCompletionPopup(title: String, message: String, buttonText: String) {
+        popupData = PopupData(
+            title: title,
+            notes: message,
+            leadingButtonText: "",
+            trailingButtonText: buttonText,
+            buttonImageString: "xmark",
+            circularAction: { [weak self] in
+                self?.popupData = nil
+            },
+            leadingButtonAction: { [weak self] in
+                self?.popupData = nil
+            },
+            trailingButtonAction: { [weak self] in
+                guard let self = self else { return }
+                self.popupData = nil
+                NotificationCenter.default.post(name: .dismissMemoryDetailViewOnly, object: nil)
+            }
+        )
+    }
 
-    func blockUser(currentUserId: UUID) async {
-        guard let authRepository = authRepository else {
-            errorMessage = "블록 기능을 사용할 수 없습니다."
-            return
-        }
+    func showBlockPopup() {
+        popupData = PopupData(
+            title: "Block this user?",
+            notes: "Are you sure you want to block this user?\nThis action cannot be undone.",
+            leadingButtonText: "No",
+            trailingButtonText: "Yes",
+            buttonImageString: "xmark",
+            circularAction: { [weak self] in
+                self?.popupData = nil
+            },
+            leadingButtonAction: { [weak self] in
+                self?.popupData = nil
+            },
+            trailingButtonAction: { [weak self] in
+                guard let self = self else { return }
+                Task {
+                    if let currentUserId = self.appModel.userId {
+                        await self.processBlock(currentUserId: currentUserId)
+                    }
+                }
+            }
+        )
+    }
+
+    private func processBlock(currentUserId: UUID) async {
         isLoading = true
         defer { isLoading = false }
+        
         do {
-            try await authRepository.blockUser(reporterId: currentUserId, blockedUserId: memory.userId)
-            // 성공 메시지 추가
-            errorMessage = "사용자 차단이 완료되었습니다."
+            try await authRepository?.blockUser(reporterId: currentUserId, blockedUserId: memory.userId)
+            showBlockCompletionPopup()
         } catch {
-            errorMessage = "블록 처리에 실패했습니다: \(error.localizedDescription)"
             logger.error("Block error: \(error.localizedDescription)")
+            showBlockCompletionPopup(error: error)
+        }
+    }
+
+    private func showBlockCompletionPopup(error: Error? = nil) {
+        if let error = error {
+            popupData = PopupData(
+                title: "Block Failed",
+                notes: "Failed to block user: \(error.localizedDescription)",
+                leadingButtonText: "",
+                trailingButtonText: "OK",
+                buttonImageString: "xmark",
+                circularAction: { [weak self] in
+                    self?.popupData = nil
+                },
+                leadingButtonAction: { [weak self] in
+                    self?.popupData = nil
+                },
+                trailingButtonAction: { [weak self] in
+                    self?.popupData = nil
+                }
+            )
+        } else {
+            popupData = PopupData(
+                title: "User blocked!",
+                notes: "Manage blocked users in Settings",
+                leadingButtonText: "",
+                trailingButtonText: "OK",
+                buttonImageString: "xmark",
+                circularAction: { [weak self] in
+                    self?.popupData = nil
+                },
+                leadingButtonAction: { [weak self] in
+                    self?.popupData = nil
+                },
+                trailingButtonAction: { [weak self] in
+                    guard let self = self else { return }
+                    self.popupData = nil
+                    NotificationCenter.default.post(name: .dismissAllAndGoMain, object: nil)
+                }
+            )
         }
     }
 
@@ -184,4 +309,11 @@ final class MemoryDetailViewModel: ObservableObject {
             }
         )
     }
+}
+
+// NotificationCenter extension for custom notification
+extension Notification.Name {
+    static let dismissMemoryDetailView = Notification.Name("dismissMemoryDetailView")
+    static let dismissMemoryDetailViewOnly = Notification.Name("dismissMemoryDetailViewOnly")
+    static let dismissAllAndGoMain = Notification.Name("dismissAllAndGoMain")
 }

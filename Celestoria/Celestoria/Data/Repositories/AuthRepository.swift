@@ -233,4 +233,8 @@ class AuthRepository: AuthRepositoryProtocol {
             .insert(blockData)
             .execute()
     }
+
+    func currentUserId() -> UUID? {
+        return supabase.auth.currentUser?.id
+    }
 }
