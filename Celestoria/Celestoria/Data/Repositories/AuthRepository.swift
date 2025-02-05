@@ -237,4 +237,33 @@ class AuthRepository: AuthRepositoryProtocol {
     func currentUserId() -> UUID? {
         return supabase.auth.currentUser?.id
     }
+
+    func fetchBlockedUsers(for userId: UUID) async throws -> [Block] {
+        do {
+            let blockedUsers: [Block] = try await supabase
+                .from("blocks")
+                .select()
+                .eq("reporter_id", value: userId.uuidString)
+                .execute()
+                .value
+            return blockedUsers
+        } catch {
+            Logger.error("Failed to fetch blocked users: \(error.localizedDescription)")
+            throw error
+        }
+    }
+    
+    func unblockUser(reporterId: UUID, blockedUserId: UUID) async throws {
+        do {
+            try await supabase
+                .from("blocks")
+                .delete()
+                .eq("reporter_id", value: reporterId.uuidString)
+                .eq("blocked_user_id", value: blockedUserId.uuidString)
+                .execute()
+        } catch {
+            Logger.error("Failed to unblock user: \(error.localizedDescription)")
+            throw error
+        }
+    }
 }

@@ -55,6 +55,7 @@ struct MenuItem {
 let settingsMenuItems = [
     MenuItem(title: "Profile", imageSelected: "settings-profile-on", imageUnselected: "settings-profile-off"),
     MenuItem(title: "Thumbnail", imageSelected: "settings-thumbnail-on", imageUnselected: "settings-thumbnail-off"),
+    MenuItem(title: "Blocked Users", imageSelected: "settings-blocked-on", imageUnselected: "settings-blocked-off"),
     MenuItem(title: "Account", imageSelected: "settings-account-on", imageUnselected: "settings-account-off")
 ]
 

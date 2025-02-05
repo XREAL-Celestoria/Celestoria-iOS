@@ -41,6 +41,7 @@ final class DIContainer: ObservableObject {
     private let signOutUseCase: SignOutUseCase
     let profileUseCase: ProfileUseCase
     private let exploreUseCase: ExploreUseCase
+    private let blockedUsersUseCase: BlockedUsersUseCase
 
     init() {
         Logger.info("Initializing DIContainer...")
@@ -77,6 +78,9 @@ final class DIContainer: ObservableObject {
             authRepository: authRepository,
             memoryRepository: memoryRepository
         )
+        self.blockedUsersUseCase = BlockedUsersUseCase(
+            authRepository: authRepository
+        )
 
         // 먼저 SpaceCoordinator 초기화
         self.spaceCoordinator = SpaceCoordinator(
@@ -105,6 +109,7 @@ final class DIContainer: ObservableObject {
             deleteAccountUseCase: deleteAccountUseCase,
             signOutUseCase: signOutUseCase,
             profileUseCase: profileUseCase,
+            blockedUsersUseCase: blockedUsersUseCase,
             appModel: appModel
         )
         self.galaxyViewModel = GalaxyViewModel(

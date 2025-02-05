@@ -16,19 +16,24 @@ class SettingViewModel: ObservableObject {
     private let deleteAccountUseCase: DeleteAccountUseCase
     private let signOutUseCase: SignOutUseCase
     private let profileUseCase: ProfileUseCase
+    private let blockedUsersUseCase: BlockedUsersUseCase
     private let appModel: AppModel
     
     @Published var profile: UserProfile?
     @Published var isLoading = false
     @Published var error: Error?
+    @Published var blockedUsers: [BlockedUserInfo] = []
+    @Published var isLoadingBlockedUsers = false
     
     init(deleteAccountUseCase: DeleteAccountUseCase,
          signOutUseCase: SignOutUseCase,
          profileUseCase: ProfileUseCase,
+         blockedUsersUseCase: BlockedUsersUseCase,
          appModel: AppModel) {
         self.deleteAccountUseCase = deleteAccountUseCase
         self.signOutUseCase = signOutUseCase
         self.profileUseCase = profileUseCase
+        self.blockedUsersUseCase = blockedUsersUseCase
         self.appModel = appModel
         
         Task {
@@ -118,5 +123,32 @@ class SettingViewModel: ObservableObject {
     
     func getThumbnailId(from imageName: String) -> String {
         return imageName.replacingOccurrences(of: "Thumbnail", with: "")
+    }
+    
+    func fetchBlockedUsers() async {
+        guard let userId = appModel.userId else { return }
+        
+        isLoadingBlockedUsers = true
+        defer { isLoadingBlockedUsers = false }
+        
+        do {
+            blockedUsers = try await blockedUsersUseCase.fetchBlockedUsers(for: userId)
+        } catch {
+            Logger.error("Failed to fetch blocked users: \(error.localizedDescription)")
+        }
+    }
+    
+    func unblockUser(_ blockedUserId: UUID) async {
+        guard let currentUserId = appModel.userId else { return }
+        
+        do {
+            try await blockedUsersUseCase.unblockUser(
+                reporterId: currentUserId,
+                blockedUserId: blockedUserId
+            )
+            await fetchBlockedUsers()
+        } catch {
+            Logger.error("Failed to unblock user: \(error.localizedDescription)")
+        }
     }
 }

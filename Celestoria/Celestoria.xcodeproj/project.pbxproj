@@ -88,6 +88,7 @@
 		A29437D12D513C4E00982EAC /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437D02D513C4E00982EAC /* Block.swift */; };
 		A29437D32D513C5B00982EAC /* ContentReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437D22D513C5B00982EAC /* ContentReport.swift */; };
 		A29437D52D513D3500982EAC /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437D42D513D3500982EAC /* Memory.swift */; };
+		A29437D72D53C60900982EAC /* BlockedUsersUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437D62D53C60900982EAC /* BlockedUsersUseCase.swift */; };
 		A2B8DB412D42AEC7001B5663 /* MemoryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */; };
 		A2B8DB782D42B409001B5663 /* CelestoriaVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */; };
 		A2B8DB832D43FA0C001B5663 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB822D43FA0C001B5663 /* SettingView.swift */; };
@@ -174,6 +175,7 @@
 		A29437D02D513C4E00982EAC /* Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
 		A29437D22D513C5B00982EAC /* ContentReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentReport.swift; sourceTree = "<group>"; };
 		A29437D42D513D3500982EAC /* Memory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Memory.swift; sourceTree = "<group>"; };
+		A29437D62D53C60900982EAC /* BlockedUsersUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedUsersUseCase.swift; sourceTree = "<group>"; };
 		A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryDetailView.swift; sourceTree = "<group>"; };
 		A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CelestoriaVideoPlayerView.swift; sourceTree = "<group>"; };
 		A2B8DB822D43FA0C001B5663 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
@@ -417,6 +419,7 @@
 				2F3672292D3E35670048D9AD /* SignInWithAppleUseCase.swift */,
 				2F36722B2D3E35750048D9AD /* SignOutUseCase.swift */,
 				2F36722D2D3E35830048D9AD /* DeleteAccountUseCase.swift */,
+				A29437D62D53C60900982EAC /* BlockedUsersUseCase.swift */,
 			);
 			path = UseCases;
 			sourceTree = "<group>";
@@ -692,6 +695,7 @@
 				2F6738212D4945FF00882ADC /* GradientBorderSmall.swift in Sources */,
 				2F36720B2D3DA3F20048D9AD /* Config.swift in Sources */,
 				2F8800C42D38D3AE00220F89 /* DIContainer.swift in Sources */,
+				A29437D72D53C60900982EAC /* BlockedUsersUseCase.swift in Sources */,
 				A2B8DB832D43FA0C001B5663 /* SettingView.swift in Sources */,
 				2F510CEA2D41449A004171E8 /* AddMemoryMainViewModel.swift in Sources */,
 				2F3671D52D3D7C3C0048D9AD /* ErrorBannerView.swift in Sources */,
