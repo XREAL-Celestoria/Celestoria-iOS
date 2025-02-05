@@ -91,6 +91,7 @@ struct ExploreView: View {
 
                 Spacer()
             }
+            .overlay(loadingOverlay)
             .toolbar {
                 ToolbarItem(placement: .bottomOrnament) {
                     ZStack {
@@ -182,6 +183,31 @@ struct ExploreView: View {
                 }
             default:
                 break
+            }
+        }
+    }
+    
+    // MARK: - Subviews
+    private var loadingOverlay: some View {
+        Group {
+            if spaceCoordinator.isLoading {
+                ZStack {
+                    Color.black.opacity(0.5)
+                        .ignoresSafeArea()
+                    ProgressView("Loading Stars...")
+                        .scaleEffect(1.5)
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .zIndex(1)
+                }
+            }
+            
+            if let errorMessage = exploreViewModel.errorMessage {
+                ErrorBannerView(message: errorMessage) {
+                    exploreViewModel.errorMessage = nil
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 10)
+                .zIndex(1)
             }
         }
     }
