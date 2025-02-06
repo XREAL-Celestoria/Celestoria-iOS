@@ -82,8 +82,6 @@
 		A2198CAD2D49063800B0AF65 /* Pet.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A2198CA82D49063800B0AF65 /* Pet.usdz */; };
 		A2198CB12D4909BF00B0AF65 /* Travel.usdc in Resources */ = {isa = PBXBuildFile; fileRef = A2198CB02D4909BF00B0AF65 /* Travel.usdc */; };
 		A21E477E2D38CD55002B60FA /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = A21E477D2D38CD55002B60FA /* RealityKitContent */; };
-		A28E59632D540D1600B77DDE /* AWSS3 in Frameworks */ = {isa = PBXBuildFile; productRef = A28E59622D540D1600B77DDE /* AWSS3 */; };
-		A28E59652D54F27F00B77DDE /* AWSClientRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = A28E59642D54F27F00B77DDE /* AWSClientRuntime */; };
 		A29437CB2D4FEA9F00982EAC /* TermsAndConditionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437CA2D4FEA9F00982EAC /* TermsAndConditionsView.swift */; };
 		A29437CD2D51135700982EAC /* NavigationBarWithMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437CC2D51135700982EAC /* NavigationBarWithMenu.swift */; };
 		A29437CF2D51136A00982EAC /* NavigationMenuPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437CE2D51136A00982EAC /* NavigationMenuPopup.swift */; };
@@ -193,11 +191,9 @@
 				2F3672012D3DA1990048D9AD /* Supabase in Frameworks */,
 				2F3671FF2D3DA1990048D9AD /* Storage in Frameworks */,
 				2F3671FB2D3DA1990048D9AD /* PostgREST in Frameworks */,
-				A28E59652D54F27F00B77DDE /* AWSClientRuntime in Frameworks */,
 				2F3671F92D3DA1990048D9AD /* Functions in Frameworks */,
 				2F3671F72D3DA1990048D9AD /* Auth in Frameworks */,
 				2F3671FD2D3DA1990048D9AD /* Realtime in Frameworks */,
-				A28E59632D540D1600B77DDE /* AWSS3 in Frameworks */,
 				A21E477E2D38CD55002B60FA /* RealityKitContent in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -575,8 +571,6 @@
 				2F3671FC2D3DA1990048D9AD /* Realtime */,
 				2F3671FE2D3DA1990048D9AD /* Storage */,
 				2F3672002D3DA1990048D9AD /* Supabase */,
-				A28E59622D540D1600B77DDE /* AWSS3 */,
-				A28E59642D54F27F00B77DDE /* AWSClientRuntime */,
 			);
 			productName = Celestoria;
 			productReference = A21E47782D38CD55002B60FA /* Celestoria.app */;
@@ -608,7 +602,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				2F3671F52D3DA1990048D9AD /* XCRemoteSwiftPackageReference "supabase-swift" */,
-				A28E59612D540D1600B77DDE /* XCRemoteSwiftPackageReference "aws-sdk-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A21E47792D38CD55002B60FA /* Products */;
@@ -936,14 +929,6 @@
 				minimumVersion = 2.5.1;
 			};
 		};
-		A28E59612D540D1600B77DDE /* XCRemoteSwiftPackageReference "aws-sdk-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/awslabs/aws-sdk-swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.12;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -980,16 +965,6 @@
 		A21E477D2D38CD55002B60FA /* RealityKitContent */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RealityKitContent;
-		};
-		A28E59622D540D1600B77DDE /* AWSS3 */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A28E59612D540D1600B77DDE /* XCRemoteSwiftPackageReference "aws-sdk-swift" */;
-			productName = AWSS3;
-		};
-		A28E59642D54F27F00B77DDE /* AWSClientRuntime */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A28E59612D540D1600B77DDE /* XCRemoteSwiftPackageReference "aws-sdk-swift" */;
-			productName = AWSClientRuntime;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
