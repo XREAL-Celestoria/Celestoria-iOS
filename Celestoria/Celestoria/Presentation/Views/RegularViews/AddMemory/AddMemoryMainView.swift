@@ -95,6 +95,34 @@ struct AddMemoryMainView: View {
                 }
                 .transition(.opacity)
             }
+            
+            // Upload progress overlay
+            if viewModel.isUploading {
+                Color.black.opacity(0.7)
+                    .edgesIgnoringSafeArea(.all)
+                
+                UploadProgressPopup(
+                    fileSize: viewModel.uploadingFileSize,
+                    progress: viewModel.uploadProgress
+                )
+            }
+            
+            // Existing popup
+            if let popupData = viewModel.popupData {
+                Color.black.opacity(0.7)
+                    .edgesIgnoringSafeArea(.all)
+                
+                PopupView(
+                    title: popupData.title,
+                    notes: popupData.notes,
+                    leadingButtonText: popupData.leadingButtonText,
+                    trailingButtonText: popupData.trailingButtonText,
+                    circularAction: popupData.circularAction,
+                    leadingButtonAction: popupData.leadingButtonAction,
+                    trailingButtonAction: popupData.trailingButtonAction,
+                    buttonImageString: popupData.buttonImageString
+                )
+            }
         }
         .animation(.easeInOut, value: viewModel.isThumbnailGenerating)
     }

@@ -31,6 +31,11 @@ class AddMemoryMainViewModel: ObservableObject {
     @Published var title: String = ""
     @Published var note: String = ""
     
+    private let MAX_FILE_SIZE: Int64 = 1024 * 1024 * 1024 // 1GB in bytes
+
+    @Published var uploadProgress: Double = 0
+    @Published var uploadingFileSize: String = ""
+    
     var isUploadEnabled: Bool {
         selectedVideoItem != nil &&
         thumbnailImage != nil &&
@@ -94,7 +99,7 @@ class AddMemoryMainViewModel: ObservableObject {
     func showPhotosPickerPopup(dismissWindow: @escaping () -> Void) {
         popupData = PopupData(
             title: "Notice",
-            notes: "Currently, only videos under 5 minutes can be uploaded.\nWould you like to continue adding memory star?",
+            notes: "Currently, only videos under 1GB can be uploaded.\n(Approximately 5 minutes of spatial video)",
             leadingButtonText: "Cancel",
             trailingButtonText: "Continue",
             buttonImageString: "xmark",
@@ -133,8 +138,25 @@ class AddMemoryMainViewModel: ObservableObject {
         Task {
             do {
                 guard let videoData = try await item.loadTransferable(type: Data.self) else {
-                    throw NSError(domain: "Thumbnail Error", code: -1, userInfo: [NSLocalizedDescriptionKey: "비디오 데이터를 불러올 수 없습니다."])
+                    throw NSError(domain: "Thumbnail Error", code: -1, userInfo: [NSLocalizedDescriptionKey: "Could not load video data."])
                 }
+                
+                // Check file size with detailed logging
+                let fileSize = Int64(videoData.count)
+                os.Logger.info("Checking file size: \(fileSize) bytes (Max: \(MAX_FILE_SIZE) bytes)")
+                
+                if fileSize >= MAX_FILE_SIZE {
+                    os.Logger.error("File size (\(formatFileSize(fileSize))) exceeds limit of 1GB")
+                    errorMessage = "Video file size (\(formatFileSize(fileSize))) exceeds 1GB limit. Please choose a smaller file."
+                    selectedVideoItem = nil  // Reset selection
+                    isPickerBlocked = true   // Block picker until user dismisses error
+                    setThumbnailGeneratingFalseWithDelay()
+                    return
+                }
+                
+                // Format file size for display
+                uploadingFileSize = formatFileSize(fileSize)
+                os.Logger.info("File size accepted: \(uploadingFileSize)")
 
                 let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).mov")
                 try videoData.write(to: tempURL)
@@ -152,7 +174,7 @@ class AddMemoryMainViewModel: ObservableObject {
                     self.setThumbnailGeneratingFalseWithDelay()
                 }
             } catch {
-                errorMessage = "비디오 로드 실패: \(error.localizedDescription)"
+                errorMessage = "Video loading failed: \(error.localizedDescription)"
                 os.Logger.error("Video selection error: \(error.localizedDescription)")
                 isPickerBlocked = false
                 setThumbnailGeneratingFalseWithDelay()
@@ -253,6 +275,14 @@ class AddMemoryMainViewModel: ObservableObject {
             }
         }
     }
+
+    private func formatFileSize(_ bytes: Int64) -> String {
+        let formatter = ByteCountFormatter()
+        formatter.allowedUnits = [.useMB, .useGB]
+        formatter.countStyle = .file
+        return formatter.string(fromByteCount: bytes)
+    }
+    
     func getLastUploadedMemory() -> Memory? {
         return lastUploadedMemory
     }

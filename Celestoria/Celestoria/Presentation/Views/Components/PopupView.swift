@@ -88,3 +88,39 @@ struct PopupView: View {
     }
 }
 
+struct UploadProgressPopup: View {
+    let fileSize: String
+    let progress: Double
+    
+    var body: some View {
+        RoundedRectangle(cornerRadius: 44)
+            .fill(LinearGradient.BackgroundPopup)
+            .frame(width: 644, height: 324)
+            .blur(radius: 100)
+            .background(Color.NebulaBlack.cornerRadius(44))
+            .overlay(
+                RoundedRectangle(cornerRadius: 44)
+                    .stroke(LinearGradient.StrokePopup, lineWidth: 3)
+            )
+            .shadow(color: Color(hex: "6BBAFF").opacity(0.3), radius: 30)
+            .overlay(
+                VStack(spacing: 20) {
+                    Text("Uploading Memory")
+                        .font(.system(size: 29, weight: .bold))
+                        .foregroundColor(.NebulaWhite)
+                    
+                    Text("Uploading \(fileSize) video file...")
+                        .font(.system(size: 17, weight: .medium))
+                        .foregroundColor(.NebulaWhite)
+                    
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .scaleEffect(1.5)
+                        .tint(.white)
+                        .padding(.top, 20)
+                }
+                .padding()
+            )
+    }
+}
+
