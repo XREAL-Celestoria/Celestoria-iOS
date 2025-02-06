@@ -19,7 +19,6 @@ struct AddMemoryMainView: View {
     
     var body: some View {
         ZStack {
-            // 기존 UI
             GeometryReader { geometry in
                 HStack(spacing: 0) {
                     // Left View
@@ -34,58 +33,53 @@ struct AddMemoryMainView: View {
                     
                     // Right View
                     RightView()
-                        .frame(width: geometry.size.width / 2, height: geometry.size.height )
+                        .frame(width: geometry.size.width / 2, height: geometry.size.height)
                 }
                 .background(
                     Group {
                         if let thumbnail = viewModel.thumbnailImage {
                             Image(uiImage: thumbnail)
                                 .resizable()
-                                .scaledToFill()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(height: 700)
+                                .frame(maxWidth: .infinity)
                                 .clipped()
                                 .overlay(Color.NebulaBlack.opacity(0.6))
                         } else {
                             Color.NebulaBlack
+                                .frame(height: 700)
+                                .frame(maxWidth: .infinity)
                         }
                     }
                 )
                 .overlay(
-                    Group {
-                        if let popupData = viewModel.popupData {
-                            ZStack {
-                                Color.black.opacity(0.6)
-                                    .ignoresSafeArea()
-                                PopupView(
-                                    title: popupData.title,
-                                    notes: popupData.notes,
-                                    leadingButtonText: popupData.leadingButtonText,
-                                    trailingButtonText: popupData.trailingButtonText,
-                                    circularAction: popupData.circularAction,
-                                    leadingButtonAction: popupData.leadingButtonAction,
-                                    trailingButtonAction: popupData.trailingButtonAction,
-                                    buttonImageString: popupData.buttonImageString
-                                )
-                                .frame(width: 656, height: 332, alignment: .center)
-                            }
-                        }
-                    }
+                    RoundedRectangle(cornerRadius: 0)
+                        .stroke(Color.NebulaWhite.opacity(0.1), lineWidth: 1)
                 )
             }
-            .onDisappear {
-                viewModel.handleViewDisappearance()
-                appModel.showAddMemoryView = false
-            }
-            .onChange(of: viewModel.errorMessage) { _ in
-                if let message = viewModel.errorMessage {
-                    print("Error: \(message)")
-                }
-            }
             
-            if viewModel.isThumbnailGenerating || viewModel.isUploading {
-                ZStack {
-                    Color.black.opacity(0.5)
-                        .ignoresSafeArea()
-                    
+            // 단일 오버레이 레이어로 통합
+            if viewModel.isThumbnailGenerating || viewModel.isUploading || viewModel.popupData != nil {
+                Color.black.opacity(0.7)
+                    .edgesIgnoringSafeArea(.all)
+                
+                if viewModel.isUploading {
+                    UploadProgressPopup(
+                        fileSize: viewModel.uploadingFileSize,
+                        progress: viewModel.uploadProgress
+                    )
+                } else if let popupData = viewModel.popupData {
+                    PopupView(
+                        title: popupData.title,
+                        notes: popupData.notes,
+                        leadingButtonText: popupData.leadingButtonText,
+                        trailingButtonText: popupData.trailingButtonText,
+                        circularAction: popupData.circularAction,
+                        leadingButtonAction: popupData.leadingButtonAction,
+                        trailingButtonAction: popupData.trailingButtonAction,
+                        buttonImageString: popupData.buttonImageString
+                    )
+                } else if viewModel.isThumbnailGenerating {
                     VStack {
                         ProgressView("Loading...")
                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
@@ -93,38 +87,18 @@ struct AddMemoryMainView: View {
                             .padding()
                     }
                 }
-                .transition(.opacity)
-            }
-            
-            // Upload progress overlay
-            if viewModel.isUploading {
-                Color.black.opacity(0.7)
-                    .edgesIgnoringSafeArea(.all)
-                
-                UploadProgressPopup(
-                    fileSize: viewModel.uploadingFileSize,
-                    progress: viewModel.uploadProgress
-                )
-            }
-            
-            // Existing popup
-            if let popupData = viewModel.popupData {
-                Color.black.opacity(0.7)
-                    .edgesIgnoringSafeArea(.all)
-                
-                PopupView(
-                    title: popupData.title,
-                    notes: popupData.notes,
-                    leadingButtonText: popupData.leadingButtonText,
-                    trailingButtonText: popupData.trailingButtonText,
-                    circularAction: popupData.circularAction,
-                    leadingButtonAction: popupData.leadingButtonAction,
-                    trailingButtonAction: popupData.trailingButtonAction,
-                    buttonImageString: popupData.buttonImageString
-                )
             }
         }
         .animation(.easeInOut, value: viewModel.isThumbnailGenerating)
+        .onDisappear {
+            viewModel.handleViewDisappearance()
+            appModel.showAddMemoryView = false
+        }
+        .onChange(of: viewModel.errorMessage) { _ in
+            if let message = viewModel.errorMessage {
+                print("Error: \(message)")
+            }
+        }
     }
 }
 

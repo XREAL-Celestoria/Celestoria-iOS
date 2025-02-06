@@ -147,9 +147,26 @@ class AddMemoryMainViewModel: ObservableObject {
                 
                 if fileSize >= MAX_FILE_SIZE {
                     os.Logger.error("File size (\(formatFileSize(fileSize))) exceeds limit of 1GB")
-                    errorMessage = "Video file size (\(formatFileSize(fileSize))) exceeds 1GB limit. Please choose a smaller file."
                     selectedVideoItem = nil  // Reset selection
-                    isPickerBlocked = true   // Block picker until user dismisses error
+                    
+                    // Show error popup instead of just setting error message
+                    popupData = PopupData(
+                        title: "File Size Exceeded",
+                        notes: "Your video file (\(formatFileSize(fileSize))) is too large.\nPlease choose a video under 1GB.",
+                        leadingButtonText: "",
+                        trailingButtonText: "OK",
+                        buttonImageString: "xmark",
+                        circularAction: { [weak self] in
+                            self?.popupData = nil
+                            self?.isPickerBlocked = false
+                        },
+                        leadingButtonAction: nil,
+                        trailingButtonAction: { [weak self] in
+                            self?.popupData = nil
+                            self?.isPickerBlocked = false
+                        }
+                    )
+                    
                     setThumbnailGeneratingFalseWithDelay()
                     return
                 }
