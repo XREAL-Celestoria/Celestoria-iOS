@@ -60,7 +60,7 @@ final class DIContainer: ObservableObject {
         
         // Initialize Repositories
         self.memoryRepository = MemoryRepository(supabase: supabaseClient)
-        self.mediaRepository = MediaRepository(supabase: supabaseClient)
+        self.mediaRepository = MediaRepository()
         self.authRepository = AuthRepository(supabase: supabaseClient)
 
         // Initialize Use Cases
