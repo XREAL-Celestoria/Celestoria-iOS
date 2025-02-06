@@ -60,21 +60,47 @@ final class MemoryDetailViewModel: ObservableObject {
     }
 
     private func checkVideoURL() {
+        os.Logger.info("🔍 checkVideoURL 시작")
+        
         guard let urlString = memory.videoURL, let url = URL(string: urlString) else {
+            os.Logger.info("❌ 유효하지 않은 URL: \(String(describing: memory.videoURL))")
             videoURLStatus = "Invalid URL"
             return
         }
+        
+        os.Logger.info("📝 체크할 URL: \(urlString)")
 
         Task {
             do {
-                let (data, response) = try await URLSession.shared.data(from: url)
+                os.Logger.info("⏳ HEAD 요청 시작")
+                let config = URLSessionConfiguration.default
+                config.timeoutIntervalForRequest = 30
+                let session = URLSession(configuration: config)
+                
+                var request = URLRequest(url: url)
+                request.httpMethod = "HEAD"
+                
+                let (_, response) = try await session.data(for: request)
+                
                 if let httpResponse = response as? HTTPURLResponse {
-                    videoURLStatus = "HTTP Status: \(httpResponse.statusCode), size: \(data.count) bytes"
+                    let contentLength = httpResponse.value(forHTTPHeaderField: "Content-Length")
+                    let message = "✅ HTTP Status: \(httpResponse.statusCode)" + (contentLength.map { ", size: \($0) bytes" } ?? "")
+                    os.Logger.info(message)
+                    videoURLStatus = message
                 } else {
-                    videoURLStatus = "Data size: \(data.count)"
+                    let message = "⚠️ Non-HTTP response"
+                    os.Logger.info(message)
+                    videoURLStatus = message
                 }
-            } catch {
-                videoURLStatus = "Error: \(error.localizedDescription)"
+            } catch let error as NSError {
+                let errorMessage: String
+                if error.domain == NSURLErrorDomain && error.code == NSURLErrorTimedOut {
+                    errorMessage = "⏰ Connection timed out"
+                } else {
+                    errorMessage = "❌ Error: \(error.localizedDescription)"
+                }
+                os.Logger.error(errorMessage)
+                videoURLStatus = errorMessage
             }
         }
     }

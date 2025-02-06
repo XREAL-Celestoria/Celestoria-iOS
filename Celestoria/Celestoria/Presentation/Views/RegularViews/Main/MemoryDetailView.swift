@@ -46,6 +46,7 @@ struct MemoryDetailView: View {
                                 dismissWindow(id: "Memory-Detail")
                             },
                             leftButtonImageString: "xmark",
+                            showMenuButton: appModel.userId != viewModel.memory.userId,
                             reportAction: {
                                 viewModel.showReportPopup()
                             },

@@ -253,37 +253,76 @@ class MediaRepository {
     
     /// b2_upload_file 호출 - 업로드용 URL과 토큰을 사용하여 파일 업로드
     private func b2UploadFile(uploadUrl: String, uploadAuthToken: String, fileName: String, data: Data, mimeType: String) async throws {
-        os.Logger.info("b2_upload_file 호출 - fileName: \(fileName), data size: \(data.count) bytes")
-        guard let url = URL(string: uploadUrl) else {
-            throw MediaError.uploadFailed()
-        }
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue(uploadAuthToken, forHTTPHeaderField: "Authorization")
-        let encodedFileName = fileName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? fileName
-        request.setValue(encodedFileName, forHTTPHeaderField: "X-Bz-File-Name")
-        request.setValue(mimeType, forHTTPHeaderField: "Content-Type")
-        request.setValue(String(data.count), forHTTPHeaderField: "Content-Length")
+        let maxRetries = 3
+        var currentRetry = 0
         
-        let sha1Hash: String = {
-            #if DEBUG
-            return "do_not_verify"
-            #else
-            let digest = Insecure.SHA1.hash(data: data)
-            return digest.map { String(format: "%02x", $0) }.joined()
-            #endif
-        }()
-        request.setValue(sha1Hash, forHTTPHeaderField: "X-Bz-Content-Sha1")
-        request.httpBody = data
-        
-        let (_, response) = try await URLSession.shared.data(for: request)
-        if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
-            os.Logger.info("b2_upload_file 성공")
-        } else {
-            let code = (response as? HTTPURLResponse)?.statusCode ?? 0
-            os.Logger.info("b2_upload_file 실패 - HTTP 응답 코드: \(code)")
-            throw MediaError.uploadFailed()
+        while currentRetry < maxRetries {
+            do {
+                guard let url = URL(string: uploadUrl) else {
+                    throw MediaError.uploadFailed()
+                }
+                var request = URLRequest(url: url)
+                request.httpMethod = "POST"
+                request.setValue(uploadAuthToken, forHTTPHeaderField: "Authorization")
+                let encodedFileName = fileName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? fileName
+                request.setValue(encodedFileName, forHTTPHeaderField: "X-Bz-File-Name")
+                request.setValue(mimeType, forHTTPHeaderField: "Content-Type")
+                request.setValue(String(data.count), forHTTPHeaderField: "Content-Length")
+                request.timeoutInterval = 3600
+                
+                let sha1Hash: String = {
+                    #if DEBUG
+                    return "do_not_verify"
+                    #else
+                    let digest = Insecure.SHA1.hash(data: data)
+                    return digest.map { String(format: "%02x", $0) }.joined()
+                    #endif
+                }()
+                request.setValue(sha1Hash, forHTTPHeaderField: "X-Bz-Content-Sha1")
+                request.httpBody = data
+                
+                let configuration = URLSessionConfiguration.default
+                configuration.timeoutIntervalForResource = 3600
+                configuration.timeoutIntervalForRequest = 3600
+                let session = URLSession(configuration: configuration)
+                
+                let (responseData, response) = try await session.data(for: request)
+                
+                if let httpResponse = response as? HTTPURLResponse {
+                    if httpResponse.statusCode == 200 {
+                        os.Logger.info("b2_upload_file 성공")
+                        return // 성공하면 함수 종료
+                    } else {
+                        if let errorString = String(data: responseData, encoding: .utf8) {
+                            os.Logger.error("b2_upload_file 실패 - HTTP 응답 코드: \(httpResponse.statusCode), 에러: \(errorString)")
+                        }
+                        
+                        // 500 에러인 경우 재시도
+                        if httpResponse.statusCode == 500 {
+                            currentRetry += 1
+                            if currentRetry < maxRetries {
+                                os.Logger.info("b2_upload_file 재시도 중... (시도 \(currentRetry)/\(maxRetries))")
+                                try await Task.sleep(nanoseconds: UInt64(pow(2.0, Double(currentRetry)) * 1_000_000_000)) // 지수 백오프
+                                continue
+                            }
+                        }
+                        
+                        throw MediaError.uploadFailed(message: "업로드 실패 (HTTP \(httpResponse.statusCode))")
+                    }
+                } else {
+                    throw MediaError.uploadFailed()
+                }
+            } catch {
+                currentRetry += 1
+                if currentRetry >= maxRetries {
+                    throw error
+                }
+                os.Logger.info("b2_upload_file 재시도 중... (시도 \(currentRetry)/\(maxRetries))")
+                try await Task.sleep(nanoseconds: UInt64(pow(2.0, Double(currentRetry)) * 1_000_000_000))
+            }
         }
+        
+        throw MediaError.uploadFailed(message: "최대 재시도 횟수 초과")
     }
 }
 
