@@ -13,12 +13,16 @@ struct CelestoriaVideoPlayerView: UIViewControllerRepresentable {
     let videoURL: URL
 
     func makeUIViewController(context: Context) -> AVPlayerViewController {
+        // AVPlayer 생성 및 설정
         let player = AVPlayer(url: videoURL)
         let playerViewController = AVPlayerViewController()
         playerViewController.player = player
         
-        // 전체 화면 자동 전환 설정
-        playerViewController.entersFullScreenWhenPlaybackBegins = true
+        // 전체화면 모드에 진입하게 하려면 fullScreenCover로 보여주므로,
+        // 여기서는 플레이어가 로드되자마자 자동 재생하도록 합니다.
+        DispatchQueue.main.async {
+            player.play()
+        }
         
         return playerViewController
     }

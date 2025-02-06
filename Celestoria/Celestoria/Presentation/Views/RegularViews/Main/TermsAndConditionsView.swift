@@ -44,39 +44,42 @@ struct TermsAndConditionsView: View {
                 // 스크롤되는 Terms and Conditions 내용
                 ScrollView {
                     Text("""
-                    These Terms and Conditions govern the use of this Apple Vision Pro application Celestoria. By downloading and using this Application, you agree to these Terms. If you do not agree, please refrain from using the Application.
+                    These Terms and Conditions govern the use of the Celestoria application ("Application") for Apple Vision Pro. By downloading and using this Application, you agree to be bound by these Terms. If you do not agree, please do not use the Application.
 
-                    1. Software License Agreement (EULA)
-                    This Application is provided to you by Apple Inc. and the developer Celestoria under a license agreement, not a sale. You are granted a limited, non-exclusive, and non-transferable right to use this Application on your Vision Pro device. You may not modify, redistribute, reverse-engineer, or resell this Application without prior written permission from the Provider. The ownership of this Application remains with the Provider.
+                    1. Software License  
+                    This Application is provided to you under a limited, non-exclusive, and non-transferable license. You are granted the right to use the Application on your Vision Pro device. Modification, redistribution, reverse-engineering, or resale of this Application is prohibited without prior written consent from the provider.
 
-                    2. Privacy Policy
-                    This Application may collect certain user data, including but not limited to:
-                    - Location data, voice input, and usage logs
-                    - Device information and interaction data
-                    
-                    The collected data will be used for the following purposes:
-                    - Improving Application performance and user experience
-                    - Providing customer support and resolving technical issues
-                    - Complying with legal requirements
+                    2. Privacy Policy  
+                    The Application may collect user data (e.g., location data, voice input, usage logs, device information, and interaction data) to improve performance, provide support, and comply with legal requirements. Please review our complete Privacy Policy for further details.
 
-                    3. Terms of Service
-                    Users must not use this Application for illegal activities or any actions that violate Apple's policies. Users must not engage in activities that infringe on the rights of others, including copyright violations or defamatory behavior. The Provider reserves the right to modify, update, or discontinue any part of the Application at any time.
+                    3. User-Generated Content and Community Guidelines  
+                        a. Content Submission and Responsibility:  
+                            Users are permitted to create and share content ("User-Generated Content"). By submitting content, you agree that it must not contain objectionable, abusive, or otherwise inappropriate material.
+                        
+                        b. Content Moderation:  
+                            - Administrator Review: Administrators review newly submitted content twice daily.  
+                            - User Reporting: If a post is reported by one or more users, it is reviewed within one hour. Posts receiving three or more reports are automatically blocked pending further review.
+                            
+                        c. User Conduct and Blocking:  
+                            Users are required to conduct themselves respectfully. The Application provides an option to block abusive users. The provider reserves the right to remove content and suspend or terminate access for any user who violates these guidelines.
+                            
+                        d. Prompt Action:  
+                            All reports of objectionable content are addressed within 24 hours. Appropriate actions include removal of content and ejection of the offending user from the Application.
 
-                    4. End User License Agreement (EULA)
-                    This Application follows Apple's Standard EULA as outlined in the App Store policies. Users must comply with Apple’s Software License Agreement (SLA) when using the Application. You can review Apple's Standard EULA at the following link:
-                    Apple Standard EULA
+                    4. Terms of Service  
+                    The Application must not be used for illegal activities or to infringe on the rights of others. The provider reserves the right to update or discontinue any part of the Application at any time.
 
-                    5. Limitation of Liability
-                    This Application is provided "as-is", and the Provider makes no warranties regarding its completeness, accuracy, or suitability for a particular purpose. The Provider shall not be liable for any damages, including data loss, device malfunctions, or any indirect damages resulting from the use of this Application.
+                    5. Limitation of Liability  
+                    The Application is provided "as-is" without warranties of any kind. The provider is not liable for any damages resulting from the use of this Application.
 
-                    6. Termination of Service and Agreement
-                    The Provider may restrict or terminate your access to the Application without prior notice if you violate these Terms. If you no longer wish to use the Application, you may terminate this agreement by deleting the Application from your device.
+                    6. Termination  
+                    The provider may restrict or terminate access to the Application at any time if these Terms are violated. Users may terminate their use by deleting the Application.
 
-                    7. Governing Law and Dispute Resolution
-                    These Terms are governed by the laws of the jurisdiction where Apple operates its App Store. Any legal disputes will be resolved in accordance with Apple's App Store Terms and Conditions.
-                    
-                    8. Amendments to Terms and Conditions
-                    The Provider may modify these Terms as necessary. Users will be notified of any changes through in-app notifications or on the official website. Continued use of the Application after changes are posted constitutes acceptance of the new Terms.
+                    7. Governing Law  
+                    These Terms are governed by the laws applicable to Apple’s App Store. Any disputes will be resolved in accordance with Apple’s policies.
+
+                    8. Amendments  
+                    The provider may modify these Terms as necessary. Users will be notified of changes via in-app notifications or on our official website. Continued use of the Application signifies acceptance of the updated Terms.
                     """)
                         .font(.system(size: 17))
                         .foregroundColor(.NebulaWhite)
