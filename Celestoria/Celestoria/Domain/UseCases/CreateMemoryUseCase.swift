@@ -57,10 +57,23 @@ class CreateMemoryUseCase {
 
     // 랜덤 위치 생성 (중복된 로직 분리)
     private func generateRandomPosition() -> Memory.Position {
-        return Memory.Position(
-            x: Double.random(in: Bool.random() ? -5...(-1) : 1...5),
-            y: Double.random(in: -1...3),
-            z: Double.random(in: Bool.random() ? -5...(-1) : 1...5)
-        )
+        let radius: Double = 8.0
+        let yMin: Double = -2.0
+        let yMax: Double = 5.0
+        
+        // y를 [-2, 5] 사이에서 무작위로 선택
+        let y = Double.random(in: yMin...yMax)
+        
+        // 주어진 y에 대해, 원의 수평 반지름(h)은 피타고라스 정리에 따라 계산됩니다.
+        let horizontalRadius = sqrt((radius * radius) - (y * y))
+        
+        // 수평원(x-z 평면)에서, 앞쪽(즉, z가 음수인 반원)만 선택하기 위해, 
+        // 각도 alpha를 -π (180°)에서 0 (0°) 사이에서 선택합니다.
+        let alpha = Double.random(in: -Double.pi...0)
+        
+        let x = horizontalRadius * cos(alpha)
+        let z = horizontalRadius * sin(alpha)  // sin(alpha)가 음수이므로, z는 항상 음수가 됨.
+        
+        return Memory.Position(x: x, y: y, z: z)
     }
 }
