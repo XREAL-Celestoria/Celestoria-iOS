@@ -41,6 +41,9 @@ struct MainView: View {
         .background(Color.NebulaBlack.ignoresSafeArea())
         .overlay(loadingOverlay)
         .onAppear {
+            // 메인 창 활성 상태 갱신
+            appModel.mainWindowActive = true
+            
             guard let userId = appModel.userId else { return }
             Task {
                 // ImmersiveSpace 열기 로직은 동일
@@ -53,6 +56,10 @@ struct MainView: View {
                     await spaceCoordinator.loadData(for: userId)
                 }
             }
+        }
+        .onDisappear {
+            // 메인 창이 사라지면 상태 업데이트
+            appModel.mainWindowActive = false
         }
         .onChange(of: scenePhase) { newPhase in
             switch newPhase {

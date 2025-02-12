@@ -44,10 +44,11 @@ struct CelestoriaApp: App {
         }
         .windowResizability(.contentSize)
 
+        // MemoryDetailView를 직접 사용하여 단일 파일로 관리합니다.
         WindowGroup(id: "Memory-Detail", for: Memory.self) { $memory in
-            if let unwrappedMemory = $memory.wrappedValue {
+            if let memory = memory {
                 MemoryDetailView(
-                    memory: unwrappedMemory,
+                    memory: memory,
                     memoryRepository: diContainer.memoryRepository,
                     profileUseCase: diContainer.profileUseCase,
                     authRepository: diContainer.authRepository,
@@ -58,8 +59,7 @@ struct CelestoriaApp: App {
                 .environmentObject(diContainer.appModel)
                 .environmentObject(diContainer.spaceCoordinator)
             } else {
-                Text("No memory provided.")
-                    .frame(width: 1280, height: 720)
+                EmptyView()
             }
         }
         .windowResizability(.contentSize)

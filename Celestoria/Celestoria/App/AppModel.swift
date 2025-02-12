@@ -77,6 +77,8 @@ final class AppModel: ObservableObject {
         }
     }
     
+    @Published var mainWindowActive: Bool = true  // 메인 윈도우 활성 상태를 추적
+    
     let immersiveSpaceID = "SpaceEnvironment"
     
     init() {

@@ -15,14 +15,24 @@ struct MemoryDetailView: View {
     @EnvironmentObject var appModel: AppModel
     @Environment(\.dismissWindow) private var dismissWindow
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.scenePhase) private var scenePhase
     @State private var showFullScreenVideo: Bool = false
     @State private var thumbnailLoaded: Bool = false
     
+    // 두 개 이상의 인스턴스가 Main 창 열기 요청을 중복하지 않게 하기 위한 static 변수
+    private static var didTriggerMainWindowOpen: Bool = false
+
     // 노티피케이션 옵저버를 static으로 관리
     private static var memoryDetailObserver: NSObjectProtocol?
     private static var mainObserver: NSObjectProtocol?
     
-    init(memory: Memory, memoryRepository: MemoryRepository, profileUseCase: ProfileUseCase, authRepository: AuthRepositoryProtocol, appModel: AppModel, spaceCoordinator: SpaceCoordinator) {
+    // MemoryDetailView는 모든 scene 관련 처리를 내부에서 수행합니다.
+    init(memory: Memory,
+         memoryRepository: MemoryRepository,
+         profileUseCase: ProfileUseCase,
+         authRepository: AuthRepositoryProtocol,
+         appModel: AppModel,
+         spaceCoordinator: SpaceCoordinator) {
         _viewModel = StateObject(wrappedValue: MemoryDetailViewModel(
             memory: memory,
             memoryRepository: memoryRepository,
@@ -47,12 +57,8 @@ struct MemoryDetailView: View {
                             },
                             leftButtonImageString: "xmark",
                             showMenuButton: appModel.userId != viewModel.memory.userId,
-                            reportAction: {
-                                viewModel.showReportPopup()
-                            },
-                            blockAction: {
-                                viewModel.showBlockPopup()
-                            }
+                            reportAction: { viewModel.showReportPopup() },
+                            blockAction: { viewModel.showBlockPopup() }
                         )
                         .padding(.horizontal, 28)
                         .padding(.top, 28)
@@ -90,9 +96,7 @@ struct MemoryDetailView: View {
                     CelestoriaVideoPlayerView(videoURL: url)
                         .edgesIgnoringSafeArea(.all)
                         .background(Color.black)
-                        .onTapGesture {
-                            showFullScreenVideo = false
-                        }
+                        .onTapGesture { showFullScreenVideo = false }
                 } else {
                     Text("Video not available")
                         .font(.title)
@@ -124,7 +128,7 @@ struct MemoryDetailView: View {
             }
         )
         .onAppear {
-            // 기존 옵저버 제거
+            // 기존 노티피케이션 옵저버 제거 처리
             if let observer = Self.memoryDetailObserver {
                 NotificationCenter.default.removeObserver(observer)
             }
@@ -141,7 +145,7 @@ struct MemoryDetailView: View {
                 dismissWindow(id: "Memory-Detail")
             }
             
-            // Block 완료 시 모든 창 닫고 메인으로 이동
+            // Block 완료 시 모든 창 닫고 Main 창 열기
             Self.mainObserver = NotificationCenter.default.addObserver(
                 forName: .dismissAllAndGoMain,
                 object: nil,
@@ -174,6 +178,22 @@ struct MemoryDetailView: View {
                 Self.mainObserver = nil
             }
         }
+        .onChange(of: scenePhase) { newPhase in
+            if newPhase == .active && !appModel.mainWindowActive {
+                // 여러 detail view에서 동시에 호출해 중복 생성을 막기 위해 static 변수를 사용합니다.
+                if !Self.didTriggerMainWindowOpen {
+                    os.Logger.info("MemoryDetailView: MainView is not active. Opening Main window.")
+                    // guard 변수 true로 설정하여 중복 호출 방지
+                    Self.didTriggerMainWindowOpen = true
+                    openWindow(id: "Main")
+                    
+                    // 약간의 딜레이 후 guard 변수를 리셋하여 이후에도 Main 창 열기 가능하게 함
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        Self.didTriggerMainWindowOpen = false
+                    }
+                }
+            }
+        }
     }
     
     @ViewBuilder
@@ -185,9 +205,7 @@ struct MemoryDetailView: View {
                     ProgressView()
                         .frame(width: 44, height: 44)
                         .position(x: geometry.size.width / 2, y: (geometry.size.height * 0.72) / 2)
-                        .onAppear {
-                            thumbnailLoaded = false
-                        }
+                        .onAppear { thumbnailLoaded = false }
                 case .success(let image):
                     ZStack {
                         image
@@ -195,9 +213,7 @@ struct MemoryDetailView: View {
                             .scaledToFit()
                             .frame(width: geometry.size.width, height: geometry.size.height)
                             .overlay(Color.NebulaBlack.opacity(0.6))
-                            .onAppear {
-                                thumbnailLoaded = true
-                            }
+                            .onAppear { thumbnailLoaded = true }
                         
                         CircularButton(action: {
                             os.Logger.info("Playing")
@@ -248,19 +264,9 @@ struct MemoryInfoView: View {
                 
                 VStack(alignment: .leading) {
                     HStack {
-//                        Text("Seoul")
-//                            .foregroundColor(.NebulaWhite)
-//                            .font(.system(size: 12, weight: .medium))
-//                        Circle()
-//                            .fill(Color.NebulaWhite.opacity(0.6))
-//                            .frame(width: 4, height: 4)
-//                            .padding(.leading, 8)
-                        
                         Text(viewModel.formattedDate)
                             .foregroundColor(.NebulaWhite)
                             .font(.system(size: 12, weight: .medium))
-//                            .padding(.leading, 8)
-                        
                         Spacer()
                     }
                     Text(viewModel.memory.title)
@@ -284,13 +290,9 @@ struct MemoryInfoView: View {
                currentUserId == viewModel.memory.userId {
                 Button(action: {
                     viewModel.showDeletePopup(
-                        dismissWindow: {
-                            dismissWindow(id: "Memory-Detail")
-                        },
-                        onMemoryDeleted: { deletedMemory in
-                            Task {
-                                await spaceCoordinator.loadData(for: currentUserId)
-                            }
+                        dismissWindow: { dismissWindow(id: "Memory-Detail") },
+                        onMemoryDeleted: { _ in
+                            Task { await spaceCoordinator.loadData(for: currentUserId) }
                         }
                     )
                 }) {
@@ -305,22 +307,19 @@ struct MemoryInfoView: View {
             }
         }
     }
-
-    // MARK: - 프로필 이미지 섹션
+    
     @ViewBuilder
     private var profileImageSection: some View {
         if let userProfile = viewModel.userProfile,
            let urlString = userProfile.profileImageURL,
            let url = URL(string: urlString) {
-            
             AsyncImage(url: url) { phase in
                 switch phase {
                 case .empty:
                     ProgressView()
                         .frame(width: 24, height: 24)
                 case .success(let image):
-                    image
-                        .resizable()
+                    image.resizable()
                         .scaledToFill()
                         .frame(width: 52, height: 52)
                         .clipShape(Circle())
@@ -335,7 +334,6 @@ struct MemoryInfoView: View {
                 }
             }
         } else {
-            // 프로필이 없거나 URL이 없으면 기본 이미지
             Image("CardUserProfileImage")
                 .resizable()
                 .scaledToFill()
