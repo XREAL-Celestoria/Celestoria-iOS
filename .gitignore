@@ -1,0 +1,40 @@
+# MARK: - Xcode
+build/
+DerivedData/
+*.xcworkspace
+*.xcuserstate
+*.xcuserdata/
+!default.xcworkspace  # 이건 예외처리 (있다면 명시적으로 포함)
+
+# MARK: - User settings
+*.xccheckout
+*.moved-aside
+*.xcscmblueprint
+
+# MARK: - Logs
+*.log
+
+# MARK: - Archives
+*.xcarchive
+
+# MARK: - Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# MARK: - IDE helpers
+.idea/
+.DS_Store
+**/.DS_Store  # 모든 하위 디렉토리의 DS_Store까지 무시
+
+# MARK: - Firebase & 민감 설정
+GoogleService-Info.plist
+
+# 민감 설정 파일 위치 기반 무시
+Celestoria/Celestoria/App/Configuration/Config.swift
+Celestoria/Celestoria/App/Configuration/*.xcconfig
+
+# MARK: - Swift Package Index
+Package.resolved
+
+# MARK: - VisionOS-specific (Shared workspace artifacts)
+*.realitykit/

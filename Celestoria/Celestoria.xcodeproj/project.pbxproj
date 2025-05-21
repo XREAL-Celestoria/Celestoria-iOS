@@ -63,6 +63,8 @@
 		2F8800BF2D38CE6800220F89 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F8800B02D38CE6800220F89 /* Preview Assets.xcassets */; };
 		2F8800C02D38CE6800220F89 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F8800B32D38CE6800220F89 /* Assets.xcassets */; };
 		2F8800C42D38D3AE00220F89 /* DIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800C32D38D3AE00220F89 /* DIContainer.swift */; };
+		2F9BDAE52DDE2402003A912D /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 2F9BDAE42DDE2402003A912D /* Debug.xcconfig */; };
+		2F9BDAE72DDE240B003A912D /* Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 2F9BDAE62DDE240B003A912D /* Release.xcconfig */; };
 		2FA858DF2D4A5D74005F131D /* PopupErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA858DE2D4A5D74005F131D /* PopupErrorView.swift */; };
 		2FB501D32D454FA3005FB0B6 /* GalaxyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB501D22D454FA3005FB0B6 /* GalaxyViewModel.swift */; };
 		2FB501D52D455130005FB0B6 /* NavigationMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB501D42D455130005FB0B6 /* NavigationMenuButton.swift */; };
@@ -149,6 +151,8 @@
 		2F8800B62D38CE6800220F89 /* SpaceImmersiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceImmersiveView.swift; sourceTree = "<group>"; };
 		2F8800B72D38CE6800220F89 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2F8800C32D38D3AE00220F89 /* DIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DIContainer.swift; sourceTree = "<group>"; };
+		2F9BDAE42DDE2402003A912D /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		2F9BDAE62DDE240B003A912D /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		2FA858DE2D4A5D74005F131D /* PopupErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupErrorView.swift; sourceTree = "<group>"; };
 		2FB501D22D454FA3005FB0B6 /* GalaxyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalaxyViewModel.swift; sourceTree = "<group>"; };
 		2FB501D42D455130005FB0B6 /* NavigationMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationMenuButton.swift; sourceTree = "<group>"; };
@@ -466,6 +470,8 @@
 			children = (
 				2F8800B72D38CE6800220F89 /* Info.plist */,
 				2F36720A2D3DA3F20048D9AD /* Config.swift */,
+				2F9BDAE42DDE2402003A912D /* Debug.xcconfig */,
+				2F9BDAE62DDE240B003A912D /* Release.xcconfig */,
 			);
 			path = Configuration;
 			sourceTree = "<group>";
@@ -618,8 +624,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2F9BDAE72DDE240B003A912D /* Release.xcconfig in Resources */,
 				2F8800BF2D38CE6800220F89 /* Preview Assets.xcassets in Resources */,
 				2F8800C02D38CE6800220F89 /* Assets.xcassets in Resources */,
+				2F9BDAE52DDE2402003A912D /* Debug.xcconfig in Resources */,
 				A2198CAA2D49063800B0AF65 /* Family.usdz in Resources */,
 				A2198CAC2D49063800B0AF65 /* Enter.usdc in Resources */,
 				A2198CAD2D49063800B0AF65 /* Pet.usdz in Resources */,
@@ -716,6 +724,7 @@
 /* Begin XCBuildConfiguration section */
 		A21E47912D38CD57002B60FA /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2F9BDAE42DDE2402003A912D /* Debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -749,6 +758,7 @@
 		};
 		A21E47922D38CD57002B60FA /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2F9BDAE62DDE240B003A912D /* Release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -782,6 +792,7 @@
 		};
 		A21E47932D38CD57002B60FA /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2F9BDAE42DDE2402003A912D /* Debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -845,6 +856,7 @@
 		};
 		A21E47942D38CD57002B60FA /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2F9BDAE62DDE240B003A912D /* Release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
