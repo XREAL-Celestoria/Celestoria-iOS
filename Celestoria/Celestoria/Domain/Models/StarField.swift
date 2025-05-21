@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 enum StarField: String, CaseIterable {
+    case FIELD_0
     case FIELD_1
     case FIELD_2
     case FIELD_3
@@ -30,6 +31,8 @@ enum StarField: String, CaseIterable {
 
     var imageName: String {
         switch self {
+        case .FIELD_0:
+            return "Starfield-0"
         case .FIELD_1:
             return "Starfield-1"
         case .FIELD_2:

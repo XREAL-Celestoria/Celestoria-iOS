@@ -7,15 +7,7 @@
 		<key>RealityKitContent.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>1</integer>
-		</dict>
-	</dict>
-	<key>SuppressBuildableAutocreation</key>
-	<dict>
-		<key>RealityKitContent</key>
-		<dict>
-			<key>primary</key>
-			<true/>
+			<integer>7</integer>
 		</dict>
 	</dict>
 </dict>

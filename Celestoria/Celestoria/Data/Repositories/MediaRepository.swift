@@ -14,12 +14,11 @@ import os
 
 // MARK: - Backblaze B2 및 Cloudflare 설정 (credential 하드코딩)
 // Backblaze credential
-private let b2KeyID = "004fc386bb8c7730000000002"                   // Backblaze B2 Application Key ID
-private let b2ApplicationKey = ""       // Backblaze B2 Application Key
-private let b2BucketId = "7f9cd368861bdbb89c470713"                   // celestoria 버킷의 Bucket ID (Backblaze 웹 콘솔에서 확인)
-private let bucketName = "celestoria"                                  // 버킷 이름 (public)
-// Cloudflare 연동: Cloudflare에 이미 개인 도메인(e.g., https://files.applevisionpro.xyz)을 연동해두었음
-private let cloudflareDomain = "https://files.applevisionpro.xyz"      // Cloudflare 프록시 도메인
+private let b2KeyID = Config.b2KeyID
+private let b2ApplicationKey = Config.b2ApplicationKey
+private let b2BucketId = Config.b2BucketId
+private let bucketName = Config.bucketName
+private let cloudflareDomain = Config.cloudflareDomain
 
 class MediaRepository {
     

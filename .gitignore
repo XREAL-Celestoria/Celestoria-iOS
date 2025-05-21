@@ -30,11 +30,7 @@ playground.xcworkspace
 GoogleService-Info.plist
 
 # 민감 설정 파일 위치 기반 무시
-Celestoria/Celestoria/App/Configuration/Config.swift
 Celestoria/Celestoria/App/Configuration/*.xcconfig
 
 # MARK: - Swift Package Index
 Package.resolved
-
-# MARK: - VisionOS-specific (Shared workspace artifacts)
-*.realitykit/
