@@ -82,14 +82,24 @@ class SettingViewModel: ObservableObject {
             return
         }
 
+        let originalName = profile?.name ?? ""
+        let nameChanged = (newName ?? "") != originalName
+        let imageChanged = selectedImage != originalImage
+
+        // 아무것도 바뀌지 않았다면 early return
+        if !nameChanged && !imageChanged {
+            Logger.info("📭 이름과 이미지 모두 변경 없음 - 업데이트 생략")
+            return
+        }
+
         Logger.info("🔁 프로필 업데이트 시작")
         Logger.info("🧾 입력된 이름: \(newName ?? "(nil)")")
         Logger.info("🧾 선택된 이미지 타입: \(String(describing: selectedImage))")
+        Logger.info("🔎 이름 변경됨? \(nameChanged), 이미지 변경됨? \(imageChanged)")
 
         isLoading = true
         defer { isLoading = false }
 
-        // 선택된 이미지 → UIImage 변환
         let imageToUpload: UIImage? = {
             guard let selected = selectedImage else {
                 Logger.info("📷 선택된 이미지 없음")
@@ -100,7 +110,6 @@ class SettingViewModel: ObservableObject {
             case .custom(let image):
                 Logger.info("📷 사용자 커스텀 이미지 선택됨")
                 return image
-
             case .predefined(let predefined):
                 let image = UIImage(named: predefined.rawValue)
                 if image == nil {
@@ -121,7 +130,8 @@ class SettingViewModel: ObservableObject {
             )
             Logger.info("✅ 서버 업데이트 완료")
 
-            self.selectedImage = selectedImage // 현재 상태 업데이트
+            self.selectedImage = selectedImage
+            self.updateUploadEnabled()
             Logger.info("🔄 ViewModel 상태 갱신 완료")
         } catch {
             self.error = error

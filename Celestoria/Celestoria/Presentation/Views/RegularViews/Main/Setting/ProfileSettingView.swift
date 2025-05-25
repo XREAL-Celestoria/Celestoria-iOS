@@ -27,16 +27,16 @@ struct ProfileSettingView: View {
                 Text("Profile")
                     .font(.system(size: 29, weight: .bold))
                     .foregroundColor(.NebulaWhite)
-
+                
                 Spacer()
-
+                
                 // isEditing에 따라 Done 버튼 표시 여부 정함.
                 if isEditing {
                     Button(action: {
                         Task {
                             isUpdating = true
                             await viewModel.updateProfileIfNeeded(
-                                newName: viewModel.profile?.name,
+                                newName: nickname, // ✅ 사용자가 입력한 새 닉네임
                                 selectedImage: viewModel.selectedImage
                             )
                             isUpdating = false
@@ -49,7 +49,7 @@ struct ProfileSettingView: View {
                     }
                     .buttonStyle(.plain)
                 }
-            }
+            }            
             .padding(.top, 35)
             .padding(.horizontal, 55)
 
