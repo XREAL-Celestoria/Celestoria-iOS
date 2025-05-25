@@ -256,28 +256,12 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
-		2F3671AB2D3D61C70048D9AD /* VisionOSUtilities */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = VisionOSUtilities;
-			sourceTree = "<group>";
-		};
 		2F3671AC2D3D61DD0048D9AD /* RealityKit */ = {
 			isa = PBXGroup;
 			children = (
 				2F3671AE2D3D62070048D9AD /* Entities */,
-				2F3671AD2D3D61F40048D9AD /* Scenes */,
-				2F3671AF2D3D62120048D9AD /* Interactions */,
 			);
 			path = RealityKit;
-			sourceTree = "<group>";
-		};
-		2F3671AD2D3D61F40048D9AD /* Scenes */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Scenes;
 			sourceTree = "<group>";
 		};
 		2F3671AE2D3D62070048D9AD /* Entities */ = {
@@ -294,13 +278,6 @@
 				2F3672162D3DAB120048D9AD /* SpaceEntity.swift */,
 			);
 			path = Entities;
-			sourceTree = "<group>";
-		};
-		2F3671AF2D3D62120048D9AD /* Interactions */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Interactions;
 			sourceTree = "<group>";
 		};
 		2F3671B42D3D74810048D9AD /* ViewModels */ = {
@@ -441,8 +418,6 @@
 		2F8800C82D38D43F00220F89 /* Data */ = {
 			isa = PBXGroup;
 			children = (
-				2F8800CE2D38D5EF00220F89 /* Network */,
-				2F8800CB2D38D46800220F89 /* Persistence */,
 				2F8800C92D38D44C00220F89 /* Repositories */,
 			);
 			path = Data;
@@ -458,19 +433,11 @@
 			path = Repositories;
 			sourceTree = "<group>";
 		};
-		2F8800CB2D38D46800220F89 /* Persistence */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Persistence;
-			sourceTree = "<group>";
-		};
 		2F8800CC2D38D47400220F89 /* Presentation */ = {
 			isa = PBXGroup;
 			children = (
 				2F3671B52D3D74940048D9AD /* Views */,
 				2F3671B42D3D74810048D9AD /* ViewModels */,
-				2F8800D32D38D72C00220F89 /* Resources */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -486,24 +453,9 @@
 			path = Configuration;
 			sourceTree = "<group>";
 		};
-		2F8800CE2D38D5EF00220F89 /* Network */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Network;
-			sourceTree = "<group>";
-		};
-		2F8800D32D38D72C00220F89 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
 		2F8800D42D38D75D00220F89 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				2F3671AB2D3D61C70048D9AD /* VisionOSUtilities */,
 				2F8800D52D38D76F00220F89 /* Utilities */,
 				2F8800D62D38D77700220F89 /* Extensions */,
 			);
