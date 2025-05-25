@@ -179,6 +179,7 @@ class MediaRepository {
             throw MediaError.uploadFailed()
         }
         let base64Auth = authData.base64EncodedString()
+        os.Logger.info(base64Auth)
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
