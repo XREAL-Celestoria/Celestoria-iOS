@@ -78,37 +78,54 @@ class SettingViewModel: ObservableObject {
     
     func updateProfileIfNeeded(newName: String?, selectedImage: ProfileImageSelection?) async {
         guard let userId = appModel.userId else {
-            Logger.error("User ID not found")
+            Logger.error("🛑 User ID not found")
             return
         }
 
-        // 아무것도 안 바뀐 경우는 early return
-        if newName == profile?.name, selectedImage == nil {
-            Logger.info("No changes detected. Skipping update.")
-            return
-        }
+        Logger.info("🔁 프로필 업데이트 시작")
+        Logger.info("🧾 입력된 이름: \(newName ?? "(nil)")")
+        Logger.info("🧾 선택된 이미지 타입: \(String(describing: selectedImage))")
 
         isLoading = true
         defer { isLoading = false }
 
+        // 선택된 이미지 → UIImage 변환
         let imageToUpload: UIImage? = {
-            switch selectedImage {
-            case .custom(let image): return image
-            case .predefined(let predefined): return UIImage(named: predefined.rawValue)
-            case .none: return nil
+            guard let selected = selectedImage else {
+                Logger.info("📷 선택된 이미지 없음")
+                return nil
+            }
+
+            switch selected {
+            case .custom(let image):
+                Logger.info("📷 사용자 커스텀 이미지 선택됨")
+                return image
+
+            case .predefined(let predefined):
+                let image = UIImage(named: predefined.rawValue)
+                if image == nil {
+                    Logger.error("❌ UIImage(named: \(predefined.rawValue)) 로드 실패")
+                } else {
+                    Logger.info("✅ UIImage(named: \(predefined.rawValue)) 로드 성공")
+                }
+                return image
             }
         }()
 
         do {
+            Logger.info("🚀 updateProfile 호출 중...")
             profile = try await profileUseCase.updateProfile(
-                name: newName ?? profile?.name,
+                name: newName,
                 image: imageToUpload,
                 userId: userId
             )
-            Logger.info("✅ 프로필 업데이트 완료")
+            Logger.info("✅ 서버 업데이트 완료")
+
+            self.selectedImage = selectedImage // 현재 상태 업데이트
+            Logger.info("🔄 ViewModel 상태 갱신 완료")
         } catch {
             self.error = error
-            Logger.error("🚨 프로필 업데이트 실패: \(error.localizedDescription)")
+            Logger.error("❌ 프로필 업데이트 실패: \(error.localizedDescription)")
         }
     }
     
