@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import os
+import _PhotosUI_SwiftUI
 
 @MainActor
 class SettingViewModel: ObservableObject {
@@ -18,12 +19,17 @@ class SettingViewModel: ObservableObject {
     private let profileUseCase: ProfileUseCase
     private let blockedUsersUseCase: BlockedUsersUseCase
     private let appModel: AppModel
+    public var originalImage: ProfileImageSelection?
     
+    //안에 닉네임
     @Published var profile: UserProfile?
     @Published var isLoading = false
     @Published var error: Error?
     @Published var blockedUsers: [BlockedUserInfo] = []
     @Published var isLoadingBlockedUsers = false
+    @Published var selectedImage: ProfileImageSelection?
+    @Published var customPhotoselectedItem: PhotosPickerItem? = nil
+    @Published var isUploadEnabled: Bool = false
     
     init(deleteAccountUseCase: DeleteAccountUseCase,
          signOutUseCase: SignOutUseCase,
@@ -43,36 +49,94 @@ class SettingViewModel: ObservableObject {
     
     func fetchProfile() async {
         isLoading = true
+        defer { isLoading = false }
+        
         do {
-            profile = try await profileUseCase.fetchProfile()
-            Logger.info("Fetched profile: \(String(describing: profile))")
+            let fetchedProfile = try await profileUseCase.fetchProfile()
+            profile = fetchedProfile
+            
+            // 최초 선택된 이미지를 기록
+            if let urlString = fetchedProfile.profileImageURL,
+               let predefined = PredefinedProfileImage.allCases.first(where: { urlString.contains($0.rawValue) }) {
+                originalImage = .predefined(predefined)
+                selectedImage = .predefined(predefined)
+            } else {
+                originalImage = nil
+                selectedImage = nil
+            }
+            
+            updateUploadEnabled()
         } catch {
             self.error = error
             Logger.error("Error fetching profile: \(error.localizedDescription)")
         }
-        isLoading = false
     }
     
-    func updateProfile(name: String?, image: UIImage?) async {
+    func updateUploadEnabled() {
+        isUploadEnabled = selectedImage != originalImage
+    }
+    
+    func updateProfileIfNeeded(newName: String?, selectedImage: ProfileImageSelection?) async {
+        guard let userId = appModel.userId else {
+            Logger.error("🛑 User ID not found")
+            return
+        }
+
+        let originalName = profile?.name ?? ""
+        let nameChanged = (newName ?? "") != originalName
+        let imageChanged = selectedImage != originalImage
+
+        // 아무것도 바뀌지 않았다면 early return
+        if !nameChanged && !imageChanged {
+            Logger.info("📭 이름과 이미지 모두 변경 없음 - 업데이트 생략")
+            return
+        }
+
+        Logger.info("🔁 프로필 업데이트 시작")
+        Logger.info("🧾 입력된 이름: \(newName ?? "(nil)")")
+        Logger.info("🧾 선택된 이미지 타입: \(String(describing: selectedImage))")
+        Logger.info("🔎 이름 변경됨? \(nameChanged), 이미지 변경됨? \(imageChanged)")
+
         isLoading = true
-        do {
-            guard let userId = appModel.userId else {
-                Logger.error("User ID not found")
-                return
+        defer { isLoading = false }
+
+        let imageToUpload: UIImage? = {
+            guard let selected = selectedImage else {
+                Logger.info("📷 선택된 이미지 없음")
+                return nil
             }
-            
-            Logger.info("Updating profile - Name: \(String(describing: name)), Has Image: \(image != nil)")
+
+            switch selected {
+            case .custom(let image):
+                Logger.info("📷 사용자 커스텀 이미지 선택됨")
+                return image
+            case .predefined(let predefined):
+                let image = UIImage(named: predefined.rawValue)
+                if image == nil {
+                    Logger.error("❌ UIImage(named: \(predefined.rawValue)) 로드 실패")
+                } else {
+                    Logger.info("✅ UIImage(named: \(predefined.rawValue)) 로드 성공")
+                }
+                return image
+            }
+        }()
+
+        do {
+            Logger.info("🚀 updateProfile 호출 중...")
             profile = try await profileUseCase.updateProfile(
-                name: name,
-                image: image,
+                name: newName,
+                image: imageToUpload,
                 userId: userId
             )
-            Logger.info("Profile updated successfully: \(String(describing: profile))")
+            Logger.info("✅ 서버 업데이트 완료")
+
+            self.selectedImage = selectedImage
+            self.updateUploadEnabled()
+            Logger.info("🔄 ViewModel 상태 갱신 완료")
         } catch {
             self.error = error
-            Logger.error("Error updating profile: \(error.localizedDescription)")
+            Logger.error("❌ 프로필 업데이트 실패: \(error.localizedDescription)")
         }
-        isLoading = false
     }
     
     func signOut() async throws {

@@ -174,11 +174,16 @@ class MediaRepository {
         guard let url = URL(string: "https://api.backblazeb2.com/b2api/v2/b2_authorize_account") else {
             throw MediaError.uploadFailed()
         }
-        let authString = "\(b2KeyID):\(b2ApplicationKey)"
+        let cleanedKeyID = b2KeyID.trimmingCharacters(in: .whitespacesAndNewlines)
+        let cleanedAppKey = b2ApplicationKey.trimmingCharacters(in: .whitespacesAndNewlines)
+        let authString = "\(cleanedKeyID):\(cleanedAppKey)"
+        let base64Auth = Data(authString.utf8).base64EncodedString()
+        Logger.info("🪪 인코딩 전 문자열: [\(authString)]")
+        Logger.info("🔐 Base64 인코딩 결과: \(base64Auth)")
         guard let authData = authString.data(using: .utf8) else {
             throw MediaError.uploadFailed()
         }
-        let base64Auth = authData.base64EncodedString()
+        os.Logger.info(base64Auth)
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"

@@ -7,8 +7,7 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
-	<key>B2_KEY_ID
-</key>
+	<key>B2_KEY_ID</key>
 	<string>$(B2_KEY_ID)
 </string>
 	<key>B2_APPLICATION_KEY</key>
