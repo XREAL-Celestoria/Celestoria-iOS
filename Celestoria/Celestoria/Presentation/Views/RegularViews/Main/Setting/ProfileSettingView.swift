@@ -185,13 +185,13 @@ struct ProfileSettingView: View {
                     .resizable()
                     .scaledToFill()
             } else {
-                Image("profile_gray")
+                Image(PredefinedProfileImage.random().rawValue)
                     .resizable()
                     .scaledToFill()
             }
 
         case .none:
-            Image("profile_gray")
+            Image(PredefinedProfileImage.random().rawValue)
                 .resizable()
                 .scaledToFill()
         }
