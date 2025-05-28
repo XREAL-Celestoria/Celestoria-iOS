@@ -20,7 +20,7 @@ final class AppModel: ObservableObject {
                 self.selectedStarfield = starfieldEnum
             } else {
                 // ★ 로그인 안되거나 starfield가 없다면 Gray로 고정
-                self.selectedStarfield = .GRAY
+                self.selectedStarfield = .FIELD_1
             }
         }
     }

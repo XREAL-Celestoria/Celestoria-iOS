@@ -21,7 +21,7 @@ class GalaxyViewModel: ObservableObject {
         self.profileUseCase = profileUseCase
         
         // 초기 상태 설정
-        self.selectedImage = StarField.GRAY.imageName
+        self.selectedImage = StarField.FIELD_1.imageName
         
         // userProfile 변경 관찰
         Task {
@@ -44,7 +44,7 @@ class GalaxyViewModel: ObservableObject {
                     self.selectedImage = starfieldName
                     self.spaceCoordinator.updateBackground(with: starfieldName)
                 } else {
-                    self.selectedImage = StarField.GRAY.imageName
+                    self.selectedImage = StarField.FIELD_1.imageName
                 }
                 Logger.info("GalaxyViewModel observer: userProfile changed to \(String(describing: newProfile?.starfield)) => selectedImage = \(String(describing: self.selectedImage))")
             }

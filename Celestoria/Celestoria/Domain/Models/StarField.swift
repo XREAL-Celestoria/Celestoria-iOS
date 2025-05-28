@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 
 enum StarField: String, CaseIterable {
-    case FIELD_0
     case FIELD_1
     case FIELD_2
     case FIELD_3
@@ -22,17 +21,9 @@ enum StarField: String, CaseIterable {
     case ORORAGREEN
     case ORORAPURPLE
     case ORORAPINK
-    case YELLOW
-    case RED
-    case BLUE
-    case PURPLEGREEN
-    case PURPLE
-    case GRAY
 
     var imageName: String {
         switch self {
-        case .FIELD_0:
-            return "Starfield-0"
         case .FIELD_1:
             return "Starfield-1"
         case .FIELD_2:
@@ -57,18 +48,6 @@ enum StarField: String, CaseIterable {
             return "Starfield-orora-purple"
         case .ORORAPINK:
             return "Starfield-orora-pink"
-        case .YELLOW:
-            return "Starfield-yellow"
-        case .RED:
-            return "Starfield-red"
-        case .BLUE:
-            return "Starfield-blue"
-        case .PURPLEGREEN:
-            return "Starfield-purpleGreen"
-        case .PURPLE:
-            return "Starfield-purple"
-        case .GRAY:
-            return "Starfield-gray"
         }
     }
 

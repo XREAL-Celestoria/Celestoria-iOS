@@ -36,7 +36,7 @@ struct ProfileSettingView: View {
                         Task {
                             isUpdating = true
                             await viewModel.updateProfileIfNeeded(
-                                newName: nickname, // ✅ 사용자가 입력한 새 닉네임
+                                newName: nickname,
                                 selectedImage: viewModel.selectedImage
                             )
                             isUpdating = false
@@ -175,9 +175,19 @@ struct ProfileSettingView: View {
     var profileImageView: some View {
         switch viewModel.selectedImage {
         case .custom(let uiImage):
-            Image(uiImage: uiImage)
-                .resizable()
-                .scaledToFill()
+            ZStack {
+                Image("profile_bg")
+                    .resizable()
+                    .scaledToFill()
+                    .clipShape(Circle())
+                    .frame(width: 330, height: 330)
+
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 240, height: 240)
+                    .clipShape(Circle())
+            }
             
         case .predefined(let predefined):
             if let image = UIImage(named: predefined.rawValue) {
@@ -185,15 +195,23 @@ struct ProfileSettingView: View {
                     .resizable()
                     .scaledToFill()
             } else {
-                Image(PredefinedProfileImage.random().rawValue)
-                    .resizable()
-                    .scaledToFill()
+                if !isImageLoading || !isUpdating {
+                    Image("profile_bg")
+                        .resizable()
+                        .scaledToFill()
+                        .clipShape(Circle())
+                        .frame(width: 330, height: 330)
+                }
             }
 
         case .none:
-            Image(PredefinedProfileImage.random().rawValue)
-                .resizable()
-                .scaledToFill()
+            if !isImageLoading || !isUpdating {
+                Image("profile_bg")
+                    .resizable()
+                    .scaledToFill()
+                    .clipShape(Circle())
+                    .frame(width: 330, height: 330)
+            }
         }
     }
 }
