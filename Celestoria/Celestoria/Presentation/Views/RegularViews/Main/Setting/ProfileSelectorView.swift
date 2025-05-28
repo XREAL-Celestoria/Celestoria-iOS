@@ -58,19 +58,18 @@ struct ProfileSelectorView: View {
                 ScrollView {
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 20), count: 3), spacing: 24) {
                         
-                        // PhotosPicker for custom image
-                        PhotosPicker(selection: $selectedItem, matching: .images) {
-                            ZStack {
-                                Circle()
-                                    .stroke(Color(hex: "424242"), lineWidth: 3)
-                                    .frame(width: 206, height: 206)
-                                    .background(.clear)
-                                
-                                Image(systemName: "plus")
-                                    .font(.system(size: 40, weight: .bold))
-                                    .foregroundColor(.NebulaWhite.opacity(0.5))
-                            }
-                        }
+                        PhotoPickerView(
+                            selectedItem: $selectedItem,
+                            tempSelectedImage: $tempSelectedImage,
+                            isSelected: {
+                                if let temp = tempSelectedImage {
+                                    if case .custom = temp {
+                                        return true
+                                    }
+                                }
+                                return false
+                            }()
+                        )
                         .buttonStyle(MainButtonStyle())
                         .onChange(of: selectedItem) { newItem in
                             Task {
@@ -191,6 +190,28 @@ struct ProfileSelectorView: View {
             // 현재 선택된 이미지를 tempSelectedImage로 설정
             tempSelectedImage = viewModel.selectedImage
         }
+        .onChange(of: selectedItem) { newItem in
+            Task {
+                guard let item = newItem else {
+                    print("❌ selectedItem is nil")
+                    return
+                }
+                
+                do {
+                    if let data = try await item.loadTransferable(type: Data.self),
+                       let image = UIImage(data: data) {
+                        await MainActor.run {
+                            print("✅ 이미지 불러오기 성공")
+                            tempSelectedImage = .custom(image)
+                        }
+                    } else {
+                        print("❌ loadTransferable는 성공했지만 UIImage 변환 실패")
+                    }
+                } catch {
+                    print("❌ 이미지 로딩 실패:", error.localizedDescription)
+                }
+            }
+        }
     }
     
     // 선택된 이미지인지 확인하는 헬퍼 함수
@@ -268,9 +289,77 @@ struct ProfileCell: View {
                 Image("Check-Circle")
                     .resizable()
                     .frame(width: 30, height: 30)
-                    .offset(x: -4, y: -4)
+                    .offset(x: -8, y: 8)
             }
         }
         .frame(width: 210, height: 210)
+    }
+}
+
+// MARK: - PhotoPickerView
+struct PhotoPickerView: View {
+    @Binding var selectedItem: PhotosPickerItem?
+    @Binding var tempSelectedImage: ProfileImageSelection?
+    let isSelected: Bool
+    
+    var body: some View {
+        PhotosPicker(selection: $selectedItem, matching: .images) {
+            ZStack {
+                if case .custom(let image) = tempSelectedImage {
+                    Image("profile_bg")
+                        .resizable()
+                        .scaledToFill()
+                        .clipShape(Circle())
+                        .frame(width: 206, height: 206)
+                    
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 150, height: 150)
+                        .clipShape(Circle())
+                    
+                    Circle()
+                        .fill(.black.opacity(0.3))
+                        .frame(width: 206, height: 206)
+                    
+                    Image(systemName: "plus")
+                        .font(.system(size: 40, weight: .bold))
+                        .foregroundColor(.NebulaWhite.opacity(0.5))
+                    
+                    if isSelected {
+                        Circle()
+                            .stroke(
+                                LinearGradient(
+                                    stops: [
+                                        Gradient.Stop(color: Color(red: 0.65, green: 0.91, blue: 1), location: 0.00),
+                                        Gradient.Stop(color: Color(red: 0.71, green: 0.79, blue: 1), location: 1.00),
+                                    ],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                ),
+                                lineWidth: 3
+                            )
+                            .frame(width: 206, height: 206)
+                        
+                        // Check mark
+                        Image("Check-Circle")
+                            .resizable()
+                            .frame(width: 30, height: 30)
+                            .offset(x: 80, y: -80)
+                    }
+                    
+                } else {
+                    Circle()
+                        .stroke(Color(hex: "424242"), lineWidth: 3)
+                        .frame(width: 206, height: 206)
+                        .background(.clear)
+                    
+                    Image(systemName: "plus")
+                        .font(.system(size: 40, weight: .bold))
+                        .foregroundColor(.NebulaWhite.opacity(0.5))
+                }
+            }
+        }
+        .buttonStyle(MainButtonStyle())
     }
 }
