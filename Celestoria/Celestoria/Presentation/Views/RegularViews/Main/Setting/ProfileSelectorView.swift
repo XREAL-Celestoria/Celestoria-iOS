@@ -319,7 +319,7 @@ struct PhotoPickerView: View {
                         .clipShape(Circle())
                     
                     Circle()
-                        .fill(.black.opacity(0.3))
+                        .fill(.black.opacity(0.2))
                         .frame(width: 206, height: 206)
                     
                     Image(systemName: "plus")

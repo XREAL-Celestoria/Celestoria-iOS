@@ -37,12 +37,14 @@ class AuthRepository: AuthRepositoryProtocol {
             let randomSuffix = String(format: "%04d", Int.random(in: 1000...9999))
             let username = "User_\(randomSuffix)"
             let randomStarfield = StarField.random().imageName
+            let randomProfileKey = Int.random(in: 0..<8)
 
             let profile = UserProfile(
                 id: UUID(),
                 userId: userId,
                 name: username,
                 profileImageURL: nil,
+                profileKey: randomProfileKey,
                 spaceThumbnailId: "1",
                 createdAt: Date(),
                 starfield: randomStarfield
@@ -66,17 +68,18 @@ class AuthRepository: AuthRepositoryProtocol {
         try await supabase.auth.signOut()
     }
 
-    func updateProfile(name: String? = nil, profileImageURL: String? = nil, spaceThumbnailId: String? = nil, starfield: String? = nil) async throws -> UserProfile {
+    func updateProfile(name: String? = nil, profileImageURL: String? = nil, profileKey: Int? = nil, spaceThumbnailId: String? = nil, starfield: String? = nil) async throws -> UserProfile {
         guard let userId = supabase.auth.currentUser?.id else {
             Logger.error("User not found when updating profile")
             throw NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not found."])
         }
         
-        Logger.info("Updating profile for user \(userId) - Name: \(String(describing: name)), ImageURL: \(String(describing: profileImageURL)), starfield: \(String(describing: starfield))")
+        Logger.info("Updating profile for user \(userId) - Name: \(String(describing: name)), ImageURL: \(String(describing: profileImageURL)), key: \(String(describing: profileKey))starfield: \(String(describing: starfield))")
         
         struct ProfileUpdate: Encodable {
             var name: String?
             var profile_image_url: String?
+            var profile_key: Int??
             var space_thumbnail_id: String?
             var starfield: String?
         }
@@ -84,6 +87,7 @@ class AuthRepository: AuthRepositoryProtocol {
         let updates = ProfileUpdate(
             name: name,
             profile_image_url: profileImageURL,
+            profile_key: profileKey,
             space_thumbnail_id: spaceThumbnailId,
             starfield: starfield
         )
@@ -117,10 +121,12 @@ class AuthRepository: AuthRepositoryProtocol {
         
         let profiles: [UserProfile] = try await supabase
             .from("user_profiles")
-            .select()
+            .select("id, user_id, name, profile_image_url, profile_key, space_thumbnail_id, created_at, starfield")
             .eq("user_id", value: userId.uuidString)
             .execute()
             .value
+        
+        print(profiles)
         
         guard let profile = profiles.first else {
             throw NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Profile not found."])

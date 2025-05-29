@@ -50,21 +50,27 @@ class SettingViewModel: ObservableObject {
     func fetchProfile() async {
         isLoading = true
         defer { isLoading = false }
-        
+
         do {
             let fetchedProfile = try await profileUseCase.fetchProfile()
             profile = fetchedProfile
-            
-            // 최초 선택된 이미지를 기록
-            if let urlString = fetchedProfile.profileImageURL,
-               let predefined = PredefinedProfileImage.allCases.first(where: { urlString.contains($0.rawValue) }) {
+            print(profile)
+
+            if let key = fetchedProfile.profileKey,
+               let predefined = PredefinedProfileImage.fromKey(key) {
                 originalImage = .predefined(predefined)
                 selectedImage = .predefined(predefined)
+            } else if let urlString = fetchedProfile.profileImageURL,
+                      let url = URL(string: urlString),
+                      let data = try? Data(contentsOf: url),
+                      let image = UIImage(data: data) {
+                originalImage = .custom(image)
+                selectedImage = .custom(image)
             } else {
                 originalImage = nil
                 selectedImage = nil
             }
-            
+
             updateUploadEnabled()
         } catch {
             self.error = error
@@ -86,53 +92,45 @@ class SettingViewModel: ObservableObject {
         let nameChanged = (newName ?? "") != originalName
         let imageChanged = selectedImage != originalImage
 
-        // 아무것도 바뀌지 않았다면 early return
         if !nameChanged && !imageChanged {
             Logger.info("📭 이름과 이미지 모두 변경 없음 - 업데이트 생략")
             return
         }
 
         Logger.info("🔁 프로필 업데이트 시작")
-        Logger.info("🧾 입력된 이름: \(newName ?? "(nil)")")
-        Logger.info("🧾 선택된 이미지 타입: \(String(describing: selectedImage))")
-        Logger.info("🔎 이름 변경됨? \(nameChanged), 이미지 변경됨? \(imageChanged)")
+
+        let imageDataToUpload: Data?
+        let profileKeyToUpload: Int?
+
+        switch selectedImage {
+        case .custom(let image):
+            imageDataToUpload = image.jpegData(compressionQuality: 0.8)
+            profileKeyToUpload = nil 
+        case .predefined(let predefined):
+            imageDataToUpload = nil
+            profileKeyToUpload = predefined.key
+        case .none:
+            imageDataToUpload = nil
+            profileKeyToUpload = nil
+        }
 
         isLoading = true
         defer { isLoading = false }
 
-        let imageToUpload: UIImage? = {
-            guard let selected = selectedImage else {
-                Logger.info("📷 선택된 이미지 없음")
-                return nil
-            }
-
-            switch selected {
-            case .custom(let image):
-                Logger.info("📷 사용자 커스텀 이미지 선택됨")
-                return image
-            case .predefined(let predefined):
-                let image = UIImage(named: predefined.rawValue)
-                if image == nil {
-                    Logger.error("❌ UIImage(named: \(predefined.rawValue)) 로드 실패")
-                } else {
-                    Logger.info("✅ UIImage(named: \(predefined.rawValue)) 로드 성공")
-                }
-                return image
-            }
-        }()
-
         do {
             Logger.info("🚀 updateProfile 호출 중...")
+
             profile = try await profileUseCase.updateProfile(
                 name: newName,
-                image: imageToUpload,
+                profileKey: profileKeyToUpload,
+                imageData: imageDataToUpload,
                 userId: userId
             )
-            Logger.info("✅ 서버 업데이트 완료")
 
             self.selectedImage = selectedImage
-            self.updateUploadEnabled()
-            Logger.info("🔄 ViewModel 상태 갱신 완료")
+            updateUploadEnabled()
+
+            Logger.info("✅ 프로필 업데이트 완료")
         } catch {
             self.error = error
             Logger.error("❌ 프로필 업데이트 실패: \(error.localizedDescription)")
@@ -159,25 +157,24 @@ class SettingViewModel: ObservableObject {
     
     func updateThumbnail(thumbnailId: String) async {
         isLoading = true
+        defer { isLoading = false }
+
         do {
             guard let userId = appModel.userId else {
-                Logger.error("User ID not found")
+                Logger.error("🛑 User ID not found")
                 return
             }
-            
-            Logger.info("Updating thumbnail ID: \(thumbnailId)")
+
+            Logger.info("📤 Updating thumbnail ID: \(thumbnailId)")
             profile = try await profileUseCase.updateProfile(
-                name: profile?.name,
-                image: nil,
                 spaceThumbnailId: thumbnailId,
                 userId: userId
             )
-            Logger.info("Thumbnail updated successfully")
+            Logger.info("✅ Thumbnail updated successfully")
         } catch {
             self.error = error
-            Logger.error("Error updating thumbnail: \(error.localizedDescription)")
+            Logger.error("❌ Error updating thumbnail: \(error.localizedDescription)")
         }
-        isLoading = false
     }
     
     // Helper function to convert between thumbnail formats

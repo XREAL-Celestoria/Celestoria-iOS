@@ -8,12 +8,6 @@
 import SwiftUI
 import PhotosUI
 
-// MARK: - Enums
-enum ProfileImageSelection: Equatable {
-    case custom(UIImage)
-    case predefined(PredefinedProfileImage)
-}
-
 enum SettingSection: String {
     case profile = "Profile"
     case thumbnail = "Thumbnail"

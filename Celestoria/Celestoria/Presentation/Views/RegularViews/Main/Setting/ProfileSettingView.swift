@@ -7,6 +7,7 @@
 
 import SwiftUI
 import PhotosUI
+import os
 
 // MARK: - Profile Setting View
 struct ProfileSettingView: View {
@@ -52,7 +53,7 @@ struct ProfileSettingView: View {
             }            
             .padding(.top, 35)
             .padding(.horizontal, 55)
-
+            
             VStack(spacing: 70) {
                 ZStack {
                     // 프로필 이미지 뷰
@@ -77,22 +78,22 @@ struct ProfileSettingView: View {
                                 }
                             }
                         )
-
+                    
                     if isImageLoading || isUpdating {
                         ProgressView()
                             .frame(width: 330, height: 330)
                             .background(Color.black.opacity(0.4))
                             .clipShape(Circle())
                     }
-
+                    
                 }
-
+                
                 // nickname view
                 ZStack {
                     RoundedRectangle(cornerRadius: 16)
                         .fill(Color.Profile)
                         .frame(width: 600, height: 90)
-
+                    
                     // editing 중일때는 textfield로, 아닐때는 text로
                     if isEditing {
                         TextField("Nickname", text: $nickname)
@@ -134,7 +135,7 @@ struct ProfileSettingView: View {
             }
             .frame(maxWidth: .infinity)
             .buttonStyle(.plain)
-
+            
             Spacer()
         }
         .sheet(isPresented: $showProfileSelector) {
@@ -144,8 +145,15 @@ struct ProfileSettingView: View {
             Task {
                 isImageLoading = true
                 await viewModel.fetchProfile()
-
-                if let profileURL = viewModel.profile?.profileImageURL, let url = URL(string: profileURL) {
+                
+                let profile = viewModel.profile
+                
+                if let key = profile?.profileKey, // ✅ 먼저 profileKey를 기준으로 확인
+                   let predefined = PredefinedProfileImage.fromKey(key) {
+                    print("✅ profileKey = \(key) → \(predefined.rawValue)")
+                    viewModel.selectedImage = .predefined(predefined)
+                } else if let urlStr = profile?.profileImageURL,
+                          let url = URL(string: urlStr) {
                     do {
                         let (data, _) = try await URLSession.shared.data(from: url)
                         if let image = UIImage(data: data) {
@@ -165,7 +173,7 @@ struct ProfileSettingView: View {
                 } else {
                     viewModel.selectedImage = .predefined(.profile_gray)
                 }
-
+                
                 isImageLoading = false
             }
         }
