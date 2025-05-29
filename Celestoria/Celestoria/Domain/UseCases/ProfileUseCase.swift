@@ -27,27 +27,29 @@ struct ProfileUseCase {
     
     func updateProfile(
         name: String? = nil,
-        image: UIImage? = nil,
+        profileKey: Int? = nil,
+        imageData: Data? = nil,
         spaceThumbnailId: String? = nil,
         starfield: String? = nil,
         userId: UUID
     ) async throws -> UserProfile {
         var profileImageURL: String? = nil
-        
-        // 프로필 이미지가 있으면 업로드
-        if let image = image {
+
+        // 커스텀 이미지가 있는 경우에만 업로드
+        if let imageData = imageData, let image = UIImage(data: imageData) {
             let (url, _) = try await mediaRepository.uploadProfileImage(image, userId: userId)
             profileImageURL = url
         }
-        
-        // 수정 사항 DB 업데이트
+
+        // 서버에 최종 데이터 전달 (profileKey 포함)
         let updatedProfile = try await authRepository.updateProfile(
             name: name,
             profileImageURL: profileImageURL,
+            profileKey: profileKey,
             spaceThumbnailId: spaceThumbnailId,
             starfield: starfield
         )
-        
+
         return updatedProfile
     }
 }

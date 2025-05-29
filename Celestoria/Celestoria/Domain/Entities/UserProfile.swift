@@ -12,6 +12,7 @@ struct UserProfile: Identifiable, Codable, Hashable {
     let userId: UUID
     let name: String
     let profileImageURL: String?
+    let profileKey: Int?
     let spaceThumbnailId: String?
     let createdAt: Date
     let starfield: String?
@@ -29,6 +30,7 @@ struct UserProfile: Identifiable, Codable, Hashable {
         case userId = "user_id"
         case name
         case profileImageURL = "profile_image_url"
+        case profileKey = "profile_key"
         case spaceThumbnailId = "space_thumbnail_id"
         case createdAt = "created_at"
         case starfield
