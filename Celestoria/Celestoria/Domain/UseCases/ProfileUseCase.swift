@@ -27,29 +27,26 @@ struct ProfileUseCase {
     
     func updateProfile(
         name: String? = nil,
-        profileKey: Int? = nil,
+        profileKey: Int?? = nil,
         imageData: Data? = nil,
-        spaceThumbnailId: String? = nil,
-        starfield: String? = nil,
+        spaceThumbnailId: String?? = nil,
+        starfield: String?? = nil,
         userId: UUID
     ) async throws -> UserProfile {
-        var profileImageURL: String? = nil
+        let current = try await authRepository.fetchProfileByUserId(userId: userId)
 
-        // 커스텀 이미지가 있는 경우에만 업로드
+        var profileImageURL: String? = current.profileImageURL
         if let imageData = imageData, let image = UIImage(data: imageData) {
             let (url, _) = try await mediaRepository.uploadProfileImage(image, userId: userId)
             profileImageURL = url
         }
 
-        // 서버에 최종 데이터 전달 (profileKey 포함)
-        let updatedProfile = try await authRepository.updateProfile(
-            name: name,
+        return try await authRepository.updateProfile(
+            name: name ?? current.name,
             profileImageURL: profileImageURL,
-            profileKey: profileKey,
-            spaceThumbnailId: spaceThumbnailId,
-            starfield: starfield
+            profileKey: profileKey != nil ? profileKey! : current.profileKey,
+            spaceThumbnailId: spaceThumbnailId != nil ? spaceThumbnailId! : current.spaceThumbnailId,
+            starfield: starfield ?? current.starfield
         )
-
-        return updatedProfile
     }
 }

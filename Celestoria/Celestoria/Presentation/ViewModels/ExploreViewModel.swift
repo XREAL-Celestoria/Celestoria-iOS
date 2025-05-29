@@ -61,13 +61,32 @@ final class ExploreViewModel: ObservableObject {
     
     func getCardItem(by userId: UUID) -> ExploreUserCardItem? {
         guard let user = getUser(by: userId) else { return nil }
+
+        let profileImageName: String
+        let isCustomImage: Bool
+
+        if let key = user.profile.profileKey,
+           let predefined = PredefinedProfileImage.fromKey(key) {
+            profileImageName = predefined.rawValue // "profile_blue" 등
+            os.Logger.info(profileImageName)
+            isCustomImage = false
+        } else if let url = user.profile.profileImageURL {
+            profileImageName = url
+            isCustomImage = url.lowercased().hasPrefix("http")
+        } else {
+            profileImageName = PredefinedProfileImage.profile_gray.rawValue
+            isCustomImage = false
+        }
+
         return ExploreUserCardItem(
             userName: user.profile.name,
-            userProfileImageName: user.profile.profileImageURL ?? "CardUserProfileImage",
+            userProfileImageName: profileImageName,
             memoryStars: user.memoryCount,
-            imageName: mapThumbnailIdToImageName(user.profile.spaceThumbnailId)
+            imageName: mapThumbnailIdToImageName(user.profile.spaceThumbnailId),
+            isCustomImage: isCustomImage
         )
     }
+    
     /// space_thumbnail_id -> 실제 썸네일 이미지 이름
     func mapThumbnailIdToImageName(_ spaceThumbnailId: String?) -> String {
         guard let thumbnailId = spaceThumbnailId else {
