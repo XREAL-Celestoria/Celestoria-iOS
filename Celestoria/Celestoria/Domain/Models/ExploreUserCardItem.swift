@@ -7,11 +7,10 @@
 
 import Foundation
 
-struct ExploreUserCardItem: Identifiable, Codable, Hashable {
-    let id = UUID()
+struct ExploreUserCardItem {
     let userName: String
     let userProfileImageName: String
     let memoryStars: Int
-    // let constellations: Int
     let imageName: String
+    let isCustomImage: Bool
 }

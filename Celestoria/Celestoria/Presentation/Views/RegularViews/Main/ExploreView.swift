@@ -60,28 +60,22 @@ struct ExploreView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 20) {
                             ForEach(exploreViewModel.exploreUsers, id: \.profile.id) { user in
-                                let cardItem = ExploreUserCardItem(
-                                    userName: user.profile.name,
-                                    userProfileImageName: user.profile.profileImageURL ?? "CardUserProfileImage",
-                                    memoryStars: user.memoryCount,
-                                    // constellations: 0, // Todo
-                                    imageName: exploreViewModel.mapThumbnailIdToImageName(user.profile.spaceThumbnailId)
-                                )
-
-                                ExploreUserCard(
-                                    item: cardItem,
-                                    onExploreGalaxy: {
-                                        guard !appModel.showExploreNavigatorView else {
-                                            os.Logger.info("Explore Navigator View is already opened")
-                                            return
+                                if let cardItem = exploreViewModel.getCardItem(by: user.profile.userId) {
+                                    ExploreUserCard(
+                                        item: cardItem,
+                                        onExploreGalaxy: {
+                                            guard !appModel.showExploreNavigatorView else {
+                                                os.Logger.info("Explore Navigator View is already opened")
+                                                return
+                                            }
+                                            
+                                            os.Logger.info("Displaying Explore Navigator View")
+                                            appModel.showExploreNavigatorView = true
+                                            openWindow(value: user.profile.userId)
+                                            dismissWindow()
                                         }
-                                        
-                                        os.Logger.info("Displaying Explore Navigator View")
-                                        appModel.showExploreNavigatorView = true
-                                        openWindow(value: user.profile.userId)
-                                        dismissWindow()
-                                    }
-                                )
+                                    )
+                                }
                             }
                         }
                         .padding(.horizontal, 48)
@@ -243,14 +237,10 @@ struct ExploreUserCard: View {
 
                 VStack {
                     HStack {
-                        if let url = URL(string: item.userProfileImageName),
-                        // 간단 예: "http"로 시작하면 외부 URL로 간주
-                        item.userProfileImageName.lowercased().hasPrefix("http") {
-                            // 외부 URL
+                        if item.isCustomImage, let url = URL(string: item.userProfileImageName) {
                             AsyncImage(url: url) { phase in
                                 switch phase {
                                 case .empty:
-                                    // 아직 로드되지 않은 상태
                                     ProgressView()
                                         .frame(width: 32, height: 32)
                                 case .success(let image):
@@ -260,17 +250,11 @@ struct ExploreUserCard: View {
                                         .frame(width: 32, height: 32)
                                         .clipShape(Circle())
                                 case .failure(_):
-                                    // 로드 실패 → 기본 이미지
-                                    Image("CardUserProfileImage")
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: 32, height: 32)
-                                        .clipShape(Circle())
+                                    fallbackProfileImage()
                                 }
                             }
                         } else {
-                            // 외부 URL이 아니면, 로컬 이미지로 처리
-                            Image("CardUserProfileImage")
+                            Image(item.userProfileImageName)
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: 32, height: 32)
@@ -318,4 +302,13 @@ struct ExploreUserCard: View {
         .background(LinearGradient.GradientCard)
         .cornerRadius(16)
     }
+}
+
+@ViewBuilder
+private func fallbackProfileImage() -> some View {
+    Image("profile_gray")
+        .resizable()
+        .scaledToFill()
+        .frame(width: 32, height: 32)
+        .clipShape(Circle())
 }
