@@ -41,7 +41,7 @@ final class SpaceCoordinator: ObservableObject {
         }
         do {
             // SpaceEntity 초기화
-            let backgroundImageName = appModel.selectedStarfield?.imageName ?? "Starfield-gray"
+            let backgroundImageName = appModel.selectedStarfield?.imageName ?? "Starfield-1"
             let newSpaceEntity = SpaceEntity(coordinator: self, backgroundImageName: backgroundImageName)
             self.spaceEntity = newSpaceEntity
             os.Logger.info("SpaceCoordinator: Created SpaceEntity with background \(backgroundImageName)")
@@ -111,7 +111,7 @@ final class SpaceCoordinator: ObservableObject {
 
         do {
             let profile = try await profileUseCase.fetchProfileByUserId(userId: userId)
-            let starfieldName = profile.starfield ?? "Starfield-gray"
+            let starfieldName = profile.starfield ?? "Starfield-1"
 
             if spaceEntity == nil {
                 spaceEntity = SpaceEntity(coordinator: self, backgroundImageName: starfieldName)
