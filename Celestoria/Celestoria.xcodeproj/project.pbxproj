@@ -91,6 +91,7 @@
 		A2198CB12D4909BF00B0AF65 /* Travel.usdc in Resources */ = {isa = PBXBuildFile; fileRef = A2198CB02D4909BF00B0AF65 /* Travel.usdc */; };
 		A21E477E2D38CD55002B60FA /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = A21E477D2D38CD55002B60FA /* RealityKitContent */; };
 		A24775052E19695E00FEB8B5 /* Like.swift in Sources */ = {isa = PBXBuildFile; fileRef = A24775042E19695E00FEB8B5 /* Like.swift */; };
+		A24775072E197C4000FEB8B5 /* fireworks.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A24775062E197C4000FEB8B5 /* fireworks.usdz */; };
 		A29437CB2D4FEA9F00982EAC /* TermsAndConditionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437CA2D4FEA9F00982EAC /* TermsAndConditionsView.swift */; };
 		A29437CD2D51135700982EAC /* NavigationBarWithMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437CC2D51135700982EAC /* NavigationBarWithMenu.swift */; };
 		A29437CF2D51136A00982EAC /* NavigationMenuPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437CE2D51136A00982EAC /* NavigationMenuPopup.swift */; };
@@ -186,6 +187,7 @@
 		A21E47782D38CD55002B60FA /* Celestoria.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Celestoria.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A21E477C2D38CD55002B60FA /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
 		A24775042E19695E00FEB8B5 /* Like.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Like.swift; sourceTree = "<group>"; };
+		A24775062E197C4000FEB8B5 /* fireworks.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = fireworks.usdz; sourceTree = "<group>"; };
 		A29437CA2D4FEA9F00982EAC /* TermsAndConditionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsAndConditionsView.swift; sourceTree = "<group>"; };
 		A29437CC2D51135700982EAC /* NavigationBarWithMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarWithMenu.swift; sourceTree = "<group>"; };
 		A29437CE2D51136A00982EAC /* NavigationMenuPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationMenuPopup.swift; sourceTree = "<group>"; };
@@ -269,6 +271,7 @@
 		2F3671AE2D3D62070048D9AD /* Entities */ = {
 			isa = PBXGroup;
 			children = (
+				A24775062E197C4000FEB8B5 /* fireworks.usdz */,
 				A2198CA62D49063800B0AF65 /* Enter.usdc */,
 				A2198CA72D49063800B0AF65 /* Family.usdz */,
 				A2198CA82D49063800B0AF65 /* Pet.usdz */,
@@ -606,6 +609,7 @@
 				2F8800BF2D38CE6800220F89 /* Preview Assets.xcassets in Resources */,
 				2F8800C02D38CE6800220F89 /* Assets.xcassets in Resources */,
 				A2198CAA2D49063800B0AF65 /* Family.usdz in Resources */,
+				A24775072E197C4000FEB8B5 /* fireworks.usdz in Resources */,
 				2FC41AD82DDE33E000E03025 /* Debug.xcconfig in Resources */,
 				A2198CAC2D49063800B0AF65 /* Enter.usdc in Resources */,
 				A2198CAD2D49063800B0AF65 /* Pet.usdz in Resources */,
