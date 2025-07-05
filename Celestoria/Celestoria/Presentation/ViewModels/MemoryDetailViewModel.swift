@@ -27,6 +27,9 @@ final class MemoryDetailViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var userProfile: UserProfile? = nil
     @Published var isDeleting: Bool = false
+    @Published var likeCount: Int = 0
+    @Published var isLiked: Bool = false
+    @Published var isLikeLoading: Bool = false
     
     init(
         memory: Memory,
@@ -50,6 +53,7 @@ final class MemoryDetailViewModel: ObservableObject {
         // ★ 메모리 작성자 프로필 가져오기
         Task {
             await fetchUserProfile()
+            await loadLikeData()
         }
     }
 
@@ -112,6 +116,52 @@ final class MemoryDetailViewModel: ObservableObject {
             self.userProfile = fetchedProfile
         } catch {
             logger.error("Failed to fetch user profile: \(error.localizedDescription)")
+        }
+    }
+    
+    // MARK: - 좋아요 관련 메서드
+    
+    private func loadLikeData() async {
+        guard let currentUserId = appModel.userId else { return }
+        
+        do {
+            // 좋아요 수와 현재 사용자의 좋아요 상태를 동시에 로드
+            async let likeCountResult = memoryRepository.getLikeCount(for: self.memory.id)
+            async let hasLikedResult = memoryRepository.hasLiked(memoryId: self.memory.id, userId: currentUserId)
+            
+            let (count, liked) = try await (likeCountResult, hasLikedResult)
+            
+            self.likeCount = count
+            self.isLiked = liked
+        } catch {
+            logger.error("Failed to load like data: \(error.localizedDescription)")
+        }
+    }
+    
+    func toggleLike() async {
+        guard let currentUserId = appModel.userId else { return }
+        guard !isLikeLoading else { return }
+        
+        isLikeLoading = true
+        defer { isLikeLoading = false }
+        
+        do {
+            if isLiked {
+                // 좋아요 취소
+                try await memoryRepository.deleteLike(memoryId: self.memory.id, userId: currentUserId)
+                likeCount = max(0, likeCount - 1)
+                isLiked = false
+                logger.info("Like removed for memory: \(self.memory.id)")
+            } else {
+                // 좋아요 추가
+                try await memoryRepository.createLike(memoryId: self.memory.id, userId: currentUserId)
+                likeCount += 1
+                isLiked = true
+                logger.info("Like added for memory: \(self.memory.id)")
+            }
+        } catch {
+            logger.error("Failed to toggle like: \(error.localizedDescription)")
+            errorMessage = "좋아요 처리 중 오류가 발생했습니다."
         }
     }
 

@@ -281,6 +281,32 @@ struct MemoryInfoView: View {
                         .padding(.top, 8)
                     
                     Spacer()
+                    
+                    // 좋아요 버튼
+                    HStack {
+                        Button(action: {
+                            Task {
+                                await viewModel.toggleLike()
+                            }
+                        }) {
+                            HStack(spacing: 12) {
+                                Image(viewModel.isLiked ? "Like-on" : "Like")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 24, height: 24)
+                                
+                                Text("\(viewModel.likeCount)")
+                                    .foregroundColor(.NebulaWhite)
+                                    .font(.system(size: 21, weight: .medium))
+                            }
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .disabled(viewModel.isLikeLoading)
+                        .opacity(viewModel.isLikeLoading ? 0.6 : 1.0)
+                        
+                        Spacer()
+                    }
+                    .padding(.bottom, 30)
                 }
                 .padding(.leading, 8)
                 .padding(.top, 28)
