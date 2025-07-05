@@ -114,6 +114,58 @@ class MemoryRepository {
             
         return !reports.isEmpty
     }
+    
+    // MARK: - 좋아요 관련 메서드
+    
+    // 좋아요 생성
+    func createLike(memoryId: UUID, userId: UUID) async throws {
+        let like = Like(
+            id: UUID(),
+            userId: userId,
+            memoryId: memoryId,
+            createdAt: Date()
+        )
+        
+        try await supabase
+            .from("likes")
+            .insert(like)
+            .execute()
+    }
+    
+    // 좋아요 삭제 (좋아요 취소)
+    func deleteLike(memoryId: UUID, userId: UUID) async throws {
+        try await supabase
+            .from("likes")
+            .delete()
+            .eq("memory_id", value: memoryId.uuidString)
+            .eq("user_id", value: userId.uuidString)
+            .execute()
+    }
+    
+    // 특정 메모리의 좋아요 수 조회
+    func getLikeCount(for memoryId: UUID) async throws -> Int {
+        let likes: [Like] = try await supabase
+            .from("likes")
+            .select()
+            .eq("memory_id", value: memoryId.uuidString)
+            .execute()
+            .value
+            
+        return likes.count
+    }
+    
+    // 사용자가 특정 메모리에 좋아요를 눌렀는지 확인
+    func hasLiked(memoryId: UUID, userId: UUID) async throws -> Bool {
+        let likes: [Like] = try await supabase
+            .from("likes")
+            .select()
+            .eq("memory_id", value: memoryId.uuidString)
+            .eq("user_id", value: userId.uuidString)
+            .execute()
+            .value
+            
+        return !likes.isEmpty
+    }
 }
 
 enum MemoryError: Error, LocalizedError {

@@ -90,6 +90,7 @@
 		A2198CAD2D49063800B0AF65 /* Pet.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A2198CA82D49063800B0AF65 /* Pet.usdz */; };
 		A2198CB12D4909BF00B0AF65 /* Travel.usdc in Resources */ = {isa = PBXBuildFile; fileRef = A2198CB02D4909BF00B0AF65 /* Travel.usdc */; };
 		A21E477E2D38CD55002B60FA /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = A21E477D2D38CD55002B60FA /* RealityKitContent */; };
+		A24775052E19695E00FEB8B5 /* Like.swift in Sources */ = {isa = PBXBuildFile; fileRef = A24775042E19695E00FEB8B5 /* Like.swift */; };
 		A29437CB2D4FEA9F00982EAC /* TermsAndConditionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437CA2D4FEA9F00982EAC /* TermsAndConditionsView.swift */; };
 		A29437CD2D51135700982EAC /* NavigationBarWithMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437CC2D51135700982EAC /* NavigationBarWithMenu.swift */; };
 		A29437CF2D51136A00982EAC /* NavigationMenuPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437CE2D51136A00982EAC /* NavigationMenuPopup.swift */; };
@@ -184,6 +185,7 @@
 		A2198CB02D4909BF00B0AF65 /* Travel.usdc */ = {isa = PBXFileReference; lastKnownFileType = file; path = Travel.usdc; sourceTree = "<group>"; };
 		A21E47782D38CD55002B60FA /* Celestoria.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Celestoria.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A21E477C2D38CD55002B60FA /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
+		A24775042E19695E00FEB8B5 /* Like.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Like.swift; sourceTree = "<group>"; };
 		A29437CA2D4FEA9F00982EAC /* TermsAndConditionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsAndConditionsView.swift; sourceTree = "<group>"; };
 		A29437CC2D51135700982EAC /* NavigationBarWithMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarWithMenu.swift; sourceTree = "<group>"; };
 		A29437CE2D51136A00982EAC /* NavigationMenuPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationMenuPopup.swift; sourceTree = "<group>"; };
@@ -388,6 +390,7 @@
 		2F8800C62D38D42000220F89 /* Entities */ = {
 			isa = PBXGroup;
 			children = (
+				A24775042E19695E00FEB8B5 /* Like.swift */,
 				2F3671E82D3D9A470048D9AD /* Category.swift */,
 				A29437D42D513D3500982EAC /* Memory.swift */,
 				2F3671EA2D3D9A8C0048D9AD /* UserProfile.swift */,
@@ -691,6 +694,7 @@
 				2F3672362D4111130048D9AD /* NavigationBar.swift in Sources */,
 				2FB501D52D455130005FB0B6 /* NavigationMenuButton.swift in Sources */,
 				2FE857FF2D434ABA0055902B /* PopupData.swift in Sources */,
+				A24775052E19695E00FEB8B5 /* Like.swift in Sources */,
 				2F3671CF2D3D7A660048D9AD /* MainView.swift in Sources */,
 				2FE858032D437BF20055902B /* VisualEffectBlur.swift in Sources */,
 				2F3672202D3E1C2F0048D9AD /* LoginView.swift in Sources */,
