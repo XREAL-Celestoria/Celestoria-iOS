@@ -35,10 +35,17 @@ struct ProfileUseCase {
     ) async throws -> UserProfile {
         let current = try await authRepository.fetchProfileByUserId(userId: userId)
 
-        var profileImageURL: String? = current.profileImageURL
+        var profileImageURL: String?
+
         if let imageData = imageData, let image = UIImage(data: imageData) {
             let (url, _) = try await mediaRepository.uploadProfileImage(image, userId: userId)
             profileImageURL = url
+        }
+        else if let profileKey = profileKey, profileKey != nil {
+            profileImageURL = nil
+        }
+        else {
+            profileImageURL = current.profileImageURL
         }
 
         return try await authRepository.updateProfile(
