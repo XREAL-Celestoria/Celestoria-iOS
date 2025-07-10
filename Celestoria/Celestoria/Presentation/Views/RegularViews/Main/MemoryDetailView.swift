@@ -336,28 +336,45 @@ struct MemoryInfoView: View {
     
     @ViewBuilder
     private var profileImageSection: some View {
-        if let userProfile = viewModel.userProfile,
-           let urlString = userProfile.profileImageURL,
-           let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .empty:
-                    ProgressView()
-                        .frame(width: 24, height: 24)
-                case .success(let image):
-                    image.resizable()
-                        .scaledToFill()
-                        .frame(width: 52, height: 52)
-                        .clipShape(Circle())
-                case .failure(_):
-                    Image("CardUserProfileImage")
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 52, height: 52)
-                        .clipShape(Circle())
-                @unknown default:
-                    EmptyView()
+        if let userProfile = viewModel.userProfile {
+            if let key = userProfile.profileKey,
+               let predefined = PredefinedProfileImage.fromKey(key) {
+                // ✅ 기본 이미지 보여주기
+                Image(predefined.rawValue)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 52, height: 52)
+                    .clipShape(Circle())
+            } else if let urlString = userProfile.profileImageURL,
+                      let url = URL(string: urlString) {
+                // ✅ 커스텀 이미지
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                            .frame(width: 24, height: 24)
+                    case .success(let image):
+                        image.resizable()
+                            .scaledToFill()
+                            .frame(width: 52, height: 52)
+                            .clipShape(Circle())
+                    case .failure(_):
+                        Image("CardUserProfileImage")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 52, height: 52)
+                            .clipShape(Circle())
+                    @unknown default:
+                        EmptyView()
+                    }
                 }
+            } else {
+                // 둘 다 없을 때 fallback
+                Image("CardUserProfileImage")
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 52, height: 52)
+                    .clipShape(Circle())
             }
         } else {
             Image("CardUserProfileImage")
@@ -366,5 +383,4 @@ struct MemoryInfoView: View {
                 .frame(width: 52, height: 52)
                 .clipShape(Circle())
         }
-    }
-}
+    }}
