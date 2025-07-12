@@ -65,6 +65,9 @@
 		2F8800C02D38CE6800220F89 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F8800B32D38CE6800220F89 /* Assets.xcassets */; };
 		2F8800C42D38D3AE00220F89 /* DIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800C32D38D3AE00220F89 /* DIContainer.swift */; };
 		2FA858DF2D4A5D74005F131D /* PopupErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA858DE2D4A5D74005F131D /* PopupErrorView.swift */; };
+		2FAA9CED2E22352200A0CAD7 /* iOSCelestoiraApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FAA9CEB2E2234E900A0CAD7 /* iOSCelestoiraApp.swift */; };
+		2FAA9CF12E2236BA00A0CAD7 /* iPhoneContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FAA9CEF2E2236A000A0CAD7 /* iPhoneContentView.swift */; };
+		2FAA9CF42E22372B00A0CAD7 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 2FAA9CF32E22372B00A0CAD7 /* Supabase */; };
 		2FB501D32D454FA3005FB0B6 /* GalaxyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB501D22D454FA3005FB0B6 /* GalaxyViewModel.swift */; };
 		2FB501D52D455130005FB0B6 /* NavigationMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB501D42D455130005FB0B6 /* NavigationMenuButton.swift */; };
 		2FB501D82D45577D005FB0B6 /* StarField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB501D72D45577D005FB0B6 /* StarField.swift */; };
@@ -159,6 +162,9 @@
 		2F8800B72D38CE6800220F89 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2F8800C32D38D3AE00220F89 /* DIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DIContainer.swift; sourceTree = "<group>"; };
 		2FA858DE2D4A5D74005F131D /* PopupErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupErrorView.swift; sourceTree = "<group>"; };
+		2FAA9CDA2E22341800A0CAD7 /* Celestoria-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Celestoria-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2FAA9CEB2E2234E900A0CAD7 /* iOSCelestoiraApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSCelestoiraApp.swift; sourceTree = "<group>"; };
+		2FAA9CEF2E2236A000A0CAD7 /* iPhoneContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPhoneContentView.swift; sourceTree = "<group>"; };
 		2FB501D22D454FA3005FB0B6 /* GalaxyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalaxyViewModel.swift; sourceTree = "<group>"; };
 		2FB501D42D455130005FB0B6 /* NavigationMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationMenuButton.swift; sourceTree = "<group>"; };
 		2FB501D72D45577D005FB0B6 /* StarField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarField.swift; sourceTree = "<group>"; };
@@ -200,6 +206,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		2FAA9CD72E22341800A0CAD7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2FAA9CF42E22372B00A0CAD7 /* Supabase in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A21E47752D38CD55002B60FA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -300,9 +314,8 @@
 		2F3671B52D3D74940048D9AD /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				2F3671A92D3D61880048D9AD /* RegularViews */,
-				2F3671A82D3D61750048D9AD /* ImmersiveViews */,
-				2F3671AA2D3D61920048D9AD /* Components */,
+				2FAA9CE72E22344800A0CAD7 /* iOS */,
+				2FAA9CE62E22343800A0CAD7 /* VisionOS */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -372,6 +385,7 @@
 				2F8800B42D38CE6800220F89 /* CelestoriaApp.swift */,
 				2F8800C32D38D3AE00220F89 /* DIContainer.swift */,
 				2F8800B22D38CE6800220F89 /* AppModel.swift */,
+				2FAA9CEB2E2234E900A0CAD7 /* iOSCelestoiraApp.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -484,6 +498,31 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		2FAA9CE62E22343800A0CAD7 /* VisionOS */ = {
+			isa = PBXGroup;
+			children = (
+				2F3671AA2D3D61920048D9AD /* Components */,
+				2F3671A82D3D61750048D9AD /* ImmersiveViews */,
+				2F3671A92D3D61880048D9AD /* RegularViews */,
+			);
+			path = VisionOS;
+			sourceTree = "<group>";
+		};
+		2FAA9CE72E22344800A0CAD7 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				2FAA9CEF2E2236A000A0CAD7 /* iPhoneContentView.swift */,
+			);
+			path = iOS;
+			sourceTree = "<group>";
+		};
+		2FAA9CF22E22372B00A0CAD7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		2FB501D62D455771005FB0B6 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -512,6 +551,7 @@
 				2F8800B92D38CE6800220F89 /* Celestoria */,
 				A21E47792D38CD55002B60FA /* Products */,
 				A21E477B2D38CD55002B60FA /* Packages */,
+				2FAA9CF22E22372B00A0CAD7 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -519,6 +559,7 @@
 			isa = PBXGroup;
 			children = (
 				A21E47782D38CD55002B60FA /* Celestoria.app */,
+				2FAA9CDA2E22341800A0CAD7 /* Celestoria-iOS.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -534,6 +575,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		2FAA9CD92E22341800A0CAD7 /* Celestoria-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2FAA9CE22E22341900A0CAD7 /* Build configuration list for PBXNativeTarget "Celestoria-iOS" */;
+			buildPhases = (
+				2FAA9CD62E22341800A0CAD7 /* Sources */,
+				2FAA9CD72E22341800A0CAD7 /* Frameworks */,
+				2FAA9CD82E22341800A0CAD7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Celestoria-iOS";
+			packageProductDependencies = (
+				2FAA9CF32E22372B00A0CAD7 /* Supabase */,
+			);
+			productName = "Celestoria-iOS";
+			productReference = 2FAA9CDA2E22341800A0CAD7 /* Celestoria-iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
 		A21E47772D38CD55002B60FA /* Celestoria */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A21E47902D38CD57002B60FA /* Build configuration list for PBXNativeTarget "Celestoria" */;
@@ -567,9 +628,12 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1620;
+				LastSwiftUpdateCheck = 1640;
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
+					2FAA9CD92E22341800A0CAD7 = {
+						CreatedOnToolsVersion = 16.4;
+					};
 					A21E47772D38CD55002B60FA = {
 						CreatedOnToolsVersion = 16.2;
 					};
@@ -593,11 +657,19 @@
 			projectRoot = "";
 			targets = (
 				A21E47772D38CD55002B60FA /* Celestoria */,
+				2FAA9CD92E22341800A0CAD7 /* Celestoria-iOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		2FAA9CD82E22341800A0CAD7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A21E47762D38CD55002B60FA /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -616,6 +688,15 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2FAA9CD62E22341800A0CAD7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2FAA9CF12E2236BA00A0CAD7 /* iPhoneContentView.swift in Sources */,
+				2FAA9CED2E22352200A0CAD7 /* iOSCelestoiraApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A21E47742D38CD55002B60FA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -706,6 +787,74 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		2FAA9CE32E22341900A0CAD7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B3CU8MA548;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "celestoria.Celestoria-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2FAA9CE42E22341900A0CAD7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B3CU8MA548;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "celestoria.Celestoria-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		A21E47912D38CD57002B60FA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2FC41AD72DDE33E000E03025 /* Debug.xcconfig */;
@@ -898,6 +1047,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2FAA9CE22E22341900A0CAD7 /* Build configuration list for PBXNativeTarget "Celestoria-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2FAA9CE32E22341900A0CAD7 /* Debug */,
+				2FAA9CE42E22341900A0CAD7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		A21E47732D38CD55002B60FA /* Build configuration list for PBXProject "Celestoria" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -956,6 +1114,11 @@
 			productName = Storage;
 		};
 		2F3672002D3DA1990048D9AD /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2F3671F52D3DA1990048D9AD /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+		2FAA9CF32E22372B00A0CAD7 /* Supabase */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 2F3671F52D3DA1990048D9AD /* XCRemoteSwiftPackageReference "supabase-swift" */;
 			productName = Supabase;
