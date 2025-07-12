@@ -34,3 +34,13 @@ Celestoria/Celestoria/App/Configuration/*.xcconfig
 
 # MARK: - Swift Package Index
 Package.resolved
+
+# MARK: - Xcode user state
+*.xcuserstate
+*.xcuserdatad
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# macOS Finder metadata
+.DS_Store
+**/.DS_Store  # 하위 디렉토리 포함 전부 무시
