@@ -2,6 +2,14 @@
 //  iOSMainView.swift
 //  Celestoria
 //
+//  Created by Minjun Kim on 7/20/25.
+//
+
+
+//
+//  iOSMainView.swift
+//  Celestoria
+//
 //  Created by Assistant on 2025/07/19.
 //
 
@@ -30,7 +38,9 @@ struct iOSMainView: View {
                         Task {
                             do {
                                 try await settingViewModel.signOut()
-                                appState.activeScreen = .login
+                                appState.hasCompletedOnboarding = false
+                                appState.hasAcceptedTerms = false
+                                appState.navigationState = .onboarding
                             } catch {
                                 print("Sign out error: \(error)")
                             }
@@ -54,7 +64,7 @@ struct iOSMainView: View {
                         if let userProfile = appState.userProfile {
                             VStack(spacing: 16) {
                                 // Profile Image
-                                if let profileImageUrl = userProfile.profileImage {
+                                if let profileImageUrl = userProfile.profileImageURL {
                                     AsyncImage(url: URL(string: profileImageUrl)) { image in
                                         image
                                             .resizable()
@@ -66,7 +76,7 @@ struct iOSMainView: View {
                                             .fill(LinearGradient.GradientMain)
                                             .frame(width: 100, height: 100)
                                             .overlay(
-                                                Text(userProfile.username.prefix(1).uppercased())
+                                                Text(userProfile.name.prefix(1).uppercased())
                                                     .font(.system(size: 40, weight: .bold))
                                                     .foregroundColor(.NebulaBlack)
                                             )
@@ -76,25 +86,17 @@ struct iOSMainView: View {
                                         .fill(LinearGradient.GradientMain)
                                         .frame(width: 100, height: 100)
                                         .overlay(
-                                            Text(userProfile.username.prefix(1).uppercased())
+                                            Text(userProfile.name.prefix(1).uppercased())
                                                 .font(.system(size: 40, weight: .bold))
                                                 .foregroundColor(.NebulaBlack)
                                         )
                                 }
                                 
                                 // Username
-                                Text(userProfile.username)
+                                Text(userProfile.name)
                                     .font(.system(size: 22, weight: .bold))
                                     .foregroundColor(.NebulaWhite)
                                 
-                                // Bio
-                                if let bio = userProfile.bio {
-                                    Text(bio)
-                                        .font(.system(size: 16))
-                                        .foregroundColor(.NebulaWhite.opacity(0.8))
-                                        .multilineTextAlignment(.center)
-                                        .padding(.horizontal, 40)
-                                }
                             }
                             .padding(.top, 20)
                         }

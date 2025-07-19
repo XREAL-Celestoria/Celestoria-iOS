@@ -2,6 +2,14 @@
 //  iOSLoginView.swift
 //  Celestoria
 //
+//  Created by Minjun Kim on 7/20/25.
+//
+
+
+//
+//  iOSLoginView.swift
+//  Celestoria
+//
 //  Created by Assistant on 2025/07/19.
 //
 
@@ -14,8 +22,13 @@ struct iOSLoginView: View {
     
     var body: some View {
         ZStack {
-            // Background
-            Color.NebulaBlack
+            // Background - use onboarding-4 image for consistency
+            Image("onboarding-4")
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .ignoresSafeArea()
+            
+            Color.black.opacity(0.4)
                 .ignoresSafeArea()
             
             VStack {
@@ -26,10 +39,11 @@ struct iOSLoginView: View {
                     title: "Celestoria",
                     subtitle: "Spatial Video Social Network"
                 )
+                .padding(.horizontal, 32)
                 
                 Spacer()
                 
-                // Sign in with Apple Button
+                // Sign in with Apple Button - same position as onboarding buttons
                 SignInWithAppleButton(.signIn, onRequest: { request in
                     viewModel.prepareRequest(request: request)
                 }, onCompletion: { result in
@@ -37,15 +51,12 @@ struct iOSLoginView: View {
                         // Navigation handled by viewModel and appState
                     }
                 })
-                .frame(height: 52)
+                .frame(height: 56)
                 .cornerRadius(12)
                 .signInWithAppleButtonStyle(.white)
                 .padding(.horizontal, 24)
-                
-                Spacer()
-                    .frame(height: 100)
+                .padding(.bottom, 50)
             }
-            .padding()
             
             // Error popup overlay
             if viewModel.showErrorPopup, let errorMessage = viewModel.errorMessage {

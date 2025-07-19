@@ -2,6 +2,22 @@
 //  iOSContentView.swift
 //  Celestoria
 //
+//  Created by Minjun Kim on 7/20/25.
+//
+
+
+//
+//  iOSContentView.swift
+//  Celestoria
+//
+//  Created by Minjun Kim on 7/20/25.
+//
+
+
+//
+//  iOSContentView.swift
+//  Celestoria
+//
 //  Created by Assistant on 2025/07/19.
 //
 
@@ -14,7 +30,11 @@ struct iOSContentView: View {
     
     var body: some View {
         Group {
-            switch appState.activeScreen {
+            switch appState.navigationState {
+            case .onboarding:
+                iOSOnboardingView()
+                    .transition(.opacity)
+                
             case .login:
                 iOSLoginView()
                     .environmentObject(loginViewModel)
@@ -24,12 +44,24 @@ struct iOSContentView: View {
                 iOSTermsAndConditionsView()
                     .transition(.opacity)
                 
-            case .main, .galaxy, .explore, .setting:
+            case .main:
                 iOSMainView()
                     .environmentObject(settingViewModel)
                     .transition(.opacity)
             }
         }
-        .animation(.easeInOut(duration: 0.3), value: appState.activeScreen)
+        .animation(.easeInOut(duration: 0.3), value: appState.navigationState)
+        .onAppear {
+            // Initialize navigation state based on user status
+            if appState.hasCompletedOnboarding {
+                if appState.userId != nil {
+                    appState.navigationState = appState.hasAcceptedTerms ? .main : .terms
+                } else {
+                    appState.navigationState = .login
+                }
+            } else {
+                appState.navigationState = .onboarding
+            }
+        }
     }
 }

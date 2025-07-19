@@ -1,3 +1,11 @@
+//
+//  iPhoneContentView.swift
+//  Celestoria
+//
+//  Created by Minjun Kim on 7/20/25.
+//
+
+
 
 //
 //  iPhoneContentView.swift

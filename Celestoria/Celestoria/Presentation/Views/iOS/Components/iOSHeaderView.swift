@@ -2,7 +2,15 @@
 //  iOSHeaderView.swift
 //  Celestoria
 //
-//  Created by Assistant on 2025/07/19.
+//  Created by Minjun Kim on 7/20/25.
+//
+
+
+//
+//  iOSHeaderView.swift
+//  Celestoria
+//
+//  Created by Claude on 1/19/25.
 //
 
 import SwiftUI
@@ -19,7 +27,7 @@ struct iOSHeaderView: View {
                 .multilineTextAlignment(.center)
             
             Text(subtitle)
-                .font(.system(size: 18, weight: .semibold, design: .default))
+                .font(.system(size: 20, weight: .semibold, design: .default))
                 .foregroundStyle(LinearGradient.GradientMain)
                 .multilineTextAlignment(.center)
         }

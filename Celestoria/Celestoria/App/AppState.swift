@@ -73,9 +73,20 @@ final class AppState: ObservableObject {
             Logger.info("Terms Accepted: \(hasAcceptedTerms)")
         }
     }
+    @Published var hasCompletedOnboarding = false {
+        didSet {
+            Logger.info("Onboarding Completed: \(hasCompletedOnboarding)")
+        }
+    }
+    @Published var navigationState: NavigationState = .onboarding {
+        didSet {
+            Logger.info("Navigation State changed: \(navigationState)")
+        }
+    }
     @Published var mainWindowActive: Bool = true  // 메인 윈도우 활성 상태를 추적
     
     // Immersive Space
+    #if os(visionOS)
     let immersiveSpaceID = "SpaceEnvironment"
     @Published var isImmersiveViewActive = false {
         didSet {
@@ -86,10 +97,14 @@ final class AppState: ObservableObject {
     // ViewModels (주요 뷰모델만 포함)
     let spaceCoordinator: SpaceCoordinator?
     let mainViewModel: MainViewModel?
+    #else
+    // iOS doesn't need these properties
+    #endif
     var loginViewModel: LoginViewModel?
     
     private let logger = Logger(subsystem: "Celestoria", category: "AppState")
     
+    #if os(visionOS)
     init(
         spaceCoordinator: SpaceCoordinator? = nil,
         mainViewModel: MainViewModel? = nil
@@ -105,6 +120,11 @@ final class AppState: ObservableObject {
             logger.warning("AppState initialized without mainViewModel")
         }
     }
+    #else
+    init() {
+        // iOS는 추가 초기화 불필요
+    }
+    #endif
     
     // MARK: - Computed Properties
     

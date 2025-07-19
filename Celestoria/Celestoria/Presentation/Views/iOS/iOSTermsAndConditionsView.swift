@@ -2,6 +2,14 @@
 //  iOSTermsAndConditionsView.swift
 //  Celestoria
 //
+//  Created by Minjun Kim on 7/20/25.
+//
+
+
+//
+//  iOSTermsAndConditionsView.swift
+//  Celestoria
+//
 //  Created by Assistant on 2025/07/19.
 //
 
@@ -12,29 +20,19 @@ struct iOSTermsAndConditionsView: View {
     
     var body: some View {
         ZStack {
-            // Background
-            Color.NebulaBlack
+            // Background with opacity overlay
+            Color.black.opacity(0.8)
                 .ignoresSafeArea()
             
-            VStack(spacing: 0) {
-                // Navigation Bar
-                iOSNavigationBar(
-                    title: "Terms and Conditions",
-                    action: {
-                        appState.activeScreen = .login
-                    },
-                    buttonImageString: "chevron.left"
-                )
+            VStack(spacing: 20) {
+                // Header
+                Text("Terms and Conditions")
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundStyle(LinearGradient.GradientMain)
                 
-                // Content
-                VStack(spacing: 20) {
-                    HStack {
-                        Text("Your Agreement")
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.NebulaWhite)
-                        Spacer()
-                    }
-                    .padding(.horizontal, 24)
+                Text("Your Agreement")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.NebulaWhite)
                     
                     // Terms content
                     ScrollView {
@@ -92,7 +90,7 @@ struct iOSTermsAndConditionsView: View {
                     // Buttons
                     HStack(spacing: 16) {
                         Button(action: {
-                            appState.activeScreen = .login
+                            appState.navigationState = .login
                         }) {
                             Text("Cancel")
                                 .font(.system(size: 18, weight: .semibold))
@@ -105,7 +103,7 @@ struct iOSTermsAndConditionsView: View {
                         
                         Button(action: {
                             appState.hasAcceptedTerms = true
-                            appState.activeScreen = .main
+                            appState.navigationState = .main
                         }) {
                             Text("Agree")
                                 .font(.system(size: 18, weight: .semibold))
@@ -118,8 +116,18 @@ struct iOSTermsAndConditionsView: View {
                     }
                     .padding(.horizontal, 24)
                     .padding(.bottom, 20)
-                }
             }
+            .padding(20)
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(LinearGradient.BackgroundPopup)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(LinearGradient.StrokePopup, lineWidth: 1)
+                    )
+            )
+            .padding(.horizontal, 24)
+            .padding(.vertical, 40)
         }
     }
 }

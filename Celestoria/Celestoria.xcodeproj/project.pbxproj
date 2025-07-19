@@ -65,7 +65,6 @@
 		2F8800C42D38D3AE00220F89 /* DIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800C32D38D3AE00220F89 /* DIContainer.swift */; };
 		2FA858DF2D4A5D74005F131D /* PopupErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA858DE2D4A5D74005F131D /* PopupErrorView.swift */; };
 		2FAA9CED2E22352200A0CAD7 /* iOSCelestoriaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FAA9CEB2E2234E900A0CAD7 /* iOSCelestoriaApp.swift */; };
-		2FAA9CF12E2236BA00A0CAD7 /* iPhoneContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FAA9CEF2E2236A000A0CAD7 /* iPhoneContentView.swift */; };
 		2FAA9CF42E22372B00A0CAD7 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 2FAA9CF32E22372B00A0CAD7 /* Supabase */; };
 		2FB501D32D454FA3005FB0B6 /* GalaxyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB501D22D454FA3005FB0B6 /* GalaxyViewModel.swift */; };
 		2FB501D52D455130005FB0B6 /* NavigationMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB501D42D455130005FB0B6 /* NavigationMenuButton.swift */; };
@@ -78,8 +77,6 @@
 		2FBE4E692DE319D200796FAA /* ProfileSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FBE4E682DE319D200796FAA /* ProfileSelectorView.swift */; };
 		2FBE4E6B2DE31A1400796FAA /* ThumbnailSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FBE4E6A2DE31A1400796FAA /* ThumbnailSettingView.swift */; };
 		2FBE4E6D2DE31A3400796FAA /* AccountSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FBE4E6C2DE31A3400796FAA /* AccountSettingView.swift */; };
-		2FC41AD82DDE33E000E03025 /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 2FC41AD72DDE33E000E03025 /* Debug.xcconfig */; };
-		2FC41ADA2DDE33EF00E03025 /* Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 2FC41AD92DDE33EF00E03025 /* Release.xcconfig */; };
 		2FE857F72D43425B0055902B /* PopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE857F62D43425B0055902B /* PopupView.swift */; };
 		2FE857F92D4344740055902B /* CircularButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE857F82D4344740055902B /* CircularButton.swift */; };
 		2FE857FF2D434ABA0055902B /* PopupData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE857FE2D434ABA0055902B /* PopupData.swift */; };
@@ -101,6 +98,44 @@
 		A29437D32D513C5B00982EAC /* ContentReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437D22D513C5B00982EAC /* ContentReport.swift */; };
 		A29437D52D513D3500982EAC /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437D42D513D3500982EAC /* Memory.swift */; };
 		A29437D72D53C60900982EAC /* BlockedUsersUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437D62D53C60900982EAC /* BlockedUsersUseCase.swift */; };
+		A2A2866C2E2BF9F4001D89B2 /* iPhoneContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2A286312E2BF314001D89B2 /* iPhoneContentView.swift */; };
+		A2A2866D2E2BF9FB001D89B2 /* iOSTermsAndConditionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2A2862F2E2BF307001D89B2 /* iOSTermsAndConditionsView.swift */; };
+		A2A2866F2E2BFA13001D89B2 /* iOSMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2A2862B2E2BF2F7001D89B2 /* iOSMainView.swift */; };
+		A2A286702E2BFA17001D89B2 /* iOSLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2A286292E2BF2EE001D89B2 /* iOSLoginView.swift */; };
+		A2A286712E2BFA1D001D89B2 /* iOSContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2A286272E2BF2E5001D89B2 /* iOSContentView.swift */; };
+		A2A286772E2C03DB001D89B2 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A254315F2E255A3F00AC4BC4 /* AppState.swift */; };
+		A2A286782E2C03E1001D89B2 /* DIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800C32D38D3AE00220F89 /* DIContainer.swift */; };
+		A2A286792E2C03E9001D89B2 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672212D3E1E410048D9AD /* LoginViewModel.swift */; };
+		A2A2867A2E2C03EF001D89B2 /* SettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB842D440536001B5663 /* SettingViewModel.swift */; };
+		A2A2867B2E2C0405001D89B2 /* Like.swift in Sources */ = {isa = PBXBuildFile; fileRef = A24775042E19695E00FEB8B5 /* Like.swift */; };
+		A2A2867C2E2C0408001D89B2 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671E82D3D9A470048D9AD /* Category.swift */; };
+		A2A2867D2E2C040C001D89B2 /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437D42D513D3500982EAC /* Memory.swift */; };
+		A2A2867E2E2C0410001D89B2 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671EA2D3D9A8C0048D9AD /* UserProfile.swift */; };
+		A2A2867F2E2C0415001D89B2 /* ContentReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437D22D513C5B00982EAC /* ContentReport.swift */; };
+		A2A286802E2C0419001D89B2 /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F510CDF2D413489004171E8 /* Screen.swift */; };
+		A2A286812E2C041D001D89B2 /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437D02D513C4E00982EAC /* Block.swift */; };
+		A2A286822E2C0421001D89B2 /* PopupData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE857FE2D434ABA0055902B /* PopupData.swift */; };
+		A2A286832E2C0434001D89B2 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671CC2D3D7A150048D9AD /* Logger.swift */; };
+		A2A286842E2C0438001D89B2 /* Gradient+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671B22D3D6B660048D9AD /* Gradient+.swift */; };
+		A2A286852E2C043C001D89B2 /* Color+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671B02D3D6A9E0048D9AD /* Color+.swift */; };
+		A2A286862E2C043F001D89B2 /* TextField+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE858042D43D3980055902B /* TextField+.swift */; };
+		A2A286872E2C0958001D89B2 /* AuthRepositoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672242D3E35110048D9AD /* AuthRepositoryProtocol.swift */; };
+		A2A286882E2C0973001D89B2 /* BlockedUsersUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437D62D53C60900982EAC /* BlockedUsersUseCase.swift */; };
+		A2A2868C2E2C09AF001D89B2 /* iOSOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2A2868B2E2C09AF001D89B2 /* iOSOnboardingView.swift */; };
+		A2A2868D2E2C09D3001D89B2 /* DeleteAccountUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F36722D2D3E35830048D9AD /* DeleteAccountUseCase.swift */; };
+		A2A2868E2E2C09D7001D89B2 /* SignOutUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F36722B2D3E35750048D9AD /* SignOutUseCase.swift */; };
+		A2A2868F2E2C0A1B001D89B2 /* SignInWithAppleUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672292D3E35670048D9AD /* SignInWithAppleUseCase.swift */; };
+		A2A286902E2C0A1E001D89B2 /* DeleteMemoryUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672082D3DA32B0048D9AD /* DeleteMemoryUseCase.swift */; };
+		A2A286912E2C0A22001D89B2 /* ProfileUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2FB5B5D2D47881D00294178 /* ProfileUseCase.swift */; };
+		A2A286922E2C0A25001D89B2 /* ExploreUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2198CA22D48812500B0AF65 /* ExploreUseCase.swift */; };
+		A2A286932E2C0A29001D89B2 /* CreateMemoryUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672062D3DA3170048D9AD /* CreateMemoryUseCase.swift */; };
+		A2A286942E2C0A2C001D89B2 /* FetchMemoriesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672042D3DA2FE0048D9AD /* FetchMemoriesUseCase.swift */; };
+		A2A286952E2C0A39001D89B2 /* MemoryRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672022D3DA1F00048D9AD /* MemoryRepository.swift */; };
+		A2A286962E2C0A3C001D89B2 /* AuthRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672262D3E35310048D9AD /* AuthRepository.swift */; };
+		A2A286972E2C0A40001D89B2 /* MediaRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F510CEB2D414971004171E8 /* MediaRepository.swift */; };
+		A2A286982E2C0A47001D89B2 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F36720A2D3DA3F20048D9AD /* Config.swift */; };
+		A2A286992E2C0D37001D89B2 /* StarField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB501D72D45577D005FB0B6 /* StarField.swift */; };
+		A2A2869A2E2C0D44001D89B2 /* PredefinedProfileImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3D38262DDED21400DD181E /* PredefinedProfileImage.swift */; };
 		A2B8DB412D42AEC7001B5663 /* MemoryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */; };
 		A2B8DB782D42B409001B5663 /* CelestoriaVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */; };
 		A2B8DB852D440536001B5663 /* SettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB842D440536001B5663 /* SettingViewModel.swift */; };
@@ -164,7 +199,6 @@
 		2FA858DE2D4A5D74005F131D /* PopupErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupErrorView.swift; sourceTree = "<group>"; };
 		2FAA9CDA2E22341800A0CAD7 /* Celestoria-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Celestoria-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2FAA9CEB2E2234E900A0CAD7 /* iOSCelestoriaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSCelestoriaApp.swift; sourceTree = "<group>"; };
-		2FAA9CEF2E2236A000A0CAD7 /* iPhoneContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPhoneContentView.swift; sourceTree = "<group>"; };
 		2FB501D22D454FA3005FB0B6 /* GalaxyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalaxyViewModel.swift; sourceTree = "<group>"; };
 		2FB501D42D455130005FB0B6 /* NavigationMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationMenuButton.swift; sourceTree = "<group>"; };
 		2FB501D72D45577D005FB0B6 /* StarField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarField.swift; sourceTree = "<group>"; };
@@ -200,6 +234,12 @@
 		A29437D22D513C5B00982EAC /* ContentReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentReport.swift; sourceTree = "<group>"; };
 		A29437D42D513D3500982EAC /* Memory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Memory.swift; sourceTree = "<group>"; };
 		A29437D62D53C60900982EAC /* BlockedUsersUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedUsersUseCase.swift; sourceTree = "<group>"; };
+		A2A286272E2BF2E5001D89B2 /* iOSContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSContentView.swift; sourceTree = "<group>"; };
+		A2A286292E2BF2EE001D89B2 /* iOSLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSLoginView.swift; sourceTree = "<group>"; };
+		A2A2862B2E2BF2F7001D89B2 /* iOSMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSMainView.swift; sourceTree = "<group>"; };
+		A2A2862F2E2BF307001D89B2 /* iOSTermsAndConditionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSTermsAndConditionsView.swift; sourceTree = "<group>"; };
+		A2A286312E2BF314001D89B2 /* iPhoneContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPhoneContentView.swift; sourceTree = "<group>"; };
+		A2A2868B2E2C09AF001D89B2 /* iOSOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSOnboardingView.swift; sourceTree = "<group>"; };
 		A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryDetailView.swift; sourceTree = "<group>"; };
 		A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CelestoriaVideoPlayerView.swift; sourceTree = "<group>"; };
 		A2B8DB842D440536001B5663 /* SettingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewModel.swift; sourceTree = "<group>"; };
@@ -211,6 +251,11 @@
 		A25431522E2559B100AC4BC4 /* Manager */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Manager;
+			sourceTree = "<group>";
+		};
+		A2A286332E2BF31D001D89B2 /* Components */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Components;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -523,7 +568,13 @@
 		2FAA9CE72E22344800A0CAD7 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				2FAA9CEF2E2236A000A0CAD7 /* iPhoneContentView.swift */,
+				A2A286332E2BF31D001D89B2 /* Components */,
+				A2A286312E2BF314001D89B2 /* iPhoneContentView.swift */,
+				A2A2862F2E2BF307001D89B2 /* iOSTermsAndConditionsView.swift */,
+				A2A2862B2E2BF2F7001D89B2 /* iOSMainView.swift */,
+				A2A2868B2E2C09AF001D89B2 /* iOSOnboardingView.swift */,
+				A2A286292E2BF2EE001D89B2 /* iOSLoginView.swift */,
+				A2A286272E2BF2E5001D89B2 /* iOSContentView.swift */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -599,6 +650,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				A2A286332E2BF31D001D89B2 /* Components */,
+			);
 			name = "Celestoria-iOS";
 			packageProductDependencies = (
 				2FAA9CF32E22372B00A0CAD7 /* Supabase */,
@@ -644,7 +698,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1640;
-				LastUpgradeCheck = 1620;
+				LastUpgradeCheck = 1640;
 				TargetAttributes = {
 					2FAA9CD92E22341800A0CAD7 = {
 						CreatedOnToolsVersion = 16.4;
@@ -689,12 +743,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2FC41ADA2DDE33EF00E03025 /* Release.xcconfig in Resources */,
 				2F8800BF2D38CE6800220F89 /* Preview Assets.xcassets in Resources */,
 				2F8800C02D38CE6800220F89 /* Assets.xcassets in Resources */,
 				A2198CAA2D49063800B0AF65 /* Family.usdz in Resources */,
 				A2C1D8262E2BC9E200CA2D9A /* fireworks.usdz in Resources */,
-				2FC41AD82DDE33E000E03025 /* Debug.xcconfig in Resources */,
 				A2198CAC2D49063800B0AF65 /* Enter.usdc in Resources */,
 				A2198CAD2D49063800B0AF65 /* Pet.usdz in Resources */,
 				A2198CB12D4909BF00B0AF65 /* Travel.usdc in Resources */,
@@ -708,8 +760,45 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2FAA9CF12E2236BA00A0CAD7 /* iPhoneContentView.swift in Sources */,
+				A2A286852E2C043C001D89B2 /* Color+.swift in Sources */,
+				A2A2867A2E2C03EF001D89B2 /* SettingViewModel.swift in Sources */,
+				A2A2868D2E2C09D3001D89B2 /* DeleteAccountUseCase.swift in Sources */,
+				A2A286822E2C0421001D89B2 /* PopupData.swift in Sources */,
+				A2A286842E2C0438001D89B2 /* Gradient+.swift in Sources */,
+				A2A2868E2E2C09D7001D89B2 /* SignOutUseCase.swift in Sources */,
+				A2A286992E2C0D37001D89B2 /* StarField.swift in Sources */,
+				A2A286932E2C0A29001D89B2 /* CreateMemoryUseCase.swift in Sources */,
+				A2A286902E2C0A1E001D89B2 /* DeleteMemoryUseCase.swift in Sources */,
+				A2A286872E2C0958001D89B2 /* AuthRepositoryProtocol.swift in Sources */,
+				A2A286702E2BFA17001D89B2 /* iOSLoginView.swift in Sources */,
+				A2A286782E2C03E1001D89B2 /* DIContainer.swift in Sources */,
+				A2A2866D2E2BF9FB001D89B2 /* iOSTermsAndConditionsView.swift in Sources */,
+				A2A2868C2E2C09AF001D89B2 /* iOSOnboardingView.swift in Sources */,
+				A2A2867F2E2C0415001D89B2 /* ContentReport.swift in Sources */,
+				A2A286832E2C0434001D89B2 /* Logger.swift in Sources */,
+				A2A286922E2C0A25001D89B2 /* ExploreUseCase.swift in Sources */,
+				A2A2868F2E2C0A1B001D89B2 /* SignInWithAppleUseCase.swift in Sources */,
+				A2A2867C2E2C0408001D89B2 /* Category.swift in Sources */,
+				A2A286962E2C0A3C001D89B2 /* AuthRepository.swift in Sources */,
+				A2A286942E2C0A2C001D89B2 /* FetchMemoriesUseCase.swift in Sources */,
+				A2A2867E2E2C0410001D89B2 /* UserProfile.swift in Sources */,
+				A2A2867D2E2C040C001D89B2 /* Memory.swift in Sources */,
+				A2A286952E2C0A39001D89B2 /* MemoryRepository.swift in Sources */,
+				A2A2866F2E2BFA13001D89B2 /* iOSMainView.swift in Sources */,
+				A2A286772E2C03DB001D89B2 /* AppState.swift in Sources */,
+				A2A2867B2E2C0405001D89B2 /* Like.swift in Sources */,
+				A2A286882E2C0973001D89B2 /* BlockedUsersUseCase.swift in Sources */,
+				A2A286792E2C03E9001D89B2 /* LoginViewModel.swift in Sources */,
+				A2A286862E2C043F001D89B2 /* TextField+.swift in Sources */,
+				A2A286812E2C041D001D89B2 /* Block.swift in Sources */,
+				A2A286912E2C0A22001D89B2 /* ProfileUseCase.swift in Sources */,
+				A2A286972E2C0A40001D89B2 /* MediaRepository.swift in Sources */,
+				A2A286802E2C0419001D89B2 /* Screen.swift in Sources */,
 				2FAA9CED2E22352200A0CAD7 /* iOSCelestoriaApp.swift in Sources */,
+				A2A286982E2C0A47001D89B2 /* Config.swift in Sources */,
+				A2A2866C2E2BF9F4001D89B2 /* iPhoneContentView.swift in Sources */,
+				A2A286712E2BFA1D001D89B2 /* iOSContentView.swift in Sources */,
+				A2A2869A2E2C0D44001D89B2 /* PredefinedProfileImage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -805,6 +894,7 @@
 /* Begin XCBuildConfiguration section */
 		2FAA9CE32E22341900A0CAD7 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2FC41AD72DDE33E000E03025 /* Debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -813,6 +903,7 @@
 				DEVELOPMENT_TEAM = B3CU8MA548;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Celestoria/App/Configuration/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -827,7 +918,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "celestoria.Celestoria-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -839,6 +930,7 @@
 		};
 		2FAA9CE42E22341900A0CAD7 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2FC41AD92DDE33EF00E03025 /* Release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -847,6 +939,7 @@
 				DEVELOPMENT_TEAM = B3CU8MA548;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Celestoria/App/Configuration/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -861,7 +954,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "celestoria.Celestoria-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
