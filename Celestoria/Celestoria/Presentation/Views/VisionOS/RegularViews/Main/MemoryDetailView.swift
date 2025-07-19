@@ -285,8 +285,12 @@ struct MemoryInfoView: View {
                     // 좋아요 버튼
                     HStack {
                         Button(action: {
+                            let wasLiked = viewModel.isLiked
                             Task {
                                 await viewModel.toggleLike()
+                                if !wasLiked && viewModel.isLiked {
+                                    spaceCoordinator.playLikeAnimation()
+                                }
                             }
                         }) {
                             HStack(spacing: 12) {
