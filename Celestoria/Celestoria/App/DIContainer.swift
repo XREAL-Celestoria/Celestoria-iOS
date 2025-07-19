@@ -17,10 +17,12 @@ final class DIContainer: ObservableObject {
     let appState: AppState
     
     // Additional ViewModels (나중에 필요시 접근)
+    #if os(visionOS)
     let addMemoryMainViewModel: AddMemoryMainViewModel
-    let settingViewModel: SettingViewModel
     let galaxyViewModel: GalaxyViewModel
     let exploreViewModel: ExploreViewModel
+    #endif
+    let settingViewModel: SettingViewModel
 
     // Supabase Client
     let supabaseClient: SupabaseClient
@@ -79,6 +81,7 @@ final class DIContainer: ObservableObject {
             authRepository: authRepository
         )
 
+        #if os(visionOS)
         // 먼저 SpaceCoordinator와 MainViewModel을 임시로 생성
         let spaceCoordinator = SpaceCoordinator(
             memoryRepository: memoryRepository,
@@ -99,6 +102,10 @@ final class DIContainer: ObservableObject {
         
         // SpaceCoordinator에 AppState 연결
         spaceCoordinator.appState = self.appState
+        #else
+        // iOS에서는 AppState만 초기화
+        self.appState = AppState()
+        #endif
         
         // LoginViewModel을 AppState와 함께 초기화
         let loginViewModel = LoginViewModel(
@@ -111,22 +118,25 @@ final class DIContainer: ObservableObject {
         self.appState.loginViewModel = loginViewModel
         
         // 기타 ViewModels
+        #if os(visionOS)
         self.exploreViewModel = ExploreViewModel(
             exploreUseCase: exploreUseCase,
             appState: self.appState
         )
         self.addMemoryMainViewModel = AddMemoryMainViewModel(createMemoryUseCase: createMemoryUseCase, appState: self.appState)
+        self.galaxyViewModel = GalaxyViewModel(
+            appState: self.appState,
+            spaceCoordinator: spaceCoordinator,
+            profileUseCase: profileUseCase
+        )
+        #endif
+        
         self.settingViewModel = SettingViewModel(
             deleteAccountUseCase: deleteAccountUseCase,
             signOutUseCase: signOutUseCase,
             profileUseCase: profileUseCase,
             blockedUsersUseCase: blockedUsersUseCase,
             appState: self.appState
-        )
-        self.galaxyViewModel = GalaxyViewModel(
-            appState: self.appState,
-            spaceCoordinator: spaceCoordinator,
-            profileUseCase: profileUseCase
         )
 
         // 모든 초기화가 끝난 후 자동 로그인 체크

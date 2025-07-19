@@ -12,7 +12,9 @@ import _PhotosUI_SwiftUI
 
 @MainActor
 class SettingViewModel: ObservableObject {
+    #if os(visionOS)
     @Environment(\.dismissImmersiveSpace) private var dismissImmersiveSpace
+    #endif
     
     private let deleteAccountUseCase: DeleteAccountUseCase
     private let signOutUseCase: SignOutUseCase
@@ -139,8 +141,10 @@ class SettingViewModel: ObservableObject {
     func signOut() async throws {
         try await signOutUseCase.execute()
         appState.userId = nil
+        #if os(visionOS)
         await dismissImmersiveSpace()
         appState.isImmersiveViewActive = false
+        #endif
         appState.hasAcceptedTerms = false
         appState.activeScreen = .login
     }
@@ -148,8 +152,10 @@ class SettingViewModel: ObservableObject {
     func deleteAccount() async throws {
         try await deleteAccountUseCase.execute()
         appState.userId = nil
+        #if os(visionOS)
         await dismissImmersiveSpace()
         appState.isImmersiveViewActive = false
+        #endif
         appState.hasAcceptedTerms = false
         appState.activeScreen = .login
     }

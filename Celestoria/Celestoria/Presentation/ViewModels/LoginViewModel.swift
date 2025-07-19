@@ -59,12 +59,21 @@ class LoginViewModel: NSObject, ObservableObject, ASAuthorizationControllerDeleg
                             // AppState 업데이트
                             self.appState.setUser(fetchedProfile, userId: userId)
                             
+                            // iOS에서는 navigationState 사용, visionOS에서는 activeScreen 사용
+                            #if os(iOS)
+                            if self.appState.hasAcceptedTerms {
+                                self.appState.navigationState = .main
+                            } else {
+                                self.appState.navigationState = .terms
+                            }
+                            #else
                             // 아직 Terms 동의가 되어 있지 않으면 .terms로 전환
                             if self.appState.hasAcceptedTerms {
                                 self.appState.activeScreen = .main
                             } else {
                                 self.appState.activeScreen = .terms
                             }
+                            #endif
                             
                             completion(userId)
                         } catch {

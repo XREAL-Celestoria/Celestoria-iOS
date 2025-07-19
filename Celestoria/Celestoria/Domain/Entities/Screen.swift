@@ -20,3 +20,10 @@ enum ActiveScreen {
     case setting
     case terms
 }
+
+enum NavigationState {
+    case onboarding
+    case login
+    case terms
+    case main
+}
