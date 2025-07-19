@@ -64,7 +64,7 @@
 		2F8800C02D38CE6800220F89 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F8800B32D38CE6800220F89 /* Assets.xcassets */; };
 		2F8800C42D38D3AE00220F89 /* DIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800C32D38D3AE00220F89 /* DIContainer.swift */; };
 		2FA858DF2D4A5D74005F131D /* PopupErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA858DE2D4A5D74005F131D /* PopupErrorView.swift */; };
-		2FAA9CED2E22352200A0CAD7 /* iOSCelestoiraApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FAA9CEB2E2234E900A0CAD7 /* iOSCelestoiraApp.swift */; };
+		2FAA9CED2E22352200A0CAD7 /* iOSCelestoriaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FAA9CEB2E2234E900A0CAD7 /* iOSCelestoriaApp.swift */; };
 		2FAA9CF12E2236BA00A0CAD7 /* iPhoneContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FAA9CEF2E2236A000A0CAD7 /* iPhoneContentView.swift */; };
 		2FAA9CF42E22372B00A0CAD7 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 2FAA9CF32E22372B00A0CAD7 /* Supabase */; };
 		2FB501D32D454FA3005FB0B6 /* GalaxyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB501D22D454FA3005FB0B6 /* GalaxyViewModel.swift */; };
@@ -163,7 +163,7 @@
 		2F8800C32D38D3AE00220F89 /* DIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DIContainer.swift; sourceTree = "<group>"; };
 		2FA858DE2D4A5D74005F131D /* PopupErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupErrorView.swift; sourceTree = "<group>"; };
 		2FAA9CDA2E22341800A0CAD7 /* Celestoria-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Celestoria-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		2FAA9CEB2E2234E900A0CAD7 /* iOSCelestoiraApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSCelestoiraApp.swift; sourceTree = "<group>"; };
+		2FAA9CEB2E2234E900A0CAD7 /* iOSCelestoriaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSCelestoriaApp.swift; sourceTree = "<group>"; };
 		2FAA9CEF2E2236A000A0CAD7 /* iPhoneContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPhoneContentView.swift; sourceTree = "<group>"; };
 		2FB501D22D454FA3005FB0B6 /* GalaxyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalaxyViewModel.swift; sourceTree = "<group>"; };
 		2FB501D42D455130005FB0B6 /* NavigationMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationMenuButton.swift; sourceTree = "<group>"; };
@@ -397,7 +397,7 @@
 				2F8800B42D38CE6800220F89 /* CelestoriaApp.swift */,
 				2F8800C32D38D3AE00220F89 /* DIContainer.swift */,
 				A254315F2E255A3F00AC4BC4 /* AppState.swift */,
-				2FAA9CEB2E2234E900A0CAD7 /* iOSCelestoiraApp.swift */,
+				2FAA9CEB2E2234E900A0CAD7 /* iOSCelestoriaApp.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -709,7 +709,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2FAA9CF12E2236BA00A0CAD7 /* iPhoneContentView.swift in Sources */,
-				2FAA9CED2E22352200A0CAD7 /* iOSCelestoiraApp.swift in Sources */,
+				2FAA9CED2E22352200A0CAD7 /* iOSCelestoriaApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
