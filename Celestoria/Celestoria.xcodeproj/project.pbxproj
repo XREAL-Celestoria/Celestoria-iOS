@@ -94,6 +94,7 @@
 		A2198CB12D4909BF00B0AF65 /* Travel.usdc in Resources */ = {isa = PBXBuildFile; fileRef = A2198CB02D4909BF00B0AF65 /* Travel.usdc */; };
 		A21E477E2D38CD55002B60FA /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = A21E477D2D38CD55002B60FA /* RealityKitContent */; };
 		A24775052E19695E00FEB8B5 /* Like.swift in Sources */ = {isa = PBXBuildFile; fileRef = A24775042E19695E00FEB8B5 /* Like.swift */; };
+		A25431602E255A3F00AC4BC4 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A254315F2E255A3F00AC4BC4 /* AppState.swift */; };
 		A29437CB2D4FEA9F00982EAC /* TermsAndConditionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437CA2D4FEA9F00982EAC /* TermsAndConditionsView.swift */; };
 		A29437CD2D51135700982EAC /* NavigationBarWithMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437CC2D51135700982EAC /* NavigationBarWithMenu.swift */; };
 		A29437CF2D51136A00982EAC /* NavigationMenuPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437CE2D51136A00982EAC /* NavigationMenuPopup.swift */; };
@@ -192,6 +193,7 @@
 		A21E47782D38CD55002B60FA /* Celestoria.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Celestoria.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A21E477C2D38CD55002B60FA /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
 		A24775042E19695E00FEB8B5 /* Like.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Like.swift; sourceTree = "<group>"; };
+		A254315F2E255A3F00AC4BC4 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		A29437CA2D4FEA9F00982EAC /* TermsAndConditionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsAndConditionsView.swift; sourceTree = "<group>"; };
 		A29437CC2D51135700982EAC /* NavigationBarWithMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarWithMenu.swift; sourceTree = "<group>"; };
 		A29437CE2D51136A00982EAC /* NavigationMenuPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationMenuPopup.swift; sourceTree = "<group>"; };
@@ -204,6 +206,14 @@
 		A2B8DB842D440536001B5663 /* SettingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewModel.swift; sourceTree = "<group>"; };
 		A2FB5B5D2D47881D00294178 /* ProfileUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileUseCase.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		A25431522E2559B100AC4BC4 /* Manager */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Manager;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		2FAA9CD72E22341800A0CAD7 /* Frameworks */ = {
@@ -275,6 +285,7 @@
 		2F3671AC2D3D61DD0048D9AD /* RealityKit */ = {
 			isa = PBXGroup;
 			children = (
+				A25431522E2559B100AC4BC4 /* Manager */,
 				2F3671AE2D3D62070048D9AD /* Entities */,
 			);
 			path = RealityKit;
@@ -384,6 +395,7 @@
 				2F8800CD2D38D52600220F89 /* Configuration */,
 				2F8800B42D38CE6800220F89 /* CelestoriaApp.swift */,
 				2F8800C32D38D3AE00220F89 /* DIContainer.swift */,
+				A254315F2E255A3F00AC4BC4 /* AppState.swift */,
 				2F8800B22D38CE6800220F89 /* AppModel.swift */,
 				2FAA9CEB2E2234E900A0CAD7 /* iOSCelestoiraApp.swift */,
 			);
@@ -607,6 +619,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				A25431522E2559B100AC4BC4 /* Manager */,
+			);
 			name = Celestoria;
 			packageProductDependencies = (
 				A21E477D2D38CD55002B60FA /* RealityKitContent */,
@@ -707,6 +722,7 @@
 				2F3671B12D3D6A9E0048D9AD /* Color+.swift in Sources */,
 				2F510CEC2D414971004171E8 /* MediaRepository.swift in Sources */,
 				A2B8DB782D42B409001B5663 /* CelestoriaVideoPlayerView.swift in Sources */,
+				A25431602E255A3F00AC4BC4 /* AppState.swift in Sources */,
 				2F510CE02D413489004171E8 /* Screen.swift in Sources */,
 				2FBE4E612DE3151D00796FAA /* SettingView.swift in Sources */,
 				2F3672222D3E1E410048D9AD /* LoginViewModel.swift in Sources */,

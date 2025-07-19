@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AddMemoryContentView: View {
     @EnvironmentObject var appModel: AppModel
+    @EnvironmentObject var appState: AppState
     
 
     var body: some View {

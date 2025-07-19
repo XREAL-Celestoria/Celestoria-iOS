@@ -6,189 +6,138 @@
 //
 
 import SwiftUI
-import Combine
 import RealityKit
-import RealityKitContent
 import os
 
+/// 3D 공간을 나타내는 엔티티
 class SpaceEntity: Entity {
-    // MARK: - Properties
-    private weak var coordinator: SpaceCoordinator?
+    private let backgroundManager = BackgroundManager()
+    private let logger = Logger(subsystem: "Celestoria", category: "SpaceEntity")
     private var starEntities: [MemoryStarEntity] = []
-    private var isProcessingVideo = false
-    private var backgroundEntity: SpaceBackgroundEntity? // 배경 엔티티 참조
-    private let backgroundImageName: String
-
+    
     // MARK: - Constants
     private enum Constants {
-        static let positionRange: ClosedRange<Float> = -4...4
-        static let defaultScale: Float = 1.0
+        static let positionRange: ClosedRange<Float> = -3...3
     }
-
+    
     // MARK: - Initialization
-    init(coordinator: SpaceCoordinator? = nil, backgroundImageName: String) {
-        self.coordinator = coordinator
-        self.backgroundImageName = backgroundImageName
+    init(backgroundImageName: String) {
         super.init()
-        setupSpaceEnvironment()
+        setupSpace(with: backgroundImageName)
     }
-
+    
     required init() {
         fatalError("init() has not been implemented")
     }
-
-    // MARK: - Setup Methods
-    private func setupSpaceEnvironment() {
-        addSpaceBackground(imageName: backgroundImageName)
+    
+    // MARK: - Setup
+    private func setupSpace(with backgroundImageName: String) {
+        backgroundManager.setupBackground(imageName: backgroundImageName, in: self)
     }
-
-    private func addSpaceBackground(imageName: String) {
-        // 기존 배경 제거
-        backgroundEntity?.removeFromParent()
-
-        // 새로운 배경 엔티티 생성
-        let spaceBackground = SpaceBackgroundEntity(backgroundImageName: imageName)
-        addChild(spaceBackground)
-        backgroundEntity = spaceBackground
-    }
-
-    // MARK: - Update Background
+    
+    // MARK: - Public Methods
+    
     func updateBackground(with imageName: String) {
-        guard let backgroundEntity = backgroundEntity else {
-            os.Logger.error("SpaceEntity: Background entity not found. Creating a new one.")
-            addSpaceBackground(imageName: imageName)
+        backgroundManager.updateBackground(imageName: imageName)
+    }
+    
+    // MARK: - Star Management
+    
+    /// Updates all stars based on the provided memories
+    func updateStars(with memories: [Memory]) async {
+        // Remove existing stars
+        cleanupExistingStars()
+        
+        // Create new stars
+        for memory in memories {
+            await addStar(for: memory)
+        }
+        
+        logger.info("Updated stars. Total: \(self.starEntities.count)")
+    }
+    
+    /// Adds a single star for a memory
+    func addStar(for memory: Memory) async {
+        // Check if star already exists
+        if self.starEntities.contains(where: { $0.memory.id == memory.id }) {
+            logger.info("Star already exists for memory: \(memory.id)")
             return
         }
         
-        backgroundEntity.updateTexture(with: imageName)
-        os.Logger.info("SpaceEntity: Background updated to \(imageName)")
+        let star = await createStar(for: memory)
+        addChild(star)
+        starEntities.append(star)
+        
+        logger.info("Added star for memory: \(memory.id)")
     }
-
-    // MARK: - Star Management
-    func updateStars(with memories: [Memory], onCompletion: @escaping () -> Void) async {
-            cleanupExistingContent() // 기존 별 제거
-            await createNewStars(from: memories) // 새로운 별 생성
-            os.Logger.info("SpaceEntity: Star update completed. Total stars: \(starEntities.count)")
-            onCompletion() // 작업 완료 후 클로저 호출
+    
+    /// Removes a star for the given memory ID
+    func removeStar(for memoryId: UUID) {
+        guard let index = self.starEntities.firstIndex(where: { $0.memory.id == memoryId }) else {
+            logger.warning("No star found for memory ID: \(memoryId)")
+            return
         }
-
-    private func cleanupExistingContent() {
-        removeExistingStars()
+        
+        let star = starEntities.remove(at: index)
+        star.removeFromParent()
+        
+        logger.info("Removed star for memory ID: \(memoryId)")
     }
-
-    private func removeExistingStars() {
+    
+    // MARK: - Private Methods
+    
+    private func cleanupExistingStars() {
         starEntities.forEach { $0.removeFromParent() }
         starEntities.removeAll()
     }
     
-    func removeStar(for memory: Memory) async {
-        guard let starIndex = starEntities.firstIndex(where: { $0.memory.id == memory.id }) else {
-            os.Logger.warning("SpaceEntity: No star found for Memory ID=\(memory.id)")
-            return
-        }
-        
-        let starToRemove = starEntities.remove(at: starIndex)
-        starToRemove.removeFromParent()
-        
-        os.Logger.info("SpaceEntity: Removed star for Memory ID=\(memory.id). Remaining stars: \(starEntities.count)")
-    }
-
-    private func createNewStars(from memories: [Memory]) async {
-        print("[DEBUG] Creating new stars for \(memories.count) memories.")
-        for memory in memories {
-            print("   → Memory ID=\(memory.id), title=\(memory.title), videoURL=\(memory.videoURL ?? "nil")")
-            let star = await createStar(for: memory)
-            addChild(star)
-            starEntities.append(star)
-        }
-    }
-
     private func createStar(for memory: Memory) async -> MemoryStarEntity {
-        // memory에 저장된 position을 SIMD3<Float>로 변환
-        let position = SIMD3<Float>(
-            Float(memory.position.x),
-            Float(memory.position.y),
-            Float(memory.position.z)
-        )
+        let position: SIMD3<Float>
+        
+        // Use stored position if available, otherwise generate random position
+        if memory.position.x == 0 && memory.position.y == 0 && memory.position.z == 0 {
+            // Generate random position
+            position = generateRandomPosition()
+        } else {
+            // Use stored position
+            position = SIMD3<Float>(
+                Float(memory.position.x),
+                Float(memory.position.y),
+                Float(memory.position.z)
+            )
+        }
         
         let star = MemoryStarEntity(memory: memory, position: position)
-
-        // 스타 모델 로드
+        
+        // Load 3D model based on category
         await star.loadModel(for: memory.category)
-
-        // 조명 추가
+        
+        // Add directional light
         let light = createDirectionalLight()
-        star.addChild(light) // 스타에 조명 추가
-
+        star.addChild(light)
+        
         return star
+    }
+    
+    private func generateRandomPosition() -> SIMD3<Float> {
+        return SIMD3<Float>(
+            Float.random(in: Constants.positionRange),
+            Float.random(in: Constants.positionRange),
+            Float.random(in: Constants.positionRange)
+        )
     }
     
     private func createDirectionalLight() -> Entity {
         let lightEntity = Entity()
-
+        
         var lightComponent = DirectionalLightComponent()
-        lightComponent.intensity = 5000
+        lightComponent.intensity = 2000
         lightComponent.color = .white
-
-    
-        lightEntity.position = SIMD3(2, 5, -2) // 조명을 특정 방향에서 비추도록 배치
-        lightEntity.look(at: [0, 0, 0], from: [2, 5, -2], relativeTo: nil)
-
+        
         lightEntity.components[DirectionalLightComponent.self] = lightComponent
+        lightEntity.look(at: [0, 0, 0], from: [1, 1, 1], relativeTo: nil)
+        
         return lightEntity
-    }
-    
-    func addStar(for memory: Memory) async {
-        os.Logger.info("SpaceEntity: Adding a new star for Memory ID=\(memory.id)")
-        
-        let position = SIMD3<Float>(
-            Float(memory.position.x),
-            Float(memory.position.y),
-            Float(memory.position.z)
-        )
-        
-        let star = await createStar(for: memory)
-        starEntities.append(star)
-        addChild(star)
-        
-        os.Logger.info("SpaceEntity: Star added for Memory ID=\(memory.id). Total stars: \(starEntities.count)")
-    }
-
-
-    private func findStarEntity(for memory: Memory) throws -> MemoryStarEntity {
-        guard let starEntity = starEntities.first(where: { $0.memory.id == memory.id }) else {
-            throw VideoError.starNotFound
-        }
-        return starEntity
-    }
-
-    private func getVideoURL(from memory: Memory) throws -> URL {
-        guard let videoURLString = memory.videoURL,
-              let videoURL = URL(string: videoURLString) else {
-            throw VideoError.invalidURL
-        }
-        return videoURL
-    }
-}
-
-// MARK: - Error Types
-enum VideoError: Error {
-    case invalidURL
-    case processingInProgress
-    case invalidEntity
-    case starNotFound
-
-    var localizedDescription: String {
-        switch self {
-        case .invalidURL:
-            return "Invalid video URL"
-        case .processingInProgress:
-            return "Video is currently being processed"
-        case .invalidEntity:
-            return "Invalid entity reference"
-        case .starNotFound:
-            return "Could not find the associated star entity"
-        }
     }
 }
 

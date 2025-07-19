@@ -17,29 +17,31 @@ struct CelestoriaApp: App {
         WindowGroup("Main", id: "Main") {
             ContentView()
                 .frame(width: 1280, height: 720)
-                .environmentObject(diContainer.spaceCoordinator)
                 .environmentObject(diContainer.appModel)
-                .environmentObject(diContainer.mainViewModel)
-                .environmentObject(diContainer.loginViewModel)
+                .environmentObject(diContainer.appState)
+                .environmentObject(diContainer.appState.spaceCoordinator)
+                .environmentObject(diContainer.appState.mainViewModel)
+                .environmentObject(diContainer.appState.loginViewModel!)
                 .environmentObject(diContainer.settingViewModel)
                 .environmentObject(diContainer.galaxyViewModel)
                 .environmentObject(diContainer.exploreViewModel)
         }
         .windowResizability(.contentSize)
 
-        ImmersiveSpace(id: diContainer.appModel.immersiveSpaceID) {
+        ImmersiveSpace(id: diContainer.appState.immersiveSpaceID) {
             SpaceImmersiveView()
-                .environmentObject(diContainer.spaceCoordinator)
+                .environmentObject(diContainer.appState.spaceCoordinator)
         }.immersionStyle(selection: $currentStyle, in: .full)
 
         WindowGroup("Add Memory", id: "Add-Memory") {
-            if diContainer.appModel.showAddMemoryView {
+            if diContainer.appState.showAddMemoryView {
                 AddMemoryContentView()
                     .frame(width: 1280, height: 720)
                     .environmentObject(diContainer.appModel)
+                    .environmentObject(diContainer.appState)
+                    .environmentObject(diContainer.appState.mainViewModel)
+                    .environmentObject(diContainer.appState.spaceCoordinator)
                     .environmentObject(diContainer.addMemoryMainViewModel)
-                    .environmentObject(diContainer.mainViewModel)
-                    .environmentObject(diContainer.spaceCoordinator)
             }
         }
         .windowResizability(.contentSize)
@@ -53,11 +55,12 @@ struct CelestoriaApp: App {
                     profileUseCase: diContainer.profileUseCase,
                     authRepository: diContainer.authRepository,
                     appModel: diContainer.appModel,
-                    spaceCoordinator: diContainer.spaceCoordinator
+                    spaceCoordinator: diContainer.appState.spaceCoordinator
                 )
                 .frame(width: 1280, height: 720)
                 .environmentObject(diContainer.appModel)
-                .environmentObject(diContainer.spaceCoordinator)
+                .environmentObject(diContainer.appState)
+                .environmentObject(diContainer.appState.spaceCoordinator)
             } else {
                 EmptyView()
             }
@@ -69,8 +72,9 @@ struct CelestoriaApp: App {
                 ExploreNavigatorView(profileId: profileId)
                     .frame(width: 720, height: 188)
                     .environmentObject(diContainer.appModel)
+                    .environmentObject(diContainer.appState)
+                    .environmentObject(diContainer.appState.spaceCoordinator)
                     .environmentObject(diContainer.exploreViewModel)
-                    .environmentObject(diContainer.spaceCoordinator)
             } else {
                 Text("No user selected.")
                     .frame(width: 720, height: 188)

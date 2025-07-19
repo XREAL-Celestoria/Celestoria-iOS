@@ -15,6 +15,7 @@ class LoginViewModel: NSObject, ObservableObject, ASAuthorizationControllerDeleg
     private var cancellables = Set<AnyCancellable>()
     private let profileUseCase: ProfileUseCase
     private let appModel: AppModel
+    private let appState: AppState?
     
     @Published var errorMessage: String?
     @Published var userId: UUID?
@@ -23,11 +24,13 @@ class LoginViewModel: NSObject, ObservableObject, ASAuthorizationControllerDeleg
     init(
         signInUseCase: SignInWithAppleUseCase,
         profileUseCase: ProfileUseCase,
-        appModel: AppModel
+        appModel: AppModel,
+        appState: AppState? = nil
     ) {
         self.signInUseCase = signInUseCase
         self.profileUseCase = profileUseCase
         self.appModel = appModel
+        self.appState = appState
     }
 
     func prepareRequest(request: ASAuthorizationAppleIDRequest) {
@@ -56,15 +59,23 @@ class LoginViewModel: NSObject, ObservableObject, ASAuthorizationControllerDeleg
                             guard let self = self else { return }
                             let fetchedProfile = try await self.profileUseCase.fetchProfile()
                             
-                            // AppModel 업데이트 (starfield 등 didSet을 통해 화면 전환 관련 로직이 있을 수 있음)
+                            // AppModel과 AppState 모두 업데이트
                             self.appModel.userId = userId
                             self.appModel.userProfile = fetchedProfile
+                            
+                            // AppState도 업데이트
+                            if let appState = self.appState {
+                                appState.setUser(fetchedProfile, userId: userId)
+                                appState.hasAcceptedTerms = self.appModel.hasAcceptedTerms
+                            }
                             
                             // 아직 Terms 동의가 되어 있지 않으면 .terms로 전환
                             if self.appModel.hasAcceptedTerms {
                                 self.appModel.activeScreen = .main
+                                self.appState?.activeScreen = .main
                             } else {
                                 self.appModel.activeScreen = .terms
+                                self.appState?.activeScreen = .terms
                             }
                             
                             completion(userId)

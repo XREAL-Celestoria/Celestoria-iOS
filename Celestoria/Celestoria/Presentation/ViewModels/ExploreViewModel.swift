@@ -68,7 +68,6 @@ final class ExploreViewModel: ObservableObject {
         if let key = user.profile.profileKey,
            let predefined = PredefinedProfileImage.fromKey(key) {
             profileImageName = predefined.rawValue // "profile_blue" 등
-            os.Logger.info(profileImageName)
             isCustomImage = false
         } else if let url = user.profile.profileImageURL {
             profileImageName = url

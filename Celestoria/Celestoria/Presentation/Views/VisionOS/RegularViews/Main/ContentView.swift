@@ -12,6 +12,7 @@ import os
 
 struct ContentView: View {
     @EnvironmentObject var appModel: AppModel
+    @EnvironmentObject var appState: AppState
     @EnvironmentObject var mainViewModel: MainViewModel
     @EnvironmentObject var loginViewModel: LoginViewModel
     @State private var activeScreen: ActiveScreen = .login
@@ -44,6 +45,7 @@ struct ContentView: View {
                         .onAppear {
                             Logger.info("Displaying Main View")
                             appModel.showAddMemoryView = false
+                            appState.showAddMemoryView = false
                         }
                 }
             case .galaxy:

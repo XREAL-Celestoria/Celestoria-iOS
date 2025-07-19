@@ -126,7 +126,7 @@ class AuthRepository: AuthRepositoryProtocol {
             .execute()
             .value
         
-        print(profiles)
+        // 불필요한 로그 제거
         
         guard let profile = profiles.first else {
             throw NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Profile not found."])

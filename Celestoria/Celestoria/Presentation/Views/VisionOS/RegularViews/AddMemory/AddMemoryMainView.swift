@@ -14,6 +14,7 @@ struct AddMemoryMainView: View {
     @EnvironmentObject var viewModel: AddMemoryMainViewModel
     @EnvironmentObject var mainViewModel: MainViewModel
     @EnvironmentObject private var appModel: AppModel
+    @EnvironmentObject private var appState: AppState
     
     @State private var isHovered: Bool = false
     
@@ -93,6 +94,7 @@ struct AddMemoryMainView: View {
         .onDisappear {
             viewModel.handleViewDisappearance()
             appModel.showAddMemoryView = false
+            appState.showAddMemoryView = false
         }
         .onChange(of: viewModel.errorMessage) { _ in
             if let message = viewModel.errorMessage {

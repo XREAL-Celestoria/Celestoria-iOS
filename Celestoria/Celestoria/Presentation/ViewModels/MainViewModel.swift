@@ -34,7 +34,7 @@ class MainViewModel: ObservableObject {
         
         do {
             memories = try await fetchMemoriesUseCase.executeAll()
-            spaceCoordinator.setInitialMemories(memories)
+            await spaceCoordinator.setInitialMemories(memories)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -54,7 +54,7 @@ class MainViewModel: ObservableObject {
             }
 
             memories = fetched
-            spaceCoordinator.setInitialMemories(memories)
+            await spaceCoordinator.setInitialMemories(memories)
         } catch {
             errorMessage = error.localizedDescription
             print("[DEBUG] Error fetching memories: \(error.localizedDescription)")

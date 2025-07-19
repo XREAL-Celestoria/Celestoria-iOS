@@ -11,6 +11,7 @@ import os
 struct MainView: View {
     @EnvironmentObject var viewModel: MainViewModel
     @EnvironmentObject var appModel: AppModel
+    @EnvironmentObject var appState: AppState
     @Environment(\.openWindow) private var openWindow
     @Environment(\.openImmersiveSpace) private var openImmersiveSpace
     @EnvironmentObject var spaceCoordinator: SpaceCoordinator
@@ -134,13 +135,14 @@ private extension MainView {
 // MARK: - Actions
 private extension MainView {
     func openAddMemoryView() {
-        guard !appModel.showAddMemoryView else {
+        guard !appModel.showAddMemoryView && !appState.showAddMemoryView else {
             os.Logger.info("Add memory view already opened")
             return
         }
         
         os.Logger.info("Displaying Add memory View")
         appModel.showAddMemoryView = true
+        appState.showAddMemoryView = true
         openWindow(id: "Add-Memory")
     }
 }

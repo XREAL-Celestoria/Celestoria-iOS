@@ -54,7 +54,6 @@ class SettingViewModel: ObservableObject {
         do {
             let fetchedProfile = try await profileUseCase.fetchProfile()
             profile = fetchedProfile
-            print(profile)
 
             if let key = fetchedProfile.profileKey,
                let predefined = PredefinedProfileImage.fromKey(key) {
