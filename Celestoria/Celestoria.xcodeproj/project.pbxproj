@@ -104,6 +104,7 @@
 		A2B8DB412D42AEC7001B5663 /* MemoryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */; };
 		A2B8DB782D42B409001B5663 /* CelestoriaVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */; };
 		A2B8DB852D440536001B5663 /* SettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB842D440536001B5663 /* SettingViewModel.swift */; };
+		A2C1D8262E2BC9E200CA2D9A /* fireworks.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A2C1D8252E2BC9E200CA2D9A /* fireworks.usdz */; };
 		A2FB5B5E2D47881D00294178 /* ProfileUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2FB5B5D2D47881D00294178 /* ProfileUseCase.swift */; };
 /* End PBXBuildFile section */
 
@@ -202,6 +203,7 @@
 		A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryDetailView.swift; sourceTree = "<group>"; };
 		A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CelestoriaVideoPlayerView.swift; sourceTree = "<group>"; };
 		A2B8DB842D440536001B5663 /* SettingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewModel.swift; sourceTree = "<group>"; };
+		A2C1D8252E2BC9E200CA2D9A /* fireworks.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = fireworks.usdz; sourceTree = "<group>"; };
 		A2FB5B5D2D47881D00294178 /* ProfileUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileUseCase.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -295,6 +297,7 @@
 				A2198CA62D49063800B0AF65 /* Enter.usdc */,
 				A2198CA72D49063800B0AF65 /* Family.usdz */,
 				A2198CA82D49063800B0AF65 /* Pet.usdz */,
+				A2C1D8252E2BC9E200CA2D9A /* fireworks.usdz */,
 				A2198CB02D4909BF00B0AF65 /* Travel.usdc */,
 				2F36720E2D3DAA6E0048D9AD /* ConstellationBackGroundEntity.swift */,
 				2F3672102D3DAAA40048D9AD /* ConstellationSpaceEntity.swift */,
@@ -690,6 +693,7 @@
 				2F8800BF2D38CE6800220F89 /* Preview Assets.xcassets in Resources */,
 				2F8800C02D38CE6800220F89 /* Assets.xcassets in Resources */,
 				A2198CAA2D49063800B0AF65 /* Family.usdz in Resources */,
+				A2C1D8262E2BC9E200CA2D9A /* fireworks.usdz in Resources */,
 				2FC41AD82DDE33E000E03025 /* Debug.xcconfig in Resources */,
 				A2198CAC2D49063800B0AF65 /* Enter.usdc in Resources */,
 				A2198CAD2D49063800B0AF65 /* Pet.usdz in Resources */,
