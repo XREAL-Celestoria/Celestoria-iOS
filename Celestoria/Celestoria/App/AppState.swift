@@ -20,34 +20,90 @@ import os
 @MainActor
 final class AppState: ObservableObject {
     // Core State
-    @Published var userId: UUID?
-    @Published var userProfile: UserProfile?
-    @Published var activeScreen: ActiveScreen = .login
+    @Published var userId: UUID? {
+        didSet {
+            Logger.info("User ID changed: \(String(describing: userId))")
+        }
+    }
+    @Published var userProfile: UserProfile? {
+        didSet {
+            // userProfile가 업데이트될 때 starfield 동기화
+            if let sfName = userProfile?.starfield,
+               let starfieldEnum = StarField(imageName: sfName) {
+                self.selectedStarfield = starfieldEnum
+            } else {
+                // 로그인 안되거나 starfield가 없다면 Gray로 고정
+                self.selectedStarfield = .FIELD_1
+            }
+        }
+    }
+    @Published var activeScreen: ActiveScreen = .login {
+        didSet {
+            Logger.info("Active Screen changed: \(activeScreen)")
+        }
+    }
     
     // UI State
-    @Published var showAddMemoryView = false
-    @Published var selectedStarfield: StarField? = .FIELD_1
-    @Published var addMemoryScreen: AddMemoryScreen = .main
-    @Published var showExploreNavigatorView = false
-    @Published var hasAcceptedTerms = false
+    @Published var showAddMemoryView = false {
+        didSet {
+            Logger.info("showAddMemoryView : \(showAddMemoryView)")
+        }
+    }
+    @Published var selectedStarfield: StarField? = .FIELD_1 {
+        didSet {
+            if let starfield = selectedStarfield {
+                Logger.info("Starfield Changed: \(starfield.rawValue)")
+            } else {
+                Logger.info("Starfield Changed: nil")
+            }
+        }
+    }
+    @Published var addMemoryScreen: AddMemoryScreen = .main {
+        didSet {
+            Logger.info("Add Memory - Active Screen changed: \(activeScreen)")
+        }
+    }
+    @Published var showExploreNavigatorView = false {
+        didSet {
+            Logger.info("showExploreNavigatorView : \(showExploreNavigatorView)")
+        }
+    }
+    @Published var hasAcceptedTerms = false {
+        didSet {
+            Logger.info("Terms Accepted: \(hasAcceptedTerms)")
+        }
+    }
+    @Published var mainWindowActive: Bool = true  // 메인 윈도우 활성 상태를 추적
     
     // Immersive Space
     let immersiveSpaceID = "SpaceEnvironment"
-    @Published var isImmersiveViewActive = false
+    @Published var isImmersiveViewActive = false {
+        didSet {
+            Logger.info("Immersive View Active: \(isImmersiveViewActive)")
+        }
+    }
     
     // ViewModels (주요 뷰모델만 포함)
-    let spaceCoordinator: SpaceCoordinator
-    let mainViewModel: MainViewModel
+    let spaceCoordinator: SpaceCoordinator?
+    let mainViewModel: MainViewModel?
     var loginViewModel: LoginViewModel?
     
     private let logger = Logger(subsystem: "Celestoria", category: "AppState")
     
     init(
-        spaceCoordinator: SpaceCoordinator,
-        mainViewModel: MainViewModel
+        spaceCoordinator: SpaceCoordinator? = nil,
+        mainViewModel: MainViewModel? = nil
     ) {
         self.spaceCoordinator = spaceCoordinator
         self.mainViewModel = mainViewModel
+        
+        // 초기화 확인 로그
+        if spaceCoordinator == nil {
+            logger.warning("AppState initialized without spaceCoordinator")
+        }
+        if mainViewModel == nil {
+            logger.warning("AppState initialized without mainViewModel")
+        }
     }
     
     // MARK: - Computed Properties

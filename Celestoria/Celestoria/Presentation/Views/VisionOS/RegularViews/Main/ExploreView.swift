@@ -9,7 +9,7 @@ import SwiftUI
 import os
 
 struct ExploreView: View {
-    @EnvironmentObject private var appModel: AppModel
+    @EnvironmentObject private var appState: AppState
     @EnvironmentObject var spaceCoordinator: SpaceCoordinator
     @EnvironmentObject var exploreViewModel: ExploreViewModel
 
@@ -27,7 +27,7 @@ struct ExploreView: View {
                 NavigationBar(
                     title: "Explore",
                     action: {
-                        appModel.activeScreen = .main
+                        appState.activeScreen = .main
                     },
                     buttonImageString: "chevron.left"
                 )
@@ -64,13 +64,13 @@ struct ExploreView: View {
                                     ExploreUserCard(
                                         item: cardItem,
                                         onExploreGalaxy: {
-                                            guard !appModel.showExploreNavigatorView else {
+                                            guard !appState.showExploreNavigatorView else {
                                                 os.Logger.info("Explore Navigator View is already opened")
                                                 return
                                             }
                                             
                                             os.Logger.info("Displaying Explore Navigator View")
-                                            appModel.showExploreNavigatorView = true
+                                            appState.showExploreNavigatorView = true
                                             openWindow(value: user.profile.userId)
                                             dismissWindow()
                                         }
@@ -167,12 +167,12 @@ struct ExploreView: View {
         .onChange(of: scenePhase) { newPhase in
             switch newPhase {
             case .background, .inactive:
-                appModel.isImmersiveViewActive = false
+                appState.isImmersiveViewActive = false
             case .active:
-                if appModel.userId != nil && !appModel.isImmersiveViewActive {
+                if appState.userId != nil && !appState.isImmersiveViewActive {
                     Task {
-                        await openImmersiveSpace(id: appModel.immersiveSpaceID)
-                        appModel.isImmersiveViewActive = true
+                        await openImmersiveSpace(id: appState.immersiveSpaceID)
+                        appState.isImmersiveViewActive = true
                     }
                 }
             default:

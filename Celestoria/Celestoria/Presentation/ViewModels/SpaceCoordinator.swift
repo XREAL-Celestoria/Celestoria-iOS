@@ -13,9 +13,9 @@ import os
 @MainActor
 final class SpaceCoordinator: ObservableObject {
     // Dependencies
-    private let appModel: AppModel
     private let memoryRepository: MemoryRepository
     private let profileUseCase: ProfileUseCase
+    weak var appState: AppState?
     
     // State
     @Published var isLoading = false
@@ -25,12 +25,12 @@ final class SpaceCoordinator: ObservableObject {
     
     private let logger = Logger(subsystem: "Celestoria", category: "SpaceCoordinator")
     
-    init(appModel: AppModel,
-         memoryRepository: MemoryRepository,
-         profileUseCase: ProfileUseCase) {
-        self.appModel = appModel
+    init(memoryRepository: MemoryRepository,
+         profileUseCase: ProfileUseCase,
+         appState: AppState? = nil) {
         self.memoryRepository = memoryRepository
         self.profileUseCase = profileUseCase
+        self.appState = appState
     }
     
     // MARK: - Public Methods
@@ -42,7 +42,7 @@ final class SpaceCoordinator: ObservableObject {
         isLoading = true
         defer { isLoading = false }
         
-        let backgroundImageName = appModel.selectedStarfield?.imageName ?? "Starfield-1"
+        let backgroundImageName = appState?.selectedStarfield?.imageName ?? "Starfield-1"
         spaceEntity = SpaceEntity(backgroundImageName: backgroundImageName)
         logger.info("Initialized with background: \(backgroundImageName)")
     }

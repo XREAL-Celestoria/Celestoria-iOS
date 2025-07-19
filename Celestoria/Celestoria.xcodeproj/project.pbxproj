@@ -57,7 +57,6 @@
 		2F510CEE2D416532004171E8 /* CategoryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F510CED2D416532004171E8 /* CategoryButton.swift */; };
 		2F67381F2D48B6D500882ADC /* ExploreNavigatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F67381E2D48B6D500882ADC /* ExploreNavigatorView.swift */; };
 		2F6738212D4945FF00882ADC /* GradientBorderSmall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F6738202D4945FF00882ADC /* GradientBorderSmall.swift */; };
-		2F8800BA2D38CE6800220F89 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B22D38CE6800220F89 /* AppModel.swift */; };
 		2F8800BB2D38CE6800220F89 /* CelestoriaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B42D38CE6800220F89 /* CelestoriaApp.swift */; };
 		2F8800BC2D38CE6800220F89 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B52D38CE6800220F89 /* ContentView.swift */; };
 		2F8800BD2D38CE6800220F89 /* SpaceImmersiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8800B62D38CE6800220F89 /* SpaceImmersiveView.swift */; };
@@ -155,7 +154,6 @@
 		2F67381E2D48B6D500882ADC /* ExploreNavigatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreNavigatorView.swift; sourceTree = "<group>"; };
 		2F6738202D4945FF00882ADC /* GradientBorderSmall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientBorderSmall.swift; sourceTree = "<group>"; };
 		2F8800B02D38CE6800220F89 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		2F8800B22D38CE6800220F89 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		2F8800B32D38CE6800220F89 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2F8800B42D38CE6800220F89 /* CelestoriaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CelestoriaApp.swift; sourceTree = "<group>"; };
 		2F8800B52D38CE6800220F89 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -396,7 +394,6 @@
 				2F8800B42D38CE6800220F89 /* CelestoriaApp.swift */,
 				2F8800C32D38D3AE00220F89 /* DIContainer.swift */,
 				A254315F2E255A3F00AC4BC4 /* AppState.swift */,
-				2F8800B22D38CE6800220F89 /* AppModel.swift */,
 				2FAA9CEB2E2234E900A0CAD7 /* iOSCelestoiraApp.swift */,
 			);
 			path = App;
@@ -729,7 +726,6 @@
 				2FE858052D43D3980055902B /* TextField+.swift in Sources */,
 				A29437D32D513C5B00982EAC /* ContentReport.swift in Sources */,
 				2FBE4E6D2DE31A3400796FAA /* AccountSettingView.swift in Sources */,
-				2F8800BA2D38CE6800220F89 /* AppModel.swift in Sources */,
 				A29437CF2D51136A00982EAC /* NavigationMenuPopup.swift in Sources */,
 				2F3671D72D3D7C730048D9AD /* MainTabButton.swift in Sources */,
 				2F510CEE2D416532004171E8 /* CategoryButton.swift in Sources */,

@@ -10,7 +10,6 @@ import os
 
 struct MainView: View {
     @EnvironmentObject var viewModel: MainViewModel
-    @EnvironmentObject var appModel: AppModel
     @EnvironmentObject var appState: AppState
     @Environment(\.openWindow) private var openWindow
     @Environment(\.openImmersiveSpace) private var openImmersiveSpace
@@ -43,14 +42,14 @@ struct MainView: View {
         .overlay(loadingOverlay)
         .onAppear {
             // 메인 창 활성 상태 갱신
-            appModel.mainWindowActive = true
+            appState.mainWindowActive = true
             
-            guard let userId = appModel.userId else { return }
+            guard let userId = appState.userId else { return }
             Task {
                 // ImmersiveSpace 열기 로직은 동일
-                if !appModel.isImmersiveViewActive {
-                    await openImmersiveSpace(id: appModel.immersiveSpaceID)
-                    appModel.isImmersiveViewActive = true
+                if !appState.isImmersiveViewActive {
+                    await openImmersiveSpace(id: appState.immersiveSpaceID)
+                    appState.isImmersiveViewActive = true
                 }
                 // userId 달라야만 loadData 호출
                 if spaceCoordinator.currentLoadedUserId != userId {
@@ -60,19 +59,19 @@ struct MainView: View {
         }
         .onDisappear {
             // 메인 창이 사라지면 상태 업데이트
-            appModel.mainWindowActive = false
+            appState.mainWindowActive = false
         }
         .onChange(of: scenePhase) { newPhase in
             switch newPhase {
             case .background, .inactive:
                 os.Logger.info("App is moving to background/inactive. Closing Immersive Space.")
-                appModel.isImmersiveViewActive = false
+                appState.isImmersiveViewActive = false
             case .active:
                 os.Logger.info("App is active. Checking Immersive Space.")
-                if appModel.userId != nil && !appModel.isImmersiveViewActive {
+                if appState.userId != nil && !appState.isImmersiveViewActive {
                     Task {
-                        await openImmersiveSpace(id: appModel.immersiveSpaceID)
-                        appModel.isImmersiveViewActive = true
+                        await openImmersiveSpace(id: appState.immersiveSpaceID)
+                        appState.isImmersiveViewActive = true
                     }
                 }
             default:
@@ -87,19 +86,19 @@ private extension MainView {
     var tabMenu: some View {
         HStack(spacing: 70) {
             MainTabButton(imageName: "Galaxy", text: "Galaxy") {
-                appModel.activeScreen = .galaxy
+                appState.activeScreen = .galaxy
                 os.Logger.info("Move to Galaxy View")
             }
             .frame(width: 104, height: 152)
             
             MainTabButton(imageName: "Explore", text: "Explore") {
-                appModel.activeScreen = .explore
+                appState.activeScreen = .explore
                 os.Logger.info("Move to Explore View")
             }
             .frame(width: 104, height: 152)
             
             MainTabButton(imageName: "Setting", text: "Setting") {
-                appModel.activeScreen = .setting
+                appState.activeScreen = .setting
                 os.Logger.info("Move to Setting View")
             }
             .frame(width: 104, height: 152)
@@ -135,13 +134,12 @@ private extension MainView {
 // MARK: - Actions
 private extension MainView {
     func openAddMemoryView() {
-        guard !appModel.showAddMemoryView && !appState.showAddMemoryView else {
+        guard !appState.showAddMemoryView else {
             os.Logger.info("Add memory view already opened")
             return
         }
         
         os.Logger.info("Displaying Add memory View")
-        appModel.showAddMemoryView = true
         appState.showAddMemoryView = true
         openWindow(id: "Add-Memory")
     }

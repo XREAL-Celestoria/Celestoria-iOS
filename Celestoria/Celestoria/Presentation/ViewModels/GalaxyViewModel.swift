@@ -13,10 +13,10 @@ class GalaxyViewModel: ObservableObject {
     @Published var selectedImage: String? // 현재 선택된 starfield(이미지) 이름
     private let spaceCoordinator: SpaceCoordinator
     private let profileUseCase: ProfileUseCase
-    let appModel: AppModel
+    let appState: AppState
 
-    init(appModel: AppModel, spaceCoordinator: SpaceCoordinator, profileUseCase: ProfileUseCase) {
-        self.appModel = appModel
+    init(appState: AppState, spaceCoordinator: SpaceCoordinator, profileUseCase: ProfileUseCase) {
+        self.appState = appState
         self.spaceCoordinator = spaceCoordinator
         self.profileUseCase = profileUseCase
         
@@ -26,7 +26,7 @@ class GalaxyViewModel: ObservableObject {
         // userProfile 변경 관찰
         Task {
             // 먼저 현재 프로필 가져오기 시도
-            if appModel.userId != nil {
+            if appState.userId != nil {
                 do {
                     let currentProfile = try await profileUseCase.fetchProfile()
                     if let starfieldName = currentProfile.starfield {
@@ -39,7 +39,7 @@ class GalaxyViewModel: ObservableObject {
             }
             
             // 이후 변경사항 관찰
-            for await newProfile in appModel.$userProfile.values {
+            for await newProfile in appState.$userProfile.values {
                 if let starfieldName = newProfile?.starfield {
                     self.selectedImage = starfieldName
                     self.spaceCoordinator.updateBackground(with: starfieldName)
@@ -65,7 +65,7 @@ class GalaxyViewModel: ObservableObject {
         Logger.info("GalaxyViewModel saveSelectedImage: \(imageName)")
         
         // 비로그인 상태면 갱신 불가 -> 그냥 리턴(원하면 Alert 처리 등)
-        guard let userId = appModel.userId else {
+        guard let userId = appState.userId else {
             Logger.info("GalaxyViewModel: no user -> cannot update DB.")
             return
         }
@@ -78,8 +78,8 @@ class GalaxyViewModel: ObservableObject {
                     userId: userId
                 )
                 
-                // AppModel에 반영 -> didSet에서 selectedStarfield 업데이트
-                appModel.userProfile = updatedProfile
+                // AppState에 반영 -> didSet에서 selectedStarfield 업데이트
+                appState.userProfile = updatedProfile
                 
                 // Immersive 공간 업데이트
                 spaceCoordinator.updateBackground(with: imageName)
@@ -93,10 +93,10 @@ class GalaxyViewModel: ObservableObject {
     // Save 버튼 활성화 여부
     var isUploadEnabled: Bool {
         // 비로그인 상태는 저장 불가
-        guard appModel.userId != nil else { return false }
+        guard appState.userId != nil else { return false }
         // 현재 DB 값과 다를 때만 true
         guard let imageName = selectedImage else { return false }
-        if let dbValue = appModel.userProfile?.starfield {
+        if let dbValue = appState.userProfile?.starfield {
             return imageName != dbValue
         }
         // userProfile.starfield가 없다면(true) → 보통 없을 일은 없지만...

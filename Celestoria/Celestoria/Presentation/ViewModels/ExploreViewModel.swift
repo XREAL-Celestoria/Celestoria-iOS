@@ -18,11 +18,11 @@ final class ExploreViewModel: ObservableObject {
     @Published var exploreUsers: [ExploreUser] = []
 
     private let exploreUseCase: ExploreUseCase
-    private let appModel: AppModel
+    private let appState: AppState
 
-    init(exploreUseCase: ExploreUseCase, appModel: AppModel) {
+    init(exploreUseCase: ExploreUseCase, appState: AppState) {
         self.exploreUseCase = exploreUseCase
-        self.appModel = appModel
+        self.appState = appState
     }
 
 
@@ -40,7 +40,7 @@ final class ExploreViewModel: ObservableObject {
         defer { isLoading = false }
 
         do {
-            let currentUserId = appModel.userId
+            let currentUserId = appState.userId
 
             let users = try await exploreUseCase.fetchExploreUsers(
                 searchText: searchText,

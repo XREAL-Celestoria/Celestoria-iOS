@@ -18,7 +18,7 @@ class SettingViewModel: ObservableObject {
     private let signOutUseCase: SignOutUseCase
     private let profileUseCase: ProfileUseCase
     private let blockedUsersUseCase: BlockedUsersUseCase
-    private let appModel: AppModel
+    private let appState: AppState
     public var originalImage: ProfileImageSelection?
     
     //안에 닉네임
@@ -35,12 +35,12 @@ class SettingViewModel: ObservableObject {
          signOutUseCase: SignOutUseCase,
          profileUseCase: ProfileUseCase,
          blockedUsersUseCase: BlockedUsersUseCase,
-         appModel: AppModel) {
+         appState: AppState) {
         self.deleteAccountUseCase = deleteAccountUseCase
         self.signOutUseCase = signOutUseCase
         self.profileUseCase = profileUseCase
         self.blockedUsersUseCase = blockedUsersUseCase
-        self.appModel = appModel
+        self.appState = appState
         
         Task {
             await fetchProfile()
@@ -82,7 +82,7 @@ class SettingViewModel: ObservableObject {
     }
     
     func updateProfileIfNeeded(newName: String?, selectedImage: ProfileImageSelection?) async {
-        guard let userId = appModel.userId else {
+        guard let userId = appState.userId else {
             Logger.error("🛑 User ID not found")
             return
         }
@@ -138,20 +138,20 @@ class SettingViewModel: ObservableObject {
     
     func signOut() async throws {
         try await signOutUseCase.execute()
-        appModel.userId = nil
+        appState.userId = nil
         await dismissImmersiveSpace()
-        appModel.isImmersiveViewActive = false
-        appModel.hasAcceptedTerms = false
-        appModel.activeScreen = .login
+        appState.isImmersiveViewActive = false
+        appState.hasAcceptedTerms = false
+        appState.activeScreen = .login
     }
     
     func deleteAccount() async throws {
         try await deleteAccountUseCase.execute()
-        appModel.userId = nil
+        appState.userId = nil
         await dismissImmersiveSpace()
-        appModel.isImmersiveViewActive = false
-        appModel.hasAcceptedTerms = false
-        appModel.activeScreen = .login
+        appState.isImmersiveViewActive = false
+        appState.hasAcceptedTerms = false
+        appState.activeScreen = .login
     }
     
     func updateThumbnail(thumbnailId: String) async {
@@ -159,7 +159,7 @@ class SettingViewModel: ObservableObject {
         defer { isLoading = false }
 
         do {
-            guard let userId = appModel.userId else {
+            guard let userId = appState.userId else {
                 Logger.error("🛑 User ID not found")
                 return
             }
@@ -186,7 +186,7 @@ class SettingViewModel: ObservableObject {
     }
     
     func fetchBlockedUsers() async {
-        guard let userId = appModel.userId else { return }
+        guard let userId = appState.userId else { return }
         
         isLoadingBlockedUsers = true
         defer { isLoadingBlockedUsers = false }
@@ -199,7 +199,7 @@ class SettingViewModel: ObservableObject {
     }
     
     func unblockUser(_ blockedUserId: UUID) async {
-        guard let currentUserId = appModel.userId else { return }
+        guard let currentUserId = appState.userId else { return }
         
         do {
             try await blockedUsersUseCase.unblockUser(

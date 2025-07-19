@@ -16,7 +16,7 @@ import os
 @MainActor
 class AddMemoryMainViewModel: ObservableObject {
     private let createMemoryUseCase: CreateMemoryUseCase
-    private let appModel: AppModel
+    private let appState: AppState
     
     @Published var popupData: PopupData?
     @Published var isPickerBlocked = true
@@ -45,9 +45,9 @@ class AddMemoryMainViewModel: ObservableObject {
         note.count <= 500
     }
     
-    init(createMemoryUseCase: CreateMemoryUseCase, appModel: AppModel) {
+    init(createMemoryUseCase: CreateMemoryUseCase, appState: AppState) {
         self.createMemoryUseCase = createMemoryUseCase
-        self.appModel = appModel
+        self.appState = appState
     }
     
     func saveMemory(note: String, title: String, userId: UUID) async {

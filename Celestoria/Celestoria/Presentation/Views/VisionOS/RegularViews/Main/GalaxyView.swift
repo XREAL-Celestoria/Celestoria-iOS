@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct GalaxyView: View {
-    @EnvironmentObject var appModel: AppModel
+    @EnvironmentObject var appState: AppState
     @EnvironmentObject var galaxyViewModel: GalaxyViewModel
     @State private var selectedSection: GalaxySection = .galaxyBackground
     @State private var showError: Bool = false
@@ -36,12 +36,12 @@ struct GalaxyView: View {
         .onChange(of: scenePhase) { newPhase in
             switch newPhase {
             case .background, .inactive:
-                appModel.isImmersiveViewActive = false
+                appState.isImmersiveViewActive = false
             case .active:
-                if appModel.userId != nil && !appModel.isImmersiveViewActive {
+                if appState.userId != nil && !appState.isImmersiveViewActive {
                     Task {
-                        await openImmersiveSpace(id: appModel.immersiveSpaceID)
-                        appModel.isImmersiveViewActive = true
+                        await openImmersiveSpace(id: appState.immersiveSpaceID)
+                        appState.isImmersiveViewActive = true
                     }
                 }
             default:
@@ -54,7 +54,7 @@ struct GalaxyView: View {
 // MARK: - Left View
 private struct LeftGalaxyView: View {
     @Binding var selectedSection: GalaxySection
-    @EnvironmentObject var appModel: AppModel
+    @EnvironmentObject var appState: AppState
     @EnvironmentObject var galaxyViewModel: GalaxyViewModel
     @State private var showError: Bool = false
     @State private var errorMessage: String = ""
@@ -65,7 +65,7 @@ private struct LeftGalaxyView: View {
             NavigationBar(
                 title: "Galaxy",
                 action: {
-                    appModel.activeScreen = .main
+                    appState.activeScreen = .main
                 },
                 buttonImageString: "chevron.left"
             )

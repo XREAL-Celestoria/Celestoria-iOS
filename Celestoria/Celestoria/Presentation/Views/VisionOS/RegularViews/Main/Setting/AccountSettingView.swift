@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - Account Setting View
 struct AccountSettingView: View {
-    @EnvironmentObject var appModel: AppModel
+    @EnvironmentObject var appState: AppState
     @EnvironmentObject var settingViewModel: SettingViewModel
     @State private var showDeleteConfirmation = false
     @State private var showError = false
@@ -58,8 +58,8 @@ struct AccountSettingView: View {
                 Task {
                     do {
                         try await settingViewModel.deleteAccount()
-                        appModel.activeScreen = .login
-                        appModel.userId = nil
+                        appState.activeScreen = .login
+                        appState.userId = nil
                     } catch {
                         errorMessage = error.localizedDescription
                         showError = true

@@ -11,7 +11,7 @@ import SwiftUI
 // 여기에서는 다시 선언하지 않습니다.
 
 struct TermsAndConditionsView: View {
-    @EnvironmentObject var appModel: AppModel
+    @EnvironmentObject var appState: AppState
     
     var body: some View {
         GeometryReader { geometry in
@@ -21,7 +21,7 @@ struct TermsAndConditionsView: View {
                 NavigationBar(
                     title: "Terms and Conditions",
                     action: {
-                        appModel.activeScreen = .login
+                        appState.activeScreen = .login
                     },
                     buttonImageString: "chevron.left"
                 )
@@ -100,7 +100,7 @@ struct TermsAndConditionsView: View {
                 HStack() {
                     Button(action: {
                         // Cancel 선택 시 로그인 전 화면으로 복귀
-                        appModel.activeScreen = .login
+                        appState.activeScreen = .login
                     }) {
                         Text("Cancel")
                             .font(.system(size: 22, weight: .semibold))
@@ -119,8 +119,8 @@ struct TermsAndConditionsView: View {
                     
                     Button(action: {
                         // Agree 선택 시 Main 화면으로 전환
-                        appModel.hasAcceptedTerms = true
-                        appModel.activeScreen = .main
+                        appState.hasAcceptedTerms = true
+                        appState.activeScreen = .main
                     }) {
                         Text("Agree")
                             .font(.system(size: 22, weight: .semibold))
@@ -153,6 +153,6 @@ struct TermsAndConditionsView: View {
 struct TermsAndConditionsView_Previews: PreviewProvider {
     static var previews: some View {
         TermsAndConditionsView()
-            .environmentObject(AppModel())
+            .environmentObject(AppState())
     }
 }

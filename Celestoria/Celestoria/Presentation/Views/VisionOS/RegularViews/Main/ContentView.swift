@@ -11,7 +11,6 @@ import RealityKitContent
 import os
 
 struct ContentView: View {
-    @EnvironmentObject var appModel: AppModel
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var mainViewModel: MainViewModel
     @EnvironmentObject var loginViewModel: LoginViewModel
@@ -19,7 +18,7 @@ struct ContentView: View {
     
     var body: some View {
         Group {
-            switch appModel.activeScreen {
+            switch appState.activeScreen {
             case .login:
                 GradientBorderContainer {
                     LoginView()
@@ -44,7 +43,6 @@ struct ContentView: View {
                         .transition(.opacity)
                         .onAppear {
                             Logger.info("Displaying Main View")
-                            appModel.showAddMemoryView = false
                             appState.showAddMemoryView = false
                         }
                 }

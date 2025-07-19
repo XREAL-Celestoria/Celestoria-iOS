@@ -15,7 +15,6 @@ final class DIContainer: ObservableObject {
     
     // Core State
     let appState: AppState
-    let appModel: AppModel  // 기존 호환성을 위해 유지
     
     // Additional ViewModels (나중에 필요시 접근)
     let addMemoryMainViewModel: AddMemoryMainViewModel
@@ -44,7 +43,6 @@ final class DIContainer: ObservableObject {
 
     init() {
         Logger.info("Initializing DIContainer...")
-        self.appModel = AppModel()
 
         // Initialize Supabase Client
         self.supabaseClient = SupabaseClient(
@@ -81,9 +79,8 @@ final class DIContainer: ObservableObject {
             authRepository: authRepository
         )
 
-        // 먼저 SpaceCoordinator 초기화
+        // 먼저 SpaceCoordinator와 MainViewModel을 임시로 생성
         let spaceCoordinator = SpaceCoordinator(
-            appModel: appModel,
             memoryRepository: memoryRepository,
             profileUseCase: profileUseCase
         )
@@ -100,11 +97,13 @@ final class DIContainer: ObservableObject {
             mainViewModel: mainViewModel
         )
         
+        // SpaceCoordinator에 AppState 연결
+        spaceCoordinator.appState = self.appState
+        
         // LoginViewModel을 AppState와 함께 초기화
         let loginViewModel = LoginViewModel(
             signInUseCase: signInWithAppleUseCase,
             profileUseCase: profileUseCase,
-            appModel: appModel,
             appState: self.appState
         )
         
@@ -114,47 +113,41 @@ final class DIContainer: ObservableObject {
         // 기타 ViewModels
         self.exploreViewModel = ExploreViewModel(
             exploreUseCase: exploreUseCase,
-            appModel: appModel
+            appState: self.appState
         )
-        self.addMemoryMainViewModel = AddMemoryMainViewModel(createMemoryUseCase: createMemoryUseCase, appModel: appModel)
+        self.addMemoryMainViewModel = AddMemoryMainViewModel(createMemoryUseCase: createMemoryUseCase, appState: self.appState)
         self.settingViewModel = SettingViewModel(
             deleteAccountUseCase: deleteAccountUseCase,
             signOutUseCase: signOutUseCase,
             profileUseCase: profileUseCase,
             blockedUsersUseCase: blockedUsersUseCase,
-            appModel: appModel
+            appState: self.appState
         )
         self.galaxyViewModel = GalaxyViewModel(
-            appModel: appModel,
+            appState: self.appState,
             spaceCoordinator: spaceCoordinator,
             profileUseCase: profileUseCase
         )
 
         // 모든 초기화가 끝난 후 자동 로그인 체크
         if let currentUser = self.supabaseClient.auth.currentUser {
-            // AppState와 AppModel 모두 업데이트
+            // AppState 업데이트
             self.appState.userId = currentUser.id
             self.appState.activeScreen = .main
-            self.appModel.userId = currentUser.id
-            self.appModel.activeScreen = .main
             
             Task {
                 do {
                     let fetchedProfile = try await profileUseCase.fetchProfile()
                     self.appState.userProfile = fetchedProfile
-                    self.appModel.userProfile = fetchedProfile
                 } catch {
                     Logger.error("Failed to fetch profile: \(error.localizedDescription)")
                 }
             }
         } else {
-            // AppState와 AppModel 모두 업데이트
+            // AppState 업데이트
             self.appState.userId = nil
             self.appState.activeScreen = .login
             self.appState.userProfile = nil
-            self.appModel.userId = nil
-            self.appModel.activeScreen = .login
-            self.appModel.userProfile = nil
         }
     }
 }

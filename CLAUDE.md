@@ -59,12 +59,18 @@ The codebase follows **MVVM + Clean Architecture** with clear separation of conc
    - Centralized DIContainer manages all dependencies
    - Initialized in App entry points (CelestoiraApp.swift, iOSCelestoiraApp.swift)
    - ViewModels and repositories are injected, not instantiated directly
+   - All dependencies initialized with proper error handling
 
 ### Key Components
 
 **App Entry Points:**
 - `CelestoiraApp.swift`: visionOS app with immersive space support
 - `iOSCelestoiraApp.swift`: iOS app with basic functionality
+
+**State Management:**
+- `AppState.swift`: Centralized state management for the entire app
+- Replaced AppModel with AppState for unified state handling
+- All ViewModels reference AppState as single source of truth
 
 **Core Features:**
 - **Memory Management**: Create, position, and manage spatial video memories
@@ -85,15 +91,23 @@ The codebase follows **MVVM + Clean Architecture** with clear separation of conc
 1. User actions trigger ViewModel methods
 2. ViewModels call UseCases or Repositories through DIContainer
 3. Repositories interact with Supabase services
-4. Data flows back through reactive properties (@Published)
+4. State updates flow through AppState (@Published properties)
 5. Views update automatically via SwiftUI bindings
+
+### Recent Refactoring Changes
+- **Removed AppModel**: Migrated all functionality to AppState
+- **Simplified SpaceCoordinator**: Now acts purely as a coordinator, delegating to SpaceEntity
+- **Safe Initialization**: Removed all force unwrapping, added proper optional handling
+- **Performance Optimization**: Added duplicate update prevention in background management
 
 ### Important Patterns
 - Always use DIContainer for dependency resolution
 - ViewModels should be @StateObject in parent views
-- Use @EnvironmentObject for app-wide state (AppViewModel)
-- Spatial positioning uses RealityKit coordinate system
+- Use @EnvironmentObject for app-wide state (AppState)
+- Spatial positioning uses random placement within bounds
 - Memory categories: Family, Travel, Pet, Entertainment
+- Always check for nil ViewModels before rendering views
+- Use if-let binding instead of force unwrapping
 
 ### Configuration
 - Environment variables in Debug/Release.xcconfig files

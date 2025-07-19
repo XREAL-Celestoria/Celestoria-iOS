@@ -1,118 +1,215 @@
 # Celestoria visionOS 앱 리팩토링 요약
 
 ## 개요
+
 Celestoria는 Apple Vision Pro용 3D 공간 SNS 앱으로, 사용자의 추억을 별처럼 3D 공간에 배치하여 표시합니다. 이번 리팩토링은 MVP/POC 단계의 "스파게티 코드"를 20년차 iOS 개발자의 관점에서 체계적으로 개선하는 작업이었습니다.
 
-## 주요 리팩토링 내용
+## 기존 구조의 문제점
 
-### 1. 책임 분리 및 관심사 분리 (Separation of Concerns)
+### 1. 단일 책임 원칙 위반
 
-#### 1.1 SpaceCoordinator 리팩토링
-**문제점**: 
-- SpaceCoordinator가 너무 많은 책임을 가지고 있었음
-- 별 생성/관리, 배경 관리, 위치 계산 등 모든 것을 담당
+- **SpaceCoordinator**가 모든 3D 공간 관련 로직을 담당
+  - 별(Star) 엔티티의 생성, 업데이트, 제거
+  - 배경(Starfield) 텍스처 관리
+  - 3D 위치 계산 및 충돌 감지
+  - 메모리 상태 추적 및 동기화
+- 이로 인해 한 기능의 변경이 다른 기능에 영향을 미칠 위험이 높았음
 
-**해결책**:
-- `StarSystemManager`: 별의 생성, 업데이트, 제거 담당
-- `BackgroundManager`: 배경 텍스처 관리 전담
-- `PositionManager`: 3D 공간 내 위치 계산 및 충돌 방지
-- `EntityPool`: 성능 최적화를 위한 엔티티 재사용
+### 2. 상태 관리 중복
+
+- **AppModel**과 여러 **ViewModel**들이 각자 상태를 관리
+- 동일한 데이터(userId, userProfile 등)가 여러 곳에 중복 저장
+- 상태 동기화 문제로 인한 UI 불일치 발생 가능성
+
+## 리팩토링 후 구조
+
+### 1. 책임 분리를 통한 모듈화
+
+#### 1.1 SpaceCoordinator의 역할 재정의
+
+**기존 구조**: 모든 3D 관련 로직을 직접 처리
+
+**개선된 구조**: 순수한 조정자(Coordinator) 역할로 축소
 
 ```swift
-// Before
-class SpaceCoordinator {
-    func addStar(...) { /* 모든 로직이 여기에 */ }
-    func updateBackground(...) { /* 배경 관리도 여기에 */ }
-    func calculatePosition(...) { /* 위치 계산도 여기에 */ }
-}
+// 개선된 SpaceCoordinator - 조정만 담당
+class SpaceCoordinator: ObservableObject {
+    weak var appState: AppState?
+    let spaceEntity = SpaceEntity()
 
-// After
-class SpaceCoordinator {
-    private let starSystemManager: StarSystemManager
-    private let backgroundManager: BackgroundManager
-    // 조정자 역할만 수행
+    // 다른 객체들에게 작업을 위임하는 메서드들
+    func addStar(for memory: Memory) async {
+        await spaceEntity.addStar(for: memory)
+    }
 }
 ```
 
-### 2. 상태 관리 통합 (Unified State Management)
+### 2. 통합 상태 관리 시스템
 
-#### 2.1 AppState 도입
-**문제점**:
-- AppModel과 여러 ViewModel들 간의 상태 동기화 문제
-- 중복된 상태 관리 로직
+#### 2.1 AppModel에서 AppState로 전환
 
-**해결책**:
-- `AppState`: 앱 전체의 중앙 상태 관리 객체 생성
-- AppModel과의 호환성을 유지하면서 점진적 마이그레이션
+**기존 구조**:
+
+- AppModel이 일부 상태 관리
+- 각 ViewModel이 독립적으로 상태 관리
+- 상태 동기화를 위한 복잡한 바인딩
+
+**개선된 구조**: AppState를 통한 단일 진실 공급원(Single Source of Truth)
 
 ```swift
 @MainActor
 final class AppState: ObservableObject {
+    // Core State - 앱 전체에서 공유되는 핵심 상태
     @Published var userId: UUID?
     @Published var userProfile: UserProfile?
     @Published var activeScreen: ActiveScreen = .login
+
+    // UI State - UI 관련 상태
     @Published var showAddMemoryView = false
+    @Published var selectedStarfield: StarField? = .FIELD_1
+
+    // Immersive Space - visionOS 특화 상태
     @Published var isImmersiveViewActive = false
-    // 중앙 집중식 상태 관리
+
+    // ViewModels - 주요 뷰모델 참조 (Optional로 안전하게 관리)
+    let spaceCoordinator: SpaceCoordinator?
+    let mainViewModel: MainViewModel?
+    var loginViewModel: LoginViewModel?
 }
 ```
 
-### 3. 성능 최적화
+이를 통해:
 
-#### 3.1 엔티티 풀링 시스템
-**구현 내용**:
-- Generic 타입의 재사용 가능한 EntityPool
-- 메모리 사용량 감소 및 생성/제거 오버헤드 최소화
+- 모든 상태가 한 곳에서 관리되어 일관성 보장
+- 상태 변경 추적이 용이함
+- 디버깅과 테스트가 간편해짐
 
-### 4. 문제 해결
+### 3. 의존성 주입 개선
 
-#### 4.1 로그인 동기화 문제
-**문제**: 로그인 시 AppModel만 업데이트되고 AppState는 업데이트되지 않아 발생하는 불일치
+#### 3.1 DIContainer를 통한 중앙화된 의존성 관리
 
-**해결**: LoginViewModel이 AppModel과 AppState를 모두 업데이트하도록 수정
+**기존 구조**:
 
-#### 4.2 Add Memory 버튼 빈 화면 문제
-**문제**: WindowGroup이 AppState를 체크하지만 실제로는 AppModel만 업데이트됨
+- ViewModels가 직접 의존성을 생성
+- 테스트 시 모의 객체 주입 불가능
 
-**해결**: 모든 관련 View와 ViewModel에서 상태 동기화
+**개선된 구조**: DIContainer가 모든 의존성을 관리
 
-#### 4.3 Starfield 중복 업데이트 문제
-**문제**: 배경이 3번 연속으로 업데이트되어 성능 저하
+```swift
+@MainActor
+final class DIContainer: ObservableObject {
+    // Core State
+    let appState: AppState
 
-**해결**: BackgroundManager에 현재 배경 추적 및 중복 호출 방지 로직 추가
+    // Repositories - 데이터 접근 계층
+    let memoryRepository: MemoryRepository
+    let authRepository: AuthRepositoryProtocol
 
-### 5. 코드 품질 개선
+    // Use Cases - 비즈니스 로직
+    private let fetchMemoriesUseCase: FetchMemoriesUseCase
+    let profileUseCase: ProfileUseCase
 
-#### 5.1 불필요한 로그 제거
-- UserProfile 배열 전체 출력 제거
-- Info.plist 반복 로그 제거
-- 프로필 이미지 반복 로그 제거
-- 디버그 정보를 최소화하여 콘솔 가독성 향상
+    init() {
+        // 1. 저장소 초기화
+        // 2. 유스케이스 초기화
+        // 3. 뷰모델 초기화
+        // 4. AppState 생성 및 연결
+    }
+}
+```
 
-#### 5.2 에러 처리 개선
-- 명확한 에러 메시지와 로깅
-- 비동기 작업의 적절한 에러 처리
+### 4. 안전한 초기화 및 옵셔널 처리
 
-## 아키텍처 개선 사항
+#### 4.1 Force Unwrapping 제거
 
-### MVVM + Clean Architecture 강화
-1. **Presentation Layer**: View와 ViewModel의 명확한 분리
-2. **Domain Layer**: UseCase를 통한 비즈니스 로직 캡슐화
-3. **Data Layer**: Repository 패턴을 통한 데이터 접근 추상화
+**기존 구조**:
 
-### 의존성 주입 개선
-- DIContainer를 통한 중앙 집중식 의존성 관리
-- 테스트 가능성 향상 및 결합도 감소
+```swift
+// 위험한 force unwrapping
+ContentView()
+    .environmentObject(diContainer.spaceCoordinator!)
+    .environmentObject(diContainer.mainViewModel!)
+```
 
-## 향후 권장 사항
+**개선된 구조**: 안전한 옵셔널 바인딩
 
-1. **AppModel 제거**: AppState로 완전히 마이그레이션
-2. **로깅 시스템**: 로그 레벨별 필터링 구현
-3. **에러 처리**: 사용자 친화적인 에러 메시지 시스템
-4. **테스트**: 유닛 테스트 및 통합 테스트 추가
-5. **문서화**: 주요 컴포넌트에 대한 상세 문서 작성
+```swift
+if let spaceCoordinator = diContainer.appState.spaceCoordinator,
+   let mainViewModel = diContainer.appState.mainViewModel {
+    ContentView()
+        .environmentObject(spaceCoordinator)
+        .environmentObject(mainViewModel)
+} else {
+    ProgressView("Loading...")
+}
+```
+
+### 5. 성능 최적화
+
+#### 5.1 중복 업데이트 방지
+
+**BackgroundManager의 개선**: 동일한 배경 재설정 방지
+
+```swift
+private var currentBackgroundName: String?
+
+func updateBackground(imageName: String) {
+    if currentBackgroundName == imageName {
+        return // 중복 업데이트 방지
+    }
+    currentBackgroundName = imageName
+    // 실제 업데이트 로직
+}
+```
+
+#### 5.2 메모리 효율적인 엔티티 관리
+
+- EntityPool을 통한 엔티티 재사용 (현재는 단순 구조로 유지)
+- 불필요한 객체 생성 최소화
+
+## 아키텍처의 주요 개선점
+
+### 1. 계층 분리 명확화
+
+```
+Presentation Layer (View + ViewModel)
+         ↓
+Domain Layer (UseCases + Entities)
+         ↓
+Data Layer (Repositories + Supabase)
+```
+
+### 2. 단방향 데이터 흐름
+
+- User Action → ViewModel → UseCase/Repository → AppState → View Update
+- 예측 가능한 상태 변경과 디버깅 용이성
+
+### 3. 테스트 가능한 구조
+
+- 모든 의존성이 프로토콜을 통해 주입됨
+- 모의 객체를 사용한 단위 테스트 가능
+- UI와 비즈니스 로직의 완전한 분리
+
+## 향후 개선 방향
+
+### 1. 테스트 커버리지
+
+- 핵심 비즈니스 로직에 대한 단위 테스트 추가
+- UI 테스트를 통한 사용자 시나리오 검증
+
+### 2. 에러 처리 체계화
+
+- 사용자 친화적인 에러 메시지
+- 네트워크 오류에 대한 재시도 로직
 
 ## 결론
-이번 리팩토링을 통해 코드의 유지보수성, 확장성, 성능이 크게 개선되었습니다. 특히 책임 분리를 통해 각 컴포넌트의 역할이 명확해졌고, 새로운 기능 추가 시 영향 범위를 최소화할 수 있는 구조가 되었습니다.
 
-MVP/POC 단계에서 프로덕션 준비 단계로 나아가는 중요한 첫걸음이 되었으며, 향후 visionOS 2.0+ 기능들을 추가하기 위한 견고한 기반이 마련되었습니다.
+이번 리팩토링을 통해 Celestoria 앱은 다음과 같은 개선을 달성했습니다:
+
+1. **유지보수성 향상**: 각 컴포넌트의 책임이 명확해져 코드 수정 시 영향 범위를 쉽게 파악 가능
+
+2. **확장성 확보**: 새로운 기능 추가 시 기존 코드 수정 없이 확장 가능한 구조
+
+3. **안정성 강화**: Force unwrapping 제거와 옵셔널 처리로 런타임 크래시 방지
+
+4. **개발 효율성**: 명확한 아키텍처로 팀원 간 협업이 원활해짐
