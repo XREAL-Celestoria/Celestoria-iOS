@@ -13,15 +13,13 @@ import Auth
 @MainActor
 final class DIContainer: ObservableObject {
     
-    // ViewModels
-    let mainViewModel: MainViewModel
-    let loginViewModel: LoginViewModel
+    // Core State
+    let appState: AppState
+    
+    // Additional ViewModels (나중에 필요시 접근)
     let addMemoryMainViewModel: AddMemoryMainViewModel
-    let spaceCoordinator: SpaceCoordinator
-    let appModel: AppModel
     let settingViewModel: SettingViewModel
     let galaxyViewModel: GalaxyViewModel
-    var memoryDetailViewModel: MemoryDetailViewModel?
     let exploreViewModel: ExploreViewModel
 
     // Supabase Client
@@ -45,7 +43,6 @@ final class DIContainer: ObservableObject {
 
     init() {
         Logger.info("Initializing DIContainer...")
-        self.appModel = AppModel()
 
         // Initialize Supabase Client
         self.supabaseClient = SupabaseClient(
@@ -82,59 +79,75 @@ final class DIContainer: ObservableObject {
             authRepository: authRepository
         )
 
-        // 먼저 SpaceCoordinator 초기화
-        self.spaceCoordinator = SpaceCoordinator(
-            appModel: appModel,
+        // 먼저 SpaceCoordinator와 MainViewModel을 임시로 생성
+        let spaceCoordinator = SpaceCoordinator(
             memoryRepository: memoryRepository,
             profileUseCase: profileUseCase
         )
 
         // 나머지 ViewModels 초기화
-        self.mainViewModel = MainViewModel(
+        let mainViewModel = MainViewModel(
             fetchMemoriesUseCase: fetchMemoriesUseCase,
             deleteMemoryUseCase: deleteMemoryUseCase,
             spaceCoordinator: spaceCoordinator
         )
-        self.exploreViewModel = ExploreViewModel(
-            exploreUseCase: exploreUseCase,
-            appModel: appModel
+        // AppState 초기화 (loginViewModel 없이)
+        self.appState = AppState(
+            spaceCoordinator: spaceCoordinator,
+            mainViewModel: mainViewModel
         )
-        self.loginViewModel = LoginViewModel(
+        
+        // SpaceCoordinator에 AppState 연결
+        spaceCoordinator.appState = self.appState
+        
+        // LoginViewModel을 AppState와 함께 초기화
+        let loginViewModel = LoginViewModel(
             signInUseCase: signInWithAppleUseCase,
             profileUseCase: profileUseCase,
-            appModel: appModel
+            appState: self.appState
         )
-        self.addMemoryMainViewModel = AddMemoryMainViewModel(createMemoryUseCase: createMemoryUseCase, appModel: appModel)
+        
+        // AppState에 loginViewModel 설정
+        self.appState.loginViewModel = loginViewModel
+        
+        // 기타 ViewModels
+        self.exploreViewModel = ExploreViewModel(
+            exploreUseCase: exploreUseCase,
+            appState: self.appState
+        )
+        self.addMemoryMainViewModel = AddMemoryMainViewModel(createMemoryUseCase: createMemoryUseCase, appState: self.appState)
         self.settingViewModel = SettingViewModel(
             deleteAccountUseCase: deleteAccountUseCase,
             signOutUseCase: signOutUseCase,
             profileUseCase: profileUseCase,
             blockedUsersUseCase: blockedUsersUseCase,
-            appModel: appModel
+            appState: self.appState
         )
         self.galaxyViewModel = GalaxyViewModel(
-            appModel: appModel,
+            appState: self.appState,
             spaceCoordinator: spaceCoordinator,
             profileUseCase: profileUseCase
         )
 
         // 모든 초기화가 끝난 후 자동 로그인 체크
         if let currentUser = self.supabaseClient.auth.currentUser {
-            self.appModel.userId = currentUser.id
-            self.appModel.activeScreen = .main
+            // AppState 업데이트
+            self.appState.userId = currentUser.id
+            self.appState.activeScreen = .main
             
             Task {
                 do {
                     let fetchedProfile = try await profileUseCase.fetchProfile()
-                    self.appModel.userProfile = fetchedProfile
+                    self.appState.userProfile = fetchedProfile
                 } catch {
                     Logger.error("Failed to fetch profile: \(error.localizedDescription)")
                 }
             }
         } else {
-            self.appModel.userId = nil
-            self.appModel.activeScreen = .login
-            self.appModel.userProfile = nil
+            // AppState 업데이트
+            self.appState.userId = nil
+            self.appState.activeScreen = .login
+            self.appState.userProfile = nil
         }
     }
 }

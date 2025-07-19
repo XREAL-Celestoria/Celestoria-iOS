@@ -12,7 +12,7 @@ import AVKit
 struct MemoryDetailView: View {
     @StateObject private var viewModel: MemoryDetailViewModel
     @EnvironmentObject var spaceCoordinator: SpaceCoordinator
-    @EnvironmentObject var appModel: AppModel
+    @EnvironmentObject var appState: AppState
     @Environment(\.dismissWindow) private var dismissWindow
     @Environment(\.openWindow) private var openWindow
     @Environment(\.scenePhase) private var scenePhase
@@ -31,14 +31,14 @@ struct MemoryDetailView: View {
          memoryRepository: MemoryRepository,
          profileUseCase: ProfileUseCase,
          authRepository: AuthRepositoryProtocol,
-         appModel: AppModel,
+         appState: AppState,
          spaceCoordinator: SpaceCoordinator) {
         _viewModel = StateObject(wrappedValue: MemoryDetailViewModel(
             memory: memory,
             memoryRepository: memoryRepository,
             profileUseCase: profileUseCase,
             authRepository: authRepository,
-            appModel: appModel,
+            appState: appState,
             spaceCoordinator: spaceCoordinator
         ))
     }
@@ -56,7 +56,7 @@ struct MemoryDetailView: View {
                                 dismissWindow(id: "Memory-Detail")
                             },
                             leftButtonImageString: "xmark",
-                            showMenuButton: appModel.userId != viewModel.memory.userId,
+                            showMenuButton: appState.userId != viewModel.memory.userId,
                             reportAction: { viewModel.showReportPopup() },
                             blockAction: { viewModel.showBlockPopup() }
                         )
@@ -152,15 +152,15 @@ struct MemoryDetailView: View {
                 queue: .main
             ) { _ in
                 dismissWindow(id: "Memory-Detail")
-                appModel.showExploreNavigatorView = false
+                appState.showExploreNavigatorView = false
                 dismissWindow(id: "Explore-Navigator")
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    appModel.activeScreen = .explore
+                    appState.activeScreen = .explore
                     openWindow(id: "Main")
                     
                     Task {
-                        if let userId = appModel.userId {
+                        if let userId = appState.userId {
                             await spaceCoordinator.loadData(for: userId)
                         }
                     }
@@ -179,7 +179,7 @@ struct MemoryDetailView: View {
             }
         }
         .onChange(of: scenePhase) { newPhase in
-            if newPhase == .active && !appModel.mainWindowActive {
+            if newPhase == .active && !appState.mainWindowActive {
                 // 여러 detail view에서 동시에 호출해 중복 생성을 막기 위해 static 변수를 사용합니다.
                 if !Self.didTriggerMainWindowOpen {
                     os.Logger.info("MemoryDetailView: MainView is not active. Opening Main window.")
@@ -240,7 +240,7 @@ struct MemoryInfoView: View {
     @ObservedObject var viewModel: MemoryDetailViewModel
     @Environment(\.dismissWindow) private var dismissWindow
     @EnvironmentObject var spaceCoordinator: SpaceCoordinator
-    @EnvironmentObject var appModel: AppModel
+    @EnvironmentObject var appState: AppState
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -312,7 +312,7 @@ struct MemoryInfoView: View {
                 .padding(.top, 28)
             }
             
-            if let currentUserId = appModel.userId,
+            if let currentUserId = appState.userId,
                currentUserId == viewModel.memory.userId {
                 Button(action: {
                     viewModel.showDeletePopup(

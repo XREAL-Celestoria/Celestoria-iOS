@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AddMemoryDoneView: View {
-    @EnvironmentObject private var appModel: AppModel
+    @EnvironmentObject private var appState: AppState
     @EnvironmentObject var viewModel: AddMemoryMainViewModel
     @Environment(\.dismissWindow) private var dismissWindow
     @Environment(\.openWindow) private var openWindow
@@ -66,8 +66,8 @@ struct AddMemoryDoneView: View {
                 spaceCoordinator.handleNewMemory(memory)
             }
             viewModel.handleViewDisappearance()
-            appModel.showAddMemoryView = false
-            appModel.addMemoryScreen = .main
+            appState.showAddMemoryView = false
+            appState.addMemoryScreen = .main
         }
     }
 }

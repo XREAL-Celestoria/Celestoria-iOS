@@ -9,7 +9,7 @@ import SwiftUI
 import AuthenticationServices
 
 struct LoginView: View {
-    @EnvironmentObject private var appModel: AppModel
+    @EnvironmentObject private var appState: AppState
     @EnvironmentObject var viewModel: LoginViewModel
     
     var body: some View {
@@ -23,8 +23,8 @@ struct LoginView: View {
                     viewModel.prepareRequest(request: request)
                 }, onCompletion: { result in
                     viewModel.handleAuthorization(result: result) { userId in
-                        // 여기서 직접 appModel 세팅할 필요 없음
-                        // userId 있으면 이미 LoginViewModel에서 appModel 업데이트 끝남
+                        // 여기서 직접 appState 세팅할 필요 없음
+                        // userId 있으면 이미 LoginViewModel에서 appState 업데이트 끝남
                     }
                 })
                 .frame(width: 376, height: 64)

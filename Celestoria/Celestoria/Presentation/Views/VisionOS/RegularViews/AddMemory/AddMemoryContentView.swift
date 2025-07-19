@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct AddMemoryContentView: View {
-    @EnvironmentObject var appModel: AppModel
+    @EnvironmentObject var appState: AppState
     
 
     var body: some View {
         Group {
-            switch appModel.addMemoryScreen {
+            switch appState.addMemoryScreen {
             case .main:
                 GradientBorderContainer {
                     AddMemoryMainView()

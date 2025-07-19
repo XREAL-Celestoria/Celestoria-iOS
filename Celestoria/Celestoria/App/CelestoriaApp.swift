@@ -7,6 +7,7 @@
 
 // 앱의 진입점, DIContainer 사용하여 의존성 제공
 import SwiftUI
+import os
 
 @main
 struct CelestoriaApp: App {
@@ -15,31 +16,58 @@ struct CelestoriaApp: App {
 
     var body: some Scene {
         WindowGroup("Main", id: "Main") {
-            ContentView()
-                .frame(width: 1280, height: 720)
-                .environmentObject(diContainer.spaceCoordinator)
-                .environmentObject(diContainer.appModel)
-                .environmentObject(diContainer.mainViewModel)
-                .environmentObject(diContainer.loginViewModel)
-                .environmentObject(diContainer.settingViewModel)
-                .environmentObject(diContainer.galaxyViewModel)
-                .environmentObject(diContainer.exploreViewModel)
+            Group {
+                if let spaceCoordinator = diContainer.appState.spaceCoordinator,
+                   let mainViewModel = diContainer.appState.mainViewModel,
+                   let loginViewModel = diContainer.appState.loginViewModel {
+                    ContentView()
+                        .frame(width: 1280, height: 720)
+                        .environmentObject(diContainer.appState)
+                        .environmentObject(spaceCoordinator)
+                        .environmentObject(mainViewModel)
+                        .environmentObject(loginViewModel)
+                        .environmentObject(diContainer.settingViewModel)
+                        .environmentObject(diContainer.galaxyViewModel)
+                        .environmentObject(diContainer.exploreViewModel)
+                } else {
+                    ProgressView("Loading...")
+                        .frame(width: 1280, height: 720)
+                        .onAppear {
+                            os.Logger().error("🔴 ViewModels not initialized!")
+                        }
+                }
+            }
         }
         .windowResizability(.contentSize)
 
-        ImmersiveSpace(id: diContainer.appModel.immersiveSpaceID) {
-            SpaceImmersiveView()
-                .environmentObject(diContainer.spaceCoordinator)
+        ImmersiveSpace(id: diContainer.appState.immersiveSpaceID) {
+            if let spaceCoordinator = diContainer.appState.spaceCoordinator {
+                SpaceImmersiveView()
+                    .environmentObject(spaceCoordinator)
+            } else {
+                Text("Loading...")
+                    .onAppear {
+                        os.Logger().error("🔴 ImmersiveSpace: spaceCoordinator is nil!")
+                    }
+            }
         }.immersionStyle(selection: $currentStyle, in: .full)
 
         WindowGroup("Add Memory", id: "Add-Memory") {
-            if diContainer.appModel.showAddMemoryView {
-                AddMemoryContentView()
-                    .frame(width: 1280, height: 720)
-                    .environmentObject(diContainer.appModel)
-                    .environmentObject(diContainer.addMemoryMainViewModel)
-                    .environmentObject(diContainer.mainViewModel)
-                    .environmentObject(diContainer.spaceCoordinator)
+            if diContainer.appState.showAddMemoryView {
+                Group {
+                    if let mainViewModel = diContainer.appState.mainViewModel,
+                       let spaceCoordinator = diContainer.appState.spaceCoordinator {
+                        AddMemoryContentView()
+                            .frame(width: 1280, height: 720)
+                            .environmentObject(diContainer.appState)
+                            .environmentObject(mainViewModel)
+                            .environmentObject(spaceCoordinator)
+                            .environmentObject(diContainer.addMemoryMainViewModel)
+                    } else {
+                        Text("Loading...")
+                            .frame(width: 1280, height: 720)
+                    }
+                }
             }
         }
         .windowResizability(.contentSize)
@@ -47,17 +75,25 @@ struct CelestoriaApp: App {
         // MemoryDetailView를 직접 사용하여 단일 파일로 관리합니다.
         WindowGroup(id: "Memory-Detail", for: Memory.self) { $memory in
             if let memory = memory {
-                MemoryDetailView(
-                    memory: memory,
-                    memoryRepository: diContainer.memoryRepository,
-                    profileUseCase: diContainer.profileUseCase,
-                    authRepository: diContainer.authRepository,
-                    appModel: diContainer.appModel,
-                    spaceCoordinator: diContainer.spaceCoordinator
-                )
-                .frame(width: 1280, height: 720)
-                .environmentObject(diContainer.appModel)
-                .environmentObject(diContainer.spaceCoordinator)
+                if let spaceCoordinator = diContainer.appState.spaceCoordinator {
+                    MemoryDetailView(
+                        memory: memory,
+                        memoryRepository: diContainer.memoryRepository,
+                        profileUseCase: diContainer.profileUseCase,
+                        authRepository: diContainer.authRepository,
+                        appState: diContainer.appState,
+                        spaceCoordinator: spaceCoordinator
+                    )
+                    .frame(width: 1280, height: 720)
+                    .environmentObject(diContainer.appState)
+                    .environmentObject(spaceCoordinator)
+                } else {
+                    Text("Loading...")
+                        .frame(width: 1280, height: 720)
+                        .onAppear {
+                            os.Logger().error("🔴 MemoryDetailView: spaceCoordinator is nil!")
+                        }
+                }
             } else {
                 EmptyView()
             }
@@ -66,11 +102,18 @@ struct CelestoriaApp: App {
         
         WindowGroup(id: "Explore-Navigator", for: UUID.self) { $profileId in
             if let profileId = profileId {
-                ExploreNavigatorView(profileId: profileId)
-                    .frame(width: 720, height: 188)
-                    .environmentObject(diContainer.appModel)
-                    .environmentObject(diContainer.exploreViewModel)
-                    .environmentObject(diContainer.spaceCoordinator)
+                Group {
+                    if let spaceCoordinator = diContainer.appState.spaceCoordinator {
+                        ExploreNavigatorView(profileId: profileId)
+                            .frame(width: 720, height: 188)
+                            .environmentObject(diContainer.appState)
+                            .environmentObject(spaceCoordinator)
+                            .environmentObject(diContainer.exploreViewModel)
+                    } else {
+                        Text("Loading...")
+                            .frame(width: 720, height: 188)
+                    }
+                }
             } else {
                 Text("No user selected.")
                     .frame(width: 720, height: 188)

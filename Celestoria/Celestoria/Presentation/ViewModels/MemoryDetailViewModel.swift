@@ -16,7 +16,7 @@ final class MemoryDetailViewModel: ObservableObject {
     private let logger = Logger(subsystem: "com.celestoria", category: "MemoryDetailViewModel")
     private let profileUseCase: ProfileUseCase?
     private let authRepository: AuthRepositoryProtocol?
-    private let appModel: AppModel
+    private let appState: AppState
     private let spaceCoordinator: SpaceCoordinator
     
     @Published private(set) var memory: Memory
@@ -36,7 +36,7 @@ final class MemoryDetailViewModel: ObservableObject {
         memoryRepository: MemoryRepository,
         profileUseCase: ProfileUseCase? = nil,
         authRepository: AuthRepositoryProtocol? = nil,
-        appModel: AppModel,
+        appState: AppState,
         spaceCoordinator: SpaceCoordinator
     ) {
         self.memory = memory
@@ -44,7 +44,7 @@ final class MemoryDetailViewModel: ObservableObject {
         self.deleteMemoryUseCase = DeleteMemoryUseCase(memoryRepository: memoryRepository)
         self.profileUseCase = profileUseCase
         self.authRepository = authRepository
-        self.appModel = appModel
+        self.appState = appState
         self.spaceCoordinator = spaceCoordinator
 
         formatDate()
@@ -122,7 +122,7 @@ final class MemoryDetailViewModel: ObservableObject {
     // MARK: - 좋아요 관련 메서드
     
     private func loadLikeData() async {
-        guard let currentUserId = appModel.userId else { return }
+        guard let currentUserId = appState.userId else { return }
         
         do {
             // 좋아요 수와 현재 사용자의 좋아요 상태를 동시에 로드
@@ -139,7 +139,7 @@ final class MemoryDetailViewModel: ObservableObject {
     }
     
     func toggleLike() async {
-        guard let currentUserId = appModel.userId else { return }
+        guard let currentUserId = appState.userId else { return }
         guard !isLikeLoading else { return }
         
         isLikeLoading = true
@@ -199,7 +199,7 @@ final class MemoryDetailViewModel: ObservableObject {
             trailingButtonAction: { [weak self] in
                 guard let self = self else { return }
                 Task {
-                    if let currentUserId = self.appModel.userId {
+                    if let currentUserId = self.appState.userId {
                         await self.processReport(reporterId: currentUserId)
                     }
                 }
@@ -285,7 +285,7 @@ final class MemoryDetailViewModel: ObservableObject {
             trailingButtonAction: { [weak self] in
                 guard let self = self else { return }
                 Task {
-                    if let currentUserId = self.appModel.userId {
+                    if let currentUserId = self.appState.userId {
                         await self.processBlock(currentUserId: currentUserId)
                     }
                 }

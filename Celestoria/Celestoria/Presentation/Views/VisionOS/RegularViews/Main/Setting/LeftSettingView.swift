@@ -10,7 +10,7 @@ import SwiftUI
 // MARK: - Left View
 struct LeftSettingView: View {
     @Binding var selectedSection: SettingSection
-    @EnvironmentObject var appModel: AppModel
+    @EnvironmentObject var appState: AppState
     @EnvironmentObject var settingViewModel: SettingViewModel
     @State private var showError: Bool = false
     @State private var errorMessage: String = ""
@@ -21,7 +21,7 @@ struct LeftSettingView: View {
             NavigationBar(
                 title: "Settings",
                 action: {
-                    appModel.activeScreen = .main
+                    appState.activeScreen = .main
                 },
                 buttonImageString: "chevron.left"
             )

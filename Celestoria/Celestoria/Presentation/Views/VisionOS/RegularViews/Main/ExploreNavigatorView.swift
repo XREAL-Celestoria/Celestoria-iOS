@@ -10,7 +10,7 @@ import os
 
 struct ExploreNavigatorView: View {
     let profileId: UUID
-    @EnvironmentObject var appModel: AppModel
+    @EnvironmentObject var appState: AppState
     @EnvironmentObject var exploreViewModel: ExploreViewModel
     @EnvironmentObject var spaceCoordinator: SpaceCoordinator
     @Environment(\.dismissWindow) private var dismissWindow
@@ -28,9 +28,9 @@ struct ExploreNavigatorView: View {
                         action: {
                             Task {
                                 dismissWindow()
-                                appModel.activeScreen = .explore
+                                appState.activeScreen = .explore
                                 openWindow(id: "Main")
-                                if let userId = appModel.userId {
+                                if let userId = appState.userId {
                                     await spaceCoordinator.loadData(for: userId)
                                 }
                             }
@@ -95,7 +95,7 @@ struct ExploreNavigatorView: View {
             }
         }
         .onDisappear {
-            appModel.showExploreNavigatorView = false
+            appState.showExploreNavigatorView = false
         }
     }
 }

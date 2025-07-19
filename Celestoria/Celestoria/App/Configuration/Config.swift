@@ -20,15 +20,12 @@ enum Config {
     
     static var cloudflareDomain: String {
         let domain = getPlistValue("CLOUDFLARE_DOMAIN")
-        let full = "https://\(domain)"
-        print("☁️ [DEBUG] Cloudflare domain: \(full)")
-        return full
+        return "https://\(domain)"
     }
     
     static var supabaseURL: URL {
         let host = getPlistValue("SUPABASE_HOST")
         let urlString = "https://\(host)"
-        print("🌐 [DEBUG] Reconstructed URL: \(urlString)")
         guard let url = URL(string: urlString) else {
             fatalError("❌ URL 변환 실패: \(urlString)")
         }
@@ -43,26 +40,11 @@ enum Config {
     private static func getPlistValue(_ key: String) -> String {
         let bundle = Bundle.main
         
-        // Info.plist 경로 및 상태 확인
-        if let path = bundle.path(forResource: "Info", ofType: "plist") {
-            print("📄 Info.plist path: \(path)")
-        } else {
-            print("❌ Info.plist 파일을 찾을 수 없습니다.")
-        }
-        
-        // 전체 Info.plist 딕셔너리 키 확인
-        if let allInfo = bundle.infoDictionary {
-            print("📦 Info.plist keys available: \(Array(allInfo.keys))")
-        } else {
-            print("❌ Info.plist 전체 딕셔너리를 가져올 수 없습니다.")
-        }
-        
         // 실제 값 가져오기
         if let value = bundle.object(forInfoDictionaryKey: key) as? String {
-            print("✅ [DEBUG] \(key) = \(value)")
+            // 디버그 로그 제거 (민감한 정보 보호 및 로그 감소)
             return value
         } else {
-            print("❌ [DEBUG] Info.plist에서 '\(key)' 키를 찾을 수 없습니다.")
             fatalError("❌ Info.plist에서 '\(key)' 키를 찾을 수 없습니다.")
         }
     }

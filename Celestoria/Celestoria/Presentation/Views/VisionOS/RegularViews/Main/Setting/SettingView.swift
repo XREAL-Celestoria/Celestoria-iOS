@@ -16,7 +16,7 @@ enum SettingSection: String {
 }
 
 struct SettingView: View {
-    @EnvironmentObject var appModel: AppModel
+    @EnvironmentObject var appState: AppState
     @EnvironmentObject var settingViewModel: SettingViewModel
     @State private var selectedSection: SettingSection = .profile
     @State private var showError: Bool = false
@@ -44,12 +44,12 @@ struct SettingView: View {
         .onChange(of: scenePhase) { newPhase in
             switch newPhase {
             case .background, .inactive:
-                appModel.isImmersiveViewActive = false
+                appState.isImmersiveViewActive = false
             case .active:
-                if appModel.userId != nil && !appModel.isImmersiveViewActive {
+                if appState.userId != nil && !appState.isImmersiveViewActive {
                     Task {
-                        await openImmersiveSpace(id: appModel.immersiveSpaceID)
-                        appModel.isImmersiveViewActive = true
+                        await openImmersiveSpace(id: appState.immersiveSpaceID)
+                        appState.isImmersiveViewActive = true
                     }
                 }
             default:
@@ -62,7 +62,7 @@ struct SettingView: View {
 // MARK: - Left View
 struct LeftSettingView: View {
     @Binding var selectedSection: SettingSection
-    @EnvironmentObject var appModel: AppModel
+    @EnvironmentObject var appState: AppState
     @EnvironmentObject var settingViewModel: SettingViewModel
     @State private var showError: Bool = false
     @State private var errorMessage: String = ""
@@ -73,7 +73,7 @@ struct LeftSettingView: View {
             NavigationBar(
                 title: "Settings",
                 action: {
-                    appModel.activeScreen = .main
+                    appState.activeScreen = .main
                 },
                 buttonImageString: "chevron.left"
             )

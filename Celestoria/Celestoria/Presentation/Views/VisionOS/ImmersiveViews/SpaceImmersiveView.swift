@@ -53,13 +53,13 @@ struct SpaceImmersiveView: View {
     }
     
     private func initializeAndAddEntity(to content: RealityViewContent) {
-            Task {
-                await spaceCoordinator.initialize()
+        Task {
+            await spaceCoordinator.initialize()
 
-                if let spaceEntity = spaceCoordinator.spaceEntity {
-                    content.add(spaceEntity)
-                    os.Logger.info("SpaceImmersiveView: Added spaceEntity to RealityView")
-                }
+            if let spaceEntity = spaceCoordinator.spaceEntity {
+                content.add(spaceEntity)
+                os.Logger.info("SpaceImmersiveView: Added spaceEntity to RealityView")
             }
         }
+    }
 }

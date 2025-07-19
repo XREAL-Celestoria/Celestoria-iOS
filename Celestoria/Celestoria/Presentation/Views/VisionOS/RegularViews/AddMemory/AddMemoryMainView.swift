@@ -13,7 +13,7 @@ import os
 struct AddMemoryMainView: View {
     @EnvironmentObject var viewModel: AddMemoryMainViewModel
     @EnvironmentObject var mainViewModel: MainViewModel
-    @EnvironmentObject private var appModel: AppModel
+    @EnvironmentObject private var appState: AppState
     
     @State private var isHovered: Bool = false
     
@@ -92,7 +92,7 @@ struct AddMemoryMainView: View {
         .animation(.easeInOut, value: viewModel.isThumbnailGenerating)
         .onDisappear {
             viewModel.handleViewDisappearance()
-            appModel.showAddMemoryView = false
+            appState.showAddMemoryView = false
         }
         .onChange(of: viewModel.errorMessage) { _ in
             if let message = viewModel.errorMessage {
@@ -107,7 +107,7 @@ struct AddMemoryMainView: View {
 private struct LeftView: View {
     @EnvironmentObject var viewModel: AddMemoryMainViewModel
     @Environment(\.dismissWindow) private var dismissWindow
-    @EnvironmentObject private var appModel: AppModel
+    @EnvironmentObject private var appState: AppState
     
     @Binding var isHovered: Bool
     
@@ -180,7 +180,7 @@ private struct LeftView: View {
 private struct RightView: View {
     @EnvironmentObject var viewModel: AddMemoryMainViewModel
     @EnvironmentObject var mainViewModel : MainViewModel
-    @EnvironmentObject private var appModel: AppModel
+    @EnvironmentObject private var appState: AppState
     @Environment(\.dismissWindow) private var dismissWindow
     
     var body: some View {
@@ -216,7 +216,7 @@ private struct RightView: View {
                 MainButton(
                     title: "Upload",
                     action: {
-                        guard let userId = appModel.userId else { return }
+                        guard let userId = appState.userId else { return }
                         Task {
                             do {
                                 os.Logger.info("executing saveMemory")
@@ -226,7 +226,7 @@ private struct RightView: View {
                                     userId: userId
                                 )
 
-                                appModel.addMemoryScreen = .done
+                                appState.addMemoryScreen = .done
                             } catch {
                                 os.Logger.error("Failed to save memory: \(error)")
                             }
