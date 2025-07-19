@@ -52,6 +52,7 @@ final class DIContainer: ObservableObject {
             supabaseKey: Config.supabaseAnonKey,
             options: SupabaseClientOptions(
                 auth: SupabaseClientOptions.AuthOptions(
+                    redirectToURL: URL(string: "com.Celestoria.Celestoria://login-callback"),
                     autoRefreshToken: true
                 )
             )

@@ -240,6 +240,7 @@
 		A2A2862F2E2BF307001D89B2 /* iOSTermsAndConditionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSTermsAndConditionsView.swift; sourceTree = "<group>"; };
 		A2A286312E2BF314001D89B2 /* iPhoneContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPhoneContentView.swift; sourceTree = "<group>"; };
 		A2A2868B2E2C09AF001D89B2 /* iOSOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSOnboardingView.swift; sourceTree = "<group>"; };
+		A2A286B42E2C25E1001D89B2 /* Celestoria-iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Celestoria-iOS.entitlements"; sourceTree = "<group>"; };
 		A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryDetailView.swift; sourceTree = "<group>"; };
 		A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CelestoriaVideoPlayerView.swift; sourceTree = "<group>"; };
 		A2B8DB842D440536001B5663 /* SettingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewModel.swift; sourceTree = "<group>"; };
@@ -611,6 +612,7 @@
 		A21E476F2D38CD55002B60FA = {
 			isa = PBXGroup;
 			children = (
+				A2A286B42E2C25E1001D89B2 /* Celestoria-iOS.entitlements */,
 				2F8800B92D38CE6800220F89 /* Celestoria */,
 				A21E47792D38CD55002B60FA /* Products */,
 				A21E477B2D38CD55002B60FA /* Packages */,
@@ -898,13 +900,16 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Celestoria-iOS.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = B3CU8MA548;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Celestoria/App/Configuration/Info.plist;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow access to your photos to choose a profile picture.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -915,8 +920,9 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "celestoria.Celestoria-iOS";
+				PRODUCT_BUNDLE_IDENTIFIER = com.Celestoria.Celestoria;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				SUPPORTS_MACCATALYST = NO;
@@ -934,13 +940,16 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Celestoria-iOS.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = B3CU8MA548;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Celestoria/App/Configuration/Info.plist;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow access to your photos to choose a profile picture.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -951,8 +960,9 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "celestoria.Celestoria-iOS";
+				PRODUCT_BUNDLE_IDENTIFIER = com.Celestoria.Celestoria;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				SUPPORTS_MACCATALYST = NO;
