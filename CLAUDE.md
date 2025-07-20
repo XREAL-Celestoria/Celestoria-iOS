@@ -19,7 +19,7 @@ xcodebuild clean -project Celestoria/Celestoria.xcodeproj
 xcodebuild -project Celestoria/Celestoria.xcodeproj -scheme Celestoria -destination 'platform=visionOS Simulator,name=Apple Vision Pro' build
 
 # Build for iOS Simulator
-xcodebuild -project Celestoria/Celestoria.xcodeproj -scheme Celestoria -destination 'platform=iOS Simulator,name=iPhone 16 Pro' build
+xcodebuild -project Celestoria/Celestoria.xcodeproj -scheme Celestoria-iOS -destination 'platform=iOS Simulator,name=iPhone 16 Pro' build
 
 # Resolve package dependencies
 xcodebuild -resolvePackageDependencies -project Celestoria/Celestoria.xcodeproj
@@ -32,11 +32,18 @@ cd Celestoria/Packages/RealityKitContent && swift build
 - No test targets exist in the project
 - No linting tools are configured
 - Environment variables are managed through Debug.xcconfig and Release.xcconfig files
+- Both iOS and visionOS targets share the same Assets.xcassets and 3D model files
+- iOS target requires manual addition of resources in Xcode (see iOS-Specific Setup)
 
 ## High-Level Architecture
 
 ### Project Overview
 Celestoria is a Spatial Video Social Network for Apple Vision Pro that displays user memories as 3D "stars" in an immersive galaxy environment. The app recently added iOS support while maintaining its primary focus on visionOS.
+
+**Target Configuration:**
+- **visionOS Target**: `Celestoria` (Bundle ID: `com.Celestoria.Celestoria`)
+- **iOS Target**: `Celestoria-iOS` (Bundle ID: `com.Celestoria.Celestoria`)
+- Both targets share the same bundle ID and Info.plist file
 
 ### Architecture Pattern
 The codebase follows **MVVM + Clean Architecture** with clear separation of concerns:
@@ -79,8 +86,8 @@ The codebase follows **MVVM + Clean Architecture** with clear separation of conc
 - **Authentication**: Apple Sign-In via Supabase Auth
 
 **Platform Differences:**
-- visionOS: Full immersive space, 3D positioning, spatial video playback
-- iOS: 2D interface, basic memory viewing and management
+- visionOS: Full immersive space with RealityKit, 3D positioning, spatial video playback
+- iOS: SceneKit-based 3D view, touch-based interaction, standard video playback
 
 ### External Dependencies
 - **Supabase**: Complete backend (Auth, Database, Storage, Realtime)
@@ -94,11 +101,13 @@ The codebase follows **MVVM + Clean Architecture** with clear separation of conc
 4. State updates flow through AppState (@Published properties)
 5. Views update automatically via SwiftUI bindings
 
-### Recent Refactoring Changes
+### Recent Changes
+- **iOS Support Added**: Full iOS target with SceneKit-based 3D galaxy view
 - **Removed AppModel**: Migrated all functionality to AppState
 - **Simplified SpaceCoordinator**: Now acts purely as a coordinator, delegating to SpaceEntity
 - **Safe Initialization**: Removed all force unwrapping, added proper optional handling
 - **Performance Optimization**: Added duplicate update prevention in background management
+- **Asset Sharing**: Both platforms use the same image assets and 3D models
 
 ### Important Patterns
 - Always use DIContainer for dependency resolution
@@ -113,3 +122,36 @@ The codebase follows **MVVM + Clean Architecture** with clear separation of conc
 - Environment variables in Debug/Release.xcconfig files
 - Sensitive data (API keys) injected via Info.plist
 - Backend services: Supabase, B2 Storage, Cloudflare
+
+### iOS-Specific Setup Requirements
+
+**Resource Configuration:**
+1. **Assets.xcassets**: Must be added to iOS target in Xcode
+   - Select Assets.xcassets → File Inspector → Target Membership → Check `Celestoria-iOS`
+2. **3D Models**: Must be added to iOS target for star rendering
+   - Add these files to iOS target: `Enter.usdc`, `Family.usdz`, `Pet.usdz`, `Travel.usdc`
+   - Location: `Packages/RealityKitContent/Sources/RealityKitContent/RealityKitContent.rkassets/Entities/`
+3. **AppIcon**: iOS requires its own AppIcon set in Assets.xcassets
+
+**Apple Sign-In Configuration:**
+1. **URL Scheme**: Added `com.Celestoria.Celestoria` to Info.plist for OAuth callbacks
+2. **Supabase Redirect**: DIContainer configured with `redirectToURL: "com.Celestoria.Celestoria://login-callback"`
+3. **Capabilities Required**:
+   - Sign in with Apple capability must be enabled in Xcode
+   - Provisioning Profile must support Sign in with Apple entitlement
+   - Entitlements file (`Celestoria.entitlements`) must be linked in build settings
+
+**iOS Implementation Details:**
+- **3D Rendering**: Uses SceneKit instead of RealityKit
+- **Background**: Uses Starfield images from `selectedImage` property, not `spaceThumbnail`
+- **Star Models**: Loads 3D models from bundle root (no subfolder path)
+- **Touch Interaction**: Single tap to select stars (no double-tap zoom)
+- **Video Playback**: Full-screen modal with AVKit VideoPlayer
+
+**Common Issues:**
+- If assets don't load, verify they're included in iOS target's Copy Bundle Resources
+- If Apple Sign-In fails with error `-7026`, check:
+  - Apple Developer account has agreed to latest Program License Agreement
+  - Sign in with Apple capability is properly added to iOS target
+  - Provisioning Profile supports the required entitlements
+  - Bundle ID matches everywhere (Info.plist, project settings, URL schemes)

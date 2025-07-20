@@ -33,7 +33,7 @@ final class DIContainer: ObservableObject {
     let authRepository: AuthRepositoryProtocol
 
     // Use Cases
-    private let fetchMemoriesUseCase: FetchMemoriesUseCase
+    let fetchMemoriesUseCase: FetchMemoriesUseCase
     private let createMemoryUseCase: CreateMemoryUseCase
     private let deleteMemoryUseCase: DeleteMemoryUseCase
     private let signInWithAppleUseCase: SignInWithAppleUseCase
@@ -42,6 +42,7 @@ final class DIContainer: ObservableObject {
     let profileUseCase: ProfileUseCase
     private let exploreUseCase: ExploreUseCase
     private let blockedUsersUseCase: BlockedUsersUseCase
+    let memoryUseCase: FetchMemoriesUseCase
 
     init() {
         Logger.info("Initializing DIContainer...")
@@ -52,6 +53,7 @@ final class DIContainer: ObservableObject {
             supabaseKey: Config.supabaseAnonKey,
             options: SupabaseClientOptions(
                 auth: SupabaseClientOptions.AuthOptions(
+                    redirectToURL: URL(string: "com.Celestoria.Celestoria://login-callback"),
                     autoRefreshToken: true
                 )
             )
@@ -80,6 +82,7 @@ final class DIContainer: ObservableObject {
         self.blockedUsersUseCase = BlockedUsersUseCase(
             authRepository: authRepository
         )
+        self.memoryUseCase = self.fetchMemoriesUseCase
 
         #if os(visionOS)
         // 먼저 SpaceCoordinator와 MainViewModel을 임시로 생성
@@ -160,4 +163,22 @@ final class DIContainer: ObservableObject {
             self.appState.userProfile = nil
         }
     }
+    
+    // iOS용 ViewModels 생성 메서드 추가
+    #if !os(visionOS)
+    func makeGalaxyViewModel() -> GalaxyViewModel {
+        return GalaxyViewModel(
+            appState: appState,
+            profileUseCase: profileUseCase,
+            memoryUseCase: fetchMemoriesUseCase
+        )
+    }
+    
+    func makeAddMemoryMainViewModel() -> AddMemoryMainViewModel {
+        return AddMemoryMainViewModel(
+            createMemoryUseCase: createMemoryUseCase,
+            appState: appState
+        )
+    }
+    #endif
 }

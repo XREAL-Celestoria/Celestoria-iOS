@@ -2,28 +2,39 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>B2_APPLICATION_KEY</key>
+	<string>$(B2_APPLICATION_KEY)</string>
+	<key>B2_BUCKET_ID</key>
+	<string>$(B2_BUCKET_ID)</string>
+	<key>B2_KEY_ID</key>
+	<string>$(B2_KEY_ID)
+</string>
+	<key>BUCKET_NAME</key>
+	<string>$(BUCKET_NAME)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.Celestoria.Celestoria</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.Celestoria.Celestoria</string>
+			</array>
+		</dict>
+	</array>
+	<key>CLOUDFLARE_DOMAIN</key>
+	<string>$(CLOUDFLARE_DOMAIN)</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow access to your photos to choose a profile picture.</string>
-	<key>B2_KEY_ID</key>
-	<string>$(B2_KEY_ID)
-</string>
-	<key>B2_APPLICATION_KEY</key>
-	<string>$(B2_APPLICATION_KEY)</string>
-	<key>B2_BUCKET_ID</key>
-	<string>$(B2_BUCKET_ID)</string>
-	<key>BUCKET_NAME</key>
-	<string>$(BUCKET_NAME)</string>
-	<key>CLOUDFLARE_DOMAIN</key>
-	<string>$(CLOUDFLARE_DOMAIN)</string>
-	<key>SUPABASE_HOST</key>
-	<string>$(SUPABASE_HOST)</string>
 	<key>SUPABASE_ANON_KEY</key>
 	<string>$(SUPABASE_ANON_KEY)</string>
+	<key>SUPABASE_HOST</key>
+	<string>$(SUPABASE_HOST)</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationPreferredDefaultSceneSessionRole</key>
@@ -41,7 +52,5 @@
 			</array>
 		</dict>
 	</dict>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
 </dict>
 </plist>

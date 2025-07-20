@@ -5,28 +5,17 @@
 //  Created by Minjun Kim on 7/20/25.
 //
 
-
-//
-//  iOSContentView.swift
-//  Celestoria
-//
-//  Created by Minjun Kim on 7/20/25.
-//
-
-
-//
-//  iOSContentView.swift
-//  Celestoria
-//
-//  Created by Assistant on 2025/07/19.
-//
-
 import SwiftUI
 
 struct iOSContentView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var loginViewModel: LoginViewModel
     @EnvironmentObject var settingViewModel: SettingViewModel
+    let diContainer: DIContainer
+    
+    init(diContainer: DIContainer) {
+        self.diContainer = diContainer
+    }
     
     var body: some View {
         Group {
@@ -45,7 +34,7 @@ struct iOSContentView: View {
                     .transition(.opacity)
                 
             case .main:
-                iOSMainView()
+                iOSMainView(diContainer: diContainer)
                     .environmentObject(settingViewModel)
                     .transition(.opacity)
             }

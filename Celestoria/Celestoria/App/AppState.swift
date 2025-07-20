@@ -85,6 +85,17 @@ final class AppState: ObservableObject {
     }
     @Published var mainWindowActive: Bool = true  // 메인 윈도우 활성 상태를 추적
     
+    // Galaxy Navigation
+    @Published var galaxyTargetUserId: UUID? {
+        didSet {
+            Logger.info("Galaxy Target User ID changed: \(String(describing: galaxyTargetUserId))")
+        }
+    }
+    
+    var currentUserId: UUID? {
+        return userId
+    }
+    
     // Immersive Space
     #if os(visionOS)
     let immersiveSpaceID = "SpaceEnvironment"
