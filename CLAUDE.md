@@ -19,7 +19,7 @@ xcodebuild clean -project Celestoria/Celestoria.xcodeproj
 xcodebuild -project Celestoria/Celestoria.xcodeproj -scheme Celestoria -destination 'platform=visionOS Simulator,name=Apple Vision Pro' build
 
 # Build for iOS Simulator
-xcodebuild -project Celestoria/Celestoria.xcodeproj -scheme Celestoria -destination 'platform=iOS Simulator,name=iPhone 16 Pro' build
+xcodebuild -project Celestoria/Celestoria.xcodeproj -scheme Celestoria-iOS -destination 'platform=iOS Simulator,name=iPhone 16 Pro' build
 
 # Resolve package dependencies
 xcodebuild -resolvePackageDependencies -project Celestoria/Celestoria.xcodeproj
@@ -37,6 +37,11 @@ cd Celestoria/Packages/RealityKitContent && swift build
 
 ### Project Overview
 Celestoria is a Spatial Video Social Network for Apple Vision Pro that displays user memories as 3D "stars" in an immersive galaxy environment. The app recently added iOS support while maintaining its primary focus on visionOS.
+
+**Target Configuration:**
+- **visionOS Target**: `Celestoria` (Bundle ID: `com.Celestoria.Celestoria`)
+- **iOS Target**: `Celestoria-iOS` (Bundle ID: `com.Celestoria.Celestoria`)
+- Both targets share the same bundle ID and Info.plist file
 
 ### Architecture Pattern
 The codebase follows **MVVM + Clean Architecture** with clear separation of concerns:
@@ -113,3 +118,20 @@ The codebase follows **MVVM + Clean Architecture** with clear separation of conc
 - Environment variables in Debug/Release.xcconfig files
 - Sensitive data (API keys) injected via Info.plist
 - Backend services: Supabase, B2 Storage, Cloudflare
+
+### iOS-Specific Setup Requirements
+
+**Apple Sign-In Configuration:**
+1. **URL Scheme**: Added `com.Celestoria.Celestoria` to Info.plist for OAuth callbacks
+2. **Supabase Redirect**: DIContainer configured with `redirectToURL: "com.Celestoria.Celestoria://login-callback"`
+3. **Capabilities Required**:
+   - Sign in with Apple capability must be enabled in Xcode
+   - Provisioning Profile must support Sign in with Apple entitlement
+   - Entitlements file (`Celestoria.entitlements`) must be linked in build settings
+
+**Common Issues:**
+- If Apple Sign-In fails with error `-7026`, check:
+  - Apple Developer account has agreed to latest Program License Agreement
+  - Sign in with Apple capability is properly added to iOS target
+  - Provisioning Profile supports the required entitlements
+  - Bundle ID matches everywhere (Info.plist, project settings, URL schemes)
