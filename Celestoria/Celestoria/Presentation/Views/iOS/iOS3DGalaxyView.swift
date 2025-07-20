@@ -209,8 +209,10 @@ struct iOS3DGalaxyView: UIViewRepresentable {
             let hitResults = scnView.hitTest(location, options: [:])
             
             // Debug logging
+            print("=== TAP DEBUG ===")
             print("Tap detected at: \(location)")
             print("Hit results count: \(hitResults.count)")
+            print("Total memory nodes: \(memoryNodes.count)")
             
             if let result = hitResults.first {
                 print("Hit node: \(result.node)")
@@ -218,20 +220,46 @@ struct iOS3DGalaxyView: UIViewRepresentable {
                 
                 // Check if the hit node is a child of iOS3DMemoryStarNode
                 var checkNode: SCNNode? = result.node
+                var depth = 0
                 while checkNode != nil {
+                    print("Checking node at depth \(depth): \(checkNode?.description ?? "nil")")
                     if let memoryNode = checkNode as? iOS3DMemoryStarNode {
                         AudioServicesPlaySystemSound(1104)
-                        parent.selectedMemory = memoryNode.memory
-                        parent.showMemoryDetail = true
-                        print("Memory selected: \(memoryNode.memory.title)")
+                        print("Memory data before selection:")
+                        print("  - ID: \(memoryNode.memory.id)")
+                        print("  - Title: \(memoryNode.memory.title)")
+                        print("  - Note: \(memoryNode.memory.note)")
+                        print("  - Category: \(memoryNode.memory.category)")
+                        print("  - VideoURL: \(memoryNode.memory.videoURL ?? "nil")")
+                        print("  - ThumbnailURL: \(memoryNode.memory.thumbnailURL ?? "nil")")
+                        
+                        // Store memory in a local variable first
+                        let selectedMemory = memoryNode.memory
+                        print("Memory selected: \(selectedMemory.id)")
+                        
+                        // Update both states together
+                        DispatchQueue.main.async { [weak self] in
+                            guard let self = self else { return }
+                            
+                            // Update selectedMemory first
+                            self.parent.selectedMemory = selectedMemory
+                            
+                            // Then show the sheet after a very small delay to ensure binding update
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                self.parent.showMemoryDetail = true
+                                print("Both states updated - selectedMemory: \(self.parent.selectedMemory?.id.uuidString ?? "nil"), showMemoryDetail: true")
+                            }
+                        }
                         return
                     }
                     checkNode = checkNode?.parent
+                    depth += 1
                 }
-                print("No memory node found in hierarchy")
+                print("No memory node found in hierarchy after checking \(depth) levels")
             } else {
                 print("No hit results")
             }
+            print("=== END TAP DEBUG ===")
         }
     }
 }
@@ -252,6 +280,14 @@ struct iOS3DGalaxyContainerView: View {
                 showMemoryDetail: $showMemoryDetail
             )
             .edgesIgnoringSafeArea(.all)
+            .onChange(of: selectedMemory) { newValue in
+                print("=== selectedMemory changed ===")
+                print("New value: \(newValue?.id.uuidString ?? "nil")")
+            }
+            .onChange(of: showMemoryDetail) { newValue in
+                print("=== showMemoryDetail changed to: \(newValue) ===")
+                print("selectedMemory at this moment: \(selectedMemory?.id.uuidString ?? "nil")")
+            }
             
             VStack {
                 // Top bar with settings button
@@ -294,9 +330,18 @@ struct iOS3DGalaxyContainerView: View {
                 }
             }
         }
-        .sheet(isPresented: $showMemoryDetail) {
+        .sheet(isPresented: $showMemoryDetail, onDismiss: {
+            // Clear selectedMemory when sheet is dismissed
+            selectedMemory = nil
+        }) {
             if let memory = selectedMemory {
                 iOSMemoryDetailView(memory: memory, diContainer: diContainer)
+            } else {
+                Text("No memory selected")
+                    .foregroundColor(.white)
+                    .onAppear {
+                        print("ERROR: showMemoryDetail is true but selectedMemory is nil!")
+                    }
             }
         }
         .sheet(isPresented: $showAddMemory) {
@@ -323,14 +368,27 @@ struct UserInfoModalView: View {
     var body: some View {
         HStack(spacing: 16) {
             if let profile = userProfile {
-                AsyncImage(url: URL(string: profile.profileImageURL ?? "")) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } placeholder: {
-                    Image(systemName: "person.circle.fill")
-                        .font(.system(size: 50))
-                        .foregroundColor(.gray)
+                Group {
+                    if let profileKey = profile.profileKey,
+                       let predefinedImage = PredefinedProfileImage.fromKey(profileKey) {
+                        Image(predefinedImage.rawValue)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    } else if let profileImageURL = profile.profileImageURL {
+                        AsyncImage(url: URL(string: profileImageURL)) { image in
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                        } placeholder: {
+                            Image(systemName: "person.circle.fill")
+                                .font(.system(size: 50))
+                                .foregroundColor(.gray)
+                        }
+                    } else {
+                        Image(systemName: "person.circle.fill")
+                            .font(.system(size: 50))
+                            .foregroundColor(.gray)
+                    }
                 }
                 .frame(width: 60, height: 60)
                 .clipShape(Circle())

@@ -142,6 +142,13 @@ final class MemoryDetailViewModel: ObservableObject {
         guard let currentUserId = appState.userId else { return }
         guard !isLikeLoading else { return }
         
+        // Check if user is trying to like their own memory
+        if memory.userId == currentUserId {
+            logger.warning("User cannot like their own memory")
+            errorMessage = "자신의 메모리에는 좋아요를 할 수 없습니다."
+            return
+        }
+        
         isLikeLoading = true
         defer { isLikeLoading = false }
         
@@ -154,6 +161,7 @@ final class MemoryDetailViewModel: ObservableObject {
                 logger.info("Like removed for memory: \(self.memory.id)")
             } else {
                 // 좋아요 추가
+                logger.info("Attempting to create like - memoryId: \(self.memory.id), userId: \(currentUserId), memoryOwnerId: \(self.memory.userId)")
                 try await memoryRepository.createLike(memoryId: self.memory.id, userId: currentUserId)
                 likeCount += 1
                 isLiked = true

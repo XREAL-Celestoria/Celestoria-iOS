@@ -11,7 +11,7 @@ protocol AuthRepositoryProtocol {
     func signInWithApple(idToken: String) async throws -> UUID
     func signOut() async throws
     func deleteAccount() async throws
-    func updateProfile(name: String?, profileImageURL: String?, profileKey: Int?, spaceThumbnailId: String?, starfield: String?) async throws -> UserProfile
+    func updateProfile(name: String?, profileImageURL: String?, profileKey: Int??, spaceThumbnailId: String?, starfield: String?) async throws -> UserProfile
     func fetchProfile() async throws -> UserProfile
     func fetchProfileByUserId(userId: UUID) async throws -> UserProfile
     func fetchAllProfiles(excludingUserId: UUID?) async throws -> [UserProfile]

@@ -17,6 +17,20 @@ struct iOSMemoryDetailView: View {
     @State private var ownerProfile: UserProfile?
     @Environment(\.dismiss) private var dismiss
     
+    init(memory: Memory, diContainer: DIContainer) {
+        self.memory = memory
+        self.diContainer = diContainer
+        print("=== iOSMemoryDetailView INIT ===")
+        print("Memory received:")
+        print("  - ID: \(memory.id)")
+        print("  - Title: \(memory.title)")
+        print("  - Note: \(memory.note)")
+        print("  - Category: \(memory.category)")
+        print("  - VideoURL: \(memory.videoURL ?? "nil")")
+        print("  - ThumbnailURL: \(memory.thumbnailURL ?? "nil")")
+        print("=== END INIT ===")
+    }
+    
     var body: some View {
         NavigationView {
             ZStack {
@@ -104,13 +118,25 @@ struct iOSMemoryDetailView: View {
                             // Owner Info
                             if let profile = ownerProfile {
                                 HStack(spacing: 12) {
-                                    AsyncImage(url: URL(string: profile.profileImageURL ?? "")) { image in
-                                        image
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fill)
-                                    } placeholder: {
-                                        Circle()
-                                            .fill(Color.gray)
+                                    Group {
+                                        if let profileKey = profile.profileKey,
+                                           let predefinedImage = PredefinedProfileImage.fromKey(profileKey) {
+                                            Image(predefinedImage.rawValue)
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fill)
+                                        } else if let profileImageURL = profile.profileImageURL {
+                                            AsyncImage(url: URL(string: profileImageURL)) { image in
+                                                image
+                                                    .resizable()
+                                                    .aspectRatio(contentMode: .fill)
+                                            } placeholder: {
+                                                Circle()
+                                                    .fill(Color.gray)
+                                            }
+                                        } else {
+                                            Circle()
+                                                .fill(Color.gray)
+                                        }
                                     }
                                     .frame(width: 40, height: 40)
                                     .clipShape(Circle())

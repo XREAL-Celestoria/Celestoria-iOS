@@ -451,6 +451,7 @@
 		2F8800B92D38CE6800220F89 /* Celestoria */ = {
 			isa = PBXGroup;
 			children = (
+				A2A286B42E2C25E1001D89B2 /* Celestoria-iOS.entitlements */,
 				2F3672182D3E14200048D9AD /* Celestoria.entitlements */,
 				2F8800C22D38D39C00220F89 /* App */,
 				2F8800C82D38D43F00220F89 /* Data */,
@@ -647,7 +648,6 @@
 		A21E476F2D38CD55002B60FA = {
 			isa = PBXGroup;
 			children = (
-				A2A286B42E2C25E1001D89B2 /* Celestoria-iOS.entitlements */,
 				2F8800B92D38CE6800220F89 /* Celestoria */,
 				A21E47792D38CD55002B60FA /* Products */,
 				A21E477B2D38CD55002B60FA /* Packages */,
@@ -964,7 +964,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "Celestoria-iOS.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Celestoria/Celestoria-iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1004,7 +1004,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "Celestoria-iOS.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "Celestoria/Celestoria-iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
