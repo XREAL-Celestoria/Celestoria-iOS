@@ -12,7 +12,7 @@ import AVKit
 struct iOSMemoryDetailView: View {
     let memory: Memory
     let diContainer: DIContainer
-    @State private var player: AVPlayer?
+    @State private var showFullScreenVideo = false
     @State private var thumbnailLoaded = false
     @State private var ownerProfile: UserProfile?
     @Environment(\.dismiss) private var dismiss
@@ -25,34 +25,54 @@ struct iOSMemoryDetailView: View {
                 
                 ScrollView {
                     VStack(spacing: 20) {
-                        // Video/Thumbnail Section
-                        if let videoURLString = memory.videoURL,
-                           let videoURL = URL(string: videoURLString) {
-                            VideoPlayer(player: player)
-                                .frame(height: 300)
-                                .background(Color.black)
-                                .onAppear {
-                                    player = AVPlayer(url: videoURL)
+                        // Thumbnail Section with Play Button
+                        if let thumbnailURLString = memory.thumbnailURL,
+                           let thumbnailURL = URL(string: thumbnailURLString) {
+                            ZStack {
+                                AsyncImage(url: thumbnailURL) { image in
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(maxHeight: 300)
+                                        .onAppear { thumbnailLoaded = true }
+                                } placeholder: {
+                                    Rectangle()
+                                        .fill(Color.gray.opacity(0.3))
+                                        .frame(height: 300)
+                                        .overlay(
+                                            ProgressView()
+                                        )
+                                        .onAppear { thumbnailLoaded = false }
                                 }
-                                .onDisappear {
-                                    player?.pause()
-                                    player = nil
+                                
+                                // Play button overlay if video is available
+                                if thumbnailLoaded && memory.videoURL != nil {
+                                    Button(action: {
+                                        showFullScreenVideo = true
+                                    }) {
+                                        ZStack {
+                                            Circle()
+                                                .fill(Color(hex: "E7E7E7").opacity(0.2))
+                                                .frame(width: 60, height: 60)
+                                            
+                                            Image(systemName: "play.fill")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(width: 25, height: 25)
+                                                .foregroundColor(.white)
+                                        }
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
                                 }
-                        } else if let thumbnailURLString = memory.thumbnailURL,
-                                  let thumbnailURL = URL(string: thumbnailURLString) {
-                            AsyncImage(url: thumbnailURL) { image in
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(maxHeight: 300)
-                            } placeholder: {
-                                Rectangle()
-                                    .fill(Color.gray.opacity(0.3))
-                                    .frame(height: 300)
-                                    .overlay(
-                                        ProgressView()
-                                    )
                             }
+                        } else {
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(height: 300)
+                                .overlay(
+                                    Text("No media available")
+                                        .foregroundColor(.gray)
+                                )
                         }
                         
                         // Memory Info
@@ -64,8 +84,10 @@ struct iOSMemoryDetailView: View {
                             
                             // Category
                             HStack {
-                                Image(systemName: memory.category.iconName)
-                                    .font(.system(size: 16))
+                                Image(memory.category.iconName)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 16, height: 16)
                                 Text(memory.category.rawValue)
                                     .font(.system(size: 16))
                             }
@@ -131,6 +153,44 @@ struct iOSMemoryDetailView: View {
         }
         .task {
             await loadOwnerProfile()
+        }
+        .fullScreenCover(isPresented: $showFullScreenVideo) {
+            if let videoURLString = memory.videoURL,
+               let videoURL = URL(string: videoURLString) {
+                ZStack {
+                    Color.black
+                        .edgesIgnoringSafeArea(.all)
+                    
+                    VideoPlayer(player: AVPlayer(url: videoURL))
+                        .edgesIgnoringSafeArea(.all)
+                    
+                    // Close button
+                    VStack {
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                showFullScreenVideo = false
+                            }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 30))
+                                    .foregroundColor(.white.opacity(0.8))
+                                    .padding()
+                            }
+                        }
+                        Spacer()
+                    }
+                }
+            } else {
+                Text("Video not available")
+                    .font(.title)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.black)
+                    .edgesIgnoringSafeArea(.all)
+                    .onTapGesture {
+                        showFullScreenVideo = false
+                    }
+            }
         }
     }
     

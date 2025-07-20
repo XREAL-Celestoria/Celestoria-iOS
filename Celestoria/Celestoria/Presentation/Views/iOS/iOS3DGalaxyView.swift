@@ -13,12 +13,15 @@ import AudioToolbox
 struct iOS3DGalaxyView: UIViewRepresentable {
     @EnvironmentObject var appState: AppState
     @StateObject private var galaxyViewModel: GalaxyViewModel
-    @State private var selectedMemory: Memory?
-    @State private var showMemoryDetail = false
-    @State private var showUserInfo = true
+    @Binding var selectedMemory: Memory?
+    @Binding var showMemoryDetail: Bool
+    let diContainer: DIContainer
     
-    init(diContainer: DIContainer) {
+    init(diContainer: DIContainer, selectedMemory: Binding<Memory?>, showMemoryDetail: Binding<Bool>) {
+        self.diContainer = diContainer
         _galaxyViewModel = StateObject(wrappedValue: diContainer.makeGalaxyViewModel())
+        _selectedMemory = selectedMemory
+        _showMemoryDetail = showMemoryDetail
     }
     
     func makeUIView(context: Context) -> SCNView {
@@ -72,7 +75,7 @@ struct iOS3DGalaxyView: UIViewRepresentable {
             let camera = SCNCamera()
             camera.fieldOfView = 60
             camera.zNear = 0.1
-            camera.zFar = 100
+            camera.zFar = 2000 // Increased to see large skybox
             
             cameraNode = SCNNode()
             cameraNode?.camera = camera
@@ -92,17 +95,34 @@ struct iOS3DGalaxyView: UIViewRepresentable {
         
         @MainActor
         private func setupBackground(in scene: SCNScene) {
-            let sphere = SCNSphere(radius: 50)
+            // Create large sphere for skybox (same as visionOS)
+            let sphere = SCNSphere(radius: 1000) // Much larger radius like visionOS
             sphere.segmentCount = 48
             
+            // Use unlit material for space background
             let material = SCNMaterial()
-            if let backgroundName = parent.galaxyViewModel.spaceThumbnail {
-                material.diffuse.contents = UIImage(named: backgroundName)
+            material.lightingModel = .constant // Unlit material
+            
+            // Use selectedImage if available, otherwise use random starfield
+            let starfieldName: String
+            if let selected = parent.galaxyViewModel.selectedImage {
+                starfieldName = selected
             } else {
-                material.diffuse.contents = UIImage(named: "spaceThumbnail01")
+                let starfieldCount = 18
+                let randomIndex = Int.random(in: 1...starfieldCount)
+                starfieldName = "Starfield-\(randomIndex)"
             }
+            
+            if let starfieldImage = UIImage(named: starfieldName) {
+                material.diffuse.contents = starfieldImage
+                print("Initial background set to: \(starfieldName)")
+            } else {
+                print("Warning: Failed to load starfield image: \(starfieldName), using default")
+                material.diffuse.contents = UIImage(named: "Starfield-1")
+            }
+            
             material.isDoubleSided = true
-            material.cullMode = .front
+            material.cullMode = .front // Show inside of sphere
             
             sphere.materials = [material]
             
@@ -162,10 +182,23 @@ struct iOS3DGalaxyView: UIViewRepresentable {
         
         @MainActor
         private func updateBackground() {
-            guard let material = backgroundNode?.geometry?.firstMaterial else { return }
+            guard let material = backgroundNode?.geometry?.firstMaterial else { 
+                print("Warning: Background node or material is not initialized yet")
+                return
+            }
             
-            if let backgroundName = parent.galaxyViewModel.spaceThumbnail {
-                material.diffuse.contents = UIImage(named: backgroundName)
+            // Use selectedImage (starfield) instead of spaceThumbnail for background
+            if let starfieldName = parent.galaxyViewModel.selectedImage {
+                if let backgroundImage = UIImage(named: starfieldName) {
+                    material.diffuse.contents = backgroundImage
+                    print("Background updated with: \(starfieldName)")
+                } else {
+                    print("Warning: Failed to load starfield image: \(starfieldName), using default")
+                    material.diffuse.contents = UIImage(named: "Starfield-1")
+                }
+            } else {
+                print("Warning: No selectedImage, using default Starfield-1")
+                material.diffuse.contents = UIImage(named: "Starfield-1")
             }
         }
         
@@ -175,11 +208,29 @@ struct iOS3DGalaxyView: UIViewRepresentable {
             let location = gesture.location(in: scnView)
             let hitResults = scnView.hitTest(location, options: [:])
             
-            if let result = hitResults.first,
-               let memoryNode = result.node as? iOS3DMemoryStarNode {
-                AudioServicesPlaySystemSound(1104)
-                parent.selectedMemory = memoryNode.memory
-                parent.showMemoryDetail = true
+            // Debug logging
+            print("Tap detected at: \(location)")
+            print("Hit results count: \(hitResults.count)")
+            
+            if let result = hitResults.first {
+                print("Hit node: \(result.node)")
+                print("Hit node name: \(result.node.name ?? "no name")")
+                
+                // Check if the hit node is a child of iOS3DMemoryStarNode
+                var checkNode: SCNNode? = result.node
+                while checkNode != nil {
+                    if let memoryNode = checkNode as? iOS3DMemoryStarNode {
+                        AudioServicesPlaySystemSound(1104)
+                        parent.selectedMemory = memoryNode.memory
+                        parent.showMemoryDetail = true
+                        print("Memory selected: \(memoryNode.memory.title)")
+                        return
+                    }
+                    checkNode = checkNode?.parent
+                }
+                print("No memory node found in hierarchy")
+            } else {
+                print("No hit results")
             }
         }
     }
@@ -195,8 +246,12 @@ struct iOS3DGalaxyContainerView: View {
     
     var body: some View {
         ZStack {
-            iOS3DGalaxyView(diContainer: diContainer)
-                .edgesIgnoringSafeArea(.all)
+            iOS3DGalaxyView(
+                diContainer: diContainer,
+                selectedMemory: $selectedMemory,
+                showMemoryDetail: $showMemoryDetail
+            )
+            .edgesIgnoringSafeArea(.all)
             
             VStack {
                 // Top bar with settings button

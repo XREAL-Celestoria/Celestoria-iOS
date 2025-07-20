@@ -126,7 +126,8 @@ struct iOSProfileSelectorView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selectedItem: PhotosPickerItem?
     
-    private let predefinedImages = (1...8).map { "profile\($0)" }
+    private let predefinedImages = ["profile_gray", "profile_blue", "profile_pink", "profile_purple",
+                                     "profile_green", "profile_yellow", "profile_blue_green", "profile_orange"]
     
     @ViewBuilder
     private var photoPicker: some View {

@@ -148,6 +148,12 @@
 		A2A286C92E2C3179001D89B2 /* iOSSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2A286C82E2C3179001D89B2 /* iOSSettingsView.swift */; };
 		A2A286D42E2C31DB001D89B2 /* GalaxyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB501D22D454FA3005FB0B6 /* GalaxyViewModel.swift */; };
 		A2A286D52E2C31E8001D89B2 /* AddMemoryMainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F510CE92D41449A004171E8 /* AddMemoryMainViewModel.swift */; };
+		A2A286D62E2CBE45001D89B2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F8800B32D38CE6800220F89 /* Assets.xcassets */; };
+		A2A286D72E2CC0BD001D89B2 /* Enter.usdc in Resources */ = {isa = PBXBuildFile; fileRef = A2198CA62D49063800B0AF65 /* Enter.usdc */; };
+		A2A286D82E2CC0C3001D89B2 /* Family.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A2198CA72D49063800B0AF65 /* Family.usdz */; };
+		A2A286D92E2CC0C7001D89B2 /* Pet.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A2198CA82D49063800B0AF65 /* Pet.usdz */; };
+		A2A286DA2E2CC0CA001D89B2 /* fireworks.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A2C1D8252E2BC9E200CA2D9A /* fireworks.usdz */; };
+		A2A286DB2E2CC0D0001D89B2 /* Travel.usdc in Resources */ = {isa = PBXBuildFile; fileRef = A2198CB02D4909BF00B0AF65 /* Travel.usdc */; };
 		A2B8DB412D42AEC7001B5663 /* MemoryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB402D42AEC7001B5663 /* MemoryDetailView.swift */; };
 		A2B8DB782D42B409001B5663 /* CelestoriaVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB772D42B409001B5663 /* CelestoriaVideoPlayerView.swift */; };
 		A2B8DB852D440536001B5663 /* SettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B8DB842D440536001B5663 /* SettingViewModel.swift */; };
@@ -778,6 +784,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A2A286DB2E2CC0D0001D89B2 /* Travel.usdc in Resources */,
+				A2A286D62E2CBE45001D89B2 /* Assets.xcassets in Resources */,
+				A2A286DA2E2CC0CA001D89B2 /* fireworks.usdz in Resources */,
+				A2A286D92E2CC0C7001D89B2 /* Pet.usdz in Resources */,
+				A2A286D72E2CC0BD001D89B2 /* Enter.usdc in Resources */,
+				A2A286D82E2CC0C3001D89B2 /* Family.usdz in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -28,13 +28,14 @@ struct iOSOnboardingView: View {
     
     var body: some View {
         ZStack {
-            Image("onboarding-\(currentStep)")
-                .resizable()
-                .aspectRatio(contentMode: .fill)
+            // Onboarding images not yet added - using placeholder
+            Color.NebulaBlack
                 .ignoresSafeArea()
-            
-            Color.black.opacity(0.4)
-                .ignoresSafeArea()
+                .overlay(
+                    Text("onboarding-\(currentStep) image missing")
+                        .foregroundColor(.red)
+                        .font(.caption)
+                )
             
             VStack {
                 Spacer()

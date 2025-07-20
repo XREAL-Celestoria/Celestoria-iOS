@@ -8,6 +8,15 @@
 
 import SwiftUI
 
+// Helper function to map thumbnail IDs to asset names
+private func thumbnailName(for id: String) -> String {
+    if let intId = Int(id), intId >= 1 && intId <= 6 {
+        return "Thumbnail\(intId)"
+    } else {
+        return "Thumbnail1"
+    }
+}
+
 struct iOSThumbnailSettingView: View {
     @StateObject private var settingViewModel: SettingViewModel
     @State private var isEditMode = false
@@ -25,8 +34,7 @@ struct iOSThumbnailSettingView: View {
                 // Current Thumbnail
                 VStack(spacing: 16) {
                     if let thumbnailId = settingViewModel.profile?.spaceThumbnailId {
-                        let thumbnailName = "spaceThumbnail\(String(format: "%02d", Int(thumbnailId) ?? 1))"
-                        Image(thumbnailName)
+                        Image(thumbnailName(for: thumbnailId))
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                             .frame(height: 250)
@@ -88,7 +96,22 @@ struct iOSThumbnailSelectorView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selectedThumbnail: String?
     
-    private let thumbnails = (1...6).map { "spaceThumbnail\(String(format: "%02d", $0))" }
+    private let thumbnails = (1...6).map { "Thumbnail\($0)" }
+    
+    private func isSelected(thumbnail: String) -> Bool {
+        if selectedThumbnail == thumbnail {
+            return true
+        }
+        
+        if selectedThumbnail == nil,
+           let thumbnailId = settingViewModel.profile?.spaceThumbnailId,
+           let intId = Int(thumbnailId), intId >= 1 && intId <= 6 {
+            let currentThumbnailName = "Thumbnail\(intId)"
+            return currentThumbnailName == thumbnail
+        }
+        
+        return false
+    }
     
     var body: some View {
         NavigationView {
@@ -111,8 +134,7 @@ struct iOSThumbnailSelectorView: View {
                                         .clipped()
                                         .cornerRadius(12)
                                     
-                                    if selectedThumbnail == thumbnail || 
-                                       (selectedThumbnail == nil && settingViewModel.profile?.spaceThumbnailId != nil && "spaceThumbnail\(String(format: "%02d", Int(settingViewModel.profile?.spaceThumbnailId ?? "1") ?? 1))" == thumbnail) {
+                                    if isSelected(thumbnail: thumbnail) {
                                         RoundedRectangle(cornerRadius: 12)
                                             .stroke(LinearGradient.GradientMain, lineWidth: 3)
                                         
@@ -143,10 +165,8 @@ struct iOSThumbnailSelectorView: View {
                         if let selected = selectedThumbnail {
                             Task {
                                 // Extract number from thumbnail name
-                                let thumbnailNumber = selected.replacingOccurrences(of: "spaceThumbnail", with: "")
-                                if let number = Int(thumbnailNumber) {
-                                    await settingViewModel.updateThumbnail(thumbnailId: String(number))
-                                }
+                                let thumbnailId = selected.replacingOccurrences(of: "Thumbnail", with: "")
+                                await settingViewModel.updateThumbnail(thumbnailId: thumbnailId)
                                 dismiss()
                             }
                         }
@@ -156,8 +176,9 @@ struct iOSThumbnailSelectorView: View {
             }
         }
         .onAppear {
-            if let thumbnailId = settingViewModel.profile?.spaceThumbnailId {
-                selectedThumbnail = "spaceThumbnail\(String(format: "%02d", Int(thumbnailId) ?? 1))"
+            if let thumbnailId = settingViewModel.profile?.spaceThumbnailId,
+               let intId = Int(thumbnailId), intId >= 1 && intId <= 6 {
+                selectedThumbnail = "Thumbnail\(intId)"
             }
         }
     }

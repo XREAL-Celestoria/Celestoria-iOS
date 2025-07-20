@@ -169,10 +169,11 @@ class GalaxyViewModel: ObservableObject {
         
         do {
             memories = try await memoryUseCase.execute(for: userId)
-            // 프로필에서 썸네일 가져오기
+            // 프로필에서 썸네일 가져오기 (iOS는 이미 selectedImage 사용)
             if let profile = appState.userProfile,
-               let thumbnailId = profile.spaceThumbnailId {
-                spaceThumbnail = "spaceThumbnail\(String(format: "%02d", thumbnailId))"
+               let thumbnailId = profile.spaceThumbnailId,
+               let thumbnailIdInt = Int(thumbnailId) {
+                spaceThumbnail = "spaceThumbnail\(String(format: "%02d", thumbnailIdInt))"
             }
         } catch {
             Logger.error("Failed to fetch memories: \(error)")
@@ -189,8 +190,13 @@ class GalaxyViewModel: ObservableObject {
             memories = try await memoryUseCase.execute(for: userId)
             // 다른 사용자의 프로필에서 썸네일 가져오기
             let profile = try await profileUseCase.fetchProfileByUserId(userId: userId)
-            if let thumbnailId = profile.spaceThumbnailId {
-                spaceThumbnail = "spaceThumbnail\(String(format: "%02d", thumbnailId))"
+            if let thumbnailId = profile.spaceThumbnailId,
+               let thumbnailIdInt = Int(thumbnailId) {
+                spaceThumbnail = "spaceThumbnail\(String(format: "%02d", thumbnailIdInt))"
+            }
+            // 다른 사용자의 starfield 설정도 반영
+            if let starfieldName = profile.starfield {
+                selectedImage = starfieldName
             }
         } catch {
             Logger.error("Failed to fetch other user memories: \(error)")

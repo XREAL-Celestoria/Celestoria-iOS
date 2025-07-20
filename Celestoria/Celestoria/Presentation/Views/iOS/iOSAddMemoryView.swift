@@ -259,8 +259,10 @@ struct iOSCategoryButton: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: 8) {
-                Image(systemName: category.iconName)
-                    .font(.system(size: 24))
+                Image(category.iconName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
                 Text(category.rawValue)
                     .font(.system(size: 14))
             }
