@@ -27,7 +27,15 @@ struct iOSProfileSettingView: View {
                 // Profile Image Section
                 VStack(spacing: 16) {
                     ZStack {
-                        if let profileImageUrl = settingViewModel.profile?.profileImageURL {
+                        if let profileKey = settingViewModel.profile?.profileKey,
+                           let predefinedImage = PredefinedProfileImage.fromKey(profileKey) {
+                            // Show predefined profile image
+                            Image(predefinedImage.rawValue)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 150, height: 150)
+                                .clipShape(Circle())
+                        } else if let profileImageUrl = settingViewModel.profile?.profileImageURL {
                             AsyncImage(url: URL(string: profileImageUrl)) { image in
                                 image
                                     .resizable()
@@ -90,7 +98,7 @@ struct iOSProfileSettingView: View {
                     if isEditMode {
                         // Save changes
                         Task {
-                            await settingViewModel.updateProfileIfNeeded(newName: tempNickname, selectedImage: nil)
+                            await settingViewModel.updateProfileIfNeeded(newName: tempNickname, selectedImage: settingViewModel.selectedImage)
                             isEditMode = false
                         }
                     } else {

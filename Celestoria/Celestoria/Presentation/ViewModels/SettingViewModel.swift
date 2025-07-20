@@ -129,6 +129,7 @@ class SettingViewModel: ObservableObject {
             )
 
             self.selectedImage = selectedImage
+            self.originalImage = selectedImage  // 원본 이미지도 업데이트하여 다음 편집 시 올바른 상태 유지
             updateUploadEnabled()
 
             Logger.info("✅ 프로필 업데이트 완료")

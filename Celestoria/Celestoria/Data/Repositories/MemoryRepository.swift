@@ -7,6 +7,7 @@
 
 import Foundation
 import Supabase
+import os
 
 class MemoryRepository {
     private let supabase: SupabaseClient
@@ -126,10 +127,18 @@ class MemoryRepository {
             createdAt: Date()
         )
         
-        try await supabase
-            .from("likes")
-            .insert(like)
-            .execute()
+        Logger().info("Creating like - userId: \(userId), memoryId: \(memoryId)")
+        
+        do {
+            try await supabase
+                .from("likes")
+                .insert(like)
+                .execute()
+            Logger().info("Like created successfully")
+        } catch {
+            Logger().error("Failed to create like: \(error)")
+            throw error
+        }
     }
     
     // 좋아요 삭제 (좋아요 취소)

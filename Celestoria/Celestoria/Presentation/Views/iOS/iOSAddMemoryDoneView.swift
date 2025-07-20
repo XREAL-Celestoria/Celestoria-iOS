@@ -25,10 +25,15 @@ struct iOSAddMemoryDoneView: View {
                 Spacer()
                 
                 // Success Icon
-                Image(systemName: "checkmark.star.fill")
-                    .font(.system(size: 100))
-                    .foregroundStyle(LinearGradient.GradientMain)
-                    .padding(.bottom, 20)
+                ZStack {
+                    Image(systemName: "star.circle.fill")
+                        .font(.system(size: 100))
+                        .foregroundStyle(LinearGradient.GradientMain)
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 40, weight: .bold))
+                        .foregroundColor(.NebulaBlack)
+                }
+                .padding(.bottom, 20)
                 
                 // Success Message
                 VStack(spacing: 16) {

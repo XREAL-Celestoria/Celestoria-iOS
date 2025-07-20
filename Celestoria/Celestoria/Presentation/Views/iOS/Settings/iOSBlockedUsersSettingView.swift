@@ -44,27 +44,33 @@ struct iOSBlockedUsersSettingView: View {
                     ForEach(settingViewModel.blockedUsers) { blockedUser in
                         HStack {
                             // Profile Image
-                            if let profileImageUrl = blockedUser.profile.profileImageURL {
-                                AsyncImage(url: URL(string: profileImageUrl)) { image in
-                                    image
+                            Group {
+                                if let profileKey = blockedUser.profile.profileKey,
+                                   let predefinedImage = PredefinedProfileImage.fromKey(profileKey) {
+                                    Image(predefinedImage.rawValue)
                                         .resizable()
                                         .aspectRatio(contentMode: .fill)
-                                } placeholder: {
+                                } else if let profileImageUrl = blockedUser.profile.profileImageURL {
+                                    AsyncImage(url: URL(string: profileImageUrl)) { image in
+                                        image
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                    } placeholder: {
+                                        Circle()
+                                            .fill(Color.gray.opacity(0.3))
+                                    }
+                                } else {
                                     Circle()
-                                        .fill(Color.gray.opacity(0.3))
+                                        .fill(LinearGradient.GradientMain)
+                                        .overlay(
+                                            Text(blockedUser.profile.name.prefix(1).uppercased())
+                                                .font(.system(size: 20, weight: .bold))
+                                                .foregroundColor(.NebulaBlack)
+                                        )
                                 }
-                                .frame(width: 50, height: 50)
-                                .clipShape(Circle())
-                            } else {
-                                Circle()
-                                    .fill(LinearGradient.GradientMain)
-                                    .frame(width: 50, height: 50)
-                                    .overlay(
-                                        Text(blockedUser.profile.name.prefix(1).uppercased())
-                                            .font(.system(size: 20, weight: .bold))
-                                            .foregroundColor(.NebulaBlack)
-                                    )
                             }
+                            .frame(width: 50, height: 50)
+                            .clipShape(Circle())
                             
                             // User Info
                             VStack(alignment: .leading, spacing: 4) {

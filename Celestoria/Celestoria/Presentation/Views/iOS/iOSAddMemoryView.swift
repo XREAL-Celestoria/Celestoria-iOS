@@ -77,6 +77,9 @@ struct iOSAddMemoryView: View {
             .navigationDestination(isPresented: $showDoneView) {
                 iOSAddMemoryDoneView(viewModel: viewModel, diContainer: diContainer)
             }
+            .onChange(of: viewModel.selectedVideoItem) { newItem in
+                viewModel.handleVideoSelection(item: newItem)
+            }
         }
     }
     
@@ -236,7 +239,7 @@ struct iOSAddMemoryView: View {
         if viewModel.isUploading {
             iOSUploadProgressView(
                 progress: viewModel.uploadProgress,
-                fileSize: Int64(0) // TODO: Get actual file size
+                fileSize: viewModel.uploadingFileSize
             )
         } else if let popupData = viewModel.popupData {
             iOSPopupView(popupData: popupData)
@@ -293,25 +296,22 @@ struct iOSTextFieldStyle: TextFieldStyle {
 
 struct iOSUploadProgressView: View {
     let progress: Double
-    let fileSize: Int64
+    let fileSize: String
     
     var body: some View {
         VStack(spacing: 20) {
-            Text("Uploading...")
+            Text("Uploading Memory")
                 .font(.system(size: 20, weight: .semibold))
                 .foregroundColor(.white)
             
-            ProgressView(value: progress)
-                .progressViewStyle(LinearProgressViewStyle(tint: .white))
-                .frame(width: 250)
-            
-            Text("\(Int(progress * 100))%")
+            Text("Uploading \(fileSize) video file...")
                 .font(.system(size: 16))
                 .foregroundColor(.white.opacity(0.8))
             
-            Text(formatFileSize(fileSize))
-                .font(.system(size: 14))
-                .foregroundColor(.white.opacity(0.6))
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                .scaleEffect(1.5)
+                .padding(.top, 10)
         }
         .padding(40)
         .background(
@@ -322,12 +322,6 @@ struct iOSUploadProgressView: View {
                         .stroke(Color.white.opacity(0.2), lineWidth: 1)
                 )
         )
-    }
-    
-    private func formatFileSize(_ bytes: Int64) -> String {
-        let formatter = ByteCountFormatter()
-        formatter.countStyle = .file
-        return formatter.string(fromByteCount: bytes)
     }
 }
 

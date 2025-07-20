@@ -11,7 +11,7 @@ import AVFoundation
 import UIKit
 
 class iOS3DMemoryStarNode: SCNNode {
-    let memory: Memory
+    private(set) var memory: Memory
     private var starNode: SCNNode?
     private var pulseAction: SCNAction?
     
@@ -180,6 +180,7 @@ class iOS3DMemoryStarNode: SCNNode {
     }
     
     func updateMemory(_ memory: Memory) {
+        self.memory = memory
         let moveAction = SCNAction.move(to: SCNVector3(
             x: Float(memory.position.x),
             y: Float(memory.position.y),
