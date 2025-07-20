@@ -109,6 +109,23 @@ The codebase follows **MVVM + Clean Architecture** with clear separation of conc
 - **Performance Optimization**: Added duplicate update prevention in background management
 - **Asset Sharing**: Both platforms use the same image assets and 3D models
 
+### Recent iOS UI Improvements (July 2025)
+- **UserInfoModalView**: 
+  - Fixed layout with Add button positioned in top-right corner using ZStack alignment
+  - Profile and name on top row, stats (stars, comments, likes) on bottom row
+  - Implemented real data fetching: memory count from repository, total likes calculated across user's memories
+  - Comments always show 0 (feature not implemented)
+- **MemoryDetailView**: 
+  - Real-time like/unlike functionality with database integration
+  - Like count updates immediately when toggled
+  - Users cannot like their own memories
+  - All stats fetched from actual database, no mock data
+- **AddMemoryDoneView**: 
+  - Updated design to match visionOS implementation
+  - Improved star icon with gradient background and glow effect
+  - Better text styling and spacing
+  - Fixed navigation and modal presentation
+
 ### Important Patterns
 - Always use DIContainer for dependency resolution
 - ViewModels should be @StateObject in parent views

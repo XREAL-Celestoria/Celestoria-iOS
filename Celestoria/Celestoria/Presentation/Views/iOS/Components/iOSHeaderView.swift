@@ -22,13 +22,13 @@ struct iOSHeaderView: View {
     var body: some View {
         VStack(spacing: 8) {
             Text(title)
-                .font(.system(size: 48, weight: .bold, design: .default))
+                .font(.system(size: 40, weight: .bold, design: .default))
                 .foregroundStyle(LinearGradient.GradientMain)
                 .multilineTextAlignment(.center)
             
             Text(subtitle)
-                .font(.system(size: 20, weight: .semibold, design: .default))
-                .foregroundStyle(LinearGradient.GradientMain)
+                .font(.system(size: 18, weight: .regular, design: .default))
+                .foregroundStyle(Color.white.opacity(0.8))
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity, alignment: .center)

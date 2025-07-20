@@ -20,84 +20,118 @@ struct iOSSettingsView: View {
     }
     
     var body: some View {
-        List {
-            // Profile Section
-            Section {
-                NavigationLink(destination: iOSProfileSettingView(diContainer: diContainer)) {
-                    HStack {
-                        Image(systemName: "person.circle.fill")
-                            .font(.system(size: 24))
-                            .foregroundStyle(LinearGradient.GradientMain)
-                        Text("Profile")
-                            .font(.system(size: 17))
-                    }
-                }
-                
-                NavigationLink(destination: iOSThumbnailSettingView(diContainer: diContainer)) {
-                    HStack {
-                        Image(systemName: "photo.fill")
-                            .font(.system(size: 24))
-                            .foregroundStyle(LinearGradient.GradientMain)
-                        Text("Space Thumbnail")
-                            .font(.system(size: 17))
-                    }
-                }
-            }
+        ZStack {
+            // Background
+            Color.black
+                .ignoresSafeArea()
             
-            // Privacy Section
-            Section {
-                NavigationLink(destination: iOSBlockedUsersSettingView(diContainer: diContainer)) {
-                    HStack {
-                        Image(systemName: "hand.raised.fill")
-                            .font(.system(size: 24))
-                            .foregroundStyle(LinearGradient.GradientMain)
-                        Text("Blocked Users")
-                            .font(.system(size: 17))
-                    }
-                }
-            }
-            
-            // Account Section
-            Section {
-                NavigationLink(destination: iOSAccountSettingView(diContainer: diContainer)) {
-                    HStack {
-                        Image(systemName: "person.badge.shield.checkmark.fill")
-                            .font(.system(size: 24))
-                            .foregroundStyle(LinearGradient.GradientMain)
-                        Text("Account")
-                            .font(.system(size: 17))
-                    }
-                }
-            }
-            
-            // Sign Out Section
-            Section {
-                Button(action: {
-                    Task {
-                        do {
-                            try await settingViewModel.signOut()
-                            appState.hasCompletedOnboarding = false
-                            appState.hasAcceptedTerms = false
-                            appState.navigationState = .onboarding
-                            dismiss()
-                        } catch {
-                            print("Sign out error: \(error)")
+            ScrollView {
+                VStack(spacing: 0) {
+                    // Galaxy
+                    NavigationLink(destination: iOSGalaxySettingView(diContainer: diContainer)) {
+                        HStack(spacing: 16) {
+                            Image(systemName: "sparkles")
+                                .font(.system(size: 22))
+                                .foregroundColor(.white)
+                                .frame(width: 24)
+                            
+                            Text("Galaxy")
+                                .font(.system(size: 17))
+                                .foregroundColor(.white)
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.white.opacity(0.5))
                         }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 20)
                     }
-                }) {
-                    HStack {
-                        Spacer()
-                        Text("Sign Out")
-                            .font(.system(size: 17, weight: .medium))
-                            .foregroundColor(.red)
-                        Spacer()
+                    
+                    Divider()
+                        .background(Color.white.opacity(0.1))
+                        .padding(.leading, 60)
+                    
+                    // Thumbnail
+                    NavigationLink(destination: iOSThumbnailSettingView(diContainer: diContainer)) {
+                        HStack(spacing: 16) {
+                            Image(systemName: "photo")
+                                .font(.system(size: 22))
+                                .foregroundColor(.white)
+                                .frame(width: 24)
+                            
+                            Text("Thumbnail")
+                                .font(.system(size: 17))
+                                .foregroundColor(.white)
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.white.opacity(0.5))
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 20)
+                    }
+                    
+                    Divider()
+                        .background(Color.white.opacity(0.1))
+                        .padding(.leading, 60)
+                    
+                    // Account Setting
+                    NavigationLink(destination: iOSAccountSettingView(diContainer: diContainer)) {
+                        HStack(spacing: 16) {
+                            Image(systemName: "gearshape")
+                                .font(.system(size: 22))
+                                .foregroundColor(.white)
+                                .frame(width: 24)
+                            
+                            Text("Account Setting")
+                                .font(.system(size: 17))
+                                .foregroundColor(.white)
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.white.opacity(0.5))
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 20)
+                    }
+                    
+                    Divider()
+                        .background(Color.white.opacity(0.1))
+                        .padding(.leading, 60)
+                    
+                    // Blocked Users
+                    NavigationLink(destination: iOSBlockedUsersSettingView(diContainer: diContainer)) {
+                        HStack(spacing: 16) {
+                            Image(systemName: "person.2.slash")
+                                .font(.system(size: 22))
+                                .foregroundColor(.white)
+                                .frame(width: 24)
+                            
+                            Text("Blocked Users")
+                                .font(.system(size: 17))
+                                .foregroundColor(.white)
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.white.opacity(0.5))
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 20)
                     }
                 }
+                .padding(.top, 20)
             }
         }
-        .listStyle(InsetGroupedListStyle())
-        .navigationTitle("Settings")
-        .navigationBarTitleDisplayMode(.large)
+        .navigationTitle("Menu")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: { dismiss() }) {

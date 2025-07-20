@@ -28,22 +28,22 @@ struct iOSAddMemoryView: View {
                     .ignoresSafeArea()
                 
                 ScrollView {
-                    VStack(spacing: 24) {
-                        // Video Selection
-                        videoSelectionSection
+                    VStack(spacing: 32) {
+                        // Thumbnail
+                        thumbnailSection
                         
                         // Category Selection
                         categorySection
                         
-                        // Title and Note
-                        inputSection
+                        // Text
+                        textSection
                         
                         // Notice
                         noticeSection
                         
                         Color.clear.frame(height: 100)
                     }
-                    .padding(.top)
+                    .padding(.top, 20)
                 }
                 
                 // Upload Button
@@ -69,7 +69,7 @@ struct iOSAddMemoryView: View {
                     }
                 }
             }
-            .onChange(of: viewModel.lastUploadedMemory) { memory in
+            .onChange(of: viewModel.lastUploadedMemory) { _, memory in
                 if memory != nil {
                     showDoneView = true
                 }
@@ -77,9 +77,21 @@ struct iOSAddMemoryView: View {
             .navigationDestination(isPresented: $showDoneView) {
                 iOSAddMemoryDoneView(viewModel: viewModel, diContainer: diContainer)
             }
-            .onChange(of: viewModel.selectedVideoItem) { newItem in
+            .onChange(of: viewModel.selectedVideoItem) { _, newItem in
                 viewModel.handleVideoSelection(item: newItem)
             }
+        }
+    }
+    
+    @ViewBuilder
+    private var thumbnailSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Thumbnail")
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundColor(.white)
+                .padding(.horizontal)
+            
+            videoSelectionSection
         }
     }
     
@@ -112,12 +124,12 @@ struct iOSAddMemoryView: View {
                     .frame(maxWidth: .infinity)
                     .frame(height: 200)
                     .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.white.opacity(0.1))
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.white.opacity(0.05))
                             .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [8]))
-                                    .foregroundColor(.white.opacity(0.3))
+                                RoundedRectangle(cornerRadius: 16)
+                                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [10, 5]))
+                                    .foregroundColor(.white.opacity(0.4))
                             )
                     )
                 }
@@ -128,12 +140,12 @@ struct iOSAddMemoryView: View {
     
     @ViewBuilder
     private var categorySection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 16) {
             Text("Category")
-                .font(.system(size: 16, weight: .medium))
-                .foregroundColor(.white.opacity(0.8))
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundColor(.white)
             
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+            HStack(spacing: 12) {
                 ForEach(Category.allCases, id: \.self) { category in
                     iOSCategoryButton(
                         category: category,
@@ -149,57 +161,99 @@ struct iOSAddMemoryView: View {
     }
     
     @ViewBuilder
-    private var inputSection: some View {
+    private var textSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            // Title
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Title")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.white.opacity(0.8))
-                
-                TextField("Enter title", text: $viewModel.title)
-                    .textFieldStyle(iOSTextFieldStyle())
-            }
+            Text("Text")
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundColor(.white)
+                .padding(.horizontal)
             
-            // Note
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Note")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.white.opacity(0.8))
+            ZStack(alignment: .bottomTrailing) {
+                VStack(spacing: 0) {
+                    // Title
+                    TextField("Write the title", text: $viewModel.title)
+                        .textFieldStyle(PlainTextFieldStyle())
+                        .font(.system(size: 16))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 16)
+                    
+                    Divider()
+                        .background(Color.white.opacity(0.3))
+                        .padding(.horizontal, 20)
+                    
+                    // Note with character limit
+                    ZStack(alignment: .topLeading) {
+                        if viewModel.note.isEmpty {
+                            Text("Write the note")
+                                .font(.system(size: 16))
+                                .foregroundColor(.white.opacity(0.5))
+                                .padding(.horizontal, 20)
+                                .padding(.top, 16)
+                                .allowsHitTesting(false)
+                        }
+                        
+                        TextEditor(text: $viewModel.note)
+                            .font(.system(size: 16))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 16)
+                            .padding(.top, 12)
+                            .padding(.bottom, 40) // Space for character counter
+                            .frame(minHeight: 180)
+                            .scrollContentBackground(.hidden)
+                            .background(Color.clear)
+                            .onChange(of: viewModel.note) { _, newValue in
+                                if newValue.count > 500 {
+                                    viewModel.note = String(newValue.prefix(500))
+                                }
+                            }
+                    }
+                }
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(viewModel.note.count >= 500 ? Color.red.opacity(0.8) : Color.white.opacity(0.3), lineWidth: 1)
+                )
                 
-                TextEditor(text: $viewModel.note)
-                    .frame(minHeight: 100)
-                    .padding(12)
-                    .background(Color.white.opacity(0.1))
-                    .cornerRadius(8)
-                    .foregroundColor(.white)
-                    .scrollContentBackground(.hidden)
+                // Character count inside the box
+                Text("\(viewModel.note.count) / 500")
+                    .font(.system(size: 14))
+                    .foregroundColor(viewModel.note.count >= 500 ? .red : .white.opacity(0.6))
+                    .padding(.trailing, 20)
+                    .padding(.bottom, 16)
+            }
+            .padding(.horizontal)
+            
+            if viewModel.note.count >= 500 {
+                Text("The content exceeds the character limit.")
+                    .font(.system(size: 13))
+                    .foregroundColor(.red)
+                    .padding(.horizontal, 20)
+                    .padding(.top, -8)
             }
         }
-        .padding(.horizontal)
     }
     
     @ViewBuilder
     private var noticeSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .center, spacing: 16) {
             HStack {
-                Image(systemName: "info.circle.fill")
-                    .font(.system(size: 16))
+                Image(systemName: "info.circle")
+                    .font(.system(size: 18))
                 Text("Notice")
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.system(size: 18, weight: .semibold))
             }
-            .foregroundColor(.white.opacity(0.8))
+            .foregroundColor(.white)
             
-            Text("• Only spatial videos are supported")
-            Text("• Maximum file size: 2GB")
-            Text("• Supported formats: MOV, MP4")
+            VStack(alignment: .leading, spacing: 8) {
+                Text("• Only spatial videos are supported")
+                Text("• Maximum file size: 2GB")
+                Text("• Supported formats: MOV, MP4")
+            }
+            .font(.system(size: 14))
+            .foregroundColor(.white.opacity(0.7))
         }
-        .font(.system(size: 14))
-        .foregroundColor(.white.opacity(0.6))
-        .padding()
-        .background(Color.white.opacity(0.05))
-        .cornerRadius(8)
         .padding(.horizontal)
+        .padding(.top, 20)
     }
     
     @ViewBuilder
@@ -210,23 +264,32 @@ struct iOSAddMemoryView: View {
                 await viewModel.saveMemory(note: viewModel.note, title: viewModel.title, userId: userId)
             }
         }) {
-            HStack {
-                Image(systemName: "arrow.up.circle.fill")
-                    .font(.system(size: 20))
+            HStack(spacing: 8) {
+                Image(systemName: "arrow.up")
+                    .font(.system(size: 18, weight: .semibold))
                 Text("Upload")
                     .font(.system(size: 17, weight: .semibold))
             }
-            .foregroundColor(.NebulaBlack)
-            .padding(.horizontal, 32)
+            .foregroundColor(viewModel.isUploadEnabled ? .white : .white.opacity(0.6))
+            .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
             .background(
-                LinearGradient(
-                    colors: viewModel.isUploadEnabled ? [Color.purple, Color.pink] : [Color.gray],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
+                RoundedRectangle(cornerRadius: 28)
+                    .fill(
+                        viewModel.isUploadEnabled ?
+                        LinearGradient(
+                            colors: [Color(hex: "#A68CFF"), Color(hex: "#FF6B99")],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ) :
+                        LinearGradient(
+                            colors: [Color.gray.opacity(0.2)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
             )
-            .cornerRadius(25)
+            .padding(.horizontal, 20)
         }
         .disabled(!viewModel.isUploadEnabled)
     }
@@ -259,26 +322,52 @@ struct iOSCategoryButton: View {
     let isSelected: Bool
     let action: () -> Void
     
+    var iconName: String {
+        switch category {
+        case .PET:
+            return "pawprint"
+        case .ENTERTAINMENT:
+            return "bolt"
+        case .TRAVEL:
+            return "airplane"
+        case .FAMILY:
+            return "heart"
+        }
+    }
+    
     var body: some View {
         Button(action: action) {
             VStack(spacing: 8) {
-                Image(category.iconName)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 24, height: 24)
-                Text(category.rawValue)
-                    .font(.system(size: 14))
+                Image(systemName: iconName)
+                    .font(.system(size: 28))
+                    .foregroundColor(isSelected ? .white : .white.opacity(0.8))
+                
+                Text(category.displayName.uppercased())
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(isSelected ? .white : .white.opacity(0.8))
             }
-            .foregroundColor(isSelected ? .NebulaBlack : .white)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
+            .frame(height: 90)
             .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? AnyShapeStyle(LinearGradient.GradientMain) : AnyShapeStyle(Color.white.opacity(0.1)))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? Color.clear : Color.white.opacity(0.2), lineWidth: 1)
+                Group {
+                    if isSelected {
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color(hex: "#A68CFF"), Color(hex: "#7B61FF")],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                    } else {
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color.clear)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(Color.white.opacity(0.4), lineWidth: 1.5)
+                            )
+                    }
+                }
             )
         }
     }
