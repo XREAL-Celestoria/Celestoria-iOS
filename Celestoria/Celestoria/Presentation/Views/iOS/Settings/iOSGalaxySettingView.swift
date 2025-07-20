@@ -1,42 +1,40 @@
 //
-//  iOSThumbnailSettingView.swift
+//  iOSGalaxySettingView.swift
 //  Celestoria
 //
 //  Created by Minjun Kim on 7/20/25.
 //
 
 
+//
+//  iOSGalaxySettingView.swift
+//  Celestoria
+//
+//  Created by Claude on 2025/07/20.
+//
+
 import SwiftUI
 
-// Helper function to map thumbnail IDs to asset names
-private func thumbnailName(for id: String) -> String {
-    if let intId = Int(id), intId >= 1 && intId <= 6 {
-        return "Thumbnail\(intId)"
-    } else {
-        return "Thumbnail1"
-    }
-}
-
-struct iOSThumbnailSettingView: View {
-    @StateObject private var settingViewModel: SettingViewModel
-    @State private var selectedThumbnail: String?
+struct iOSGalaxySettingView: View {
+    @StateObject private var galaxyViewModel: GalaxyViewModel
+    @State private var selectedStarfield: String?
     let diContainer: DIContainer
     
     init(diContainer: DIContainer) {
         self.diContainer = diContainer
-        _settingViewModel = StateObject(wrappedValue: diContainer.settingViewModel)
+        _galaxyViewModel = StateObject(wrappedValue: diContainer.makeGalaxyViewModel())
     }
     
-    private let thumbnails = ["Thumbnail1", "Thumbnail2", "Thumbnail3", "Thumbnail4", "Thumbnail5", "Thumbnail6"]
+    private let starfields: [String] = [
+        "Starfield-1", "Starfield-2", "Starfield-3", "Starfield-4",
+        "Starfield-5", "Starfield-6", "Starfield-7", "Starfield-8"
+    ]
     
-    private func isSelected(thumbnail: String) -> Bool {
-        if let selected = selectedThumbnail {
-            return selected == thumbnail
+    private func isSelected(starfield: String) -> Bool {
+        if let selected = selectedStarfield {
+            return selected == starfield
         }
-        if let thumbnailId = settingViewModel.profile?.spaceThumbnailId {
-            return thumbnail == thumbnailName(for: thumbnailId)
-        }
-        return false
+        return galaxyViewModel.selectedImage == starfield
     }
     
     var body: some View {
@@ -46,23 +44,23 @@ struct iOSThumbnailSettingView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Grid of thumbnail options
+                // Grid of galaxy options
                 ScrollView {
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                        ForEach(thumbnails, id: \.self) { thumbnail in
+                        ForEach(starfields, id: \.self) { starfield in
                             Button(action: {
-                                selectedThumbnail = thumbnail
+                                selectedStarfield = starfield
                             }) {
                                 ZStack {
-                                    // Thumbnail image
-                                    Image(thumbnail)
+                                    // Galaxy image
+                                    Image(starfield)
                                         .resizable()
                                         .aspectRatio(contentMode: .fill)
                                         .frame(height: 180)
                                         .clipped()
                                         .cornerRadius(16)
                                     
-                                    if isSelected(thumbnail: thumbnail) {
+                                    if isSelected(starfield: starfield) {
                                         // Selection overlay
                                         RoundedRectangle(cornerRadius: 16)
                                             .stroke(Color.white, lineWidth: 3)
@@ -94,11 +92,9 @@ struct iOSThumbnailSettingView: View {
                 
                 // Save Button
                 Button(action: {
-                    if let selected = selectedThumbnail,
-                       let index = thumbnails.firstIndex(of: selected) {
-                        Task {
-                            await settingViewModel.updateThumbnail(thumbnailId: String(index + 1))
-                        }
+                    if let selected = selectedStarfield {
+                        galaxyViewModel.selectImage(with: selected)
+                        galaxyViewModel.saveSelectedImage()
                     }
                 }) {
                     Text("Save")
@@ -113,10 +109,10 @@ struct iOSThumbnailSettingView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 30)
-                .disabled(selectedThumbnail == nil)
+                .disabled(selectedStarfield == nil && galaxyViewModel.selectedImage == nil)
             }
         }
-        .navigationTitle("Thumbnail")
+        .navigationTitle("Galaxy")
         .navigationBarTitleDisplayMode(.inline)
     }
 }

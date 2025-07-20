@@ -213,3 +213,85 @@ Data Layer (Repositories + Supabase)
 3. **안정성 강화**: Force unwrapping 제거와 옵셔널 처리로 런타임 크래시 방지
 
 4. **개발 효율성**: 명확한 아키텍처로 팀원 간 협업이 원활해짐
+
+## 2025년 7월 iOS UI 개선사항
+
+### 개요
+
+iOS 앱의 UI가 디자인 목업과 일치하지 않는 문제를 해결하기 위한 상세한 UI 개선 작업을 수행했습니다. 특히 실제 데이터 연동과 레이아웃 조정에 중점을 두었습니다.
+
+### 주요 개선 사항
+
+#### 1. UserInfoModalView (홈 화면 하단 모달)
+
+**문제점:**
+- Add 버튼이 잘못된 위치에 있음
+- 프로필과 통계가 한 줄에 표시되어 레이아웃이 복잡함
+- 하드코딩된 목업 데이터 사용 (memoryCount: 15, likeCount: 356 등)
+
+**해결책:**
+- ZStack alignment를 사용하여 Add 버튼을 우측 상단에 배치
+- 프로필과 이름을 상단, 통계(별, 댓글, 좋아요)를 하단에 배치
+- 실제 데이터 연동:
+  - 메모리 개수: `memoryUseCase.execute(for: userId)`로 실제 개수 조회
+  - 좋아요 수: 사용자의 모든 메모리에 대한 좋아요 총합 계산
+  - 댓글 수: 기능 미구현으로 0 표시
+
+#### 2. MemoryDetailView (메모리 상세 화면)
+
+**문제점:**
+- 좋아요/댓글 수가 하드코딩된 값 사용
+- 좋아요 기능이 실제로 작동하지 않음
+
+**해결책:**
+- 실시간 좋아요 기능 구현:
+  - `memoryRepository.getLikeCount()`: 좋아요 개수 조회
+  - `memoryRepository.hasLiked()`: 현재 사용자의 좋아요 상태 확인
+  - `memoryRepository.createLike()`/`deleteLike()`: 좋아요 토글
+- 자신의 메모리에는 좋아요 불가 처리
+- 좋아요 상태 변경 시 즉각적인 UI 업데이트
+
+#### 3. AddMemoryDoneView (메모리 업로드 완료 화면)
+
+**문제점:**
+- visionOS 디자인과 일치하지 않는 UI
+- 아이콘과 텍스트 스타일이 다름
+
+**해결책:**
+- visionOS의 AddMemoryDoneView 디자인 참조하여 통일
+- 별 아이콘에 그라데이션 배경과 글로우 효과 추가
+- 텍스트 크기와 간격 조정
+- "View Memory Star" 버튼 스타일 개선
+
+### 기술적 구현 세부사항
+
+#### 데이터 통합
+```swift
+// 기존: 목업 데이터
+@State private var likeCount: Int = 356 // TODO: Replace with actual data
+
+// 개선: 실제 데이터 조회
+private func loadUserStats() async {
+    let memories = try await diContainer.memoryUseCase.execute(for: userId)
+    memoryCount = memories.count
+    
+    var totalLikes = 0
+    for memory in memories {
+        let likeCount = try await diContainer.memoryRepository.getLikeCount(for: memory.id)
+        totalLikes += likeCount
+    }
+    likeCount = totalLikes
+}
+```
+
+#### UI 레이아웃 개선
+- HStack + VStack 조합에서 ZStack alignment 활용으로 변경
+- 절대 위치 지정이 필요한 요소(Add 버튼)의 정확한 배치
+- 반응형 디자인을 위한 적절한 spacing과 padding 값 조정
+
+### 성과
+
+1. **일관성**: iOS와 visionOS 간의 UI 일관성 확보
+2. **정확성**: 실제 데이터베이스 값을 표시하여 신뢰성 향상
+3. **사용성**: 즉각적인 피드백을 제공하는 인터랙션 구현
+4. **유지보수성**: 목업 데이터 제거로 향후 유지보수 용이

@@ -22,13 +22,8 @@ struct iOSLoginView: View {
     
     var body: some View {
         ZStack {
-            // Background - use onboarding-4 image for consistency
-            Image("onboarding-4")
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .ignoresSafeArea()
-            
-            Color.black.opacity(0.4)
+            // Background - pure black
+            Color.black
                 .ignoresSafeArea()
             
             VStack {

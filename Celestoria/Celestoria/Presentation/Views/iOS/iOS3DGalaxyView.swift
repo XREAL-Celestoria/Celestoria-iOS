@@ -364,95 +364,157 @@ struct UserInfoModalView: View {
     let diContainer: DIContainer
     @State private var userProfile: UserProfile?
     @State private var memoryCount: Int = 0
+    @State private var followerCount: Int = 0 // TODO: Implement followers when available
+    @State private var commentCount: Int = 0 // Comments feature not implemented yet
+    @State private var likeCount: Int = 0
     
     var body: some View {
-        HStack(spacing: 16) {
+        ZStack(alignment: .topTrailing) {
             if let profile = userProfile {
-                Group {
-                    if let profileKey = profile.profileKey,
-                       let predefinedImage = PredefinedProfileImage.fromKey(profileKey) {
-                        Image(predefinedImage.rawValue)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    } else if let profileImageURL = profile.profileImageURL {
-                        AsyncImage(url: URL(string: profileImageURL)) { image in
-                            image
+                HStack(spacing: 8) {
+                    // Profile image
+                    Group {
+                        if let profileKey = profile.profileKey,
+                           let predefinedImage = PredefinedProfileImage.fromKey(profileKey) {
+                            Image(predefinedImage.rawValue)
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
-                        } placeholder: {
+                        } else if let profileImageURL = profile.profileImageURL {
+                            AsyncImage(url: URL(string: profileImageURL)) { image in
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            } placeholder: {
+                                Image(systemName: "person.circle.fill")
+                                    .font(.system(size: 50))
+                                    .foregroundColor(.gray)
+                            }
+                        } else {
                             Image(systemName: "person.circle.fill")
                                 .font(.system(size: 50))
                                 .foregroundColor(.gray)
                         }
-                    } else {
-                        Image(systemName: "person.circle.fill")
-                            .font(.system(size: 50))
-                            .foregroundColor(.gray)
                     }
-                }
-                .frame(width: 60, height: 60)
-                .clipShape(Circle())
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(profile.name)
-                        .font(.headline)
-                        .foregroundColor(.white)
+                    .frame(width: 40, height: 40)
+                    .clipShape(Circle())
                     
-                    Text("\(memoryCount) memories")
-                        .font(.caption)
-                        .foregroundColor(.gray)
+                    // User info with name and stats
+                    VStack(alignment: .leading, spacing: 8) {
+                        // Name
+                        Text(profile.name)
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(.white)
+                        
+                        // Stats row
+                        HStack(spacing: 20) {
+                            // Stars icon with count
+                            HStack(spacing: 4) {
+                                Image(systemName: "star.fill")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.white.opacity(0.7))
+                                Text("\(memoryCount)")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.white)
+                            }
+                            
+                            // Comments icon with count
+                            HStack(spacing: 4) {
+                                Image(systemName: "message.fill")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.white.opacity(0.7))
+                                Text("\(commentCount)")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.white)
+                            }
+                            
+                            // Likes icon with count
+                            HStack(spacing: 4) {
+                                Image(systemName: "heart.fill")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.white.opacity(0.7))
+                                Text("\(likeCount)")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.white)
+                            }
+                        }
+                    }
+                    
+                    Spacer()
                 }
                 
-                Spacer()
-                
+                // Add button positioned in top-right corner
                 if isOwnGalaxy {
                     Button(action: onAddMemory) {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.system(size: 30))
-                            .foregroundColor(.white)
+                        HStack(spacing: 4) {
+                            Image(systemName: "plus")
+                                .font(.system(size: 14, weight: .medium))
+                            Text("Add")
+                                .font(.system(size: 14, weight: .medium))
+                        }
+                        .foregroundColor(.black)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(Color.white)
+                        )
                     }
                 }
             } else {
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                HStack {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    Spacer()
+                }
             }
         }
-        .padding()
+        .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 20)
-                .fill(Color.black.opacity(0.8))
+                .fill(Color(white: 0.08))
                 .overlay(
                     RoundedRectangle(cornerRadius: 20)
-                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                        .stroke(Color.white.opacity(0.1), lineWidth: 1)
                 )
         )
-        .task {
-            await loadUserInfo()
+        .onAppear {
+            Task {
+                await loadUserProfile()
+                await loadUserStats()
+            }
         }
     }
     
-    private func loadUserInfo() async {
+    private func loadUserProfile() async {
         do {
-            // Load user profile
             userProfile = try await diContainer.profileUseCase.fetchProfileByUserId(userId: userId)
-            
-            // Load memory count
+        } catch {
+            print("Error loading user profile: \(error)")
+        }
+    }
+    
+    private func loadUserStats() async {
+        do {
+            // Load memories to get count and calculate total likes
             let memories = try await diContainer.memoryUseCase.execute(for: userId)
             memoryCount = memories.count
+            
+            // Calculate total likes across all user's memories
+            var totalLikes = 0
+            for memory in memories {
+                let likeCount = try await diContainer.memoryRepository.getLikeCount(for: memory.id)
+                totalLikes += likeCount
+            }
+            likeCount = totalLikes
+            
+            // Comments are not implemented yet, so always 0
+            commentCount = 0
+            
         } catch {
-            print("Error loading user info: \(error)")
-            // Set default values on error
-            userProfile = UserProfile(
-                id: UUID(),
-                userId: userId,
-                name: "Unknown",
-                profileImageURL: nil,
-                profileKey: nil,
-                spaceThumbnailId: nil,
-                createdAt: Date(),
-                starfield: nil
-            )
+            print("Error loading user stats: \(error)")
             memoryCount = 0
+            likeCount = 0
+            commentCount = 0
         }
     }
 }

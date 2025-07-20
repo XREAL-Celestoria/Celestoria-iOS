@@ -13,64 +13,117 @@ struct iOSAddMemoryDoneView: View {
     @EnvironmentObject var appState: AppState
     @Environment(\.dismiss) private var dismiss
     @State private var showMemoryDetail = false
+    @State private var animateIcon = false
+    @State private var showGlow = false
     let diContainer: DIContainer
     
     var body: some View {
         ZStack {
             // Background
-            Color.NebulaBlack
+            Color.black
                 .ignoresSafeArea()
             
-            VStack(spacing: 24) {
+            VStack(spacing: 32) {
                 Spacer()
                 
-                // Success Icon
-                ZStack {
-                    Image(systemName: "star.circle.fill")
-                        .font(.system(size: 100))
-                        .foregroundStyle(LinearGradient.GradientMain)
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 40, weight: .bold))
-                        .foregroundColor(.NebulaBlack)
+                // Success Icon - using custom image if available, fallback to star
+                if UIImage(named: "AddMemoryDone") != nil {
+                    Image("AddMemoryDone")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 160, height: 160)
+                        .scaleEffect(animateIcon ? 1 : 0.5)
+                        .opacity(animateIcon ? 1 : 0)
+                } else {
+                    // Fallback design with star
+                    ZStack {
+                        // Glow effect
+                        Circle()
+                            .fill(
+                                RadialGradient(
+                                    colors: [Color(hex: "#7B61FF").opacity(0.4), Color.clear],
+                                    center: .center,
+                                    startRadius: 10,
+                                    endRadius: 80
+                                )
+                            )
+                            .frame(width: 200, height: 200)
+                            .blur(radius: 15)
+                            .scaleEffect(showGlow ? 1.2 : 0.8)
+                            .opacity(showGlow ? 1 : 0)
+                        
+                        // Star icon with gradient background
+                        ZStack {
+                            Circle()
+                                .fill(
+                                    LinearGradient(
+                                        colors: [Color(hex: "#A68CFF"), Color(hex: "#7B61FF")],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .frame(width: 140, height: 140)
+                            
+                            Image(systemName: "star.fill")
+                                .font(.system(size: 60))
+                                .foregroundColor(.white)
+                        }
+                        .scaleEffect(animateIcon ? 1 : 0.5)
+                        .opacity(animateIcon ? 1 : 0)
+                    }
                 }
-                .padding(.bottom, 20)
+                
+                Spacer()
                 
                 // Success Message
                 VStack(spacing: 16) {
-                    Text("The memory star upload has been completed.")
-                        .font(.system(size: 18, weight: .medium))
+                    Text("The Memory Star upload has been completed.")
+                        .font(.system(size: 18, weight: .semibold))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                     
-                    Text("Why not take a moment to explore the memory star you created?")
-                        .font(.system(size: 22, weight: .bold))
-                        .foregroundColor(.white)
+                    Text("Why not take a moment to explore the memory you created?")
+                        .font(.system(size: 16))
+                        .foregroundColor(.white.opacity(0.7))
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, 20)
                 }
+                .padding(.horizontal, 32)
                 
+                Spacer()
                 Spacer()
                 
                 // View Memory Button
                 Button(action: {
-                    if let memory = viewModel.getLastUploadedMemory() {
+                    if viewModel.getLastUploadedMemory() != nil {
                         showMemoryDetail = true
                     }
                 }) {
-                    HStack {
-                        Image(systemName: "star.fill")
-                            .font(.system(size: 20))
-                        Text("View Memory Star")
-                            .font(.system(size: 20, weight: .semibold))
-                    }
-                    .foregroundColor(.NebulaBlack)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 56)
-                    .background(LinearGradient.GradientSub)
-                    .cornerRadius(16)
+                    Text("View Memory Star")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(.black)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 18)
+                        .background(
+                            RoundedRectangle(cornerRadius: 28)
+                                .fill(
+                                    LinearGradient(
+                                        colors: [Color.white, Color.white.opacity(0.95)],
+                                        startPoint: .top,
+                                        endPoint: .bottom
+                                    )
+                                )
+                        )
                 }
                 .padding(.horizontal, 20)
-                .padding(.bottom, 40)
+                .padding(.bottom, 50)
+            }
+        }
+        .onAppear {
+            withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+                animateIcon = true
+            }
+            withAnimation(.easeInOut(duration: 1).delay(0.3)) {
+                showGlow = true
             }
         }
         .navigationBarBackButtonHidden(true)
