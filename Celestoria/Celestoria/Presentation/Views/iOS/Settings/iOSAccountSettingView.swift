@@ -143,13 +143,15 @@ struct iOSAccountSettingView: View {
                 Image(systemName: "rectangle.portrait.and.arrow.right")
                     .font(.system(size: 18))
                 Text("Sign Out")
-                    .font(.system(size: 17, weight: .medium))
+                    .font(.system(size: 17, weight: .semibold))
             }
-            .foregroundColor(.white)
+            .foregroundColor(.NebulaBlack)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
-            .background(LinearGradient.GradientMain)
-            .cornerRadius(12)
+            .frame(height: 50)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(LinearGradient.GradientSub)
+            )
         }
         .padding(.top, 10)
     }

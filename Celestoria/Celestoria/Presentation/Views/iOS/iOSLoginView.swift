@@ -51,6 +51,8 @@ struct iOSLoginView: View {
                 .signInWithAppleButtonStyle(.white)
                 .padding(.horizontal, 24)
                 .padding(.bottom, 50)
+                .disabled(viewModel.isLoggingIn)
+                .opacity(viewModel.isLoggingIn ? 0.6 : 1.0)
             }
             
             // Error popup overlay

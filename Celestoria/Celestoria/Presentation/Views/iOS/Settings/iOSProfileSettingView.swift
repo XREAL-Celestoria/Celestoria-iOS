@@ -22,11 +22,17 @@ struct iOSProfileSettingView: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                // Profile Image Section
-                VStack(spacing: 16) {
-                    ZStack {
+        ZStack {
+            // Background
+            Color.black
+                .ignoresSafeArea()
+            
+            VStack {
+                ScrollView {
+                    VStack(spacing: 24) {
+                        // Profile Image Section
+                        VStack(spacing: 16) {
+                            ZStack {
                         if let profileKey = settingViewModel.profile?.profileKey,
                            let predefinedImage = PredefinedProfileImage.fromKey(profileKey) {
                             // Show predefined profile image
@@ -80,20 +86,33 @@ struct iOSProfileSettingView: View {
                         }
                     }
                     
-                    // Nickname Section
+                    // Nickname Section - styled like visionOS
                     if isEditMode {
-                        TextField("Nickname", text: $tempNickname)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .frame(maxWidth: 250)
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.gray.opacity(0.2))
+                                .frame(width: 280, height: 50)
+                            
+                            TextField("Nickname", text: $tempNickname)
+                                .font(.system(size: 20, weight: .medium))
+                                .foregroundColor(.white)
+                                .multilineTextAlignment(.center)
+                                .frame(width: 260)
+                        }
                     } else {
                         Text(settingViewModel.profile?.name ?? "Unknown")
                             .font(.system(size: 24, weight: .semibold))
-                            .foregroundColor(.primary)
+                            .foregroundColor(.white)
                     }
                 }
-                .padding(.top, 20)
+                        .padding(.top, 20)
+                        
+                        Spacer(minLength: 100) // Space for button
+                    }
+                    .padding()
+                }
                 
-                // Edit/Save Button
+                // Edit/Save Button - fixed at bottom
                 Button(action: {
                     if isEditMode {
                         // Save changes
@@ -108,20 +127,25 @@ struct iOSProfileSettingView: View {
                     }
                 }) {
                     Text(isEditMode ? "Done" : "Edit")
-                        .font(.system(size: 17, weight: .medium))
-                        .foregroundColor(.white)
-                        .frame(width: 100, height: 44)
-                        .background(LinearGradient.GradientMain)
-                        .cornerRadius(22)
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(.NebulaBlack)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(LinearGradient.GradientSub)
+                        )
                 }
-                .padding(.top, 10)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 30)
             }
-            .padding()
         }
         .navigationTitle("Profile")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showProfileSelector) {
-            iOSProfileSelectorView(settingViewModel: settingViewModel)
+            iOSProfileSelectorView(settingViewModel: settingViewModel, isPresented: $showProfileSelector)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
         }
         .task {
             await settingViewModel.fetchProfile()
@@ -131,7 +155,7 @@ struct iOSProfileSettingView: View {
 
 struct iOSProfileSelectorView: View {
     @ObservedObject var settingViewModel: SettingViewModel
-    @Environment(\.dismiss) private var dismiss
+    @Binding var isPresented: Bool
     @State private var selectedItem: PhotosPickerItem?
     @State private var tempSelectedImage: ProfileImageSelection?
     
@@ -170,11 +194,14 @@ struct iOSProfileSelectorView: View {
                             }
                         }
                         .onChange(of: selectedItem) { _, newItem in
-                            Task {
-                                if let item = newItem,
-                                   let data = try? await item.loadTransferable(type: Data.self),
-                                   let image = UIImage(data: data) {
-                                    tempSelectedImage = .custom(image)
+                            if let item = newItem {
+                                Task {
+                                    if let data = try? await item.loadTransferable(type: Data.self),
+                                       let image = UIImage(data: data) {
+                                        await MainActor.run {
+                                            tempSelectedImage = .custom(image)
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -201,19 +228,22 @@ struct iOSProfileSelectorView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
-                        dismiss()
+                        isPresented = false
                     }
                     .foregroundColor(.white)
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
-                        Task {
-                            if let tempImage = tempSelectedImage {
-                                settingViewModel.selectedImage = tempImage
-                                await settingViewModel.updateProfileIfNeeded(newName: nil, selectedImage: tempImage)
+                        if let tempImage = tempSelectedImage {
+                            settingViewModel.selectedImage = tempImage
+                            isPresented = false
+                            // Update profile after sheet dismisses
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                Task {
+                                    await settingViewModel.updateProfileIfNeeded(newName: nil, selectedImage: tempImage)
+                                }
                             }
-                            dismiss()
                         }
                     }
                     .foregroundColor(.white)

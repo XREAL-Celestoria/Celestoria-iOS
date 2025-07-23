@@ -99,19 +99,13 @@ struct iOSAddMemoryDoneView: View {
                     }
                 }) {
                     Text("View Memory Star")
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundColor(.white)
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(.NebulaBlack)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 18)
+                        .frame(height: 50)
                         .background(
                             RoundedRectangle(cornerRadius: 16)
-                                .fill(
-                                    LinearGradient(
-                                        colors: [Color(hex: "#A68CFF"), Color(hex: "#7B61FF")],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
+                                .fill(LinearGradient.GradientSub)
                         )
                 }
                 .padding(.horizontal, 20)

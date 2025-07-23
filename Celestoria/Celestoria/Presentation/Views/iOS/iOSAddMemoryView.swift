@@ -270,18 +270,14 @@ struct iOSAddMemoryView: View {
                 Text("Upload")
                     .font(.system(size: 17, weight: .semibold))
             }
-            .foregroundColor(viewModel.isUploadEnabled ? .white : .white.opacity(0.6))
+            .foregroundColor(viewModel.isUploadEnabled ? .NebulaBlack : .white.opacity(0.6))
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
+            .frame(height: 50)
             .background(
                 RoundedRectangle(cornerRadius: 16)
                     .fill(
                         viewModel.isUploadEnabled ?
-                        LinearGradient(
-                            colors: [Color(hex: "#A68CFF"), Color(hex: "#FF6B99")],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ) :
+                        LinearGradient.GradientSub :
                         LinearGradient(
                             colors: [Color.gray.opacity(0.4)],
                             startPoint: .leading,
@@ -467,7 +463,7 @@ struct iOSPopupView: View {
                         .foregroundColor(.NebulaBlack)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(LinearGradient.GradientMain)
+                        .background(LinearGradient.GradientSub)
                         .cornerRadius(8)
                 }
             }
