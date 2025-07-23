@@ -27,6 +27,32 @@ struct iOSSettingsView: View {
             
             ScrollView {
                 VStack(spacing: 0) {
+                    // Profile
+                    NavigationLink(destination: iOSProfileSettingView(diContainer: diContainer)) {
+                        HStack(spacing: 16) {
+                            Image(systemName: "person.circle")
+                                .font(.system(size: 22))
+                                .foregroundColor(.white)
+                                .frame(width: 24)
+                            
+                            Text("Profile")
+                                .font(.system(size: 17))
+                                .foregroundColor(.white)
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.white.opacity(0.5))
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 20)
+                    }
+                    
+                    Divider()
+                        .background(Color.white.opacity(0.1))
+                        .padding(.leading, 60)
+                    
                     // Galaxy
                     NavigationLink(destination: iOSGalaxySettingView(diContainer: diContainer)) {
                         HStack(spacing: 16) {

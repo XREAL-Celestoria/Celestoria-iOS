@@ -25,71 +25,9 @@ struct iOSAccountSettingView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 30) {
-                // Account Info Section
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Account Information")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(.primary)
-                    
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Text("User ID")
-                                .font(.system(size: 16))
-                                .foregroundColor(.secondary)
-                            Spacer()
-                            Text(appState.userId?.uuidString ?? "Unknown")
-                                .font(.system(size: 16))
-                                .foregroundColor(.primary)
-                        }
-                        
-                        Divider()
-                        
-                        HStack {
-                            Text("Account Type")
-                                .font(.system(size: 16))
-                                .foregroundColor(.secondary)
-                            Spacer()
-                            HStack(spacing: 4) {
-                                Image(systemName: "apple.logo")
-                                    .font(.system(size: 14))
-                                Text("Sign in with Apple")
-                                    .font(.system(size: 16))
-                            }
-                            .foregroundColor(.primary)
-                        }
-                    }
-                    .padding()
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(12)
-                }
-                
-                // Danger Zone
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Danger Zone")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(.red)
-                    
-                    Text("Once you delete your account, there is no going back. Please be certain.")
-                        .font(.system(size: 14))
-                        .foregroundColor(.secondary)
-                    
-                    Button(action: {
-                        showDeleteConfirmation = true
-                    }) {
-                        HStack {
-                            Image(systemName: "trash.fill")
-                                .font(.system(size: 18))
-                            Text("Delete Account")
-                                .font(.system(size: 17, weight: .medium))
-                        }
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(Color.red)
-                        .cornerRadius(12)
-                    }
-                }
-                .padding(.top, 30)
+                accountInfoSection
+                signOutButton
+                dangerZoneSection
             }
             .padding()
         }
@@ -140,5 +78,109 @@ struct iOSAccountSettingView: View {
         } message: { error in
             Text(error)
         }
+    }
+    
+    // MARK: - View Components
+    
+    @ViewBuilder
+    private var accountInfoSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Account Information")
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundColor(.primary)
+            
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text("User ID")
+                        .font(.system(size: 16))
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Text(appState.userId?.uuidString ?? "Unknown")
+                        .font(.system(size: 16))
+                        .foregroundColor(.primary)
+                }
+                
+                Divider()
+                
+                HStack {
+                    Text("Account Type")
+                        .font(.system(size: 16))
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    HStack(spacing: 4) {
+                        Image(systemName: "apple.logo")
+                            .font(.system(size: 14))
+                        Text("Sign in with Apple")
+                            .font(.system(size: 16))
+                    }
+                    .foregroundColor(.primary)
+                }
+            }
+            .padding()
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(12)
+        }
+    }
+    
+    @ViewBuilder
+    private var signOutButton: some View {
+        Button(action: {
+            Task {
+                do {
+                    try await settingViewModel.signOut()
+                    // Reset app state and navigate to login
+                    appState.navigationState = .login
+                    appState.userId = nil
+                    appState.userProfile = nil
+                    appState.galaxyTargetUserId = nil
+                    dismiss()
+                } catch {
+                    deleteError = error.localizedDescription
+                }
+            }
+        }) {
+            HStack {
+                Image(systemName: "rectangle.portrait.and.arrow.right")
+                    .font(.system(size: 18))
+                Text("Sign Out")
+                    .font(.system(size: 17, weight: .medium))
+            }
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 16)
+            .background(LinearGradient.GradientMain)
+            .cornerRadius(12)
+        }
+        .padding(.top, 10)
+    }
+    
+    @ViewBuilder
+    private var dangerZoneSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Danger Zone")
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundColor(.red)
+            
+            Text("Once you delete your account, there is no going back. Please be certain.")
+                .font(.system(size: 14))
+                .foregroundColor(.secondary)
+            
+            Button(action: {
+                showDeleteConfirmation = true
+            }) {
+                HStack {
+                    Image(systemName: "trash.fill")
+                        .font(.system(size: 18))
+                    Text("Delete Account")
+                        .font(.system(size: 17, weight: .medium))
+                }
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(Color.red)
+                .cornerRadius(12)
+            }
+        }
+        .padding(.top, 30)
     }
 }

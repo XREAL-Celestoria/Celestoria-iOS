@@ -32,11 +32,13 @@ struct iOSContentView: View {
             case .terms:
                 iOSTermsAndConditionsView()
                     .transition(.opacity)
+                    .zIndex(1)
                 
             case .main:
                 iOSMainView(diContainer: diContainer)
                     .environmentObject(settingViewModel)
                     .transition(.opacity)
+                    .zIndex(0)
             }
         }
         .animation(.easeInOut(duration: 0.3), value: appState.navigationState)

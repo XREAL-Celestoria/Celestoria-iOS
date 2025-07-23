@@ -271,62 +271,91 @@ struct iOS3DGalaxyContainerView: View {
     @State private var showMemoryDetail = false
     @State private var showSettings = false
     @State private var showAddMemory = false
+    @State private var isContentReady = false
     
     var body: some View {
         ZStack {
-            iOS3DGalaxyView(
-                diContainer: diContainer,
-                selectedMemory: $selectedMemory,
-                showMemoryDetail: $showMemoryDetail
-            )
-            .edgesIgnoringSafeArea(.all)
-            .onChange(of: selectedMemory) { newValue in
-                print("=== selectedMemory changed ===")
-                print("New value: \(newValue?.id.uuidString ?? "nil")")
-            }
-            .onChange(of: showMemoryDetail) { newValue in
-                print("=== showMemoryDetail changed to: \(newValue) ===")
-                print("selectedMemory at this moment: \(selectedMemory?.id.uuidString ?? "nil")")
-            }
-            
-            VStack {
-                // Top bar with settings button
-                HStack {
-                    Spacer()
-                    
-                    Button(action: {
-                        showSettings = true
-                    }) {
-                        Image(systemName: "gearshape.fill")
-                            .font(.system(size: 24))
-                            .foregroundColor(.white)
-                            .padding(12)
-                            .background(
-                                Circle()
-                                    .fill(Color.black.opacity(0.5))
-                                    .overlay(
-                                        Circle()
-                                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                                    )
-                            )
-                    }
-                    .padding(.trailing, 20)
-                    .padding(.top, 50) // Account for safe area
+            if isContentReady {
+                iOS3DGalaxyView(
+                    diContainer: diContainer,
+                    selectedMemory: $selectedMemory,
+                    showMemoryDetail: $showMemoryDetail
+                )
+                .edgesIgnoringSafeArea(.all)
+                .onChange(of: selectedMemory) { newValue in
+                    print("=== selectedMemory changed ===")
+                    print("New value: \(newValue?.id.uuidString ?? "nil")")
+                }
+                .onChange(of: showMemoryDetail) { newValue in
+                    print("=== showMemoryDetail changed to: \(newValue) ===")
+                    print("selectedMemory at this moment: \(selectedMemory?.id.uuidString ?? "nil")")
                 }
                 
-                Spacer()
-                
-                if let targetUserId = appState.galaxyTargetUserId {
-                    UserInfoModalView(
-                        userId: targetUserId,
-                        isOwnGalaxy: targetUserId == appState.currentUserId,
-                        onAddMemory: {
-                            showAddMemory = true
-                        },
-                        diContainer: diContainer
-                    )
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 20)
+                VStack {
+                    // Top bar with settings button
+                    HStack {
+                        Spacer()
+                        
+                        Button(action: {
+                            showSettings = true
+                        }) {
+                            Image(systemName: "gearshape.fill")
+                                .font(.system(size: 24))
+                                .foregroundColor(.white)
+                                .padding(12)
+                                .background(
+                                    Circle()
+                                        .fill(Color.black.opacity(0.5))
+                                        .overlay(
+                                            Circle()
+                                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                        )
+                                )
+                        }
+                        .padding(.trailing, 20)
+                        .padding(.top, 50) // Account for safe area
+                    }
+                    
+                    Spacer()
+                    
+                    if let targetUserId = appState.galaxyTargetUserId {
+                        UserInfoModalView(
+                            userId: targetUserId,
+                            isOwnGalaxy: targetUserId == appState.currentUserId,
+                            onAddMemory: {
+                                showAddMemory = true
+                            },
+                            diContainer: diContainer
+                        )
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 20)
+                        .transition(.opacity.combined(with: .move(edge: .bottom)))
+                    }
+                }
+                .transition(.opacity)
+            } else {
+                // Loading screen while content is being prepared
+                ZStack {
+                    Color.black
+                        .edgesIgnoringSafeArea(.all)
+                    
+                    VStack(spacing: 20) {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .scaleEffect(1.5)
+                        
+                        Text("Loading Memory Stars...")
+                            .font(.system(size: 18, weight: .medium))
+                            .foregroundColor(.white.opacity(0.8))
+                    }
+                }
+            }
+        }
+        .onAppear {
+            // Delay showing content to ensure smooth transition
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                withAnimation(.easeIn(duration: 0.3)) {
+                    isContentReady = true
                 }
             }
         }
@@ -411,44 +440,40 @@ struct UserInfoModalView: View {
                     }
                     
                     // Second row: Stats with Figma spacing
-                    HStack(alignment: .center) {
+                    HStack {
                         Spacer()
-                        
-                        // Stars icon with count
-                        HStack(alignment: .center, spacing: 8) {
-                            Image("Memory-icon")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 20, height: 20)
-                            Text("\(memoryCount)")
-                                .font(.system(size: 20, weight: .semibold))
-                                .foregroundColor(.white)
+                        HStack(alignment: .center, spacing: 60) {
+                            // Stars icon with count
+                            HStack(alignment: .center, spacing: 8) {
+                                Image("Memory-icon")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 20, height: 20)
+                                Text("\(memoryCount)")
+                                    .font(.system(size: 20, weight: .semibold))
+                                    .foregroundColor(.white)
+                            }
+                            
+                            // Comments icon with count
+                            HStack(alignment: .center, spacing: 8) {
+                                Text("💬")
+                                    .font(.system(size: 18))
+                                Text("\(commentCount)")
+                                    .font(.system(size: 20, weight: .semibold))
+                                    .foregroundColor(.white)
+                            }
+                            
+                            // Likes icon with count
+                            HStack(alignment: .center, spacing: 8) {
+                                Image("Like")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 20, height: 20)
+                                Text("\(likeCount)")
+                                    .font(.system(size: 20, weight: .semibold))
+                                    .foregroundColor(.white)
+                            }
                         }
-                        
-                        Spacer()
-                        
-                        // Comments icon with count
-                        HStack(alignment: .center, spacing: 8) {
-                            Text("💬")
-                                .font(.system(size: 18))
-                            Text("\(commentCount)")
-                                .font(.system(size: 20, weight: .semibold))
-                                .foregroundColor(.white)
-                        }
-                        
-                        Spacer()
-                        
-                        // Likes icon with count
-                        HStack(alignment: .center, spacing: 8) {
-                            Image("Like")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 20, height: 20)
-                            Text("\(likeCount)")
-                                .font(.system(size: 20, weight: .semibold))
-                                .foregroundColor(.white)
-                        }
-                        
                         Spacer()
                     }
                 }
@@ -458,13 +483,12 @@ struct UserInfoModalView: View {
                 .frame(height: 100)
                 .background(
                     LinearGradient(
-                        stops: [
-                            Gradient.Stop(color: Color(red: 0.09, green: 0.09, blue: 0.09).opacity(0.7), location: 0.00),
-                            Gradient.Stop(color: Color(red: 0.29, green: 0.29, blue: 0.29).opacity(0.7), location: 0.50),
-                            Gradient.Stop(color: Color(red: 0.13, green: 0.48, blue: 0.67).opacity(0.8), location: 1.00),
-                        ],
-                        startPoint: UnitPoint(x: 0.5, y: -0.78),
-                        endPoint: UnitPoint(x: 0.5, y: 1)
+                        gradient: Gradient(colors: [
+                            Color(red: 0.141, green: 0.263, blue: 0.388), // #244363
+                            Color(red: 0.094, green: 0.098, blue: 0.145) // #181925
+                        ]),
+                        startPoint: .top,
+                        endPoint: .bottom
                     )
                 )
                 .overlay(
@@ -512,13 +536,12 @@ struct UserInfoModalView: View {
                     .padding(.vertical, 8)
                     .background(
                         LinearGradient(
-                            stops: [
-                                Gradient.Stop(color: .white.opacity(0.2), location: 0.00),
-                                Gradient.Stop(color: Color(red: 0.77, green: 0.9, blue: 1).opacity(0.2), location: 0.25),
-                                Gradient.Stop(color: Color(red: 0.33, green: 0.77, blue: 1).opacity(0.5), location: 1.00),
-                            ],
-                            startPoint: UnitPoint(x: 0.5, y: 0),
-                            endPoint: UnitPoint(x: 0.5, y: 1)
+                            gradient: Gradient(colors: [
+                                Color(red: 0.275, green: 0.325, blue: 0.439), // #465370
+                                Color(red: 0.290, green: 0.463, blue: 0.624) // #4A769F
+                            ]),
+                            startPoint: .top,
+                            endPoint: .bottom
                         )
                     )
                     .cornerRadius(40)
@@ -545,13 +568,12 @@ struct UserInfoModalView: View {
             .frame(height: 100)
             .background(
                 LinearGradient(
-                    stops: [
-                        Gradient.Stop(color: Color(red: 0.09, green: 0.09, blue: 0.09).opacity(0.7), location: 0.00),
-                        Gradient.Stop(color: Color(red: 0.29, green: 0.29, blue: 0.29).opacity(0.7), location: 0.50),
-                        Gradient.Stop(color: Color(red: 0.13, green: 0.48, blue: 0.67).opacity(0.8), location: 1.00),
-                    ],
-                    startPoint: UnitPoint(x: 0.5, y: -0.78),
-                    endPoint: UnitPoint(x: 0.5, y: 1)
+                    gradient: Gradient(colors: [
+                        Color(red: 0.141, green: 0.263, blue: 0.388), // #244363
+                        Color(red: 0.094, green: 0.098, blue: 0.145) // #181925
+                    ]),
+                    startPoint: .top,
+                    endPoint: .bottom
                 )
             )
             .overlay(

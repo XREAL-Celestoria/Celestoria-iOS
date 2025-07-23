@@ -78,13 +78,13 @@ struct iOSAddMemoryDoneView: View {
                 // Success Message
                 VStack(spacing: 16) {
                     Text("The Memory Star upload has been completed.")
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundColor(.white)
+                        .font(.system(size: 16, weight: .regular))
+                        .foregroundColor(.white.opacity(0.8))
                         .multilineTextAlignment(.center)
                     
                     Text("Why not take a moment to explore the memory you created?")
-                        .font(.system(size: 16))
-                        .foregroundColor(.white.opacity(0.7))
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                 }
                 .padding(.horizontal, 32)
@@ -100,16 +100,16 @@ struct iOSAddMemoryDoneView: View {
                 }) {
                     Text("View Memory Star")
                         .font(.system(size: 18, weight: .semibold))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 18)
                         .background(
-                            RoundedRectangle(cornerRadius: 28)
+                            RoundedRectangle(cornerRadius: 16)
                                 .fill(
                                     LinearGradient(
-                                        colors: [Color.white, Color.white.opacity(0.95)],
-                                        startPoint: .top,
-                                        endPoint: .bottom
+                                        colors: [Color(hex: "#A68CFF"), Color(hex: "#7B61FF")],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
                                     )
                                 )
                         )
