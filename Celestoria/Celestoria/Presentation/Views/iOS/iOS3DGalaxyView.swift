@@ -370,114 +370,211 @@ struct UserInfoModalView: View {
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
+            // Main modal with Figma gradient
             if let profile = userProfile {
-                HStack(spacing: 8) {
-                    // Profile image
-                    Group {
-                        if let profileKey = profile.profileKey,
-                           let predefinedImage = PredefinedProfileImage.fromKey(profileKey) {
-                            Image(predefinedImage.rawValue)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                        } else if let profileImageURL = profile.profileImageURL {
-                            AsyncImage(url: URL(string: profileImageURL)) { image in
-                                image
+                VStack(alignment: .leading, spacing: 12) {
+                    // First row: Profile and name
+                    HStack(alignment: .center, spacing: 8) {
+                        // Profile image
+                        Group {
+                            if let profileKey = profile.profileKey,
+                               let predefinedImage = PredefinedProfileImage.fromKey(profileKey) {
+                                Image(predefinedImage.rawValue)
                                     .resizable()
                                     .aspectRatio(contentMode: .fill)
-                            } placeholder: {
+                            } else if let profileImageURL = profile.profileImageURL {
+                                AsyncImage(url: URL(string: profileImageURL)) { image in
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                } placeholder: {
+                                    Image(systemName: "person.circle.fill")
+                                        .font(.system(size: 40))
+                                        .foregroundColor(.gray)
+                                }
+                            } else {
                                 Image(systemName: "person.circle.fill")
-                                    .font(.system(size: 50))
+                                    .font(.system(size: 40))
                                     .foregroundColor(.gray)
                             }
-                        } else {
-                            Image(systemName: "person.circle.fill")
-                                .font(.system(size: 50))
-                                .foregroundColor(.gray)
                         }
-                    }
-                    .frame(width: 40, height: 40)
-                    .clipShape(Circle())
-                    
-                    // User info with name and stats
-                    VStack(alignment: .leading, spacing: 8) {
-                        // Name
-                        Text(profile.name)
-                            .font(.system(size: 18, weight: .semibold))
-                            .foregroundColor(.white)
+                        .frame(width: 40, height: 40)
+                        .clipShape(Circle())
                         
-                        // Stats row
-                        HStack(spacing: 20) {
-                            // Stars icon with count
-                            HStack(spacing: 4) {
-                                Image(systemName: "star.fill")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.white.opacity(0.7))
-                                Text("\(memoryCount)")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.white)
-                            }
-                            
-                            // Comments icon with count
-                            HStack(spacing: 4) {
-                                Image(systemName: "message.fill")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.white.opacity(0.7))
-                                Text("\(commentCount)")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.white)
-                            }
-                            
-                            // Likes icon with count
-                            HStack(spacing: 4) {
-                                Image(systemName: "heart.fill")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.white.opacity(0.7))
-                                Text("\(likeCount)")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.white)
-                            }
-                        }
+                        // User name with Figma font
+                        Text(profile.name)
+                            .font(.system(size: 25, weight: .bold))
+                            .foregroundColor(.white)
+                            .lineLimit(1)
+                        
+                        Spacer()
                     }
                     
-                    Spacer()
-                }
-                
-                // Add button positioned in top-right corner
-                if isOwnGalaxy {
-                    Button(action: onAddMemory) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "plus")
-                                .font(.system(size: 14, weight: .medium))
-                            Text("Add")
-                                .font(.system(size: 14, weight: .medium))
+                    // Second row: Stats with Figma spacing
+                    HStack(alignment: .center) {
+                        Spacer()
+                        
+                        // Stars icon with count
+                        HStack(alignment: .center, spacing: 8) {
+                            Image("Memory-icon")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 20, height: 20)
+                            Text("\(memoryCount)")
+                                .font(.system(size: 20, weight: .semibold))
+                                .foregroundColor(.white)
                         }
-                        .foregroundColor(.black)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(Color.white)
-                        )
+                        
+                        Spacer()
+                        
+                        // Comments icon with count
+                        HStack(alignment: .center, spacing: 8) {
+                            Text("💬")
+                                .font(.system(size: 18))
+                            Text("\(commentCount)")
+                                .font(.system(size: 20, weight: .semibold))
+                                .foregroundColor(.white)
+                        }
+                        
+                        Spacer()
+                        
+                        // Likes icon with count
+                        HStack(alignment: .center, spacing: 8) {
+                            Image("Like")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 20, height: 20)
+                            Text("\(likeCount)")
+                                .font(.system(size: 20, weight: .semibold))
+                                .foregroundColor(.white)
+                        }
+                        
+                        Spacer()
                     }
                 }
-            } else {
-                HStack {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    Spacer()
-                }
-            }
-        }
-        .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color(white: 0.08))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .frame(maxWidth: .infinity)
+                .frame(height: 100)
+                .background(
+                    LinearGradient(
+                        stops: [
+                            Gradient.Stop(color: Color(red: 0.09, green: 0.09, blue: 0.09).opacity(0.7), location: 0.00),
+                            Gradient.Stop(color: Color(red: 0.29, green: 0.29, blue: 0.29).opacity(0.7), location: 0.50),
+                            Gradient.Stop(color: Color(red: 0.13, green: 0.48, blue: 0.67).opacity(0.8), location: 1.00),
+                        ],
+                        startPoint: UnitPoint(x: 0.5, y: -0.78),
+                        endPoint: UnitPoint(x: 0.5, y: 1)
+                    )
                 )
-        )
-        .onAppear {
+                .overlay(
+                    RoundedRectangle(cornerRadius: 24)
+                        .stroke(
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    Color(red: 0.4, green: 0.6, blue: 0.9).opacity(0.2),
+                                    Color(red: 0.3, green: 0.5, blue: 0.8).opacity(0.1)
+                                ]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 1
+                        )
+                )
+                .cornerRadius(24)
+                .shadow(color: Color(red: 0.4, green: 0.7, blue: 1).opacity(0.9), radius: 8, x: 0, y: 0)
+                .shadow(color: Color(red: 0.4, green: 0.7, blue: 1).opacity(0.6), radius: 12, x: 0, y: 0)
+                .padding(.horizontal, 20)
+            
+            // Add button with Figma specs
+            if isOwnGalaxy {
+                Button(action: onAddMemory) {
+                    HStack(alignment: .center, spacing: 4) {
+                        HStack(alignment: .center, spacing: 0) {
+                            Image("Memory-icon")
+                                .resizable()
+                                .scaledToFit()
+                        }
+                        .padding(.leading, 0)
+                        .padding(.trailing, 2)
+                        .padding(.top, 2.99997)
+                        .padding(.bottom, 0.38748)
+                        .frame(width: 24, height: 24, alignment: .center)
+                        
+                        Image(systemName: "plus")
+                            .font(.system(size: 12, weight: .medium))
+                        
+                        Text("Add")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.white)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(
+                        LinearGradient(
+                            stops: [
+                                Gradient.Stop(color: .white.opacity(0.2), location: 0.00),
+                                Gradient.Stop(color: Color(red: 0.77, green: 0.9, blue: 1).opacity(0.2), location: 0.25),
+                                Gradient.Stop(color: Color(red: 0.33, green: 0.77, blue: 1).opacity(0.5), location: 1.00),
+                            ],
+                            startPoint: UnitPoint(x: 0.5, y: 0),
+                            endPoint: UnitPoint(x: 0.5, y: 1)
+                        )
+                    )
+                    .cornerRadius(40)
+                    .shadow(color: Color(red: 0.42, green: 0.73, blue: 1), radius: 6, x: 0, y: 0)
+                    .shadow(color: Color(red: 0.5, green: 0.8, blue: 1).opacity(0.8), radius: 10, x: 0, y: 0)
+                    .shadow(color: Color(red: 0.6, green: 0.85, blue: 1).opacity(0.6), radius: 14, x: 0, y: 0)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 40)
+                            .inset(by: 0.75)
+                            .stroke(Color(red: 0.65, green: 0.91, blue: 1), lineWidth: 1.5)
+                    )
+                }
+                .offset(x: -10, y: -10)
+            }
+        } else {
+            // Loading state
+            HStack {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                Spacer()
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity)
+            .frame(height: 100)
+            .background(
+                LinearGradient(
+                    stops: [
+                        Gradient.Stop(color: Color(red: 0.09, green: 0.09, blue: 0.09).opacity(0.7), location: 0.00),
+                        Gradient.Stop(color: Color(red: 0.29, green: 0.29, blue: 0.29).opacity(0.7), location: 0.50),
+                        Gradient.Stop(color: Color(red: 0.13, green: 0.48, blue: 0.67).opacity(0.8), location: 1.00),
+                    ],
+                    startPoint: UnitPoint(x: 0.5, y: -0.78),
+                    endPoint: UnitPoint(x: 0.5, y: 1)
+                )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 24)
+                    .stroke(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color(red: 0.4, green: 0.6, blue: 0.9).opacity(0.2),
+                                Color(red: 0.3, green: 0.5, blue: 0.8).opacity(0.1)
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
+            )
+            .cornerRadius(24)
+            .shadow(color: Color(red: 0.4, green: 0.7, blue: 1).opacity(0.9), radius: 8, x: 0, y: 0)
+            .shadow(color: Color(red: 0.4, green: 0.7, blue: 1).opacity(0.6), radius: 12, x: 0, y: 0)
+            .padding(.horizontal, 20)
+        }
+    }
+    .onAppear {
             Task {
                 await loadUserProfile()
                 await loadUserStats()
