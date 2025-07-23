@@ -19,6 +19,7 @@ class LoginViewModel: NSObject, ObservableObject, ASAuthorizationControllerDeleg
     @Published var errorMessage: String?
     @Published var userId: UUID?
     @Published var showErrorPopup: Bool = false
+    @Published var isLoggingIn: Bool = false
 
     init(
         signInUseCase: SignInWithAppleUseCase,
@@ -35,6 +36,8 @@ class LoginViewModel: NSObject, ObservableObject, ASAuthorizationControllerDeleg
     }
 
     func handleAuthorization(result: Result<ASAuthorization, Error>, completion: @escaping (UUID?) -> Void) {
+        isLoggingIn = true
+        
         switch result {
         case .success(let authorization):
             handleAppleAuthorization(authorization)
@@ -43,11 +46,13 @@ class LoginViewModel: NSObject, ObservableObject, ASAuthorizationControllerDeleg
                     if case .failure(let error) = completionResult {
                         self?.errorMessage = "Please try again."
                         self?.showErrorPopup = true
+                        self?.isLoggingIn = false
                         completion(nil)
                     }
                 }, receiveValue: { [weak self] userId in
                     // 로그인 성공 처리
                     self?.errorMessage = nil
+                    self?.isLoggingIn = false
                     self?.userId = userId
                     self?.showErrorPopup = false
 
@@ -79,6 +84,7 @@ class LoginViewModel: NSObject, ObservableObject, ASAuthorizationControllerDeleg
                         } catch {
                             self?.errorMessage = "Please try again."
                             self?.showErrorPopup = true
+                            self?.isLoggingIn = false
                             completion(nil)
                         }
                     }
@@ -88,6 +94,7 @@ class LoginViewModel: NSObject, ObservableObject, ASAuthorizationControllerDeleg
             DispatchQueue.main.async {
                 self.errorMessage = "Please try again."
                 self.showErrorPopup = true
+                self.isLoggingIn = false
                 completion(nil)
             }
         }

@@ -270,20 +270,16 @@ struct iOSAddMemoryView: View {
                 Text("Upload")
                     .font(.system(size: 17, weight: .semibold))
             }
-            .foregroundColor(viewModel.isUploadEnabled ? .white : .white.opacity(0.6))
+            .foregroundColor(viewModel.isUploadEnabled ? .NebulaBlack : .white.opacity(0.6))
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
+            .frame(height: 50)
             .background(
-                RoundedRectangle(cornerRadius: 28)
+                RoundedRectangle(cornerRadius: 16)
                     .fill(
                         viewModel.isUploadEnabled ?
+                        LinearGradient.GradientSub :
                         LinearGradient(
-                            colors: [Color(hex: "#A68CFF"), Color(hex: "#FF6B99")],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ) :
-                        LinearGradient(
-                            colors: [Color.gray.opacity(0.2)],
+                            colors: [Color.gray.opacity(0.4)],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
@@ -338,37 +334,42 @@ struct iOSCategoryButton: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: 8) {
-                Image(systemName: iconName)
-                    .font(.system(size: 28))
-                    .foregroundColor(isSelected ? .white : .white.opacity(0.8))
+                // Circular button with icon
+                ZStack {
+                    Circle()
+                        .fill(
+                            isSelected ? 
+                            LinearGradient(
+                                colors: [Color(hex: "#A68CFF"), Color(hex: "#7B61FF")],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ) : 
+                            LinearGradient(
+                                colors: [Color.clear],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .overlay(
+                            Circle()
+                                .stroke(
+                                    isSelected ? Color.clear : Color.white.opacity(0.4),
+                                    lineWidth: 1.5
+                                )
+                        )
+                        .frame(width: 60, height: 60)
+                    
+                    Image(systemName: iconName)
+                        .font(.system(size: 24))
+                        .foregroundColor(isSelected ? .white : .white.opacity(0.8))
+                }
                 
-                Text(category.displayName.uppercased())
-                    .font(.system(size: 11, weight: .medium))
+                // Category name below
+                Text(category.displayName.capitalized)
+                    .font(.system(size: 12, weight: .medium))
                     .foregroundColor(isSelected ? .white : .white.opacity(0.8))
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 90)
-            .background(
-                Group {
-                    if isSelected {
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(
-                                LinearGradient(
-                                    colors: [Color(hex: "#A68CFF"), Color(hex: "#7B61FF")],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                    } else {
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.clear)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .stroke(Color.white.opacity(0.4), lineWidth: 1.5)
-                            )
-                    }
-                }
-            )
         }
     }
 }
@@ -462,7 +463,7 @@ struct iOSPopupView: View {
                         .foregroundColor(.NebulaBlack)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(LinearGradient.GradientMain)
+                        .background(LinearGradient.GradientSub)
                         .cornerRadius(8)
                 }
             }

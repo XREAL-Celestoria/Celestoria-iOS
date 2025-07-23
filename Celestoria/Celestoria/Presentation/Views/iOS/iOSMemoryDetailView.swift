@@ -8,6 +8,7 @@
 
 import SwiftUI
 import AVKit
+import CoreMotion
 
 struct iOSMemoryDetailView: View {
     let memory: Memory
@@ -20,6 +21,11 @@ struct iOSMemoryDetailView: View {
     @State private var commentCount: Int = 0 // Comments feature not implemented
     @State private var isLiked: Bool = false
     @State private var isLikeLoading: Bool = false
+    @State private var isPlayingInline = false
+    @State private var player: AVPlayer?
+    @State private var rotationX: Double = 0
+    @State private var rotationY: Double = 0
+    @StateObject private var motionManager = MotionManager()
     @EnvironmentObject var appState: AppState
     @Environment(\.dismiss) private var dismiss
     
@@ -63,63 +69,15 @@ struct iOSMemoryDetailView: View {
                 
                 ScrollView {
                     VStack(spacing: 0) {
-                        // Video Thumbnail Section
-                        if let thumbnailURLString = memory.thumbnailURL,
-                           let thumbnailURL = URL(string: thumbnailURLString) {
-                            GeometryReader { geometry in
-                                ZStack {
-                                    AsyncImage(url: thumbnailURL) { image in
-                                        image
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fill)
-                                            .frame(width: geometry.size.width, height: geometry.size.width * 0.56) // 16:9 aspect ratio
-                                            .clipped()
-                                            .onAppear { thumbnailLoaded = true }
-                                    } placeholder: {
-                                        Rectangle()
-                                            .fill(Color.gray.opacity(0.3))
-                                            .frame(width: geometry.size.width, height: geometry.size.width * 0.56)
-                                            .overlay(
-                                                ProgressView()
-                                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                            )
-                                            .onAppear { thumbnailLoaded = false }
-                                    }
-                                    
-                                    // Play button overlay if video is available
-                                    if thumbnailLoaded && memory.videoURL != nil {
-                                        Button(action: {
-                                            showFullScreenVideo = true
-                                        }) {
-                                            ZStack {
-                                                Circle()
-                                                    .fill(Color.white.opacity(0.3))
-                                                    .frame(width: 60, height: 60)
-                                                    .overlay(
-                                                        Circle()
-                                                            .stroke(Color.white.opacity(0.5), lineWidth: 2)
-                                                    )
-                                                
-                                                Image(systemName: "play.fill")
-                                                    .font(.system(size: 24))
-                                                    .foregroundColor(.white)
-                                                    .offset(x: 3)
-                                            }
-                                        }
-                                        .buttonStyle(PlainButtonStyle())
-                                    }
-                                }
-                            }
-                            .frame(height: UIScreen.main.bounds.width * 0.56)
-                        } else {
-                            Rectangle()
-                                .fill(Color.gray.opacity(0.3))
-                                .frame(height: UIScreen.main.bounds.width * 0.56)
-                                .overlay(
-                                    Text("No media available")
-                                        .foregroundColor(.gray)
-                                )
-                        }
+                        // Gyroscope Video Section
+                        GyroscopeVideoView(
+                            memory: memory,
+                            isPlayingInline: $isPlayingInline,
+                            showFullScreenVideo: $showFullScreenVideo,
+                            player: $player,
+                            motionManager: motionManager
+                        )
+                        .frame(height: UIScreen.main.bounds.width * 0.56)
                         
                         // Info Bar
                         HStack(spacing: 20) {
@@ -362,6 +320,189 @@ struct iOSMemoryDetailView: View {
             }
         } catch {
             print("Error toggling like: \(error)")
+        }
+    }
+}
+
+// MARK: - Motion Manager
+class MotionManager: ObservableObject {
+    private let motionManager = CMMotionManager()
+    @Published var pitch: Double = 0
+    @Published var roll: Double = 0
+    
+    // Baseline values for calibration
+    private var baselinePitch: Double = 0
+    private var baselineRoll: Double = 0
+    private var calibrationTimer: Timer?
+    private let calibrationSpeed: Double = 0.1 // Higher = faster calibration
+    private var isInitialized = false
+    
+    init() {
+        if motionManager.isDeviceMotionAvailable {
+            motionManager.deviceMotionUpdateInterval = 1.0 / 60.0
+            motionManager.startDeviceMotionUpdates(to: .main) { [weak self] motion, error in
+                guard let motion = motion else { return }
+                
+                // Initialize baseline on first update
+                if !(self?.isInitialized ?? false) {
+                    self?.baselinePitch = motion.attitude.pitch
+                    self?.baselineRoll = motion.attitude.roll
+                    self?.isInitialized = true
+                }
+                
+                self?.updateRotation(motion: motion)
+            }
+            
+            // Start calibration timer
+            calibrationTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+                self?.calibrateBaseline()
+            }
+        }
+    }
+    
+    private func updateRotation(motion: CMDeviceMotion) {
+        let rawPitch = motion.attitude.pitch
+        let rawRoll = motion.attitude.roll
+        
+        // Apply differential rotation (current - baseline)
+        pitch = rawPitch - baselinePitch
+        roll = rawRoll - baselineRoll
+    }
+    
+    private func calibrateBaseline() {
+        guard let motion = motionManager.deviceMotion else { return }
+        
+        let targetPitch = motion.attitude.pitch
+        let targetRoll = motion.attitude.roll
+        
+        // Slowly lerp baseline towards current orientation
+        baselinePitch += (targetPitch - baselinePitch) * calibrationSpeed
+        baselineRoll += (targetRoll - baselineRoll) * calibrationSpeed
+    }
+    
+    deinit {
+        calibrationTimer?.invalidate()
+        motionManager.stopDeviceMotionUpdates()
+    }
+}
+
+// MARK: - Gyroscope Video View
+struct GyroscopeVideoView: View {
+    let memory: Memory
+    @Binding var isPlayingInline: Bool
+    @Binding var showFullScreenVideo: Bool
+    @Binding var player: AVPlayer?
+    @ObservedObject var motionManager: MotionManager
+    @State private var thumbnailLoaded = false
+    
+    var body: some View {
+        GeometryReader { geometry in
+            // Card container with gyroscope effect
+            ZStack {
+                // Video card with 3D rotation
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color.black)
+                    .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
+                    .overlay(
+                        ZStack {
+                            // Thumbnail or video content
+                            if let thumbnailURLString = memory.thumbnailURL,
+                               let thumbnailURL = URL(string: thumbnailURLString) {
+                                
+                                if isPlayingInline, let player = player {
+                                    // Video player
+                                    VideoPlayer(player: player)
+                                        .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
+                                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                                        .onAppear {
+                                            player.play()
+                                        }
+                                        .onDisappear {
+                                            player.pause()
+                                        }
+                                } else {
+                                    // Thumbnail
+                                    AsyncImage(url: thumbnailURL) { image in
+                                        image
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                            .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
+                                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                                            .onAppear { thumbnailLoaded = true }
+                                    } placeholder: {
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .fill(Color.gray.opacity(0.3))
+                                            .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
+                                            .overlay(
+                                                ProgressView()
+                                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                            )
+                                    }
+                                }
+                            }
+                            
+                            // Play button overlay
+                            if thumbnailLoaded && memory.videoURL != nil && !isPlayingInline {
+                                Button(action: {
+                                    if let videoURLString = memory.videoURL,
+                                       let videoURL = URL(string: videoURLString) {
+                                        player = AVPlayer(url: videoURL)
+                                        isPlayingInline = true
+                                    }
+                                }) {
+                                    ZStack {
+                                        Circle()
+                                            .fill(Color.white.opacity(0.3))
+                                            .frame(width: 60, height: 60)
+                                            .overlay(
+                                                Circle()
+                                                    .stroke(Color.white.opacity(0.5), lineWidth: 2)
+                                            )
+                                        
+                                        Image(systemName: "play.fill")
+                                            .font(.system(size: 24))
+                                            .foregroundColor(.white)
+                                            .offset(x: 3)
+                                    }
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                            }
+                            
+                            // Fullscreen button (bottom right)
+                            if (thumbnailLoaded && memory.videoURL != nil) || isPlayingInline {
+                                VStack {
+                                    Spacer()
+                                    HStack {
+                                        Spacer()
+                                        Button(action: {
+                                            showFullScreenVideo = true
+                                        }) {
+                                            Image(systemName: "arrow.up.left.and.arrow.down.right")
+                                                .font(.system(size: 16))
+                                                .foregroundColor(.white)
+                                                .padding(8)
+                                                .background(Color.black.opacity(0.5))
+                                                .clipShape(RoundedRectangle(cornerRadius: 4))
+                                        }
+                                        .padding(12)
+                                    }
+                                }
+                            }
+                        }
+                    )
+                    .rotation3DEffect(
+                        .degrees(motionManager.pitch * 20), 
+                        axis: (x: 1, y: 0, z: 0)
+                    )
+                    .rotation3DEffect(
+                        .degrees(motionManager.roll * 20), 
+                        axis: (x: 0, y: 1, z: 0)
+                    )
+                    .shadow(color: Color.black.opacity(0.3), radius: 20, x: 0, y: 10)
+            }
+            .frame(width: geometry.size.width, height: geometry.size.width * 0.56)
+            .animation(.easeOut(duration: 0.2), value: motionManager.roll)
+            .animation(.easeOut(duration: 0.2), value: motionManager.pitch)
         }
     }
 }

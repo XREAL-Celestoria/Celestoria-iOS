@@ -102,13 +102,13 @@ struct iOSThumbnailSettingView: View {
                     }
                 }) {
                     Text("Save")
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundColor(.black)
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(.NebulaBlack)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
+                        .frame(height: 50)
                         .background(
-                            RoundedRectangle(cornerRadius: 25)
-                                .fill(Color.white)
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(LinearGradient.GradientSub)
                         )
                 }
                 .padding(.horizontal, 20)

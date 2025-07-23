@@ -22,11 +22,17 @@ struct iOSProfileSettingView: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                // Profile Image Section
-                VStack(spacing: 16) {
-                    ZStack {
+        ZStack {
+            // Background
+            Color.black
+                .ignoresSafeArea()
+            
+            VStack {
+                ScrollView {
+                    VStack(spacing: 24) {
+                        // Profile Image Section
+                        VStack(spacing: 16) {
+                            ZStack {
                         if let profileKey = settingViewModel.profile?.profileKey,
                            let predefinedImage = PredefinedProfileImage.fromKey(profileKey) {
                             // Show predefined profile image
@@ -80,20 +86,33 @@ struct iOSProfileSettingView: View {
                         }
                     }
                     
-                    // Nickname Section
+                    // Nickname Section - styled like visionOS
                     if isEditMode {
-                        TextField("Nickname", text: $tempNickname)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .frame(maxWidth: 250)
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.gray.opacity(0.2))
+                                .frame(width: 280, height: 50)
+                            
+                            TextField("Nickname", text: $tempNickname)
+                                .font(.system(size: 20, weight: .medium))
+                                .foregroundColor(.white)
+                                .multilineTextAlignment(.center)
+                                .frame(width: 260)
+                        }
                     } else {
                         Text(settingViewModel.profile?.name ?? "Unknown")
                             .font(.system(size: 24, weight: .semibold))
-                            .foregroundColor(.primary)
+                            .foregroundColor(.white)
                     }
                 }
-                .padding(.top, 20)
+                        .padding(.top, 20)
+                        
+                        Spacer(minLength: 100) // Space for button
+                    }
+                    .padding()
+                }
                 
-                // Edit/Save Button
+                // Edit/Save Button - fixed at bottom
                 Button(action: {
                     if isEditMode {
                         // Save changes
@@ -108,20 +127,25 @@ struct iOSProfileSettingView: View {
                     }
                 }) {
                     Text(isEditMode ? "Done" : "Edit")
-                        .font(.system(size: 17, weight: .medium))
-                        .foregroundColor(.white)
-                        .frame(width: 100, height: 44)
-                        .background(LinearGradient.GradientMain)
-                        .cornerRadius(22)
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(.NebulaBlack)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(LinearGradient.GradientSub)
+                        )
                 }
-                .padding(.top, 10)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 30)
             }
-            .padding()
         }
         .navigationTitle("Profile")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showProfileSelector) {
-            iOSProfileSelectorView(settingViewModel: settingViewModel)
+            iOSProfileSelectorView(settingViewModel: settingViewModel, isPresented: $showProfileSelector)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
         }
         .task {
             await settingViewModel.fetchProfile()
@@ -131,90 +155,148 @@ struct iOSProfileSettingView: View {
 
 struct iOSProfileSelectorView: View {
     @ObservedObject var settingViewModel: SettingViewModel
-    @Environment(\.dismiss) private var dismiss
+    @Binding var isPresented: Bool
     @State private var selectedItem: PhotosPickerItem?
+    @State private var tempSelectedImage: ProfileImageSelection?
     
-    private let predefinedImages = ["profile_gray", "profile_blue", "profile_pink", "profile_purple",
-                                     "profile_green", "profile_yellow", "profile_blue_green", "profile_orange"]
+    private let predefinedImages = PredefinedProfileImage.allCases
     
-    @ViewBuilder
-    private var photoPicker: some View {
-        PhotosPicker(selection: $selectedItem, matching: .images) {
-            VStack {
-                Image(systemName: "photo.badge.plus")
-                    .font(.system(size: 40))
-                    .foregroundColor(.gray)
-                Text("Choose from Library")
-                    .font(.system(size: 16))
-                    .foregroundColor(.gray)
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 120)
-            .background(Color.gray.opacity(0.1))
-            .cornerRadius(12)
+    private var currentSelectedImage: ProfileImageSelection? {
+        if let profileKey = settingViewModel.profile?.profileKey,
+           let predefinedImage = PredefinedProfileImage.fromKey(profileKey) {
+            return .predefined(predefinedImage)
         }
-        .onChange(of: selectedItem) { _, newItem in
-            Task {
-                if let item = newItem,
-                   let data = try? await item.loadTransferable(type: Data.self),
-                   let image = UIImage(data: data) {
-                    await settingViewModel.updateProfileIfNeeded(newName: nil, selectedImage: .custom(image))
-                    dismiss()
-                }
-            }
-        }
+        return nil
     }
     
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Custom Photo Picker
-                    photoPicker
-                    
-                    // Predefined Images Grid
-                    Text("Or choose a preset")
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.secondary)
-                    
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
-                        ForEach(predefinedImages, id: \.self) { imageName in
-                            Button(action: {
-                                Task {
-                                    if let predefinedImage = PredefinedProfileImage(rawValue: imageName) {
-                                    await settingViewModel.updateProfileIfNeeded(newName: nil, selectedImage: .predefined(predefinedImage))
-                                }
-                                    dismiss()
-                                }
-                            }) {
-                                ZStack {
-                                    Image(imageName)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                        .frame(width: 70, height: 70)
-                                        .clipShape(Circle())
-                                    
-                                    if false { // TODO: Fix selected image check
+            ZStack {
+                Color.NebulaBlack
+                    .ignoresSafeArea()
+                
+                ScrollView {
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
+                        // Custom Photo Picker (Plus button)
+                        PhotosPicker(selection: $selectedItem, matching: .images) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.gray.opacity(0.2))
+                                    .frame(width: 100, height: 100)
+                                    .overlay(
                                         Circle()
-                                            .stroke(LinearGradient.GradientMain, lineWidth: 3)
-                                            .frame(width: 75, height: 75)
+                                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                    )
+                                
+                                Image(systemName: "plus")
+                                    .font(.system(size: 30))
+                                    .foregroundColor(.gray)
+                            }
+                        }
+                        .onChange(of: selectedItem) { _, newItem in
+                            if let item = newItem {
+                                Task {
+                                    if let data = try? await item.loadTransferable(type: Data.self),
+                                       let image = UIImage(data: data) {
+                                        await MainActor.run {
+                                            tempSelectedImage = .custom(image)
+                                        }
                                     }
                                 }
                             }
                         }
+                        
+                        // Predefined Images
+                        ForEach(predefinedImages, id: \.self) { predefinedImage in
+                            Button(action: {
+                                tempSelectedImage = .predefined(predefinedImage)
+                            }) {
+                                ProfileImageCell(
+                                    imageName: predefinedImage.rawValue,
+                                    isSelected: isImageSelected(predefinedImage)
+                                )
+                            }
+                        }
                     }
+                    .padding(.horizontal)
+                    .padding(.top, 20)
+                    .padding(.bottom, 100)
                 }
-                .padding()
             }
-            .navigationTitle("Select Profile Photo")
+            .navigationTitle("Edit Profile")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
-                        dismiss()
+                        isPresented = false
                     }
+                    .foregroundColor(.white)
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Save") {
+                        if let tempImage = tempSelectedImage {
+                            settingViewModel.selectedImage = tempImage
+                            isPresented = false
+                            // Update profile after sheet dismisses
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                Task {
+                                    await settingViewModel.updateProfileIfNeeded(newName: nil, selectedImage: tempImage)
+                                }
+                            }
+                        }
+                    }
+                    .foregroundColor(.white)
+                    .fontWeight(.semibold)
+                    .disabled(tempSelectedImage == nil)
                 }
             }
         }
+        .onAppear {
+            tempSelectedImage = currentSelectedImage
+        }
+    }
+    
+    private func isImageSelected(_ predefinedImage: PredefinedProfileImage) -> Bool {
+        if let temp = tempSelectedImage {
+            if case .predefined(let selected) = temp {
+                return selected == predefinedImage
+            }
+        }
+        return false
+    }
+}
+
+// Profile Image Cell
+struct ProfileImageCell: View {
+    let imageName: String
+    let isSelected: Bool
+    
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            // Profile Image
+            Image(imageName)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 100, height: 100)
+                .clipShape(Circle())
+                .overlay(
+                    Circle()
+                        .stroke(
+                            isSelected ? LinearGradient.GradientMain : LinearGradient(colors: [Color.clear], startPoint: .top, endPoint: .bottom),
+                            lineWidth: isSelected ? 3 : 0
+                        )
+                )
+            
+            // Checkmark
+            if isSelected {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 24))
+                    .foregroundStyle(.white, LinearGradient.GradientMain)
+                    .background(Circle().fill(Color.black))
+                    .offset(x: -5, y: 5)
+            }
+        }
+        .frame(width: 100, height: 100)
     }
 }
