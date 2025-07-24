@@ -5,14 +5,6 @@
 //  Created by Minjun Kim on 7/20/25.
 //
 
-
-//
-//  iOSOnboardingView.swift
-//  Celestoria
-//
-//  Created by Claude on 1/19/25.
-//
-
 import SwiftUI
 
 struct iOSOnboardingView: View {
@@ -20,42 +12,34 @@ struct iOSOnboardingView: View {
     @EnvironmentObject var appState: AppState
     
     private let onboardingData: [(title: String, subtitle: String)] = [
-        ("Welcome to Celestoria", "Your spatial memories, forever in the stars"),
-        ("Capture Your Moments", "Transform your videos into celestial memories"),
-        ("Explore the Galaxy", "Discover memories shared by others around the world"),
-        ("Ready to Begin", "Let's create your first constellation of memories")
+        ("Turn Moments into Memory Stars", "Create a Memory Star\nby uploading your Spatial Video"),
+        ("Design Your Own Galaxy", "Choose a cosmic background\nand build your memory-filled galaxy."),
+        ("Take Your Galaxy Everywhere", "View and upload your Memory Stars\ndirectly from your iPhone"),
+        ("Explore Other Galaxies", "Explore others’ galaxies and\nconnect through hearts and comments.")
     ]
     
     var body: some View {
         ZStack {
-            // Onboarding images not yet added - using placeholder
-            Color.NebulaBlack
-                .ignoresSafeArea()
-                .overlay(
-                    Text("onboarding-\(currentStep) image missing")
-                        .foregroundColor(.red)
-                        .font(.caption)
-                )
             
-            VStack {
+            Image("onboardingImage\(currentStep)")
+                .resizable()
+                .scaledToFill()
+                .clipped()
+                .ignoresSafeArea()
+            
+            VStack(alignment: .center) {
                 Spacer()
                 
-                iOSHeaderView(
-                    title: onboardingData[currentStep - 1].title,
-                    subtitle: onboardingData[currentStep - 1].subtitle
-                )
-                .padding(.horizontal, 32)
+                Text(onboardingData[currentStep - 1].title)
+                    .font(.system(size: 19, weight: .bold))
+                    .padding(.horizontal, 40)
+                    .padding(.bottom, 16)
                 
-                Spacer()
-                
-                HStack(spacing: 8) {
-                    ForEach(1...4, id: \.self) { step in
-                        Circle()
-                            .fill(currentStep == step ? Color.white : Color.white.opacity(0.5))
-                            .frame(width: 8, height: 8)
-                    }
-                }
-                .padding(.bottom, 32)
+                Text(onboardingData[currentStep - 1].subtitle)
+                    .font(.system(size: 15, weight: .regular))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
+                    .padding(.bottom, 80)
                 
                 iOSMainButton(
                     title: currentStep < 4 ? "Next" : "Get Started",

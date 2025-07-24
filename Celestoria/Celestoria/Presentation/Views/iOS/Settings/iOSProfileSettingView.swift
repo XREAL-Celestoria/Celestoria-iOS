@@ -62,7 +62,7 @@ struct iOSProfileSettingView: View {
                                 .overlay(
                                     Text(settingViewModel.profile?.name.prefix(1).uppercased() ?? "?")
                                         .font(.system(size: 60, weight: .bold))
-                                        .foregroundColor(.NebulaBlack)
+                                        .foregroundColor(Colors.NebulaBlack)
                                 )
                         }
                         

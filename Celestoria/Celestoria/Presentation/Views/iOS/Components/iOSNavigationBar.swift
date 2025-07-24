@@ -25,7 +25,7 @@ struct iOSNavigationBar: View {
             Button(action: action) {
                 Image(systemName: buttonImageString)
                     .font(.system(size: 20, weight: .medium))
-                    .foregroundColor(.NebulaWhite)
+                    .foregroundColor(Colors.NebulaWhite)
                     .frame(width: 44, height: 44)
             }
             
@@ -33,7 +33,7 @@ struct iOSNavigationBar: View {
             
             Text(title)
                 .font(.system(size: 18, weight: .bold))
-                .foregroundColor(.NebulaWhite)
+                .foregroundColor(Colors.NebulaWhite)
             
             Spacer()
             

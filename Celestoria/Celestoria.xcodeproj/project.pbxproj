@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2F1130022E2DF088008F1F24 /* iOSHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F112FFE2E2DF088008F1F24 /* iOSHeaderView.swift */; };
+		2F1130032E2DF088008F1F24 /* iOSMainButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F112FFF2E2DF088008F1F24 /* iOSMainButton.swift */; };
+		2F1130042E2DF088008F1F24 /* iOSNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F1130002E2DF088008F1F24 /* iOSNavigationBar.swift */; };
 		2F3671B12D3D6A9E0048D9AD /* Color+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671B02D3D6A9E0048D9AD /* Color+.swift */; };
 		2F3671B32D3D6B660048D9AD /* Gradient+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671B22D3D6B660048D9AD /* Gradient+.swift */; };
 		2F3671C92D3D76ED0048D9AD /* SpaceCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3671C82D3D76ED0048D9AD /* SpaceCoordinator.swift */; };
@@ -48,6 +51,12 @@
 		2F3672342D3E652C0048D9AD /* ErrorOvelayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672332D3E652C0048D9AD /* ErrorOvelayView.swift */; };
 		2F3672362D4111130048D9AD /* NavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3672352D4111130048D9AD /* NavigationBar.swift */; };
 		2F3D38272DDED21400DD181E /* PredefinedProfileImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F3D38262DDED21400DD181E /* PredefinedProfileImage.swift */; };
+		2F4A6E592E2E867E00E03D8A /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F4A6E582E2E867E00E03D8A /* Fonts.swift */; };
+		2F4A6E5A2E2E867E00E03D8A /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F4A6E582E2E867E00E03D8A /* Fonts.swift */; };
+		2F4A6E602E2E872000E03D8A /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F4A6E5F2E2E872000E03D8A /* Colors.swift */; };
+		2F4A6E612E2E872000E03D8A /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F4A6E5F2E2E872000E03D8A /* Colors.swift */; };
+		2F4A6E632E2E877D00E03D8A /* Text+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F4A6E622E2E877D00E03D8A /* Text+.swift */; };
+		2F4A6E642E2E877D00E03D8A /* Text+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F4A6E622E2E877D00E03D8A /* Text+.swift */; };
 		2F510CE02D413489004171E8 /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F510CDF2D413489004171E8 /* Screen.swift */; };
 		2F510CE22D4134EE004171E8 /* AddMemoryContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F510CE12D4134EE004171E8 /* AddMemoryContentView.swift */; };
 		2F510CE62D4135D3004171E8 /* AddMemoryMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F510CE52D4135D3004171E8 /* AddMemoryMainView.swift */; };
@@ -163,6 +172,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2F112FFE2E2DF088008F1F24 /* iOSHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSHeaderView.swift; sourceTree = "<group>"; };
+		2F112FFF2E2DF088008F1F24 /* iOSMainButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSMainButton.swift; sourceTree = "<group>"; };
+		2F1130002E2DF088008F1F24 /* iOSNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSNavigationBar.swift; sourceTree = "<group>"; };
 		2F3671B02D3D6A9E0048D9AD /* Color+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+.swift"; sourceTree = "<group>"; };
 		2F3671B22D3D6B660048D9AD /* Gradient+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Gradient+.swift"; sourceTree = "<group>"; };
 		2F3671C82D3D76ED0048D9AD /* SpaceCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceCoordinator.swift; sourceTree = "<group>"; };
@@ -199,6 +211,9 @@
 		2F3672332D3E652C0048D9AD /* ErrorOvelayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorOvelayView.swift; sourceTree = "<group>"; };
 		2F3672352D4111130048D9AD /* NavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBar.swift; sourceTree = "<group>"; };
 		2F3D38262DDED21400DD181E /* PredefinedProfileImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredefinedProfileImage.swift; sourceTree = "<group>"; };
+		2F4A6E582E2E867E00E03D8A /* Fonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fonts.swift; sourceTree = "<group>"; };
+		2F4A6E5F2E2E872000E03D8A /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		2F4A6E622E2E877D00E03D8A /* Text+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Text+.swift"; sourceTree = "<group>"; };
 		2F510CDF2D413489004171E8 /* Screen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Screen.swift; sourceTree = "<group>"; };
 		2F510CE12D4134EE004171E8 /* AddMemoryContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMemoryContentView.swift; sourceTree = "<group>"; };
 		2F510CE52D4135D3004171E8 /* AddMemoryMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMemoryMainView.swift; sourceTree = "<group>"; };
@@ -284,11 +299,6 @@
 			path = Manager;
 			sourceTree = "<group>";
 		};
-		A2A286332E2BF31D001D89B2 /* Components */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Components;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -317,6 +327,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2F1130012E2DF088008F1F24 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				2F112FFE2E2DF088008F1F24 /* iOSHeaderView.swift */,
+				2F112FFF2E2DF088008F1F24 /* iOSMainButton.swift */,
+				2F1130002E2DF088008F1F24 /* iOSNavigationBar.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		2F3671A82D3D61750048D9AD /* ImmersiveViews */ = {
 			isa = PBXGroup;
 			children = (
@@ -414,6 +434,15 @@
 				2F3672242D3E35110048D9AD /* AuthRepositoryProtocol.swift */,
 			);
 			path = Protocol;
+			sourceTree = "<group>";
+		};
+		2F4A6E5E2E2E86F600E03D8A /* DesignSystem */ = {
+			isa = PBXGroup;
+			children = (
+				2F4A6E582E2E867E00E03D8A /* Fonts.swift */,
+				2F4A6E5F2E2E872000E03D8A /* Colors.swift */,
+			);
+			path = DesignSystem;
 			sourceTree = "<group>";
 		};
 		2F510CE32D413588004171E8 /* Main */ = {
@@ -562,6 +591,7 @@
 		2F8800D42D38D75D00220F89 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				2F4A6E5E2E2E86F600E03D8A /* DesignSystem */,
 				2F8800D52D38D76F00220F89 /* Utilities */,
 				2F8800D62D38D77700220F89 /* Extensions */,
 			);
@@ -583,6 +613,7 @@
 				2F3671B22D3D6B660048D9AD /* Gradient+.swift */,
 				2F3671B02D3D6A9E0048D9AD /* Color+.swift */,
 				2FE858042D43D3980055902B /* TextField+.swift */,
+				2F4A6E622E2E877D00E03D8A /* Text+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -600,6 +631,7 @@
 		2FAA9CE72E22344800A0CAD7 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				2F1130012E2DF088008F1F24 /* Components */,
 				A2A286C82E2C3179001D89B2 /* iOSSettingsView.swift */,
 				A2A286C62E2C3173001D89B2 /* iOSMemoryDetailView.swift */,
 				A2A286C42E2C316A001D89B2 /* iOSAddMemoryView.swift */,
@@ -607,7 +639,6 @@
 				A2A286C02E2C3157001D89B2 /* iOS3DMemoryStarNode.swift */,
 				A2A286BE2E2C314B001D89B2 /* iOS3DGalaxyView.swift */,
 				A2A286B52E2C311A001D89B2 /* Settings */,
-				A2A286332E2BF31D001D89B2 /* Components */,
 				A2A286312E2BF314001D89B2 /* iPhoneContentView.swift */,
 				A2A2862F2E2BF307001D89B2 /* iOSTermsAndConditionsView.swift */,
 				A2A2862B2E2BF2F7001D89B2 /* iOSMainView.swift */,
@@ -700,9 +731,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				A2A286332E2BF31D001D89B2 /* Components */,
 			);
 			name = "Celestoria-iOS";
 			packageProductDependencies = (
@@ -817,6 +845,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2F4A6E632E2E877D00E03D8A /* Text+.swift in Sources */,
 				A2A286852E2C043C001D89B2 /* Color+.swift in Sources */,
 				A2A2867A2E2C03EF001D89B2 /* SettingViewModel.swift in Sources */,
 				A2A2868D2E2C09D3001D89B2 /* DeleteAccountUseCase.swift in Sources */,
@@ -825,6 +854,7 @@
 				A2A2868E2E2C09D7001D89B2 /* SignOutUseCase.swift in Sources */,
 				A2A286992E2C0D37001D89B2 /* StarField.swift in Sources */,
 				A2A286932E2C0A29001D89B2 /* CreateMemoryUseCase.swift in Sources */,
+				2F4A6E592E2E867E00E03D8A /* Fonts.swift in Sources */,
 				A2A286902E2C0A1E001D89B2 /* DeleteMemoryUseCase.swift in Sources */,
 				A2A286872E2C0958001D89B2 /* AuthRepositoryProtocol.swift in Sources */,
 				A2A286C72E2C3173001D89B2 /* iOSMemoryDetailView.swift in Sources */,
@@ -841,9 +871,13 @@
 				A2A286922E2C0A25001D89B2 /* ExploreUseCase.swift in Sources */,
 				A2A2868F2E2C0A1B001D89B2 /* SignInWithAppleUseCase.swift in Sources */,
 				A2A2867C2E2C0408001D89B2 /* Category.swift in Sources */,
+				2F1130022E2DF088008F1F24 /* iOSHeaderView.swift in Sources */,
+				2F1130032E2DF088008F1F24 /* iOSMainButton.swift in Sources */,
+				2F1130042E2DF088008F1F24 /* iOSNavigationBar.swift in Sources */,
 				A2A286962E2C0A3C001D89B2 /* AuthRepository.swift in Sources */,
 				A2A286942E2C0A2C001D89B2 /* FetchMemoriesUseCase.swift in Sources */,
 				A2A2867E2E2C0410001D89B2 /* UserProfile.swift in Sources */,
+				2F4A6E602E2E872000E03D8A /* Colors.swift in Sources */,
 				A2A286BB2E2C312E001D89B2 /* iOSProfileSettingView.swift in Sources */,
 				A2A2867D2E2C040C001D89B2 /* Memory.swift in Sources */,
 				A2A286952E2C0A39001D89B2 /* MemoryRepository.swift in Sources */,
@@ -914,6 +948,7 @@
 				2F3672152D3DAAF20048D9AD /* SpaceBackgroundEntity.swift in Sources */,
 				2F3671EB2D3D9A8C0048D9AD /* UserProfile.swift in Sources */,
 				A29437D12D513C4E00982EAC /* Block.swift in Sources */,
+				2F4A6E642E2E877D00E03D8A /* Text+.swift in Sources */,
 				2F3672032D3DA1F00048D9AD /* MemoryRepository.swift in Sources */,
 				2F3672112D3DAAA40048D9AD /* ConstellationSpaceEntity.swift in Sources */,
 				2F3672272D3E35310048D9AD /* AuthRepository.swift in Sources */,
@@ -939,6 +974,7 @@
 				2FB501D32D454FA3005FB0B6 /* GalaxyViewModel.swift in Sources */,
 				A29437CB2D4FEA9F00982EAC /* TermsAndConditionsView.swift in Sources */,
 				2F3D38272DDED21400DD181E /* PredefinedProfileImage.swift in Sources */,
+				2F4A6E5A2E2E867E00E03D8A /* Fonts.swift in Sources */,
 				2F6738212D4945FF00882ADC /* GradientBorderSmall.swift in Sources */,
 				2F36720B2D3DA3F20048D9AD /* Config.swift in Sources */,
 				2F8800C42D38D3AE00220F89 /* DIContainer.swift in Sources */,
@@ -946,6 +982,7 @@
 				2F510CEA2D41449A004171E8 /* AddMemoryMainViewModel.swift in Sources */,
 				2F3671D52D3D7C3C0048D9AD /* ErrorBannerView.swift in Sources */,
 				A2198CA32D48812500B0AF65 /* ExploreUseCase.swift in Sources */,
+				2F4A6E612E2E872000E03D8A /* Colors.swift in Sources */,
 				2FB501E62D46CDD6005FB0B6 /* MemoryDetailViewModel.swift in Sources */,
 				2F3672362D4111130048D9AD /* NavigationBar.swift in Sources */,
 				2FB501D52D455130005FB0B6 /* NavigationMenuButton.swift in Sources */,
