@@ -168,7 +168,19 @@ struct AddMemoryButton: View {
             .overlay(
                 RoundedRectangle(cornerRadius: 40)
                     .inset(by: 0.75)
-                    .stroke(Color(red: 0.65, green: 0.91, blue: 1), lineWidth: 1.5)
+                    .stroke(
+                        LinearGradient(
+                            gradient: Gradient(stops: [
+                                Gradient.Stop(color: Color(hex: "CFF4FF").opacity(0.4), location: 0.0),
+                                Gradient.Stop(color: Color.white.opacity(0.0), location: 0.41),
+                                Gradient.Stop(color: Color.white.opacity(0.0), location: 0.62),
+                                Gradient.Stop(color: Color(hex: "CFF4FF").opacity(0.2), location: 1.0)
+                            ]),
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        ),
+                        lineWidth: 1.5
+                    )
             )
         }
         .offset(x: isExpanded ? -24 : -50, y: isExpanded ? 24 : -14)

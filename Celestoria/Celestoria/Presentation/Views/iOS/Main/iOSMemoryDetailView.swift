@@ -90,25 +90,32 @@ struct iOSMemoryDetailView: View {
                                     await toggleLike()
                                 }
                             }) {
-                                HStack(spacing: 4) {
-                                    Image(systemName: isLiked ? "heart.fill" : "heart")
-                                        .font(.system(size: 18))
+                                HStack(spacing: 8) {
+                                    // TODO: - 수정 필요
+                                    Image(isLiked ? "likeWhiteIcon" : "likeWhiteIcon")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 24, height: 24)
+                                    
                                     Text("\(likeCount)")
-                                        .font(.system(size: 16))
+                                        .fontStyle(Fonts.caption1)
+                                        .foregroundStyle(Colors.NebulaWhite)
                                 }
-                                .foregroundColor(isLiked ? .red : .white)
                             }
                             .disabled(isLikeLoading || memory.userId == appState.userId)
                             
                             // Comment count
-                            HStack(spacing: 4) {
-                                Image(systemName: "message")
-                                    .font(.system(size: 18))
+                            HStack(spacing: 8) {
+                                Image("commentWhiteIcon")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 24, height: 24)
+                                
                                 Text("\(commentCount)")
-                                    .font(.system(size: 16))
+                                    .fontStyle(Fonts.caption1)
+                                    .foregroundStyle(Colors.NebulaWhite)
                             }
-                            .foregroundColor(.white)
-                            
+                                                
                             Spacer()
                             
                             // Delete button (only for owner)
@@ -116,9 +123,10 @@ struct iOSMemoryDetailView: View {
                                 Button(action: {
                                     showDeleteConfirmation = true
                                 }) {
-                                    Image(systemName: "trash")
-                                        .font(.system(size: 18))
-                                        .foregroundColor(.white)
+                                    Image("trashIcon")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 24, height: 24)
                                 }
                             }
                         }
@@ -126,27 +134,33 @@ struct iOSMemoryDetailView: View {
                         .padding(.vertical, 16)
                         
                         // Memory Info
-                        VStack(alignment: .leading, spacing: 20) {
+                        VStack(alignment: .leading) {
                             // Category and Date
                             HStack {
                                 // Category
                                 Text(memory.category.rawValue.uppercased())
-                                    .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(Color(hex: "#7B61FF"))
+                                    .fontStyle(Fonts.caption2)
+                                    .foregroundStyle(LinearGradient.GradientMain)
                                 
                                 Text("•")
-                                    .foregroundColor(.white.opacity(0.5))
+                                    .foregroundColor(Colors.NebulaWhite.opacity(0.6))
                                 
                                 // Date
                                 Text(formatDate(memory.createdAt))
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.white.opacity(0.7))
+                                    .fontStyle(Fonts.caption2)
+                                    .foregroundColor(Colors.NebulaWhite)
                             }
+                            
+                            Spacer()
+                                .frame(height: 8)
                             
                             // Title
                             Text(memory.title)
-                                .font(.system(size: 22, weight: .bold))
-                                .foregroundColor(.white)
+                                .fontStyle(Fonts.title3)
+                                .foregroundColor(Colors.NebulaWhite)
+                            
+                            Spacer()
+                                .frame(height: 20)
                             
                             // Note
                             if !memory.note.isEmpty {
@@ -156,7 +170,6 @@ struct iOSMemoryDetailView: View {
                                     .lineSpacing(4)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
-                            
                             
                             // Owner Info
                             if let profile = ownerProfile {
@@ -206,16 +219,23 @@ struct iOSMemoryDetailView: View {
             }
         }
         .navigationBarHidden(true)
-        .confirmationDialog("Delete Memory Star", isPresented: $showDeleteConfirmation, titleVisibility: .visible) {
-            Button("Delete", role: .destructive) {
-                Task {
-                    await deleteMemory()
+        .overlay(
+            Group {
+                if showDeleteConfirmation {
+                    DeleteMemoryConfirmationPopup(
+                        onCancel: {
+                            showDeleteConfirmation = false
+                        },
+                        onDelete: {
+                            Task {
+                                await deleteMemory()
+                            }
+                        }
+                    )
+                    .transition(.opacity.combined(with: .scale(scale: 0.9)))
                 }
             }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("Are you sure you want to delete this? This action cannot be undone.")
-        }
+        )
         .task {
             await loadOwnerProfile()
             await loadLikeData()
