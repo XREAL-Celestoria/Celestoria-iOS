@@ -86,7 +86,7 @@ struct TermsAndConditionsView: View {
                         .padding(30)
                 }
                 .frame(width: 826, height: 386)
-                .background(Color.Profile.opacity(0.2))
+                .background(Colors.Profile.opacity(0.2))
                 .cornerRadius(34.66)
                 .overlay(
                     RoundedRectangle(cornerRadius: 34.66)

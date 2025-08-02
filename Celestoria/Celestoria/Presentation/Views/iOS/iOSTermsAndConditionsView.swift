@@ -9,33 +9,54 @@ import SwiftUI
 
 struct iOSTermsAndConditionsView: View {
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var settingViewModel: SettingViewModel
     
     var body: some View {
         ZStack {
-            // Full black background
-            Color.black
+            Colors.backgroundMain
                 .ignoresSafeArea()
             
-            VStack(spacing: 20) {
-                Spacer()
+            VStack {
+                // Header
+                ZStack {
+                    HStack {
+                        Button(action: {
+                            settingViewModel.resetToLogin()
+                        }) {
+                            Image("backButton")
+                                .resizable()
+                                .frame(width: 30, height: 30)
+                        }
+                        
+                        Spacer()
+                    }
+                    
+                    HStack(alignment: .center) {
+                        Spacer()
+                        
+                        Text("Terms and Conditions")
+                            .fontStyle(Fonts.headline)
+                            .foregroundColor(Colors.NebulaWhite)
+                        
+                        Spacer()
+                    }
+                }
+                .frame(maxWidth: .infinity, minHeight: 48)
+                .padding(.horizontal, 14)
+                .padding(.bottom, 20)
                 
-                // Title outside the card
-                Text("Terms and Conditions")
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(Colors.NebulaWhite)
-                    .padding(.horizontal, 40)
-                
-                // Main card container
+                // ScrollView Content
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
-                        // Your Agreement inside the card
+                    VStack(alignment: .center) {
                         Text("Your Agreement")
-                            .font(.system(size: 17, weight: .semibold))
+                            .fontStyle(Fonts.callout)
                             .foregroundColor(Colors.NebulaWhite)
                             .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.top, 24)
+                            .padding(.top, 30)
                         
-                        // Terms content
+                        Spacer()
+                            .frame(minHeight: 16)
+                        
                         Text("""
                         These Terms and Conditions govern the use of this Application. By downloading and using this Application, you agree to these Terms. If you do not agree, please refrain from using the Application.
 
@@ -59,62 +80,41 @@ struct iOSTermsAndConditionsView: View {
                         5. Governing Law
                         These Terms are governed by the laws applicable to Apple's App Store. Any disputes will be resolved in accordance with Apple's policies.
                         """)
-                        .font(.system(size: 14))
-                        .foregroundColor(Colors.NebulaWhite.opacity(0.8))
+                        .fontStyle(Fonts.subheadline)
+                        .foregroundColor(Colors.NebulaWhite)
                         .lineSpacing(5)
-                        .padding(.horizontal, 20)
+                        .padding(.horizontal, 30)
                         .padding(.bottom, 30)
                     }
                 }
-                .frame(maxHeight: 380)
                 .background(
-                    RoundedRectangle(cornerRadius: 24)
-                        .fill(Color.black.opacity(0.85))
+                    RoundedRectangle(cornerRadius: 40)
+                        .fill(Colors.InputBackground)
                         .overlay(
                             RoundedRectangle(cornerRadius: 24)
-                                .stroke(Colors.NebulaWhite.opacity(0.2), lineWidth: 1)
+                                .stroke(Colors.GrayStroke)
                         )
                 )
-                .padding(.horizontal, 20)
+                .padding(.horizontal, 24)
                 
-                // Buttons outside the card
-                HStack(spacing: 12) {
-                    Button(action: {
-                        appState.navigationState = .login
-                    }) {
-                        Text("Cancel")
-                            .font(.system(size: 17, weight: .semibold))
-                            .foregroundColor(Colors.NebulaWhite)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 50)
-                            .background(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .fill(Color(hex: "#2C2C2E"))
-                            )
-                    }
-                    
-                    Button(action: {
-                        // 약관 동의 시 UserDefaults에 상태 저장
-                        UserDefaults.standard.set(true, forKey: "hasAcceptedTerms")
-                        appState.hasAcceptedTerms = true
-                        appState.navigationState = .main
-                    }) {
-                        Text("Agree")
-                            .font(.system(size: 17, weight: .semibold))
-                            .foregroundColor(Colors.NebulaBlack)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 50)
-                            .background(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .fill(LinearGradient.GradientSub)
-                            )
+                // Bottom Buttons
+                VStack(spacing: 10) {
+                    HStack(spacing: 10) {
+                        iOSMainButton(title: "Cancel", action: {settingViewModel.resetToLogin()}, isEnabled: false)
+                        
+                        iOSMainButton(title: "Agree", action: {
+                            UserDefaults.standard.set(true, forKey: "hasAcceptedTerms")
+                            appState.hasAcceptedTerms = true
+                            appState.navigationState = .main
+                        }, isEnabled: true)
                     }
                 }
-                .padding(.horizontal, 20)
+                .padding(.horizontal, 24)
                 .padding(.top, 20)
-                
-                Spacer()
+                .padding(.bottom, 60)
             }
         }
+        // 위치를 같게 하기 위해.. 서인데 이거 뭐 왜이러지 몰름
+        .ignoresSafeArea(.container, edges: .bottom)
     }
 }

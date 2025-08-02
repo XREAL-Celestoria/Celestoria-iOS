@@ -232,4 +232,26 @@ class SettingViewModel: ObservableObject {
             Logger.error("Failed to unblock user: \(error.localizedDescription)")
         }
     }
+    
+    // MARK: - Login Reset Methods
+    
+    /// 로그인 상태를 완전히 초기화하고 로그인 화면으로 이동합니다.
+    func resetToLogin() {
+        // AppState 초기화
+        appState.userId = nil
+        appState.userProfile = nil
+        
+        // UserDefaults에서 관련 데이터 제거
+        UserDefaults.standard.removeObject(forKey: "userId")
+        UserDefaults.standard.removeObject(forKey: "hasAcceptedTerms")
+        
+        // iOS에서는 navigationState 사용
+        #if os(iOS)
+        appState.navigationState = .login
+        #else
+        appState.activeScreen = .login
+        #endif
+        
+        Logger.info("Login state reset - User logged out and redirected to login")
+    }
 }

@@ -17,7 +17,7 @@ struct iOSSplashView: View {
             
             VStack(spacing: 20) {
                 // 앱 아이콘
-                Image("AppIcon")
+                Image("Logo")
                     .resizable()
                     .scaledToFit()
                     .frame(maxWidth: 168, maxHeight: 168)

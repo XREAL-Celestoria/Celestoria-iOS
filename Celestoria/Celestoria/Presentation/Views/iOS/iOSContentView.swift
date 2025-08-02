@@ -22,6 +22,7 @@ struct iOSContentView: View {
         Group {
             if showSplash {
                 iOSSplashView()
+                    .transition(.opacity)
             } else {
                 Group {
                     switch appState.navigationState {
@@ -31,7 +32,7 @@ struct iOSContentView: View {
                         
                     case .login:
                         iOSLoginView()
-                            .environmentObject(loginViewModel) 
+                            .environmentObject(loginViewModel)
                             .transition(.opacity)
                         
                     case .terms:
@@ -46,13 +47,15 @@ struct iOSContentView: View {
                             .zIndex(0)
                     }
                 }
-                .animation(.easeInOut(duration: 0.3), value: appState.navigationState)
             }
         }
+        .animation(.easeInOut(duration: 0.8), value: showSplash)
+        .animation(.easeInOut(duration: 0.6), value: appState.navigationState)
         .onAppear {
+            // 스플래시 화면 표시 후 초기화
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                 initializeAppState()
-                withAnimation(.easeInOut(duration: 0.3)) {
+                withAnimation(.easeInOut(duration: 0.8)) {
                     showSplash = false
                 }
             }

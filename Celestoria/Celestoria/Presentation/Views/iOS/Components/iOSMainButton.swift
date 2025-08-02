@@ -18,17 +18,16 @@ struct iOSMainButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 19, weight: .bold))
+                .fontStyle(Fonts.title3)
                 .foregroundColor(isEnabled ? Colors.NebulaBlack : Colors.NebulaWhite)
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
                 .background(isEnabled ?
                             AnyShapeStyle(LinearGradient.GradientSub) :
-                                AnyShapeStyle(Colors.NebulaWhite.opacity(0.1)))
+                                AnyShapeStyle(Colors.BtnGray))
                 .cornerRadius(16)
         }
         .buttonStyle(iOSMainButtonStyle())
-        .padding(.horizontal, 24)
     }
 }
 

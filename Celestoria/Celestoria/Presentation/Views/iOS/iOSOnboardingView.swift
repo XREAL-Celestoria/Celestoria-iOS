@@ -25,7 +25,6 @@ struct iOSOnboardingView: View {
     
     var body: some View {
         ZStack {
-            
             Image("Onboarding\(currentStep)")
                 .resizable()
                 .scaledToFill()
@@ -60,17 +59,19 @@ struct iOSOnboardingView: View {
                     },
                     isEnabled: true
                 )
+                .padding(.horizontal, 24)
                 .padding(.bottom, 60)
             }
         }
     }
+    
     private var content: some View {
            VStack(spacing: 16) {
                Text(onboardingData[currentStep - 1].title)
-                   .font(.system(size: 19, weight: .bold))
+                   .fontStyle(Fonts.title3)
 
                Text(onboardingData[currentStep - 1].subtitle)
-                   .font(.system(size: 15))
+                   .fontStyle(Fonts.subheadline)
                    .multilineTextAlignment(.center)
            }
        }

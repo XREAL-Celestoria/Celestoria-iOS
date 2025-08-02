@@ -9,147 +9,141 @@ import Foundation
 import SwiftUI
 
 enum Fonts {
-    // title
+    // XL Titles
+    static let xlTitle1 = FontStyle(
+        name: "XLTitle1",
+        size: 48,
+        lineHeight: 56,
+        letterSpacing: 0,
+        weight: .bold
+    )
+    
+    static let xlTitle2 = FontStyle(
+        name: "XLTitle2",
+        size: 38,
+        lineHeight: 46,
+        letterSpacing: 0,
+        weight: .bold
+    )
+    
+    // Large Title
+    static let largeTitle = FontStyle(
+        name: "LargeTitle",
+        size: 29,
+        lineHeight: 38,
+        letterSpacing: 0,
+        weight: .bold
+    )
+    
+    // Titles
     static let title1 = FontStyle(
-        name: "Pretendard-Bold",
-        size: 28,
-        lineHeight: 36.4,
-        letterSpacing: -0.4
-    )
-    
-    static let title2Bold = FontStyle(
-        name: "Pretendard-Bold",
+        name: "Title1",
         size: 24,
-        lineHeight: 31.2,
-        letterSpacing: -0.4
+        lineHeight: 32,
+        letterSpacing: 0,
+        weight: .bold
     )
     
-    static let title2SemiBold = FontStyle(
-        name: "Pretendard-SemiBold",
+    static let title1_2 = FontStyle(
+        name: "Title1-2",
         size: 24,
-        lineHeight: 31.2,
-        letterSpacing: -0.4
+        lineHeight: 32,
+        letterSpacing: 0,
+        weight: .semibold
     )
     
-    // heading
-    static let heading1Bold = FontStyle(
-        name: "Pretendard-Bold",
+    static let title2 = FontStyle(
+        name: "Title2",
         size: 22,
-        lineHeight: 28.6,
-        letterSpacing: -0.4
+        lineHeight: 28,
+        letterSpacing: 0,
+        weight: .bold
     )
     
-    static let heading1SemiBold = FontStyle(
-        name: "Pretendard-SemiBold",
+    static let title2_2 = FontStyle(
+        name: "Title2-2",
         size: 22,
-        lineHeight: 28.6,
-        letterSpacing: -0.4
+        lineHeight: 28,
+        letterSpacing: 0,
+        weight: .semibold
     )
     
-    static let heading2Bold = FontStyle(
-        name: "Pretendard-Bold",
-        size: 18,
-        lineHeight: 23.4,
-        letterSpacing: -0.4
+    static let title3 = FontStyle(
+        name: "Title3",
+        size: 19,
+        lineHeight: 24,
+        letterSpacing: 0,
+        weight: .bold
     )
     
-    static let heading3Bold = FontStyle(
-        name: "Pretendard-Bold",
-        size: 16,
-        lineHeight: 20.8,
-        letterSpacing: -0.4
+    // Headline
+    static let headline = FontStyle(
+        name: "Headline",
+        size: 17,
+        lineHeight: 22,
+        letterSpacing: 0,
+        weight: .bold
     )
     
-    static let heading2SemiBold = FontStyle(
-        name: "Pretendard-SemiBold",
-        size: 18,
-        lineHeight: 23.4,
-        letterSpacing: -0.4
+    // Body
+    static let body1 = FontStyle(
+        name: "Body1",
+        size: 17,
+        lineHeight: 22,
+        letterSpacing: 0,
+        weight: .medium
     )
     
-    static let heading2Medium = FontStyle(
-        name: "Pretendard-Medium",
-        size: 18,
-        lineHeight: 23.4,
-        letterSpacing: -0.4
+    static let body2 = FontStyle(
+        name: "Body2",
+        size: 17,
+        lineHeight: 22,
+        letterSpacing: 0,
+        weight: .regular
     )
     
-    static let heading3Medium = FontStyle(
-        name: "Pretendard-Medium",
-        size: 16,
-        lineHeight: 20.8,
-        letterSpacing: -0.4
+    // Callout
+    static let callout = FontStyle(
+        name: "Callout",
+        size: 15,
+        lineHeight: 20,
+        letterSpacing: 0,
+        weight: .semibold
     )
     
-    static let heading3Regular = FontStyle(
-        name: "Pretendard-Regular",
-        size: 16,
-        lineHeight: 20.8,
-        letterSpacing: -0.4
+    // Subheadline
+    static let subheadline = FontStyle(
+        name: "Subheadline",
+        size: 15,
+        lineHeight: 20,
+        letterSpacing: 0,
+        weight: .regular
     )
     
-    // body
-    static let body1SemiBold = FontStyle(
-        name: "Pretendard-SemiBold",
-        size: 14,
-        lineHeight: 21.0,
-        letterSpacing: -0.4
+    // Footnote
+    static let footnote = FontStyle(
+        name: "Footnote",
+        size: 13,
+        lineHeight: 18,
+        letterSpacing: 0,
+        weight: .medium
     )
     
-    static let body1Medium = FontStyle(
-        name: "Pretendard-Medium",
-        size: 14,
-        lineHeight: 21.0,
-        letterSpacing: -0.4
-    )
-    
-    static let body2SemiBold = FontStyle(
-        name: "Pretendard-SemiBold",
+    // Captions
+    static let caption1 = FontStyle(
+        name: "Caption1",
         size: 12,
-        lineHeight: 18.0,
-        letterSpacing: -0.4
-    )
-    
-    static let body2Medium = FontStyle(
-        name: "Pretendard-Medium",
-        size: 12,
-        lineHeight: 18.0,
-        letterSpacing: -0.4
-    )
-    
-    static let body2Regular = FontStyle(
-        name: "Pretendard-Regular",
-        size: 12,
-        lineHeight: 18.0,
-        letterSpacing: -0.4
-    )
-    
-    static let caption1Medium = FontStyle(
-        name: "Pretendard-Medium",
-        size: 11,
-        lineHeight: 16.5,
-        letterSpacing: -0.4
-    )
-    
-    static let caption1Regular = FontStyle(
-        name: "Pretendard-Regular",
-        size: 11,
-        lineHeight: 16.5,
-        letterSpacing: -0.4
-    )
-    
-    static let caption1Semibold = FontStyle(
-        name: "Pretendard-SemiBold",
-        size: 11,
-        lineHeight: 16.5,
-        letterSpacing: -0.4
+        lineHeight: 16,
+        letterSpacing: 0,
+        weight: .medium
     )
     
     static let caption2 = FontStyle(
-        name: "Pretendard-Regular",
-        size: 9,
-        lineHeight: 13.5,
-        letterSpacing: -0.4
+        name: "Caption2",
+        size: 12,
+        lineHeight: 16,
+        letterSpacing: 0,
+        weight: .medium
     )
 }
 
@@ -158,8 +152,9 @@ struct FontStyle {
     let size: CGFloat
     let lineHeight: CGFloat
     let letterSpacing: CGFloat
-
+    let weight: Font.Weight
+    
     func toFont() -> Font {
-        Font.custom(name, size: size)
+        return .system(size: size, weight: weight, design: .default)
     }
 }
