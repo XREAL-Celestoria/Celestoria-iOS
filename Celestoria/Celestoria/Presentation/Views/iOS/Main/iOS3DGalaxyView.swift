@@ -41,7 +41,7 @@ struct iOS3DGalaxyView: View {
                 }
             }
         }
-        .sheet(isPresented: $viewModel.showMemoryDetail, onDismiss: {
+        .fullScreenCover(isPresented: $viewModel.showMemoryDetail, onDismiss: {
             viewModel.clearSelectedMemory()
         }) {
             if let memory = viewModel.selectedMemory {

@@ -51,8 +51,24 @@ struct iOSMemoryDetailView: View {
                 .shadow(color: Color(red: 0.4, green: 0.7, blue: 1).opacity(0.9), radius: 8, x: 0, y: 0)
                 .shadow(color: Color(red: 0.4, green: 0.7, blue: 1).opacity(0.6), radius: 12, x: 0, y: 0)
             
-            VStack(spacing: 0) {
-                closeButtonHeader
+            VStack {
+                // Close button header
+                HStack {
+                    Button(action: { dismiss() }) {
+                        Image("backButton")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 30, height: 30)
+                    }
+                    .padding(.leading, 16)
+                    .padding(.top, 8)
+                    
+                    Spacer()
+                }
+                .zIndex(1)
+                
+                Spacer()
+                    .frame(height: 8)
                 
                 ScrollView {
                     VStack(spacing: 0) {
@@ -66,8 +82,125 @@ struct iOSMemoryDetailView: View {
                         )
                         .frame(height: UIScreen.main.bounds.width * 0.56)
                         
-                        memoryActionBar
-                        memoryInfoSection
+                        // Info Bar
+                        HStack(spacing: 20) {
+                            // Like button
+                            Button(action: {
+                                Task {
+                                    await toggleLike()
+                                }
+                            }) {
+                                HStack(spacing: 4) {
+                                    Image(systemName: isLiked ? "heart.fill" : "heart")
+                                        .font(.system(size: 18))
+                                    Text("\(likeCount)")
+                                        .font(.system(size: 16))
+                                }
+                                .foregroundColor(isLiked ? .red : .white)
+                            }
+                            .disabled(isLikeLoading || memory.userId == appState.userId)
+                            
+                            // Comment count
+                            HStack(spacing: 4) {
+                                Image(systemName: "message")
+                                    .font(.system(size: 18))
+                                Text("\(commentCount)")
+                                    .font(.system(size: 16))
+                            }
+                            .foregroundColor(.white)
+                            
+                            Spacer()
+                            
+                            // Delete button (only for owner)
+                            if memory.userId == appState.userId {
+                                Button(action: {
+                                    showDeleteConfirmation = true
+                                }) {
+                                    Image(systemName: "trash")
+                                        .font(.system(size: 18))
+                                        .foregroundColor(.white)
+                                }
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 16)
+                        
+                        // Memory Info
+                        VStack(alignment: .leading, spacing: 20) {
+                            // Category and Date
+                            HStack {
+                                // Category
+                                Text(memory.category.rawValue.uppercased())
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(Color(hex: "#7B61FF"))
+                                
+                                Text("•")
+                                    .foregroundColor(.white.opacity(0.5))
+                                
+                                // Date
+                                Text(formatDate(memory.createdAt))
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.white.opacity(0.7))
+                            }
+                            
+                            // Title
+                            Text(memory.title)
+                                .font(.system(size: 22, weight: .bold))
+                                .foregroundColor(.white)
+                            
+                            // Note
+                            if !memory.note.isEmpty {
+                                Text(memory.note)
+                                    .font(.system(size: 16))
+                                    .foregroundColor(.white.opacity(0.9))
+                                    .lineSpacing(4)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                            
+                            
+                            // Owner Info
+                            if let profile = ownerProfile {
+                                HStack(spacing: 12) {
+                                    Group {
+                                        if let profileKey = profile.profileKey,
+                                           let predefinedImage = PredefinedProfileImage.fromKey(profileKey) {
+                                            Image(predefinedImage.rawValue)
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fill)
+                                        } else if let profileImageURL = profile.profileImageURL {
+                                            AsyncImage(url: URL(string: profileImageURL)) { image in
+                                                image
+                                                    .resizable()
+                                                    .aspectRatio(contentMode: .fill)
+                                            } placeholder: {
+                                                Circle()
+                                                    .fill(Color.gray)
+                                            }
+                                        } else {
+                                            Circle()
+                                                .fill(Color.gray)
+                                        }
+                                    }
+                                    .frame(width: 50, height: 50)
+                                    .clipShape(Circle())
+                                    
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(profile.name)
+                                            .font(.system(size: 16, weight: .semibold))
+                                            .foregroundColor(.white)
+                                        Text("Owner")
+                                            .font(.system(size: 14))
+                                            .foregroundColor(.white.opacity(0.6))
+                                    }
+                                    
+                                    Spacer()
+                                }
+                                .padding(.top, 16)
+                                .padding(.bottom, 8)
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 16)
                     }
                 }
             }
@@ -125,171 +258,6 @@ struct iOSMemoryDetailView: View {
                     }
             }
         }
-    }
-    
-    // MARK: - Close Button Header
-    private var closeButtonHeader: some View {
-        HStack {
-            Button(action: { dismiss() }) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 20, weight: .medium))
-                    .foregroundColor(.white)
-                    .padding(12)
-                    .background(
-                        Circle()
-                            .fill(Color.black.opacity(0.5))
-                    )
-            }
-            .padding(.leading, 16)
-            .padding(.top, 8)
-            Spacer()
-        }
-        .zIndex(1)
-    }
-    
-    // MARK: - Memory Action Bar
-    private var memoryActionBar: some View {
-        HStack(spacing: 20) {
-            // Like button
-            Button(action: {
-                Task {
-                    await toggleLike()
-                }
-            }) {
-                HStack(spacing: 4) {
-                    Image(systemName: isLiked ? "heart.fill" : "heart")
-                        .font(.system(size: 18))
-                    Text("\(likeCount)")
-                        .font(.system(size: 16))
-                }
-                .foregroundColor(isLiked ? .red : .white)
-            }
-            .disabled(isLikeLoading || memory.userId == appState.userId)
-            
-            // Comment count
-            HStack(spacing: 4) {
-                Image(systemName: "message")
-                    .font(.system(size: 18))
-                Text("\(commentCount)")
-                    .font(.system(size: 16))
-            }
-            .foregroundColor(.white)
-            
-            Spacer()
-            
-            // Delete button (only for owner)
-            if memory.userId == appState.userId {
-                Button(action: {
-                    showDeleteConfirmation = true
-                }) {
-                    Image(systemName: "trash")
-                        .font(.system(size: 18))
-                        .foregroundColor(.white)
-                }
-            }
-        }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 16)
-    }
-    
-    // MARK: - Memory Info Section
-    private var memoryInfoSection: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            memoryHeaderInfo
-            memoryTitle
-            memoryNote
-            memoryOwnerInfo
-        }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 16)
-    }
-    
-    // MARK: - Memory Header Info
-    private var memoryHeaderInfo: some View {
-        HStack {
-            // Category
-            Text(memory.category.rawValue.uppercased())
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(Color(hex: "#7B61FF"))
-            
-            Text("•")
-                .foregroundColor(.white.opacity(0.5))
-            
-            // Date
-            Text(formatDate(memory.createdAt))
-                .font(.system(size: 14))
-                .foregroundColor(.white.opacity(0.7))
-        }
-    }
-    
-    // MARK: - Memory Title
-    private var memoryTitle: some View {
-        Text(memory.title)
-            .font(.system(size: 22, weight: .bold))
-            .foregroundColor(.white)
-    }
-    
-    // MARK: - Memory Note
-    private var memoryNote: some View {
-        Group {
-            if !memory.note.isEmpty {
-                Text(memory.note)
-                    .font(.system(size: 16))
-                    .foregroundColor(.white.opacity(0.9))
-                    .lineSpacing(4)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-    }
-    
-    // MARK: - Memory Owner Info
-    private var memoryOwnerInfo: some View {
-        Group {
-            if let profile = ownerProfile {
-                HStack(spacing: 12) {
-                    ownerProfileImage(profile: profile)
-                    
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(profile.name)
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.white)
-                        Text("Owner")
-                            .font(.system(size: 14))
-                            .foregroundColor(.white.opacity(0.6))
-                    }
-                    
-                    Spacer()
-                }
-                .padding(.top, 16)
-                .padding(.bottom, 8)
-            }
-        }
-    }
-    
-    // MARK: - Owner Profile Image
-    private func ownerProfileImage(profile: UserProfile) -> some View {
-        Group {
-            if let profileKey = profile.profileKey,
-               let predefinedImage = PredefinedProfileImage.fromKey(profileKey) {
-                Image(predefinedImage.rawValue)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } else if let profileImageURL = profile.profileImageURL {
-                AsyncImage(url: URL(string: profileImageURL)) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } placeholder: {
-                    Circle()
-                        .fill(Color.gray)
-                }
-            } else {
-                Circle()
-                    .fill(Color.gray)
-            }
-        }
-        .frame(width: 50, height: 50)
-        .clipShape(Circle())
     }
     
     private func loadOwnerProfile() async {
