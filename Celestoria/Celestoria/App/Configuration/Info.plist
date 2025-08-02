@@ -52,14 +52,9 @@
 			</array>
 		</dict>
 	</dict>
-	<key>UILaunchScreen</key>
-	<dict>
-		<key>UIColorName</key>
-		<string>LaunchScreenBackground</string>
-		<key>UIImageName</key>
-		<string>LaunchIcon</string>
-		<key>UILaunchScreen</key>
-		<dict/>
-	</dict>
+	<key>CFBundleIdentifier</key>
+	<string>com.Celestoria.Celestoria</string>
+	<key>UILaunchStoryboardName</key>
+	<string>Launch Screen.storyboard</string>
 </dict>
 </plist>

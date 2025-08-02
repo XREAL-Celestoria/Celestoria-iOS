@@ -12,18 +12,11 @@ struct iOSSplashView: View {
     
     var body: some View {
         ZStack {
-            Colors.backgroundMain
+            Image("splash")
+                .resizable()
+                .scaledToFill()
                 .ignoresSafeArea()
-            
-            VStack(spacing: 20) {
-                // 앱 아이콘
-                Image("Logo")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: 168, maxHeight: 168)
-                    .scaleEffect(isAnimating ? 1.1 : 1.0)
-                    .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: isAnimating)
-            }
+                .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: isAnimating)
         }
         .onAppear {
             isAnimating = true

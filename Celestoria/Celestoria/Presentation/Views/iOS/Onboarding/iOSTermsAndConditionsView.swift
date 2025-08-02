@@ -17,7 +17,6 @@ struct iOSTermsAndConditionsView: View {
                 .ignoresSafeArea()
             
             VStack {
-                .ignoresSafeArea(.container, edges: .bottom)
                 // Header
                 ZStack {
                     HStack {
@@ -115,5 +114,7 @@ struct iOSTermsAndConditionsView: View {
                 .padding(.bottom, 60)
             }
         }
+        // 위치를 같게 하기 위해.. 서인데 이거 뭐 왜이러지 몰름
+        .ignoresSafeArea(.container, edges: .bottom)
     }
 }
