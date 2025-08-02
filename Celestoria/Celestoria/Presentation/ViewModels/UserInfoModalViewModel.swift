@@ -1,0 +1,73 @@
+//
+//  UserInfoModalViewModel.swift
+//  Celestoria
+//
+//  Created by Minjun Kim on 7/20/25.
+//
+
+import Foundation
+import os
+
+@MainActor
+class UserInfoModalViewModel: ObservableObject {
+    // MARK: - Published Properties
+    @Published var userProfile: UserProfile?
+    @Published var memoryCount: Int = 0
+    @Published var followerCount: Int = 0 // TODO: Implement followers when available
+    @Published var commentCount: Int = 0 // Comments feature not implemented yet
+    @Published var likeCount: Int = 0
+    
+    // MARK: - Dependencies
+    private let diContainer: DIContainer
+    private let userId: UUID
+    
+    // MARK: - Initialization
+    init(diContainer: DIContainer, userId: UUID) {
+        self.diContainer = diContainer
+        self.userId = userId
+        
+        loadUserData()
+    }
+    
+    // MARK: - Public Methods
+    func loadUserData() {
+        Task {
+            await loadUserProfile()
+            await loadUserStats()
+        }
+    }
+    
+    // MARK: - Private Methods
+    private func loadUserProfile() async {
+        do {
+            userProfile = try await diContainer.profileUseCase.fetchProfileByUserId(userId: userId)
+        } catch {
+            Logger.error("Error loading user profile: \(error.localizedDescription)")
+        }
+    }
+    
+    private func loadUserStats() async {
+        do {
+            // Load memories to get count and calculate total likes
+            let memories = try await diContainer.memoryUseCase.execute(for: userId)
+            memoryCount = memories.count
+            
+            // Calculate total likes across all user's memories
+            var totalLikes = 0
+            for memory in memories {
+                let likeCount = try await diContainer.memoryRepository.getLikeCount(for: memory.id)
+                totalLikes += likeCount
+            }
+            likeCount = totalLikes
+            
+            // Comments are not implemented yet, so always 0
+            commentCount = 0
+            
+        } catch {
+            Logger.error("Error loading user stats: \(error.localizedDescription)")
+            memoryCount = 0
+            likeCount = 0
+            commentCount = 0
+        }
+    }
+} 

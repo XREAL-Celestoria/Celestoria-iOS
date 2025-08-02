@@ -174,6 +174,21 @@ final class DIContainer: ObservableObject {
         )
     }
     
+    func makeiOS3DGalaxyViewModel() -> iOS3DGalaxyViewModel {
+        return iOS3DGalaxyViewModel(
+            galaxyViewModel: makeGalaxyViewModel(),
+            appState: appState,
+            diContainer: self
+        )
+    }
+    
+    func makeUserInfoModalViewModel(userId: UUID) -> UserInfoModalViewModel {
+        return UserInfoModalViewModel(
+            diContainer: self,
+            userId: userId
+        )
+    }
+    
     func makeAddMemoryMainViewModel() -> AddMemoryMainViewModel {
         return AddMemoryMainViewModel(
             createMemoryUseCase: createMemoryUseCase,
