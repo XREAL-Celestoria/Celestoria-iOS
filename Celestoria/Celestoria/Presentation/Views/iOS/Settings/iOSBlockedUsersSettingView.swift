@@ -65,7 +65,7 @@ struct iOSBlockedUsersSettingView: View {
                                         .overlay(
                                             Text(blockedUser.profile.name.prefix(1).uppercased())
                                                 .font(.system(size: 20, weight: .bold))
-                                                .foregroundColor(.NebulaBlack)
+                                                .foregroundColor(Colors.NebulaBlack)
                                         )
                                 }
                             }

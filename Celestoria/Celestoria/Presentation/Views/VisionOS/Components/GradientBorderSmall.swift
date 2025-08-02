@@ -18,7 +18,7 @@ struct GradientBorderContainerSmall: View {
         ZStack {
             // 테두리와 배경
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.NebulaBlack)
+                .fill(Colors.NebulaBlack)
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
                         .stroke(
@@ -31,7 +31,7 @@ struct GradientBorderContainerSmall: View {
             // 내부 컨텐츠
             content
                 .padding(12) // 컨텐츠 내부 여백
-                .background(Color.NebulaBlack) // 컨텐츠 배경
+                .background(Colors.NebulaBlack) // 컨텐츠 배경
                 .clipShape(RoundedRectangle(cornerRadius: 24)) // 내부 모양 맞추기
     
         }

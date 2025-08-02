@@ -24,7 +24,7 @@ struct iOSAddMemoryView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.NebulaBlack
+                Colors.NebulaBlack
                     .ignoresSafeArea()
                 
                 ScrollView {
@@ -270,7 +270,7 @@ struct iOSAddMemoryView: View {
                 Text("Upload")
                     .font(.system(size: 17, weight: .semibold))
             }
-            .foregroundColor(viewModel.isUploadEnabled ? .NebulaBlack : .white.opacity(0.6))
+            .foregroundColor(viewModel.isUploadEnabled ? Colors.NebulaBlack : .white.opacity(0.6))
             .frame(maxWidth: .infinity)
             .frame(height: 50)
             .background(
@@ -406,7 +406,7 @@ struct iOSUploadProgressView: View {
         .padding(40)
         .background(
             RoundedRectangle(cornerRadius: 20)
-                .fill(Color.NebulaBlack)
+                .fill(Colors.NebulaBlack)
                 .overlay(
                     RoundedRectangle(cornerRadius: 20)
                         .stroke(Color.white.opacity(0.2), lineWidth: 1)
@@ -460,7 +460,7 @@ struct iOSPopupView: View {
                 }) {
                     Text(popupData.trailingButtonText)
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.NebulaBlack)
+                        .foregroundColor(Colors.NebulaBlack)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
                         .background(LinearGradient.GradientSub)
@@ -471,7 +471,7 @@ struct iOSPopupView: View {
         .padding(32)
         .background(
             RoundedRectangle(cornerRadius: 20)
-                .fill(Color.NebulaBlack)
+                .fill(Colors.NebulaBlack)
                 .overlay(
                     RoundedRectangle(cornerRadius: 20)
                         .stroke(Color.white.opacity(0.2), lineWidth: 1)

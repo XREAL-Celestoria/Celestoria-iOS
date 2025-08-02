@@ -36,11 +36,11 @@ struct AddMemoryDoneView: View {
             Spacer()
             
             Text("The memory star upload has been completed.")
-                .foregroundColor(Color.NebulaWhite)
+                .foregroundColor(Colors.NebulaWhite)
                 .font(.system(size: 17, weight: .medium))
             
             Text("Why not take a moment to explore the memory star you created?")
-                .foregroundColor(Color.NebulaWhite)
+                .foregroundColor(Colors.NebulaWhite)
                 .font(.system(size: 22, weight: .bold))
             
             Spacer()
@@ -53,7 +53,7 @@ struct AddMemoryDoneView: View {
             }) {
                 Text("View Memory Star")
                     .font(.system(size: 22, weight: .semibold))
-                    .foregroundColor(Color.NebulaBlack)
+                    .foregroundColor(Colors.NebulaBlack)
                     .frame(width: 380, height: 64)
                     .background(LinearGradient.GradientSub
                         .cornerRadius(16))

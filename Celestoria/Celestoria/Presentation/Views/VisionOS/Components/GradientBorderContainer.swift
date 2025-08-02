@@ -17,7 +17,7 @@ struct GradientBorderContainer: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 44)
-                .fill(Color.NebulaBlack)
+                .fill(Colors.NebulaBlack)
                 .overlay(
                     RoundedRectangle(cornerRadius: 44)
                         .stroke(

@@ -22,7 +22,7 @@ struct iOSTermsAndConditionsView: View {
                 // Title outside the card
                 Text("Terms and Conditions")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.NebulaWhite)
+                    .foregroundColor(Colors.NebulaWhite)
                     .padding(.horizontal, 40)
                 
                 // Main card container
@@ -31,7 +31,7 @@ struct iOSTermsAndConditionsView: View {
                         // Your Agreement inside the card
                         Text("Your Agreement")
                             .font(.system(size: 17, weight: .semibold))
-                            .foregroundColor(.NebulaWhite)
+                            .foregroundColor(Colors.NebulaWhite)
                             .frame(maxWidth: .infinity, alignment: .center)
                             .padding(.top, 24)
                         
@@ -60,7 +60,7 @@ struct iOSTermsAndConditionsView: View {
                         These Terms are governed by the laws applicable to Apple's App Store. Any disputes will be resolved in accordance with Apple's policies.
                         """)
                         .font(.system(size: 14))
-                        .foregroundColor(.NebulaWhite.opacity(0.8))
+                        .foregroundColor(Colors.NebulaWhite.opacity(0.8))
                         .lineSpacing(5)
                         .padding(.horizontal, 20)
                         .padding(.bottom, 30)
@@ -72,7 +72,7 @@ struct iOSTermsAndConditionsView: View {
                         .fill(Color.black.opacity(0.85))
                         .overlay(
                             RoundedRectangle(cornerRadius: 24)
-                                .stroke(Color.NebulaWhite.opacity(0.2), lineWidth: 1)
+                                .stroke(Colors.NebulaWhite.opacity(0.2), lineWidth: 1)
                         )
                 )
                 .padding(.horizontal, 20)
@@ -84,7 +84,7 @@ struct iOSTermsAndConditionsView: View {
                     }) {
                         Text("Cancel")
                             .font(.system(size: 17, weight: .semibold))
-                            .foregroundColor(.NebulaWhite)
+                            .foregroundColor(Colors.NebulaWhite)
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
                             .background(
@@ -99,7 +99,7 @@ struct iOSTermsAndConditionsView: View {
                     }) {
                         Text("Agree")
                             .font(.system(size: 17, weight: .semibold))
-                            .foregroundColor(.NebulaBlack)
+                            .foregroundColor(Colors.NebulaBlack)
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
                             .background(

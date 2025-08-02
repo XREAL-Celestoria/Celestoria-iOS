@@ -212,7 +212,7 @@ struct MemoryDetailView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: geometry.size.width, height: geometry.size.height)
-                            .overlay(Color.NebulaBlack.opacity(0.6))
+                            .overlay(Colors.NebulaBlack.opacity(0.6))
                             .onAppear { thumbnailLoaded = true }
                         
                         CircularButton(action: {
@@ -250,8 +250,8 @@ struct MemoryInfoView: View {
             Rectangle()
                 .fill(Color.clear)
                 .overlay(
-                    Color.NebulaBlack.opacity(0.3)
-                        .shadow(.inner(color: Color.NebulaWhite.opacity(0.8), radius: 24))
+                    Colors.NebulaBlack.opacity(0.3)
+                        .shadow(.inner(color: Colors.NebulaWhite.opacity(0.8), radius: 24))
                 )
                 .edgesIgnoringSafeArea(.all)
             
@@ -265,12 +265,12 @@ struct MemoryInfoView: View {
                 VStack(alignment: .leading) {
                     HStack {
                         Text(viewModel.formattedDate)
-                            .foregroundColor(.NebulaWhite)
+                            .foregroundColor(Colors.NebulaWhite)
                             .font(.system(size: 12, weight: .medium))
                         Spacer()
                     }
                     Text(viewModel.memory.title)
-                        .foregroundColor(.NebulaWhite)
+                        .foregroundColor(Colors.NebulaWhite)
                         .font(.system(size: 24, weight: .bold))
                         .padding(.top, 0)
                     
@@ -300,7 +300,7 @@ struct MemoryInfoView: View {
                                     .frame(width: 24, height: 24)
                                 
                                 Text("\(viewModel.likeCount)")
-                                    .foregroundColor(.NebulaWhite)
+                                    .foregroundColor(Colors.NebulaWhite)
                                     .font(.system(size: 21, weight: .medium))
                             }
                         }

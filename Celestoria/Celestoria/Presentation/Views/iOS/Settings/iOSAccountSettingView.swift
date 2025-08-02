@@ -145,7 +145,7 @@ struct iOSAccountSettingView: View {
                 Text("Sign Out")
                     .font(.system(size: 17, weight: .semibold))
             }
-            .foregroundColor(.NebulaBlack)
+            .foregroundColor(Colors.NebulaBlack)
             .frame(maxWidth: .infinity)
             .frame(height: 50)
             .background(

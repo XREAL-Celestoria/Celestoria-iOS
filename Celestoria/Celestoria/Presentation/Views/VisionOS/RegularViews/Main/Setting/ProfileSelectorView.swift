@@ -30,7 +30,7 @@ struct ProfileSelectorView: View {
                 HStack {
                     Text("Change Profile")
                         .font(.system(size: 29, weight: .bold))
-                        .foregroundColor(.NebulaWhite)
+                        .foregroundColor(Colors.NebulaWhite)
                     
                     Spacer()
                     
@@ -46,7 +46,7 @@ struct ProfileSelectorView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 20, height: 20)
-                                .foregroundColor(.NebulaWhite)
+                                .foregroundColor(Colors.NebulaWhite)
                         }
                     }
                     .buttonStyle(MainButtonStyle())
@@ -324,7 +324,7 @@ struct PhotoPickerView: View {
                     
                     Image(systemName: "plus")
                         .font(.system(size: 40, weight: .bold))
-                        .foregroundColor(.NebulaWhite.opacity(0.5))
+                        .foregroundColor(Colors.NebulaWhite.opacity(0.5))
                     
                     if isSelected {
                         Circle()
@@ -356,7 +356,7 @@ struct PhotoPickerView: View {
                     
                     Image(systemName: "plus")
                         .font(.system(size: 40, weight: .bold))
-                        .foregroundColor(.NebulaWhite.opacity(0.5))
+                        .foregroundColor(Colors.NebulaWhite.opacity(0.5))
                 }
             }
         }

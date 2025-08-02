@@ -22,7 +22,7 @@ struct CircularButton: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 20, height: 20)
-                    .foregroundColor(.NebulaWhite)
+                    .foregroundColor(Colors.NebulaWhite)
             }
         }
         .buttonStyle(MainButtonStyle())

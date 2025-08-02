@@ -35,7 +35,7 @@ struct TermsAndConditionsView: View {
                 HStack {
                     Text("Your Agreement")
                         .font(.system(size: 22, weight: .bold))
-                        .foregroundColor(.NebulaWhite)
+                        .foregroundColor(Colors.NebulaWhite)
                     Spacer()
                         .frame(width: 22)
                 }
@@ -82,7 +82,7 @@ struct TermsAndConditionsView: View {
                     The provider may modify these Terms as necessary. Users will be notified of changes via in-app notifications or on our official website. Continued use of the Application signifies acceptance of the updated Terms.
                     """)
                         .font(.system(size: 17))
-                        .foregroundColor(.NebulaWhite)
+                        .foregroundColor(Colors.NebulaWhite)
                         .padding(30)
                 }
                 .frame(width: 826, height: 386)
@@ -90,7 +90,7 @@ struct TermsAndConditionsView: View {
                 .cornerRadius(34.66)
                 .overlay(
                     RoundedRectangle(cornerRadius: 34.66)
-                        .stroke(Color.NebulaWhite, lineWidth: 1)
+                        .stroke(Colors.NebulaWhite, lineWidth: 1)
                 )
 
                 Spacer()
@@ -104,7 +104,7 @@ struct TermsAndConditionsView: View {
                     }) {
                         Text("Cancel")
                             .font(.system(size: 22, weight: .semibold))
-                            .foregroundColor(.NebulaWhite)
+                            .foregroundColor(Colors.NebulaWhite)
                             .frame(width: 400, height: 76)
                             .background(
                                 AnyShapeStyle(
@@ -124,7 +124,7 @@ struct TermsAndConditionsView: View {
                     }) {
                         Text("Agree")
                             .font(.system(size: 22, weight: .semibold))
-                            .foregroundColor(.NebulaBlack)
+                            .foregroundColor(Colors.NebulaBlack)
                             .frame(width: 400, height: 76)
                             .background(
                                 AnyShapeStyle(

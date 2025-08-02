@@ -24,7 +24,7 @@ struct PopupView: View {
             .fill(LinearGradient.BackgroundPopup)
             .frame(width: 644, height: 324)
             .blur(radius: 100)
-            .background(Color.NebulaBlack.cornerRadius(44))
+            .background(Colors.NebulaBlack.cornerRadius(44))
             .overlay(
                 RoundedRectangle(cornerRadius: 44)
                     .stroke(LinearGradient.StrokePopup, lineWidth: 3)
@@ -35,7 +35,7 @@ struct PopupView: View {
                     HStack {
                         Text(title)
                             .font(.system(size: 29, weight: .bold))
-                            .foregroundColor(.NebulaWhite)
+                            .foregroundColor(Colors.NebulaWhite)
                             .padding(.leading, 52)
                             .padding(.top, 48)
                         
@@ -48,7 +48,7 @@ struct PopupView: View {
                     
                     Text(notes)
                         .font(.system(size: 17, weight: .medium))
-                        .foregroundColor(.NebulaWhite)
+                        .foregroundColor(Colors.NebulaWhite)
                         .padding(.top, 8)
                         .padding(.horizontal, 52)
                     
@@ -61,9 +61,9 @@ struct PopupView: View {
                             Button(action: leadingButtonAction) {
                                 Text(leadingButtonText)
                                     .font(.system(size: 22, weight: .bold))
-                                    .foregroundColor(.NebulaWhite)
+                                    .foregroundColor(Colors.NebulaWhite)
                                     .frame(width: 240, height: 76)
-                                    .background(Color.NebulaWhite.opacity(0.1).cornerRadius(16))
+                                    .background(Colors.NebulaWhite.opacity(0.1).cornerRadius(16))
                             }
                             .buttonStyle(MainButtonStyle())
                             
@@ -74,7 +74,7 @@ struct PopupView: View {
                         Button(action: trailingButtonAction) {
                             Text(trailingButtonText)
                                 .font(.system(size: 22, weight: .bold))
-                                .foregroundColor(.NebulaBlack)
+                                .foregroundColor(Colors.NebulaBlack)
                                 .frame(width: leadingButtonText == nil || leadingButtonText?.isEmpty == true ? 504 : 240, height: 76)
                                 .background(LinearGradient.GradientSub.cornerRadius(16))
                         }
@@ -97,7 +97,7 @@ struct UploadProgressPopup: View {
             .fill(LinearGradient.BackgroundPopup)
             .frame(width: 644, height: 324)
             .blur(radius: 100)
-            .background(Color.NebulaBlack.cornerRadius(44))
+            .background(Colors.NebulaBlack.cornerRadius(44))
             .overlay(
                 RoundedRectangle(cornerRadius: 44)
                     .stroke(LinearGradient.StrokePopup, lineWidth: 3)
@@ -107,11 +107,11 @@ struct UploadProgressPopup: View {
                 VStack(spacing: 20) {
                     Text("Uploading Memory")
                         .font(.system(size: 29, weight: .bold))
-                        .foregroundColor(.NebulaWhite)
+                        .foregroundColor(Colors.NebulaWhite)
                     
                     Text("Uploading \(fileSize) video file...")
                         .font(.system(size: 17, weight: .medium))
-                        .foregroundColor(.NebulaWhite)
+                        .foregroundColor(Colors.NebulaWhite)
                     
                     ProgressView()
                         .progressViewStyle(.circular)

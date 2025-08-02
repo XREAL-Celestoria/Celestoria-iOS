@@ -6,13 +6,6 @@
 //
 
 
-//
-//  iOSHeaderView.swift
-//  Celestoria
-//
-//  Created by Claude on 1/19/25.
-//
-
 import SwiftUI
 
 struct iOSHeaderView: View {
@@ -22,16 +15,15 @@ struct iOSHeaderView: View {
     var body: some View {
         VStack(spacing: 8) {
             Text(title)
-                .font(.system(size: 40, weight: .bold, design: .default))
+                .font(.system(size: 50, weight: .bold, design: .default))
                 .foregroundStyle(LinearGradient.GradientMain)
                 .multilineTextAlignment(.center)
             
             Text(subtitle)
-                .font(.system(size: 18, weight: .regular, design: .default))
-                .foregroundStyle(Color.white.opacity(0.8))
+                .font(.system(size: 15, weight: .semibold, design: .default))
+                .foregroundStyle(LinearGradient.GradientMain)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity, alignment: .center)
-        .padding(.top, 20)
     }
 }

@@ -37,7 +37,7 @@ struct MainTabButton: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 50, height: 50)
-                            .foregroundColor(.NebulaWhite)
+                            .foregroundColor(Colors.NebulaWhite)
                     }
                     .frame(width: geometry.size.width, height: geometry.size.width)
                 }
@@ -48,10 +48,10 @@ struct MainTabButton: View {
                 
                 Text(text)
                     .font(.system(size: 19, weight: .bold))
-                    .foregroundColor(.NebulaWhite)
+                    .foregroundColor(Colors.NebulaWhite)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.NebulaBlack)
+            .background(Colors.NebulaBlack)
         }
     }
 }

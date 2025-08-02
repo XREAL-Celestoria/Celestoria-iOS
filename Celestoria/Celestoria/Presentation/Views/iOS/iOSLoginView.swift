@@ -5,14 +5,6 @@
 //  Created by Minjun Kim on 7/20/25.
 //
 
-
-//
-//  iOSLoginView.swift
-//  Celestoria
-//
-//  Created by Assistant on 2025/07/19.
-//
-
 import SwiftUI
 import AuthenticationServices
 
@@ -22,30 +14,23 @@ struct iOSLoginView: View {
     
     var body: some View {
         ZStack {
-            // Background - pure black
-            Color.black
-                .ignoresSafeArea()
-            
-            VStack {
+            VStack(alignment: .center) {
                 Spacer()
+                    .frame(height: UIScreen.main.bounds.height * 0.35)
                 
-                // Header
                 iOSHeaderView(
                     title: "Celestoria",
                     subtitle: "Spatial Video Social Network"
                 )
-                .padding(.horizontal, 32)
                 
                 Spacer()
                 
-                // Sign in with Apple Button - same position as onboarding buttons
-                SignInWithAppleButton(.signIn, onRequest: { request in
+                SignInWithAppleButton(.signIn,
+                                      onRequest: { request in
                     viewModel.prepareRequest(request: request)
-                }, onCompletion: { result in
-                    viewModel.handleAuthorization(result: result) { userId in
-                        // Navigation handled by viewModel and appState
-                    }
-                })
+                },
+                                      onCompletion: handleAppleLogin
+                )
                 .frame(height: 56)
                 .cornerRadius(12)
                 .signInWithAppleButtonStyle(.white)
@@ -55,48 +40,9 @@ struct iOSLoginView: View {
                 .opacity(viewModel.isLoggingIn ? 0.6 : 1.0)
             }
             
-            // Error popup overlay
-            if viewModel.showErrorPopup, let errorMessage = viewModel.errorMessage {
-                Color.black.opacity(0.6)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        viewModel.showErrorPopup = false
-                        viewModel.errorMessage = nil
-                    }
-                
-                VStack(spacing: 20) {
-                    Text("Login Error")
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundColor(.NebulaWhite)
-                    
-                    Text(errorMessage)
-                        .font(.system(size: 16))
-                        .foregroundColor(.NebulaWhite)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
-                    
-                    iOSMainButton(
-                        title: "Close",
-                        action: {
-                            viewModel.showErrorPopup = false
-                            viewModel.errorMessage = nil
-                        },
-                        isEnabled: true
-                    )
-                    .padding(.horizontal, 40)
-                }
-                .padding(24)
-                .background(
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color.Profile)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 20)
-                                .stroke(Color.NebulaWhite.opacity(0.2), lineWidth: 1)
-                        )
-                )
-                .padding(.horizontal, 40)
-            }
+            errorPopupView
         }
+        .background(Colors.backgroundMain)
         .onChange(of: viewModel.errorMessage) { _, newValue in
             if newValue != nil {
                 viewModel.showErrorPopup = true
@@ -105,6 +51,56 @@ struct iOSLoginView: View {
         .onAppear {
             viewModel.showErrorPopup = false
             viewModel.errorMessage = nil
+        }
+    }
+
+    @ViewBuilder
+    private var errorPopupView: some View {
+        if viewModel.showErrorPopup, let errorMessage = viewModel.errorMessage {
+            Color.black.opacity(0.6)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    viewModel.showErrorPopup = false
+                    viewModel.errorMessage = nil
+                }
+
+            VStack(spacing: 20) {
+                Text("Login Error")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundColor(Colors.NebulaWhite)
+
+                Text(errorMessage)
+                    .font(.system(size: 16))
+                    .foregroundColor(Colors.NebulaWhite)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+
+                iOSMainButton(
+                    title: "Close",
+                    action: {
+                        viewModel.showErrorPopup = false
+                        viewModel.errorMessage = nil
+                    },
+                    isEnabled: true
+                )
+                .padding(.horizontal, 40)
+            }
+            .padding(24)
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Colors.Profile)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(Colors.NebulaWhite.opacity(0.2), lineWidth: 1)
+                    )
+            )
+            .padding(.horizontal, 40)
+        }
+    }
+    
+    private func handleAppleLogin(result: Result<ASAuthorization, Error>) {
+        viewModel.handleAuthorization(result: result) { userId in
+            // Navigation handled by viewModel and appState
         }
     }
 }

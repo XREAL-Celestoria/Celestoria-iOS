@@ -100,7 +100,7 @@ struct iOSAddMemoryDoneView: View {
                 }) {
                     Text("View Memory Star")
                         .font(.system(size: 17, weight: .semibold))
-                        .foregroundColor(.NebulaBlack)
+                        .foregroundColor(Colors.NebulaBlack)
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)
                         .background(

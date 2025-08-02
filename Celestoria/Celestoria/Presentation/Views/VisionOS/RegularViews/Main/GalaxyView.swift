@@ -27,7 +27,7 @@ struct GalaxyView: View {
                     .frame(width: geometry.size.width * 0.62)
             }
         }
-        .background(Color.NebulaBlack.ignoresSafeArea())
+        .background(Colors.NebulaBlack.ignoresSafeArea())
         .alert("오류", isPresented: $showError) {
             Button("확인", role: .cancel) { }
         } message: {
@@ -113,8 +113,8 @@ private struct RightGalaxyView: View {
             Rectangle()
                 .fill(Color.clear)
                 .overlay(
-                    Color.NebulaBlack.opacity(0.3)
-                        .shadow(.inner(color: Color.NebulaWhite.opacity(0.8), radius: 24))
+                    Colors.NebulaBlack.opacity(0.3)
+                        .shadow(.inner(color: Colors.NebulaWhite.opacity(0.8), radius: 24))
                 )
                 .edgesIgnoringSafeArea(.all)
             
@@ -154,7 +154,7 @@ private struct GalaxyButtonGrid: View {
                 // Title
                 Text("Galaxy Background")
                     .font(.system(size: 29, weight: .bold))
-                    .foregroundColor(.NebulaWhite)
+                    .foregroundColor(Colors.NebulaWhite)
                     .padding(.leading, 55)
                     .padding(.top, 28)
                 
@@ -212,7 +212,7 @@ private struct GalaxyButtonGrid: View {
             }) {
                 Text("Save")
                     .font(.system(size: 22, weight: .semibold))
-                    .foregroundColor(galaxyViewModel.isUploadEnabled ? .NebulaBlack : .NebulaBlack.opacity(0.3))
+                    .foregroundColor(galaxyViewModel.isUploadEnabled ? Colors.NebulaBlack : Colors.NebulaBlack.opacity(0.3))
                     .frame(width: 380, height: 64)
                     .background(galaxyViewModel.isUploadEnabled ?
                                 AnyShapeStyle(LinearGradient.GradientSub) :

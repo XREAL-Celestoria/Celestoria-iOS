@@ -62,7 +62,7 @@ struct iOSProfileSettingView: View {
                                 .overlay(
                                     Text(settingViewModel.profile?.name.prefix(1).uppercased() ?? "?")
                                         .font(.system(size: 60, weight: .bold))
-                                        .foregroundColor(.NebulaBlack)
+                                        .foregroundColor(Colors.NebulaBlack)
                                 )
                         }
                         
@@ -128,7 +128,7 @@ struct iOSProfileSettingView: View {
                 }) {
                     Text(isEditMode ? "Done" : "Edit")
                         .font(.system(size: 17, weight: .semibold))
-                        .foregroundColor(.NebulaBlack)
+                        .foregroundColor(Colors.NebulaBlack)
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)
                         .background(
@@ -172,7 +172,7 @@ struct iOSProfileSelectorView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                Color.NebulaBlack
+                Colors.NebulaBlack
                     .ignoresSafeArea()
                 
                 ScrollView {

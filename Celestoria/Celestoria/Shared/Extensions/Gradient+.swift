@@ -11,13 +11,13 @@ import SwiftUI
 extension LinearGradient {
     // Design System
     static let GradientMain = LinearGradient(
-        gradient: Gradient(colors: [Color.Main1, Color.Main2]),
+        gradient: Gradient(colors: [Colors.Main1, Colors.Main2]),
         startPoint: .bottomLeading,
         endPoint: .topTrailing
     )
     
     static let GradientSub = LinearGradient(
-        gradient: Gradient(colors: [Color.Sub1, Color.Sub2]),
+        gradient: Gradient(colors: [Colors.Sub1, Colors.Sub2]),
         startPoint: .top,
         endPoint: .bottom
     )
@@ -29,13 +29,13 @@ extension LinearGradient {
     )
     
     static let GradientStroke = LinearGradient(
-        gradient: Gradient(colors: [Color.Stroke1, Color.Stroke2]),
+        gradient: Gradient(colors: [Colors.Stroke1, Colors.Stroke2]),
         startPoint: .top,
         endPoint: .bottom
     )
     
     static let GradientIcon = LinearGradient(
-        gradient: Gradient(colors: [Color.Icon1, Color.Icon2]),
+        gradient: Gradient(colors: [Colors.Icon1, Colors.Icon2]),
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
@@ -47,29 +47,29 @@ extension LinearGradient {
     )
     
     static let GradientCardOverlay = LinearGradient(
-        gradient: Gradient(colors: [Color.NebulaWhite.opacity(0), Color.NebulaBlack.opacity(0.7)]),
+        gradient: Gradient(colors: [Colors.NebulaWhite.opacity(0), Colors.NebulaBlack.opacity(0.7)]),
         startPoint: .top,
         endPoint: .bottom
     )
     
     static let BackgroundPopup = LinearGradient(
         gradient: Gradient(stops: [
-            Gradient.Stop(color: Color.Popup1, location: 0.0),
-            Gradient.Stop(color: Color.Popup2, location: 0.65),
-            Gradient.Stop(color: Color.Popup3, location: 1.0)
+            Gradient.Stop(color: Colors.Popup1, location: 0.0),
+            Gradient.Stop(color: Colors.Popup2, location: 0.65),
+            Gradient.Stop(color: Colors.Popup3, location: 1.0)
         ]),
         startPoint: .top,
         endPoint: .bottom
     )
     
     static let StrokePopup = LinearGradient(
-        gradient: Gradient(colors: [Color.NebulaWhite, Color(hex: "CCCCCC")]),
+        gradient: Gradient(colors: [Colors.NebulaWhite, Color(hex: "CCCCCC")]),
         startPoint: .top,
         endPoint: .bottom
     )
     
     static let BackgroundSearch = LinearGradient(
-        gradient: Gradient(colors: [Color.Search1, Color.Search2]),
+        gradient: Gradient(colors: [Colors.Search1, Colors.Search2]),
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )

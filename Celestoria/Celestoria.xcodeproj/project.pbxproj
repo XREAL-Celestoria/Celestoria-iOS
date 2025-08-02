@@ -82,6 +82,15 @@
 		2FE857FF2D434ABA0055902B /* PopupData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE857FE2D434ABA0055902B /* PopupData.swift */; };
 		2FE858032D437BF20055902B /* VisualEffectBlur.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE858022D437BF20055902B /* VisualEffectBlur.swift */; };
 		2FE858052D43D3980055902B /* TextField+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE858042D43D3980055902B /* TextField+.swift */; };
+		5D6C19FC2E3E05EA004A0B17 /* iOSHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6C19F82E3E05EA004A0B17 /* iOSHeaderView.swift */; };
+		5D6C19FD2E3E05EA004A0B17 /* iOSMainButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6C19F92E3E05EA004A0B17 /* iOSMainButton.swift */; };
+		5D6C19FE2E3E05EA004A0B17 /* iOSNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6C19FA2E3E05EA004A0B17 /* iOSNavigationBar.swift */; };
+		5D6C1A0B2E3E0684004A0B17 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6C1A092E3E0684004A0B17 /* Colors.swift */; };
+		5D6C1A0C2E3E0684004A0B17 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6C1A092E3E0684004A0B17 /* Colors.swift */; };
+		5D6C1A0E2E3E0691004A0B17 /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6C1A0D2E3E0691004A0B17 /* Fonts.swift */; };
+		5D6C1A0F2E3E0691004A0B17 /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6C1A0D2E3E0691004A0B17 /* Fonts.swift */; };
+		5D6C1A112E3E06B2004A0B17 /* Text+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6C1A102E3E06B2004A0B17 /* Text+.swift */; };
+		5D6C1A122E3E06B2004A0B17 /* Text+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6C1A102E3E06B2004A0B17 /* Text+.swift */; };
 		A2198CA32D48812500B0AF65 /* ExploreUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2198CA22D48812500B0AF65 /* ExploreUseCase.swift */; };
 		A2198CA52D48814300B0AF65 /* ExploreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2198CA42D48814300B0AF65 /* ExploreViewModel.swift */; };
 		A2198CAA2D49063800B0AF65 /* Family.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A2198CA72D49063800B0AF65 /* Family.usdz */; };
@@ -236,6 +245,12 @@
 		2FE857FE2D434ABA0055902B /* PopupData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupData.swift; sourceTree = "<group>"; };
 		2FE858022D437BF20055902B /* VisualEffectBlur.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualEffectBlur.swift; sourceTree = "<group>"; };
 		2FE858042D43D3980055902B /* TextField+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TextField+.swift"; sourceTree = "<group>"; };
+		5D6C19F82E3E05EA004A0B17 /* iOSHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSHeaderView.swift; sourceTree = "<group>"; };
+		5D6C19F92E3E05EA004A0B17 /* iOSMainButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSMainButton.swift; sourceTree = "<group>"; };
+		5D6C19FA2E3E05EA004A0B17 /* iOSNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSNavigationBar.swift; sourceTree = "<group>"; };
+		5D6C1A092E3E0684004A0B17 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		5D6C1A0D2E3E0691004A0B17 /* Fonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fonts.swift; sourceTree = "<group>"; };
+		5D6C1A102E3E06B2004A0B17 /* Text+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Text+.swift"; sourceTree = "<group>"; };
 		A2198CA22D48812500B0AF65 /* ExploreUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreUseCase.swift; sourceTree = "<group>"; };
 		A2198CA42D48814300B0AF65 /* ExploreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewModel.swift; sourceTree = "<group>"; };
 		A2198CA62D49063800B0AF65 /* Enter.usdc */ = {isa = PBXFileReference; lastKnownFileType = file; path = Enter.usdc; sourceTree = "<group>"; };
@@ -282,11 +297,6 @@
 		A25431522E2559B100AC4BC4 /* Manager */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Manager;
-			sourceTree = "<group>";
-		};
-		A2A286332E2BF31D001D89B2 /* Components */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Components;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -562,6 +572,7 @@
 		2F8800D42D38D75D00220F89 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				5D6C1A0A2E3E0684004A0B17 /* DesignSystem */,
 				2F8800D52D38D76F00220F89 /* Utilities */,
 				2F8800D62D38D77700220F89 /* Extensions */,
 			);
@@ -583,6 +594,7 @@
 				2F3671B22D3D6B660048D9AD /* Gradient+.swift */,
 				2F3671B02D3D6A9E0048D9AD /* Color+.swift */,
 				2FE858042D43D3980055902B /* TextField+.swift */,
+				5D6C1A102E3E06B2004A0B17 /* Text+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -607,7 +619,7 @@
 				A2A286C02E2C3157001D89B2 /* iOS3DMemoryStarNode.swift */,
 				A2A286BE2E2C314B001D89B2 /* iOS3DGalaxyView.swift */,
 				A2A286B52E2C311A001D89B2 /* Settings */,
-				A2A286332E2BF31D001D89B2 /* Components */,
+				5D6C19FB2E3E05EA004A0B17 /* Components */,
 				A2A286312E2BF314001D89B2 /* iPhoneContentView.swift */,
 				A2A2862F2E2BF307001D89B2 /* iOSTermsAndConditionsView.swift */,
 				A2A2862B2E2BF2F7001D89B2 /* iOSMainView.swift */,
@@ -645,6 +657,25 @@
 				2FBE4E6C2DE31A3400796FAA /* AccountSettingView.swift */,
 			);
 			path = Setting;
+			sourceTree = "<group>";
+		};
+		5D6C19FB2E3E05EA004A0B17 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				5D6C19F82E3E05EA004A0B17 /* iOSHeaderView.swift */,
+				5D6C19F92E3E05EA004A0B17 /* iOSMainButton.swift */,
+				5D6C19FA2E3E05EA004A0B17 /* iOSNavigationBar.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		5D6C1A0A2E3E0684004A0B17 /* DesignSystem */ = {
+			isa = PBXGroup;
+			children = (
+				5D6C1A092E3E0684004A0B17 /* Colors.swift */,
+				5D6C1A0D2E3E0691004A0B17 /* Fonts.swift */,
+			);
+			path = DesignSystem;
 			sourceTree = "<group>";
 		};
 		A21E476F2D38CD55002B60FA = {
@@ -700,9 +731,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				A2A286332E2BF31D001D89B2 /* Components */,
 			);
 			name = "Celestoria-iOS";
 			packageProductDependencies = (
@@ -817,6 +845,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D6C1A112E3E06B2004A0B17 /* Text+.swift in Sources */,
 				A2A286852E2C043C001D89B2 /* Color+.swift in Sources */,
 				A2A2867A2E2C03EF001D89B2 /* SettingViewModel.swift in Sources */,
 				A2A2868D2E2C09D3001D89B2 /* DeleteAccountUseCase.swift in Sources */,
@@ -834,6 +863,7 @@
 				A2A286782E2C03E1001D89B2 /* DIContainer.swift in Sources */,
 				A2A286C52E2C316A001D89B2 /* iOSAddMemoryView.swift in Sources */,
 				A2A2866D2E2BF9FB001D89B2 /* iOSTermsAndConditionsView.swift in Sources */,
+				5D6C1A0B2E3E0684004A0B17 /* Colors.swift in Sources */,
 				A2A2868C2E2C09AF001D89B2 /* iOSOnboardingView.swift in Sources */,
 				A2A286BD2E2C3133001D89B2 /* iOSThumbnailSettingView.swift in Sources */,
 				A2A2867F2E2C0415001D89B2 /* ContentReport.swift in Sources */,
@@ -841,6 +871,9 @@
 				A2A286922E2C0A25001D89B2 /* ExploreUseCase.swift in Sources */,
 				A2A2868F2E2C0A1B001D89B2 /* SignInWithAppleUseCase.swift in Sources */,
 				A2A2867C2E2C0408001D89B2 /* Category.swift in Sources */,
+				5D6C19FC2E3E05EA004A0B17 /* iOSHeaderView.swift in Sources */,
+				5D6C19FD2E3E05EA004A0B17 /* iOSMainButton.swift in Sources */,
+				5D6C19FE2E3E05EA004A0B17 /* iOSNavigationBar.swift in Sources */,
 				A2A286962E2C0A3C001D89B2 /* AuthRepository.swift in Sources */,
 				A2A286942E2C0A2C001D89B2 /* FetchMemoriesUseCase.swift in Sources */,
 				A2A2867E2E2C0410001D89B2 /* UserProfile.swift in Sources */,
@@ -868,6 +901,7 @@
 				A2A286712E2BFA1D001D89B2 /* iOSContentView.swift in Sources */,
 				A2A287372E2D34B1001D89B2 /* iOSGalaxySettingView.swift in Sources */,
 				A2A286BF2E2C314B001D89B2 /* iOS3DGalaxyView.swift in Sources */,
+				5D6C1A0E2E3E0691004A0B17 /* Fonts.swift in Sources */,
 				A2A2869A2E2C0D44001D89B2 /* PredefinedProfileImage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -902,6 +936,7 @@
 				2FE857F92D4344740055902B /* CircularButton.swift in Sources */,
 				2FA858DF2D4A5D74005F131D /* PopupErrorView.swift in Sources */,
 				2F510CE62D4135D3004171E8 /* AddMemoryMainView.swift in Sources */,
+				5D6C1A0F2E3E0691004A0B17 /* Fonts.swift in Sources */,
 				A2198CA52D48814300B0AF65 /* ExploreViewModel.swift in Sources */,
 				2F3672132D3DAAD00048D9AD /* MemoryStarEntity.swift in Sources */,
 				2F3671CB2D3D78000048D9AD /* GradientBorderContainer.swift in Sources */,
@@ -911,6 +946,7 @@
 				A29437D52D513D3500982EAC /* Memory.swift in Sources */,
 				2F3672252D3E35110048D9AD /* AuthRepositoryProtocol.swift in Sources */,
 				2F36722A2D3E35670048D9AD /* SignInWithAppleUseCase.swift in Sources */,
+				5D6C1A122E3E06B2004A0B17 /* Text+.swift in Sources */,
 				2F3672152D3DAAF20048D9AD /* SpaceBackgroundEntity.swift in Sources */,
 				2F3671EB2D3D9A8C0048D9AD /* UserProfile.swift in Sources */,
 				A29437D12D513C4E00982EAC /* Block.swift in Sources */,
@@ -918,6 +954,7 @@
 				2F3672112D3DAAA40048D9AD /* ConstellationSpaceEntity.swift in Sources */,
 				2F3672272D3E35310048D9AD /* AuthRepository.swift in Sources */,
 				2F3671E92D3D9A470048D9AD /* Category.swift in Sources */,
+				5D6C1A0C2E3E0684004A0B17 /* Colors.swift in Sources */,
 				A29437CD2D51135700982EAC /* NavigationBarWithMenu.swift in Sources */,
 				2F3671B32D3D6B660048D9AD /* Gradient+.swift in Sources */,
 				2F8800BC2D38CE6800220F89 /* ContentView.swift in Sources */,
@@ -970,9 +1007,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Celestoria/Celestoria-iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B3CU8MA548;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = B3CU8MA548;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Celestoria/App/Configuration/Info.plist;
@@ -991,6 +1030,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Celestoria.Celestoria;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = seyoung;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				SUPPORTS_MACCATALYST = NO;
@@ -1010,9 +1050,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Celestoria/Celestoria-iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B3CU8MA548;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = B3CU8MA548;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Celestoria/App/Configuration/Info.plist;
@@ -1031,6 +1073,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Celestoria.Celestoria;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = seyoung;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				SUPPORTS_MACCATALYST = NO;

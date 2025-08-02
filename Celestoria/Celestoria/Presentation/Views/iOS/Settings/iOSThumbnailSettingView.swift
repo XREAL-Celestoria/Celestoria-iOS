@@ -103,7 +103,7 @@ struct iOSThumbnailSettingView: View {
                 }) {
                     Text("Save")
                         .font(.system(size: 17, weight: .semibold))
-                        .foregroundColor(.NebulaBlack)
+                        .foregroundColor(Colors.NebulaBlack)
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)
                         .background(

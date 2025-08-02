@@ -38,7 +38,7 @@ struct MainView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .center)
-        .background(Color.NebulaBlack.ignoresSafeArea())
+        .background(Colors.NebulaBlack.ignoresSafeArea())
         .overlay(loadingOverlay)
         .onAppear {
             // 메인 창 활성 상태 갱신
