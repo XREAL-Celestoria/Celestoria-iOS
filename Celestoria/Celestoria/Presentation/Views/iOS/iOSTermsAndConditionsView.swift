@@ -94,6 +94,8 @@ struct iOSTermsAndConditionsView: View {
                     }
                     
                     Button(action: {
+                        // 약관 동의 시 UserDefaults에 상태 저장
+                        UserDefaults.standard.set(true, forKey: "hasAcceptedTerms")
                         appState.hasAcceptedTerms = true
                         appState.navigationState = .main
                     }) {

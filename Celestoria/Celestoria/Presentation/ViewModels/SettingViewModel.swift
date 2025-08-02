@@ -142,23 +142,37 @@ class SettingViewModel: ObservableObject {
     func signOut() async throws {
         try await signOutUseCase.execute()
         appState.userId = nil
+        appState.userProfile = nil
+        
         #if os(visionOS)
         await dismissImmersiveSpace()
         appState.isImmersiveViewActive = false
-        #endif
         appState.hasAcceptedTerms = false
         appState.activeScreen = .login
+        #else
+        // iOS에서는 navigationState 사용
+        appState.navigationState = .login
+        // UserDefaults에서 약관 동의 상태 제거
+        UserDefaults.standard.removeObject(forKey: "hasAcceptedTerms")
+        #endif
     }
     
     func deleteAccount() async throws {
         try await deleteAccountUseCase.execute()
         appState.userId = nil
+        appState.userProfile = nil
+        
         #if os(visionOS)
         await dismissImmersiveSpace()
         appState.isImmersiveViewActive = false
-        #endif
         appState.hasAcceptedTerms = false
         appState.activeScreen = .login
+        #else
+        // iOS에서는 navigationState 사용
+        appState.navigationState = .login
+        // UserDefaults에서 약관 동의 상태 제거
+        UserDefaults.standard.removeObject(forKey: "hasAcceptedTerms")
+        #endif
     }
     
     func updateThumbnail(thumbnailId: String) async {

@@ -20,7 +20,7 @@ struct iOSOnboardingView: View {
         ("Turn Moments into Memory Stars", "Create a Memory Star\nby uploading your Spatial Video", .bottom),
         ("Design Your Own Galaxy", "Choose a cosmic background\nand build your memory-filled galaxy.", .top),
         ("Take Your Galaxy Everywhere", "View and upload your Memory Stars\ndirectly from your iPhone", .bottom),
-        ("Explore Other Galaxies", "Explore others’ galaxies and\nconnect through hearts and comments.", .top)
+        ("Explore Other Galaxies", "Explore others' galaxies and\nconnect through hearts and comments.", .top)
     ]
     
     var body: some View {
@@ -51,6 +51,8 @@ struct iOSOnboardingView: View {
                             if currentStep < 4 {
                                 currentStep += 1
                             } else {
+                                // 온보딩 완료 시 UserDefaults에 상태 저장
+                                UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
                                 appState.hasCompletedOnboarding = true
                                 appState.navigationState = .login
                             }

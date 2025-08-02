@@ -13,7 +13,7 @@ struct iOSCelestoriaApp: App {
     
     var body: some Scene {
         WindowGroup {
-            iPhoneContentView(diContainer: diContainer)
+            iOSContentView(diContainer: diContainer)
                 .environmentObject(diContainer.appState)
                 .environmentObject(diContainer.appState.loginViewModel ?? LoginViewModel(
                     signInUseCase: SignInWithAppleUseCase(repository: diContainer.authRepository),

@@ -128,11 +128,6 @@ struct iOSAccountSettingView: View {
             Task {
                 do {
                     try await settingViewModel.signOut()
-                    // Reset app state and navigate to login
-                    appState.navigationState = .login
-                    appState.userId = nil
-                    appState.userProfile = nil
-                    appState.galaxyTargetUserId = nil
                     dismiss()
                 } catch {
                     deleteError = error.localizedDescription

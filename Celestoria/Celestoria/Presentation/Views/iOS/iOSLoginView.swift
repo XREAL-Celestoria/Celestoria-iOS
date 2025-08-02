@@ -16,7 +16,6 @@ struct iOSLoginView: View {
         ZStack {
             VStack(alignment: .center) {
                 Spacer()
-                    .frame(height: UIScreen.main.bounds.height * 0.35)
                 
                 iOSHeaderView(
                     title: "Celestoria",
@@ -24,6 +23,7 @@ struct iOSLoginView: View {
                 )
                 
                 Spacer()
+                    .frame(height: UIScreen.main.bounds.height * 0.4)
                 
                 SignInWithAppleButton(.signIn,
                                       onRequest: { request in
@@ -35,7 +35,7 @@ struct iOSLoginView: View {
                 .cornerRadius(12)
                 .signInWithAppleButtonStyle(.white)
                 .padding(.horizontal, 24)
-                .padding(.bottom, 50)
+                .padding(.bottom, 60)
                 .disabled(viewModel.isLoggingIn)
                 .opacity(viewModel.isLoggingIn ? 0.6 : 1.0)
             }

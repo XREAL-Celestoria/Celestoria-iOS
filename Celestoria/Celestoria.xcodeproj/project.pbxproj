@@ -91,6 +91,7 @@
 		5D6C1A0F2E3E0691004A0B17 /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6C1A0D2E3E0691004A0B17 /* Fonts.swift */; };
 		5D6C1A112E3E06B2004A0B17 /* Text+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6C1A102E3E06B2004A0B17 /* Text+.swift */; };
 		5D6C1A122E3E06B2004A0B17 /* Text+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6C1A102E3E06B2004A0B17 /* Text+.swift */; };
+		5D6C1A142E3E1238004A0B17 /* iOSSplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6C1A132E3E1238004A0B17 /* iOSSplashView.swift */; };
 		A2198CA32D48812500B0AF65 /* ExploreUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2198CA22D48812500B0AF65 /* ExploreUseCase.swift */; };
 		A2198CA52D48814300B0AF65 /* ExploreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2198CA42D48814300B0AF65 /* ExploreViewModel.swift */; };
 		A2198CAA2D49063800B0AF65 /* Family.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A2198CA72D49063800B0AF65 /* Family.usdz */; };
@@ -107,7 +108,6 @@
 		A29437D32D513C5B00982EAC /* ContentReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437D22D513C5B00982EAC /* ContentReport.swift */; };
 		A29437D52D513D3500982EAC /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437D42D513D3500982EAC /* Memory.swift */; };
 		A29437D72D53C60900982EAC /* BlockedUsersUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29437D62D53C60900982EAC /* BlockedUsersUseCase.swift */; };
-		A2A2866C2E2BF9F4001D89B2 /* iPhoneContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2A286312E2BF314001D89B2 /* iPhoneContentView.swift */; };
 		A2A2866D2E2BF9FB001D89B2 /* iOSTermsAndConditionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2A2862F2E2BF307001D89B2 /* iOSTermsAndConditionsView.swift */; };
 		A2A2866F2E2BFA13001D89B2 /* iOSMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2A2862B2E2BF2F7001D89B2 /* iOSMainView.swift */; };
 		A2A286702E2BFA17001D89B2 /* iOSLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2A286292E2BF2EE001D89B2 /* iOSLoginView.swift */; };
@@ -251,6 +251,7 @@
 		5D6C1A092E3E0684004A0B17 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		5D6C1A0D2E3E0691004A0B17 /* Fonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fonts.swift; sourceTree = "<group>"; };
 		5D6C1A102E3E06B2004A0B17 /* Text+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Text+.swift"; sourceTree = "<group>"; };
+		5D6C1A132E3E1238004A0B17 /* iOSSplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSSplashView.swift; sourceTree = "<group>"; };
 		A2198CA22D48812500B0AF65 /* ExploreUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreUseCase.swift; sourceTree = "<group>"; };
 		A2198CA42D48814300B0AF65 /* ExploreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewModel.swift; sourceTree = "<group>"; };
 		A2198CA62D49063800B0AF65 /* Enter.usdc */ = {isa = PBXFileReference; lastKnownFileType = file; path = Enter.usdc; sourceTree = "<group>"; };
@@ -272,7 +273,6 @@
 		A2A286292E2BF2EE001D89B2 /* iOSLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSLoginView.swift; sourceTree = "<group>"; };
 		A2A2862B2E2BF2F7001D89B2 /* iOSMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSMainView.swift; sourceTree = "<group>"; };
 		A2A2862F2E2BF307001D89B2 /* iOSTermsAndConditionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSTermsAndConditionsView.swift; sourceTree = "<group>"; };
-		A2A286312E2BF314001D89B2 /* iPhoneContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPhoneContentView.swift; sourceTree = "<group>"; };
 		A2A2868B2E2C09AF001D89B2 /* iOSOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSOnboardingView.swift; sourceTree = "<group>"; };
 		A2A286B42E2C25E1001D89B2 /* Celestoria-iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Celestoria-iOS.entitlements"; sourceTree = "<group>"; };
 		A2A286B62E2C3121001D89B2 /* iOSAccountSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSAccountSettingView.swift; sourceTree = "<group>"; };
@@ -612,6 +612,8 @@
 		2FAA9CE72E22344800A0CAD7 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				A2A286272E2BF2E5001D89B2 /* iOSContentView.swift */,
+				5D6C1A132E3E1238004A0B17 /* iOSSplashView.swift */,
 				A2A286C82E2C3179001D89B2 /* iOSSettingsView.swift */,
 				A2A286C62E2C3173001D89B2 /* iOSMemoryDetailView.swift */,
 				A2A286C42E2C316A001D89B2 /* iOSAddMemoryView.swift */,
@@ -620,12 +622,10 @@
 				A2A286BE2E2C314B001D89B2 /* iOS3DGalaxyView.swift */,
 				A2A286B52E2C311A001D89B2 /* Settings */,
 				5D6C19FB2E3E05EA004A0B17 /* Components */,
-				A2A286312E2BF314001D89B2 /* iPhoneContentView.swift */,
 				A2A2862F2E2BF307001D89B2 /* iOSTermsAndConditionsView.swift */,
 				A2A2862B2E2BF2F7001D89B2 /* iOSMainView.swift */,
 				A2A2868B2E2C09AF001D89B2 /* iOSOnboardingView.swift */,
 				A2A286292E2BF2EE001D89B2 /* iOSLoginView.swift */,
-				A2A286272E2BF2E5001D89B2 /* iOSContentView.swift */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -897,10 +897,10 @@
 				A2A286802E2C0419001D89B2 /* Screen.swift in Sources */,
 				2FAA9CED2E22352200A0CAD7 /* iOSCelestoriaApp.swift in Sources */,
 				A2A286982E2C0A47001D89B2 /* Config.swift in Sources */,
-				A2A2866C2E2BF9F4001D89B2 /* iPhoneContentView.swift in Sources */,
 				A2A286712E2BFA1D001D89B2 /* iOSContentView.swift in Sources */,
 				A2A287372E2D34B1001D89B2 /* iOSGalaxySettingView.swift in Sources */,
 				A2A286BF2E2C314B001D89B2 /* iOS3DGalaxyView.swift in Sources */,
+				5D6C1A142E3E1238004A0B17 /* iOSSplashView.swift in Sources */,
 				5D6C1A0E2E3E0691004A0B17 /* Fonts.swift in Sources */,
 				A2A2869A2E2C0D44001D89B2 /* PredefinedProfileImage.swift in Sources */,
 			);
