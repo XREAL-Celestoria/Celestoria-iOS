@@ -175,6 +175,73 @@ class MemoryRepository {
             
         return !likes.isEmpty
     }
+    
+    // MARK: - URL 토큰 갱신
+    
+    // 썸네일 URL 토큰 갱신
+    func refreshThumbnailURL(for memory: Memory) async throws -> String? {
+        guard let thumbnailURL = memory.thumbnailURL else { return nil }
+        
+        // URL에서 경로 추출
+        let path = extractPathFromURL(thumbnailURL)
+        guard let path = path else { return nil }
+        
+        // 새로운 서명된 URL 생성
+        let signedURL = try await supabase.storage
+            .from("thumbnails")
+            .createSignedURL(
+                path: path,
+                expiresIn: 3600 // 1시간
+            )
+        
+        return signedURL.absoluteString
+    }
+    
+    // 비디오 URL 토큰 갱신
+    func refreshVideoURL(for memory: Memory) async throws -> String? {
+        guard let videoURL = memory.videoURL else { return nil }
+        
+        // URL에서 경로 추출
+        let path = extractPathFromURL(videoURL)
+        guard let path = path else { return nil }
+        
+        // 새로운 서명된 URL 생성
+        let signedURL = try await supabase.storage
+            .from("spatial_videos")
+            .createSignedURL(
+                path: path,
+                expiresIn: 3600 // 1시간
+            )
+        
+        return signedURL.absoluteString
+    }
+    
+    // URL에서 경로 추출하는 헬퍼 메서드
+    private func extractPathFromURL(_ urlString: String) -> String? {
+        guard let url = URL(string: urlString) else {
+            print("❌ DEBUG: Invalid URL: \(urlString)")
+            return nil
+        }
+        
+        // URL에서 경로 부분만 추출
+        // 예: https://.../storage/v1/object/sign/thumbnails/path/to/file?token=...
+        // -> thumbnails/path/to/file
+        
+        let pathComponents = url.pathComponents
+        print("🔍 DEBUG: URL path components: \(pathComponents)")
+        
+        if let signIndex = pathComponents.firstIndex(of: "sign"),
+           signIndex + 1 < pathComponents.count {
+            let bucketName = pathComponents[signIndex + 1]
+            let filePath = pathComponents.dropFirst(signIndex + 2).joined(separator: "/")
+            let fullPath = "\(bucketName)/\(filePath)"
+            print("🔍 DEBUG: Extracted path: \(fullPath)")
+            return fullPath
+        }
+        
+        print("❌ DEBUG: Could not extract path from URL: \(urlString)")
+        return nil
+    }
 }
 
 enum MemoryError: Error, LocalizedError {

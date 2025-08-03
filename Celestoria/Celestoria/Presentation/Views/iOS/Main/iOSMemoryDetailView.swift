@@ -29,6 +29,11 @@ struct iOSMemoryDetailView: View {
     @EnvironmentObject var appState: AppState
     @Environment(\.dismiss) private var dismiss
     
+    // URL 토큰 갱신을 위한 상태
+    @State private var refreshedThumbnailURL: String?
+    @State private var refreshedVideoURL: String?
+    @State private var isRefreshingURLs = false
+    
     init(memory: Memory, diContainer: DIContainer) {
         self.memory = memory
         self.diContainer = diContainer
@@ -53,7 +58,7 @@ struct iOSMemoryDetailView: View {
             
             VStack {
                 iOSNavigationView(title: "", onBack: {dismiss()})
-                .zIndex(1)
+                    .zIndex(1)
                 
                 Spacer()
                     .frame(height: 8)
@@ -63,6 +68,8 @@ struct iOSMemoryDetailView: View {
                         // Gyroscope Video Section
                         GyroscopeVideoView(
                             memory: memory,
+                            refreshedThumbnailURL: refreshedThumbnailURL,
+                            refreshedVideoURL: refreshedVideoURL,
                             isPlayingInline: $isPlayingInline,
                             showFullScreenVideo: $showFullScreenVideo,
                             player: $player,
@@ -103,7 +110,7 @@ struct iOSMemoryDetailView: View {
                                     .fontStyle(Fonts.caption1)
                                     .foregroundStyle(Colors.NebulaWhite)
                             }
-                                                
+                            
                             Spacer()
                             
                             // Delete button (only for owner)
@@ -124,20 +131,10 @@ struct iOSMemoryDetailView: View {
                         // Memory Info
                         VStack(alignment: .leading) {
                             // Category and Date
-                            HStack {
-                                // Category
-                                Text(memory.category.rawValue.uppercased())
-                                    .fontStyle(Fonts.caption2)
-                                    .foregroundStyle(LinearGradient.GradientMain)
-                                
-                                Text("•")
-                                    .foregroundColor(Colors.NebulaWhite.opacity(0.6))
-                                
-                                // Date
-                                Text(formatDate(memory.createdAt))
-                                    .fontStyle(Fonts.caption2)
-                                    .foregroundColor(Colors.NebulaWhite)
-                            }
+                            // Date
+                            Text(formatDate(memory.createdAt))
+                                .fontStyle(Fonts.caption2)
+                                .foregroundColor(Colors.NebulaWhite)
                             
                             Spacer()
                                 .frame(height: 8)
@@ -216,7 +213,28 @@ struct iOSMemoryDetailView: View {
                         },
                         onDelete: {
                             Task {
-                                await deleteMemory()
+                                do {
+                                    // URL에서 경로 추출
+                                    let videoPath = extractPathFromURL(memory.videoURL)
+                                    let thumbnailPath = extractPathFromURL(memory.thumbnailURL)
+                                    
+                                    // 메모리 삭제
+                                    try await diContainer.deleteMemoryUseCase.execute(
+                                        memoryId: memory.id,
+                                        videoPath: videoPath,
+                                        thumbnailPath: thumbnailPath
+                                    )
+                                    
+                                    // 메인뷰 리프레시
+                                    appState.refreshMainView = true
+                                    
+                                    // 상세뷰 닫기
+                                    dismiss()
+                                    
+                                    print("✅ DEBUG: Memory deleted successfully and main view refreshed")
+                                } catch {
+                                    print("❌ ERROR: Failed to delete memory: \(error)")
+                                }
                             }
                         }
                     )
@@ -227,9 +245,11 @@ struct iOSMemoryDetailView: View {
         .task {
             await loadOwnerProfile()
             await loadLikeData()
+            await refreshURLs()
         }
         .fullScreenCover(isPresented: $showFullScreenVideo) {
-            if let videoURLString = memory.videoURL,
+            let videoURLToUse = refreshedVideoURL ?? memory.videoURL
+            if let videoURLString = videoURLToUse,
                let videoURL = URL(string: videoURLString) {
                 ZStack {
                     Color.black
@@ -282,10 +302,33 @@ struct iOSMemoryDetailView: View {
         return displayFormatter.string(from: date)
     }
     
-    private func deleteMemory() async {
-        // TODO: Implement memory deletion
-        // deleteMemoryUseCase is private in DIContainer
-        dismiss()
+    // URL에서 경로 추출하는 헬퍼 메서드
+    private func extractPathFromURL(_ urlString: String?) -> String? {
+        guard let urlString = urlString,
+              let url = URL(string: urlString) else {
+            return nil
+        }
+        
+        let pathComponents = url.pathComponents
+        
+        // files.applevisionpro.xyz 형식: /celestoria/thumbnails/path/to/file
+        if urlString.contains("files.applevisionpro.xyz") {
+            if pathComponents.count >= 4 {
+                let bucketName = pathComponents[2] // thumbnails 또는 spatial_videos
+                let filePath = pathComponents.dropFirst(3).joined(separator: "/")
+                return "\(bucketName)/\(filePath)"
+            }
+        }
+        
+        // Supabase 형식: /storage/v1/object/sign/thumbnails/path/to/file
+        if let signIndex = pathComponents.firstIndex(of: "sign"),
+           signIndex + 1 < pathComponents.count {
+            let bucketName = pathComponents[signIndex + 1]
+            let filePath = pathComponents.dropFirst(signIndex + 2).joined(separator: "/")
+            return "\(bucketName)/\(filePath)"
+        }
+        
+        return nil
     }
     
     private func loadLikeData() async {
@@ -331,6 +374,62 @@ struct iOSMemoryDetailView: View {
             }
         } catch {
             print("Error toggling like: \(error)")
+        }
+    }
+    
+    // URL 토큰 갱신
+    private func refreshURLs() async {
+        guard !isRefreshingURLs else { return }
+        
+        isRefreshingURLs = true
+        defer { isRefreshingURLs = false }
+        
+        print("🔄 DEBUG: Refreshing URLs...")
+        
+        // 썸네일 URL 갱신
+        if let thumbnailURL = memory.thumbnailURL {
+            print("🔄 DEBUG: Refreshing thumbnail URL...")
+            // 이미 직접 접근 가능한 URL인지 확인
+            if thumbnailURL.contains("files.applevisionpro.xyz") {
+                print("🔍 DEBUG: Thumbnail URL is already accessible, no need to refresh")
+                refreshedThumbnailURL = thumbnailURL
+            } else {
+                // Supabase URL인 경우 갱신 시도
+                do {
+                    let refreshedURL = try await diContainer.memoryRepository.refreshThumbnailURL(for: memory)
+                    if let refreshedURL = refreshedURL {
+                        refreshedThumbnailURL = refreshedURL
+                        print("🔄 DEBUG: New thumbnail URL: \(refreshedURL)")
+                    }
+                } catch {
+                    print("⚠️ WARNING: Failed to refresh thumbnail URL, using original: \(error)")
+                    // 에러 발생 시 원본 URL 사용
+                    refreshedThumbnailURL = thumbnailURL
+                }
+            }
+        }
+        
+        // 비디오 URL 갱신
+        if let videoURL = memory.videoURL {
+            print("🔄 DEBUG: Refreshing video URL...")
+            // 이미 직접 접근 가능한 URL인지 확인
+            if videoURL.contains("files.applevisionpro.xyz") {
+                print("🔍 DEBUG: Video URL is already accessible, no need to refresh")
+                refreshedVideoURL = videoURL
+            } else {
+                // Supabase URL인 경우 갱신 시도
+                do {
+                    let refreshedURL = try await diContainer.memoryRepository.refreshVideoURL(for: memory)
+                    if let refreshedURL = refreshedURL {
+                        refreshedVideoURL = refreshedURL
+                        print("🔄 DEBUG: New video URL: \(refreshedURL)")
+                    }
+                } catch {
+                    print("⚠️ WARNING: Failed to refresh video URL, using original: \(error)")
+                    // 에러 발생 시 원본 URL 사용
+                    refreshedVideoURL = videoURL
+                }
+            }
         }
     }
 }
@@ -395,16 +494,20 @@ class MotionManager: ObservableObject {
         calibrationTimer?.invalidate()
         motionManager.stopDeviceMotionUpdates()
     }
+    
 }
 
 // MARK: - Gyroscope Video View
 struct GyroscopeVideoView: View {
     let memory: Memory
+    let refreshedThumbnailURL: String?
+    let refreshedVideoURL: String?
     @Binding var isPlayingInline: Bool
     @Binding var showFullScreenVideo: Bool
     @Binding var player: AVPlayer?
     @ObservedObject var motionManager: MotionManager
     @State private var thumbnailLoaded = false
+    @State private var imageLoadError = false
     
     var body: some View {
         GeometryReader { geometry in
@@ -417,7 +520,7 @@ struct GyroscopeVideoView: View {
                     .overlay(
                         ZStack {
                             // Thumbnail or video content
-                            if let thumbnailURLString = memory.thumbnailURL,
+                            if let thumbnailURLString = refreshedThumbnailURL ?? memory.thumbnailURL,
                                let thumbnailURL = URL(string: thumbnailURLString) {
                                 
                                 if isPlayingInline, let player = player {
@@ -432,30 +535,76 @@ struct GyroscopeVideoView: View {
                                             player.pause()
                                         }
                                 } else {
-                                    // Thumbnail
-                                    AsyncImage(url: thumbnailURL) { image in
-                                        image
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fill)
-                                            .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
-                                            .clipShape(RoundedRectangle(cornerRadius: 20))
-                                            .onAppear { thumbnailLoaded = true }
-                                    } placeholder: {
-                                        RoundedRectangle(cornerRadius: 20)
-                                            .fill(Color.gray.opacity(0.3))
-                                            .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
-                                            .overlay(
-                                                ProgressView()
-                                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                            )
+                                    // Thumbnail with proper loading state management
+                                    AsyncImage(url: thumbnailURL) { phase in
+                                        switch phase {
+                                        case .empty:
+                                            // Loading state
+                                            RoundedRectangle(cornerRadius: 20)
+                                                .fill(Color.gray.opacity(0.3))
+                                                .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
+                                                .overlay(
+                                                    ProgressView()
+                                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                                )
+                                        case .success(let image):
+                                            // Successfully loaded image
+                                            image
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fill)
+                                                .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
+                                                .clipShape(RoundedRectangle(cornerRadius: 20))
+                                                .onAppear {
+                                                    thumbnailLoaded = true
+                                                    imageLoadError = false
+                                                }
+                                        case .failure(let error):
+                                            // Failed to load image
+                                            RoundedRectangle(cornerRadius: 20)
+                                                .fill(Color.gray.opacity(0.3))
+                                                .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
+                                                .overlay(
+                                                    VStack {
+                                                        Image(systemName: "photo")
+                                                            .font(.system(size: 30))
+                                                            .foregroundColor(.white.opacity(0.6))
+                                                        Text("Failed to load image")
+                                                            .font(.caption)
+                                                            .foregroundColor(.white.opacity(0.6))
+                                                    }
+                                                )
+                                                .onAppear {
+                                                    imageLoadError = true
+                                                }
+                                        @unknown default:
+                                            // Unknown state
+                                            RoundedRectangle(cornerRadius: 20)
+                                                .fill(Color.gray.opacity(0.3))
+                                                .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
+                                        }
                                     }
                                 }
+                            } else {
+                                // No thumbnail URL available
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(Color.gray.opacity(0.3))
+                                    .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
+                                    .overlay(
+                                        VStack {
+                                            Image(systemName: "video")
+                                                .font(.system(size: 30))
+                                                .foregroundColor(.white.opacity(0.6))
+                                            Text("No thumbnail available")
+                                                .font(.caption)
+                                                .foregroundColor(.white.opacity(0.6))
+                                        }
+                                    )
                             }
                             
-                            // Play button overlay
-                            if thumbnailLoaded && memory.videoURL != nil && !isPlayingInline {
+                            // Play button overlay (show if thumbnail is loaded or if we have video URL)
+                            if (thumbnailLoaded || (refreshedVideoURL ?? memory.videoURL) != nil) && !isPlayingInline && !imageLoadError {
                                 Button(action: {
-                                    if let videoURLString = memory.videoURL,
+                                    if let videoURLString = refreshedVideoURL ?? memory.videoURL,
                                        let videoURL = URL(string: videoURLString) {
                                         player = AVPlayer(url: videoURL)
                                         isPlayingInline = true
@@ -480,7 +629,7 @@ struct GyroscopeVideoView: View {
                             }
                             
                             // Fullscreen button (bottom right)
-                            if (thumbnailLoaded && memory.videoURL != nil) || isPlayingInline {
+                            if ((thumbnailLoaded || (refreshedVideoURL ?? memory.videoURL) != nil) && !imageLoadError) || isPlayingInline {
                                 VStack {
                                     Spacer()
                                     HStack {
@@ -502,11 +651,11 @@ struct GyroscopeVideoView: View {
                         }
                     )
                     .rotation3DEffect(
-                        .degrees(motionManager.pitch * 20), 
+                        .degrees(motionManager.pitch * 20),
                         axis: (x: 1, y: 0, z: 0)
                     )
                     .rotation3DEffect(
-                        .degrees(motionManager.roll * 20), 
+                        .degrees(motionManager.roll * 20),
                         axis: (x: 0, y: 1, z: 0)
                     )
                     .shadow(color: Color.black.opacity(0.3), radius: 20, x: 0, y: 10)

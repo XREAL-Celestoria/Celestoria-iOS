@@ -190,6 +190,7 @@ struct iOS3DGalaxyContainerView: View {
                     )
                     .padding(.bottom, 20)
                     .transition(.opacity.combined(with: .move(edge: .bottom)))
+                    .id("userInfoModal-\(targetUserId)-\(appState.refreshMainView)")
                 }
             }
             .transition(.opacity)

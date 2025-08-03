@@ -35,7 +35,7 @@ final class DIContainer: ObservableObject {
     // Use Cases
     let fetchMemoriesUseCase: FetchMemoriesUseCase
     private let createMemoryUseCase: CreateMemoryUseCase
-    private let deleteMemoryUseCase: DeleteMemoryUseCase
+    let deleteMemoryUseCase: DeleteMemoryUseCase
     private let signInWithAppleUseCase: SignInWithAppleUseCase
     private let deleteAccountUseCase: DeleteAccountUseCase
     private let signOutUseCase: SignOutUseCase

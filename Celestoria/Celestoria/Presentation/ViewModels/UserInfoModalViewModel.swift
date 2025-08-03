@@ -20,13 +20,16 @@ class UserInfoModalViewModel: ObservableObject {
     // MARK: - Dependencies
     private let diContainer: DIContainer
     private let userId: UUID
+    private let appState: AppState
     
     // MARK: - Initialization
     init(diContainer: DIContainer, userId: UUID) {
         self.diContainer = diContainer
         self.userId = userId
+        self.appState = diContainer.appState
         
         loadUserData()
+        setupRefreshObserver()
     }
     
     // MARK: - Public Methods
@@ -68,6 +71,19 @@ class UserInfoModalViewModel: ObservableObject {
             memoryCount = 0
             likeCount = 0
             commentCount = 0
+        }
+    }
+    
+    private func setupRefreshObserver() {
+        // appState.refreshMainView가 변경될 때마다 데이터 리프레시
+        Task {
+            for await refreshState in appState.$refreshMainView.values {
+                if refreshState {
+                    await loadUserData()
+                    // 리프레시 완료 후 상태 리셋
+                    appState.refreshMainView = false
+                }
+            }
         }
     }
 } 
