@@ -27,10 +27,6 @@ struct UserInfoModalView: View {
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            if isExpanded {
-                Colors.BackgroundBlack
-                    .transition(.opacity)
-            }
             
             if let profile = viewModel.userProfile {
                 VStack(spacing: 0) {
@@ -40,7 +36,7 @@ struct UserInfoModalView: View {
                 .padding(.horizontal, isExpanded ? 0 : 28)
                 .scaleEffect(isExpanded ? 1.0 : 1.0)
                 .frame(maxWidth: .infinity, maxHeight: isExpanded ? .infinity : 120)
-                .frame(height: isExpanded ? UIScreen.main.bounds.height * 0.9 : 120)
+                .frame(height: isExpanded ? UIScreen.main.bounds.height - 52 : 120)
                 .padding(.bottom, isExpanded ? 0 : 30)
                 .offset(y: dragOffset)
                 .gesture(

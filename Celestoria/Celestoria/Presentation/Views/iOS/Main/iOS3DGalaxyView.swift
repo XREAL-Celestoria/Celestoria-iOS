@@ -134,9 +134,12 @@ struct iOS3DGalaxyContainerView: View {
     let diContainer: DIContainer
     @EnvironmentObject var appState: AppState
     @StateObject private var galaxyViewModel: GalaxyViewModel
-    @State private var showSettings = false
-    @State private var showAddMemory = false
+    @State private var activeScreen: MainActiveScreen?
     @State private var containerOpacity: Double = 0
+    
+    enum MainActiveScreen {
+        case explore, notification, addMemory, settings, memoryDetail(Memory)
+    }
     
     init(diContainer: DIContainer) {
         self.diContainer = diContainer
@@ -144,43 +147,99 @@ struct iOS3DGalaxyContainerView: View {
     }
     
     var body: some View {
-        ZStack {
-            // 갤럭시 뷰
-            iOS3DGalaxyView(
-                galaxyViewModel: galaxyViewModel,
-                appState: appState,
-                diContainer: diContainer
-            )
-            
-            // UI 오버레이
+        iOS3DGalaxyView(
+            galaxyViewModel: galaxyViewModel,
+            appState: appState,
+            diContainer: diContainer
+        )
+        .opacity(containerOpacity)
+        .animation(.easeInOut(duration: 1.0), value: containerOpacity)
+        .onAppear {
+            withAnimation(.easeInOut(duration: 1.0).delay(0.3)) {
+                containerOpacity = 1
+            }
+        }
+        .fullScreenCover(isPresented: Binding(
+            get: { activeScreen != nil },
+            set: { if !$0 { activeScreen = nil } }
+        )) {
+            if let screen = activeScreen {
+                switch screen {
+                case .explore:
+                    NavigationView {
+                        ExploreView()
+                            .navigationTitle("Explore")
+                            .navigationBarTitleDisplayMode(.large)
+                    }
+                    .navigationViewStyle(StackNavigationViewStyle())
+                case .notification:
+                    NotificationView()
+                case .addMemory:
+                    iOSAddMemoryContentView(diContainer: diContainer)
+                case .settings:
+                    NavigationView {
+                        iOSSettingsView(diContainer: diContainer)
+                            .navigationTitle("Settings")
+                            .navigationBarTitleDisplayMode(.large)
+                    }
+                    .navigationViewStyle(StackNavigationViewStyle())
+                case .memoryDetail(let memory):
+                    iOSMemoryDetailView(memory: memory, diContainer: diContainer)
+                }
+            }
+        }
+        .onChange(of: appState.refreshMainView) { _, shouldRefresh in
+            if shouldRefresh {
+                galaxyViewModel.refreshGalaxy()
+                appState.refreshMainView = false
+            }
+        }
+        .onReceive(appState.$selectedMemoryForDetail) { memory in
+            if let memory = memory {
+                activeScreen = .memoryDetail(memory)
+            }
+        }
+        .overlay(
+            // 상단 버튼들 - 독립적인 ZStack
             VStack {
-                // 상단 설정 버튼
                 HStack {
                     Spacer()
                     
-                    Button(action: {
-                        showSettings = true
-                    }) {
-                        Image(systemName: "gearshape.fill")
-                            .font(.system(size: 24))
-                            .foregroundColor(.white)
-                            .padding(12)
-                            .background(
-                                Circle()
-                                    .fill(Color.black.opacity(0.5))
-                                    .overlay(
-                                        Circle()
-                                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                                    )
-                            )
+                    HStack(spacing: 16) {
+                        Button(action: { activeScreen = .explore }) {
+                            Image("exploreIcon")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 24, height: 24)
+                        }
+                        
+                        Button(action: { activeScreen = .notification }) {
+                            Image("NotificationIcon")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 24, height: 24)
+                        }
+                        
+                        Button(action: { activeScreen = .settings }) {
+                            Image("menuIcon")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 24, height: 24)
+                        }
                     }
-                    .padding(.trailing, 20)
-                    .padding(.top, 50) // Account for safe area
+                    .padding(.trailing, 16)
+                    .padding(.top, 16)
                 }
                 
                 Spacer()
+            }
+        )
+        .overlay(
+            // 하단 유저 모달 - 독립적인 ZStack
+            VStack {
+                Spacer()
+                    .frame(minHeight: 52)
                 
-                // 하단 유저 모달
                 if let targetUserId = appState.galaxyTargetUserId {
                     UserInfoModalView(
                         userId: targetUserId,
@@ -192,34 +251,36 @@ struct iOS3DGalaxyContainerView: View {
                     )
                 }
             }
-        }
-        .opacity(containerOpacity)
-        .animation(.easeInOut(duration: 1.0), value: containerOpacity)
-        .onAppear {
-            // 컨테이너가 나타날 때 페이드인
-            withAnimation(.easeInOut(duration: 1.0).delay(0.3)) {
-                containerOpacity = 1
+        )
+    }
+}
+
+// 화면들
+struct ExploreView: View {
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            VStack {
+                Text("Explore")
+                    .font(.largeTitle)
+                    .foregroundColor(.white)
+                Text("탐색 화면")
+                    .foregroundColor(.gray)
             }
         }
-        .fullScreenCover(isPresented: $showAddMemory) {
-            iOSAddMemoryContentView(diContainer: diContainer)
-        }
-        .fullScreenCover(isPresented: $appState.showAddMemoryView) {
-            iOSAddMemoryContentView(diContainer: diContainer)
-        }
-        .fullScreenCover(isPresented: $showSettings) {
-            iOSSettingsView(diContainer: diContainer)
-        }
-        .fullScreenCover(isPresented: $appState.showMemoryDetail) {
-            if let memory = appState.selectedMemoryForDetail {
-                iOSMemoryDetailView(memory: memory, diContainer: diContainer)
-            }
-        }
-        .onChange(of: appState.refreshMainView) { _, shouldRefresh in
-            if shouldRefresh {
-                // 메인뷰 새로고침
-                galaxyViewModel.refreshGalaxy()
-                appState.refreshMainView = false
+    }
+}
+
+struct NotificationView: View {
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            VStack {
+                Text("Notification")
+                    .font(.largeTitle)
+                    .foregroundColor(.white)
+                Text("알림 화면")
+                    .foregroundColor(.gray)
             }
         }
     }
