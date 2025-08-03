@@ -6,13 +6,6 @@
 //
 
 
-//
-//  iOSMainButton.swift
-//  Celestoria
-//
-//  Created by Claude on 1/19/25.
-//
-
 import Foundation
 import AudioToolbox
 import SwiftUI
@@ -25,20 +18,18 @@ struct iOSMainButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundColor(isEnabled ? .NebulaBlack : .NebulaWhite)
+                .fontStyle(Fonts.title3)
+                .foregroundColor(isEnabled ? Colors.NebulaBlack : Colors.NebulaWhite)
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
                 .background(isEnabled ?
                             AnyShapeStyle(LinearGradient.GradientSub) :
-                                AnyShapeStyle(Color.NebulaWhite.opacity(0.1)))
-                .cornerRadius(12)
+                                AnyShapeStyle(Colors.BtnGray))
+                .cornerRadius(16)
         }
         .buttonStyle(iOSMainButtonStyle())
-        .padding(.horizontal, 24)
     }
 }
-
 
 struct iOSMainButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
@@ -52,3 +43,4 @@ struct iOSMainButtonStyle: ButtonStyle {
             .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
     }
 }
+

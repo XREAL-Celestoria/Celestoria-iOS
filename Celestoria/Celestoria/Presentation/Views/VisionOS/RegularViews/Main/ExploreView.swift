@@ -51,7 +51,7 @@ struct ExploreView: View {
                         .padding(.top, 64)
 
                     Text("Explore other people's Galaxy!")
-                        .foregroundColor(Color.NebulaWhite)
+                        .foregroundColor(Colors.NebulaWhite)
                         .font(.system(size: 22, weight: .bold))
                         .padding(.top, 32)
                     
@@ -98,7 +98,7 @@ struct ExploreView: View {
                             // Search Bar Background
                             ZStack {
                                 RoundedRectangle(cornerRadius: 28)
-                                    .fill(Color.NebulaBlack)
+                                    .fill(Colors.NebulaBlack)
                                     .frame(width: 832, height: 56)
                                     .padding(.leading, 16)
 
@@ -112,16 +112,16 @@ struct ExploreView: View {
                                     ZStack(alignment: .leading) {
                                         if exploreViewModel.searchText.isEmpty {
                                             Text("Search user name")
-                                                .foregroundColor(Color.NebulaWhite)
+                                                .foregroundColor(Colors.NebulaWhite)
                                                 .font(.system(size: 16))
                                                 .padding(.leading, 8)
                                         }
                                         
                                         TextField("", text: $exploreViewModel.searchText)
                                             .submitLabel(.search)
-                                            .foregroundColor(Color.NebulaWhite)
+                                            .foregroundColor(Colors.NebulaWhite)
                                             .font(.system(size: 16))
-                                            .tint(Color.NebulaWhite)
+                                            .tint(Colors.NebulaWhite)
                                             .focused($isSearchFieldFocused)
                                             .onSubmit {
                                                 Task {
@@ -263,7 +263,7 @@ struct ExploreUserCard: View {
 
                         Text(item.userName)
                             .font(.system(size: 19, weight: .bold))
-                            .foregroundColor(.NebulaWhite)
+                            .foregroundColor(Colors.NebulaWhite)
                             .padding(.leading, 12)
 
                         Spacer()
@@ -277,7 +277,7 @@ struct ExploreUserCard: View {
                     // Text("\(item.memoryStars) Memory Stars, \(item.constellations) Constellations")
                     Text("\(item.memoryStars) Memory Stars")
                         .font(.system(size: 15, weight: .semibold))
-                        .foregroundColor(.NebulaWhite)
+                        .foregroundColor(Colors.NebulaWhite)
                         .padding(.bottom, 24)
                         .frame(alignment: .center)
                 }

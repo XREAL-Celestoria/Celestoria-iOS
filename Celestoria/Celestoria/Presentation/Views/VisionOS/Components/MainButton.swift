@@ -18,11 +18,11 @@ struct MainButton: View {
         Button(action: action) {
             Text(title) // Dynamic title
                 .font(.system(size: 22, weight: .semibold))
-                .foregroundColor(isEnabled ? .NebulaBlack : .NebulaWhite)
+                .foregroundColor(isEnabled ? Colors.NebulaBlack : Colors.NebulaWhite)
                 .frame(width: 380, height: 64)
                 .background(isEnabled ?
                             AnyShapeStyle(LinearGradient.GradientSub) :
-                                AnyShapeStyle(Color.NebulaWhite.opacity(0.1)))
+                                AnyShapeStyle(Colors.NebulaWhite.opacity(0.1)))
                 .cornerRadius(16)
         }
         .buttonStyle(MainButtonStyle())

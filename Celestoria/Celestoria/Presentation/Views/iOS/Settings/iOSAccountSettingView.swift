@@ -31,8 +31,21 @@ struct iOSAccountSettingView: View {
             }
             .padding()
         }
-        .navigationTitle("Account")
+        .navigationTitle("Account Setting")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    dismiss()
+                }) {
+                    Image("backButton")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+            }
+        }
         .confirmationDialog(
             "Delete Account",
             isPresented: $showDeleteConfirmation,
@@ -128,11 +141,6 @@ struct iOSAccountSettingView: View {
             Task {
                 do {
                     try await settingViewModel.signOut()
-                    // Reset app state and navigate to login
-                    appState.navigationState = .login
-                    appState.userId = nil
-                    appState.userProfile = nil
-                    appState.galaxyTargetUserId = nil
                     dismiss()
                 } catch {
                     deleteError = error.localizedDescription
@@ -145,7 +153,7 @@ struct iOSAccountSettingView: View {
                 Text("Sign Out")
                     .font(.system(size: 17, weight: .semibold))
             }
-            .foregroundColor(.NebulaBlack)
+            .foregroundColor(Colors.NebulaBlack)
             .frame(maxWidth: .infinity)
             .frame(height: 50)
             .background(

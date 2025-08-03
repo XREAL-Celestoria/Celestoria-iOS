@@ -22,7 +22,7 @@ struct PopupErrorView: View {
             .fill(LinearGradient.BackgroundPopup)
             .frame(width: 644, height: 324)
             .blur(radius: 100)
-            .background(Color.NebulaBlack.cornerRadius(44))
+            .background(Colors.NebulaBlack.cornerRadius(44))
             .overlay(
                 RoundedRectangle(cornerRadius: 44)
                     .stroke(LinearGradient.StrokePopup, lineWidth: 3)
@@ -33,7 +33,7 @@ struct PopupErrorView: View {
                     HStack {
                         Text(title)
                             .font(.system(size: 29, weight: .bold))
-                            .foregroundColor(.NebulaWhite)
+                            .foregroundColor(Colors.NebulaWhite)
                             .padding(.leading, 52)
                             .padding(.top, 48)
                         
@@ -46,7 +46,7 @@ struct PopupErrorView: View {
                     
                     Text(notes)
                         .font(.system(size: 17, weight: .medium))
-                        .foregroundColor(.NebulaWhite)
+                        .foregroundColor(Colors.NebulaWhite)
                         .padding(.top, 8)
                         .padding(.horizontal, 52)
                     
@@ -55,7 +55,7 @@ struct PopupErrorView: View {
                     Button(action: buttonAction) {
                         Text(trailingButtonText)
                             .font(.system(size: 22, weight: .bold))
-                            .foregroundColor(.NebulaBlack)
+                            .foregroundColor(Colors.NebulaBlack)
                             .frame(width: 240, height: 76)
                             .background(LinearGradient.GradientSub.cornerRadius(16))
                     }

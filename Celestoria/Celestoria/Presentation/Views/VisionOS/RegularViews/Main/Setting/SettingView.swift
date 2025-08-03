@@ -35,7 +35,7 @@ struct SettingView: View {
                     .frame(width: geometry.size.width * 0.62)
             }
         }
-        .background(Color.NebulaBlack.ignoresSafeArea())
+        .background(Colors.NebulaBlack.ignoresSafeArea())
         .alert("오류", isPresented: $showError) {
             Button("확인", role: .cancel) { }
         } message: {
@@ -113,7 +113,7 @@ struct LeftSettingView: View {
             }) {
                 Text("Sign Out")
                     .font(.system(size: 22, weight: .semibold))
-                    .foregroundColor(.NebulaRed)
+                    .foregroundColor(Colors.NebulaRed)
                     .padding(.vertical, 18)
                     .frame(maxWidth: 380, alignment: .center)
                     .background(Color(hex: "#1B212A"))
@@ -144,8 +144,8 @@ struct RightSettingView: View {
             Rectangle()
                 .fill(Color.clear)
                 .overlay(
-                    Color.NebulaBlack.opacity(0.3)
-                        .shadow(.inner(color: Color.NebulaWhite.opacity(0.8), radius: 24))
+                    Colors.NebulaBlack.opacity(0.3)
+                        .shadow(.inner(color: Colors.NebulaWhite.opacity(0.8), radius: 24))
                 )
                 .edgesIgnoringSafeArea(.all)
             

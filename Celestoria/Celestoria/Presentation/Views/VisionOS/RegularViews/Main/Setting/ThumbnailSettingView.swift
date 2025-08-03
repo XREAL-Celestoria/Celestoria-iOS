@@ -18,7 +18,7 @@ struct ThumbnailSettingView: View {
         VStack(alignment: .leading, spacing: 40) {
             Text("Thumbnail")
                 .font(.system(size: 29, weight: .bold))
-                .foregroundColor(.NebulaWhite)
+                .foregroundColor(Colors.NebulaWhite)
                 .padding(.top, 35)
                 .padding(.horizontal, 55)
             
@@ -55,7 +55,7 @@ struct ThumbnailSettingView: View {
             }) {
                 Text(isEditing ? "Cancel" : "Edit")
                     .font(.system(size: 24, weight: .semibold))
-                    .foregroundColor(.NebulaWhite)
+                    .foregroundColor(Colors.NebulaWhite)
             }
             .frame(maxWidth: .infinity)
             .buttonStyle(.plain)
@@ -103,7 +103,7 @@ struct ThumbnailSelectorView: View {
                 HStack {
                     Text("Change Thumbnail")
                         .font(.system(size: 29, weight: .bold))
-                        .foregroundColor(.NebulaWhite)
+                        .foregroundColor(Colors.NebulaWhite)
                     
                     Spacer()
                     
@@ -119,7 +119,7 @@ struct ThumbnailSelectorView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 20, height: 20)
-                                .foregroundColor(.NebulaWhite)
+                                .foregroundColor(Colors.NebulaWhite)
                         }
                     }
                     .buttonStyle(MainButtonStyle())

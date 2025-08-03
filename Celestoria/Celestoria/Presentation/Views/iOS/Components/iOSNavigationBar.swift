@@ -5,14 +5,6 @@
 //  Created by Minjun Kim on 7/20/25.
 //
 
-
-//
-//  iOSNavigationBar.swift
-//  Celestoria
-//
-//  Created by Claude on 1/19/25.
-//
-
 import SwiftUI
 
 struct iOSNavigationBar: View {
@@ -25,7 +17,7 @@ struct iOSNavigationBar: View {
             Button(action: action) {
                 Image(systemName: buttonImageString)
                     .font(.system(size: 20, weight: .medium))
-                    .foregroundColor(.NebulaWhite)
+                    .foregroundColor(Colors.NebulaWhite)
                     .frame(width: 44, height: 44)
             }
             
@@ -33,7 +25,7 @@ struct iOSNavigationBar: View {
             
             Text(title)
                 .font(.system(size: 18, weight: .bold))
-                .foregroundColor(.NebulaWhite)
+                .foregroundColor(Colors.NebulaWhite)
             
             Spacer()
             

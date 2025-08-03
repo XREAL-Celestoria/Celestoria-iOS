@@ -20,7 +20,7 @@ struct AccountSettingView: View {
         VStack(alignment: .leading, spacing: 24) {
             Text("Account Setting")
                 .font(.system(size: 29, weight: .bold))
-                .foregroundColor(.NebulaWhite)
+                .foregroundColor(Colors.NebulaWhite)
                 .padding(.top, 35)
                 .padding(.horizontal, 55)
             
@@ -87,7 +87,7 @@ struct BlockedUsersSettingView: View {
         VStack(alignment: .leading, spacing: 24) {
             Text("Blocked Users")
                 .font(.system(size: 29, weight: .bold))
-                .foregroundColor(.NebulaWhite)
+                .foregroundColor(Colors.NebulaWhite)
                 .padding(.top, 35)
                 .padding(.horizontal, 55)
             
@@ -96,7 +96,7 @@ struct BlockedUsersSettingView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if settingViewModel.blockedUsers.isEmpty {
                 Text("No blocked users")
-                    .foregroundColor(.NebulaWhite)
+                    .foregroundColor(Colors.NebulaWhite)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 ScrollView {

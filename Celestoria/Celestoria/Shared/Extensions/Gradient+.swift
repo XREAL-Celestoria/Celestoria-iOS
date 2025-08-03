@@ -11,13 +11,13 @@ import SwiftUI
 extension LinearGradient {
     // Design System
     static let GradientMain = LinearGradient(
-        gradient: Gradient(colors: [Color.Main1, Color.Main2]),
+        gradient: Gradient(colors: [Colors.Main1, Colors.Main2]),
         startPoint: .bottomLeading,
         endPoint: .topTrailing
     )
     
     static let GradientSub = LinearGradient(
-        gradient: Gradient(colors: [Color.Sub1, Color.Sub2]),
+        gradient: Gradient(colors: [Colors.Sub1, Colors.Sub2]),
         startPoint: .top,
         endPoint: .bottom
     )
@@ -29,13 +29,13 @@ extension LinearGradient {
     )
     
     static let GradientStroke = LinearGradient(
-        gradient: Gradient(colors: [Color.Stroke1, Color.Stroke2]),
+        gradient: Gradient(colors: [Colors.Stroke1, Colors.Stroke2]),
         startPoint: .top,
         endPoint: .bottom
     )
     
     static let GradientIcon = LinearGradient(
-        gradient: Gradient(colors: [Color.Icon1, Color.Icon2]),
+        gradient: Gradient(colors: [Colors.Icon1, Colors.Icon2]),
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
@@ -47,31 +47,130 @@ extension LinearGradient {
     )
     
     static let GradientCardOverlay = LinearGradient(
-        gradient: Gradient(colors: [Color.NebulaWhite.opacity(0), Color.NebulaBlack.opacity(0.7)]),
+        gradient: Gradient(colors: [Colors.NebulaWhite.opacity(0), Colors.NebulaBlack.opacity(0.7)]),
         startPoint: .top,
         endPoint: .bottom
     )
     
     static let BackgroundPopup = LinearGradient(
         gradient: Gradient(stops: [
-            Gradient.Stop(color: Color.Popup1, location: 0.0),
-            Gradient.Stop(color: Color.Popup2, location: 0.65),
-            Gradient.Stop(color: Color.Popup3, location: 1.0)
+            Gradient.Stop(color: Colors.Popup1, location: 0.0),
+            Gradient.Stop(color: Colors.Popup2, location: 0.65),
+            Gradient.Stop(color: Colors.Popup3, location: 1.0)
         ]),
         startPoint: .top,
         endPoint: .bottom
     )
     
     static let StrokePopup = LinearGradient(
-        gradient: Gradient(colors: [Color.NebulaWhite, Color(hex: "CCCCCC")]),
+        gradient: Gradient(colors: [Colors.NebulaWhite, Color(hex: "CCCCCC")]),
         startPoint: .top,
         endPoint: .bottom
     )
     
     static let BackgroundSearch = LinearGradient(
-        gradient: Gradient(colors: [Color.Search1, Color.Search2]),
+        gradient: Gradient(colors: [Colors.Search1, Colors.Search2]),
         startPoint: .topLeading,
         endPoint: .bottomTrailing
+    )
+    
+    // Design Tokens - Gradients
+    static let SubGradient = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#a7e9fe"), Color(hex: "#b5c9ff")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let MainGradient = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#babcff"), Color(hex: "#cff4ff")]),
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+    
+    static let MainStroke = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#ffffff"), Color(hex: "#cdefff")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let PopupStroke = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#ffffff"), Color(hex: "#cccccc")]),
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+    
+    static let IconGradient = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#cff4ff"), Color(hex: "#babcff")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let PopupMain = LinearGradient(
+        gradient: Gradient(stops: [
+            Gradient.Stop(color: Color(hex: "#17171733"), location: 0.0),
+            Gradient.Stop(color: Color(hex: "#4b4b4b33"), location: 0.65),
+            Gradient.Stop(color: Color(hex: "#54c3ff80"), location: 1.0)
+        ]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let SearchUsercardBG = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#a7e9fe"), Color(hex: "#515768")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let BtnFillColor = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#a7e9fe"), Color(hex: "#b5c9ff")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let BtnStroke = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#ffffff"), Color(hex: "#cdefff")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let CheckedBoxStroke = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#a7e9fe"), Color(hex: "#b5c9ff")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let BtnAfterSelect = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#a7e9fe"), Color(hex: "#b5c9ff")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let BtnBeforeSelect = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#aab8c6"), Color(hex: "#839dba")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let DimBlackGradation = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#00000000"), Color(hex: "#000000b2")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let DimSkyblueGradation = LinearGradient(
+        gradient: Gradient(stops: [
+            Gradient.Stop(color: Color(hex: "#17171733"), location: 0.0),
+            Gradient.Stop(color: Color(hex: "#4b4b4b33"), location: 0.51),
+            Gradient.Stop(color: Color(hex: "#217aaa80"), location: 1.0)
+        ]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let BtnBackGrad = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#14141500"), Color(hex: "#141415")]),
+        startPoint: .top,
+        endPoint: .bottom
     )
     
     // Other

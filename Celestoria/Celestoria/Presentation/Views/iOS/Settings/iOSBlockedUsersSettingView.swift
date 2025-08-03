@@ -10,6 +10,7 @@ import SwiftUI
 
 struct iOSBlockedUsersSettingView: View {
     @StateObject private var settingViewModel: SettingViewModel
+    @Environment(\.dismiss) private var dismiss
     let diContainer: DIContainer
     
     init(diContainer: DIContainer) {
@@ -65,7 +66,7 @@ struct iOSBlockedUsersSettingView: View {
                                         .overlay(
                                             Text(blockedUser.profile.name.prefix(1).uppercased())
                                                 .font(.system(size: 20, weight: .bold))
-                                                .foregroundColor(.NebulaBlack)
+                                                .foregroundColor(Colors.NebulaBlack)
                                         )
                                 }
                             }
@@ -108,6 +109,19 @@ struct iOSBlockedUsersSettingView: View {
         }
         .navigationTitle("Blocked Users")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    dismiss()
+                }) {
+                    Image("backButton")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+            }
+        }
         .task {
             await settingViewModel.fetchBlockedUsers()
         }

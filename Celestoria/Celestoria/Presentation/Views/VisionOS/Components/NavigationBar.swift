@@ -18,7 +18,7 @@ struct NavigationBar: View {
             
             Text(title)
                 .font(.system(size: 29, weight: .bold))
-                .foregroundColor(.NebulaWhite)
+                .foregroundColor(Colors.NebulaWhite)
                 .padding(.leading, 24)
             
             Spacer()

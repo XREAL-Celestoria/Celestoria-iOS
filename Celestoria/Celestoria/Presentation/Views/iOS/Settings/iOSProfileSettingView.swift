@@ -11,9 +11,12 @@ import PhotosUI
 
 struct iOSProfileSettingView: View {
     @StateObject private var settingViewModel: SettingViewModel
-    @State private var isEditMode = false
     @State private var showProfileSelector = false
     @State private var tempNickname = ""
+    @State private var isImageLoading = false
+    @State private var isUpdating = false
+    @FocusState private var isNicknameFocused: Bool
+    @Environment(\.dismiss) private var dismiss
     let diContainer: DIContainer
     
     init(diContainer: DIContainer) {
@@ -24,134 +27,205 @@ struct iOSProfileSettingView: View {
     var body: some View {
         ZStack {
             // Background
-            Color.black
+            Colors.BackgroundBlack
                 .ignoresSafeArea()
             
-            VStack {
-                ScrollView {
-                    VStack(spacing: 24) {
-                        // Profile Image Section
-                        VStack(spacing: 16) {
-                            ZStack {
-                        if let profileKey = settingViewModel.profile?.profileKey,
-                           let predefinedImage = PredefinedProfileImage.fromKey(profileKey) {
-                            // Show predefined profile image
-                            Image(predefinedImage.rawValue)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 150, height: 150)
-                                .clipShape(Circle())
-                        } else if let profileImageUrl = settingViewModel.profile?.profileImageURL {
-                            AsyncImage(url: URL(string: profileImageUrl)) { image in
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                            } placeholder: {
-                                Circle()
-                                    .fill(Color.gray.opacity(0.3))
-                                    .overlay(
-                                        ProgressView()
-                                    )
-                            }
-                            .frame(width: 150, height: 150)
+            VStack(spacing: 0) {
+                // Profile Image Section
+                VStack(spacing: 36) {
+                    ZStack {
+                        // 프로필 이미지 뷰
+                        profileImageView
+                            .scaledToFill()
+                            .frame(width: 220, height: 220)
                             .clipShape(Circle())
-                        } else {
-                            Circle()
-                                .fill(LinearGradient.GradientMain)
-                                .frame(width: 150, height: 150)
-                                .overlay(
-                                    Text(settingViewModel.profile?.name.prefix(1).uppercased() ?? "?")
-                                        .font(.system(size: 60, weight: .bold))
-                                        .foregroundColor(.NebulaBlack)
-                                )
-                        }
-                        
-                        if isEditMode {
-                            Circle()
-                                .fill(Color.black.opacity(0.5))
-                                .frame(width: 150, height: 150)
-                                .overlay(
-                                    VStack {
-                                        Image(systemName: "camera.fill")
-                                            .font(.system(size: 30))
-                                            .foregroundColor(.white)
-                                        Text("Change Photo")
-                                            .font(.system(size: 14))
-                                            .foregroundColor(.white)
-                                    }
-                                )
-                                .onTapGesture {
-                                    showProfileSelector = true
-                                }
-                        }
+                            .onTapGesture {
+                                showProfileSelector = true
+                            }
                     }
                     
                     // Nickname Section - styled like visionOS
-                    if isEditMode {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.gray.opacity(0.2))
-                                .frame(width: 280, height: 50)
-                            
-                            TextField("Nickname", text: $tempNickname)
-                                .font(.system(size: 20, weight: .medium))
-                                .foregroundColor(.white)
-                                .multilineTextAlignment(.center)
-                                .frame(width: 260)
-                        }
-                    } else {
-                        Text(settingViewModel.profile?.name ?? "Unknown")
-                            .font(.system(size: 24, weight: .semibold))
-                            .foregroundColor(.white)
-                    }
-                }
-                        .padding(.top, 20)
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Colors.ProfileNamebox)
+                            .frame(width: UIScreen.main.bounds.width - 48, height: 84)
+                            .overlay(nicknameStroke)
                         
-                        Spacer(minLength: 100) // Space for button
+                        TextField("Nickname", text: $tempNickname)
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundColor(Colors.NebulaWhite)
+                            .multilineTextAlignment(.center)
+                            .frame(width: UIScreen.main.bounds.width - 52)
+                            .focused($isNicknameFocused)
                     }
-                    .padding()
+                    .onTapGesture {
+                        isNicknameFocused = true
+                    }
                 }
+                .padding(.top, 30)
                 
-                // Edit/Save Button - fixed at bottom
-                Button(action: {
-                    if isEditMode {
-                        // Save changes
+                Spacer()
+                
+                // Save Button - fixed at bottom
+                iOSUploadButton (
+                    title: "Save",
+                    action: {
+                        // 키보드 내리기
+                        isNicknameFocused = false
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                        
                         Task {
+                            isUpdating = true
                             await settingViewModel.updateProfileIfNeeded(newName: tempNickname, selectedImage: settingViewModel.selectedImage)
-                            isEditMode = false
+                            isUpdating = false
+                            dismiss()
                         }
-                    } else {
-                        // Enter edit mode
-                        tempNickname = settingViewModel.profile?.name ?? ""
-                        isEditMode = true
-                    }
-                }) {
-                    Text(isEditMode ? "Done" : "Edit")
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundColor(.NebulaBlack)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                        .background(
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(LinearGradient.GradientSub)
-                        )
-                }
-                .padding(.horizontal, 20)
+                    },
+                    isEnabled: hasChanges
+                )
+                .padding(.horizontal, 24)
                 .padding(.bottom, 30)
+                .background(LinearGradient.BtnBackGrad)
+            }
+            .onTapGesture {
+                // 배경을 탭했을 때 키보드 내리기
+                isNicknameFocused = false
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
         }
-        .navigationTitle("Profile")
+        .navigationTitle("Edit Profile")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    // 키보드 내리기
+                    isNicknameFocused = false
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    dismiss()
+                }) {
+                    Image("backButton")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+            }
+        }
         .sheet(isPresented: $showProfileSelector) {
             iOSProfileSelectorView(settingViewModel: settingViewModel, isPresented: $showProfileSelector)
-                .presentationDetents([.large])
+                .presentationDetents([.medium])
                 .presentationDragIndicator(.visible)
         }
+        .overlay(
+            // Loading overlay - 맨 위에 정 가운데
+            Group {
+                if isImageLoading || isUpdating {
+                    Color.black.opacity(0.5)
+                        .ignoresSafeArea()
+                    
+                    VStack {
+                        Spacer()
+                        LoadingView()
+                        Spacer()
+                    }
+                    .frame(maxWidth: UIScreen.main.bounds.width , maxHeight: .infinity)
+                }
+            }
+        )
         .task {
-            await settingViewModel.fetchProfile()
+            Task {
+                isImageLoading = true
+                await settingViewModel.fetchProfile()
+                
+                let profile = settingViewModel.profile
+                
+                // tempNickname 초기화
+                tempNickname = profile?.name ?? ""
+                
+                if let key = profile?.profileKey,
+                   let predefined = PredefinedProfileImage.fromKey(key) {
+                    print("✅ profileKey = \(key) → \(predefined.rawValue)")
+                    settingViewModel.selectedImage = .predefined(predefined)
+                } else if let urlStr = profile?.profileImageURL {
+                    // SettingViewModel에서 이미 캐시된 이미지가 있는지 확인
+                    if let selectedImage = settingViewModel.selectedImage,
+                       case .custom(let image) = selectedImage {
+                        // 이미 캐시된 이미지가 있으면 그대로 사용
+                        print("✅ 캐시된 커스텀 이미지 사용")
+                    } else {
+                        // SettingViewModel에서 이미지 로드 (캐싱 포함)
+                        await settingViewModel.fetchProfile()
+                    }
+                } else {
+                    settingViewModel.selectedImage = .predefined(.profile_gray)
+                }
+                
+                isImageLoading = false
+            }
         }
     }
+    
+    // 변경사항이 있는지 확인하는 computed property
+    private var hasChanges: Bool {
+        let nameChanged = tempNickname != (settingViewModel.profile?.name ?? "")
+        let imageChanged = settingViewModel.selectedImage != settingViewModel.originalImage
+        return nameChanged || imageChanged
+    }
+    
+    @ViewBuilder
+    var profileImageView: some View {
+        switch settingViewModel.selectedImage {
+        case .custom(let uiImage):
+            ZStack {
+                Image("profile_bg")
+                    .resizable()
+                    .scaledToFill()
+                    .clipShape(Circle())
+                    .frame(width: 220, height: 220)
+                
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 160, height: 160)
+                    .clipShape(Circle())
+            }
+            
+        case .predefined(let predefined):
+            if let image = UIImage(named: predefined.rawValue) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                if !isImageLoading || !isUpdating {
+                    Image("profile_bg")
+                        .resizable()
+                        .scaledToFill()
+                        .clipShape(Circle())
+                        .frame(width: 220, height: 220)
+                }
+            }
+            
+        case .none:
+            if !isImageLoading || !isUpdating {
+                Image("profile_bg")
+                    .resizable()
+                    .scaledToFill()
+                    .clipShape(Circle())
+                    .frame(width: 220, height: 220)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var nicknameStroke: some View {
+        RoundedRectangle(cornerRadius: 16)
+            .stroke(
+                isNicknameFocused ? AnyShapeStyle(LinearGradient.GradientSub) : AnyShapeStyle(Color.clear),
+                lineWidth: isNicknameFocused ? 2 : 0
+            )
+    }
 }
+
 
 struct iOSProfileSelectorView: View {
     @ObservedObject var settingViewModel: SettingViewModel
@@ -161,99 +235,69 @@ struct iOSProfileSelectorView: View {
     
     private let predefinedImages = PredefinedProfileImage.allCases
     
-    private var currentSelectedImage: ProfileImageSelection? {
-        if let profileKey = settingViewModel.profile?.profileKey,
-           let predefinedImage = PredefinedProfileImage.fromKey(profileKey) {
-            return .predefined(predefinedImage)
-        }
-        return nil
-    }
-    
     var body: some View {
-        NavigationView {
-            ZStack {
-                Color.NebulaBlack
-                    .ignoresSafeArea()
-                
+        ZStack {
+            Color(hex: "262629")
+                .ignoresSafeArea()
+            
+            VStack {
+                // Grid of profile images
                 ScrollView {
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
-                        // Custom Photo Picker (Plus button)
-                        PhotosPicker(selection: $selectedItem, matching: .images) {
-                            ZStack {
-                                Circle()
-                                    .fill(Color.gray.opacity(0.2))
-                                    .frame(width: 100, height: 100)
-                                    .overlay(
-                                        Circle()
-                                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                                    )
-                                
-                                Image(systemName: "plus")
-                                    .font(.system(size: 30))
-                                    .foregroundColor(.gray)
-                            }
-                        }
+                    Spacer()
+                        .frame(height: 20)
+                    
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                        
+                        PhotoPickerView(
+                            selectedItem: $selectedItem,
+                            tempSelectedImage: $tempSelectedImage,
+                            isSelected: {
+                                if let temp = tempSelectedImage {
+                                    if case .custom = temp {
+                                        return true
+                                    }
+                                }
+                                return false
+                            }()
+                        )
                         .onChange(of: selectedItem) { _, newItem in
-                            if let item = newItem {
-                                Task {
-                                    if let data = try? await item.loadTransferable(type: Data.self),
-                                       let image = UIImage(data: data) {
-                                        await MainActor.run {
-                                            tempSelectedImage = .custom(image)
-                                        }
+                            Task {
+                                if let data = try? await newItem?.loadTransferable(type: Data.self),
+                                   let image = UIImage(data: data) {
+                                    await MainActor.run {
+                                        tempSelectedImage = .custom(image)
+                                        // 커스텀 이미지 선택 시 바로 적용하고 닫기
+                                        settingViewModel.selectedImage = .custom(image)
+                                        isPresented = false
                                     }
                                 }
                             }
                         }
                         
-                        // Predefined Images
+                        // Predefined profile images
                         ForEach(predefinedImages, id: \.self) { predefinedImage in
                             Button(action: {
                                 tempSelectedImage = .predefined(predefinedImage)
+                                // 미리 정의된 이미지 선택 시 바로 적용하고 닫기
+                                settingViewModel.selectedImage = .predefined(predefinedImage)
+                                isPresented = false
                             }) {
-                                ProfileImageCell(
-                                    imageName: predefinedImage.rawValue,
+                                ProfileCell(
+                                    image: predefinedImage.rawValue,
                                     isSelected: isImageSelected(predefinedImage)
                                 )
                             }
                         }
+                        Spacer()
                     }
-                    .padding(.horizontal)
-                    .padding(.top, 20)
-                    .padding(.bottom, 100)
-                }
-            }
-            .navigationTitle("Edit Profile")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        isPresented = false
-                    }
-                    .foregroundColor(.white)
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
-                        if let tempImage = tempSelectedImage {
-                            settingViewModel.selectedImage = tempImage
-                            isPresented = false
-                            // Update profile after sheet dismisses
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                Task {
-                                    await settingViewModel.updateProfileIfNeeded(newName: nil, selectedImage: tempImage)
-                                }
-                            }
-                        }
-                    }
-                    .foregroundColor(.white)
-                    .fontWeight(.semibold)
-                    .disabled(tempSelectedImage == nil)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 60)
                 }
             }
         }
         .onAppear {
-            tempSelectedImage = currentSelectedImage
+            // 현재 선택된 이미지를 tempSelectedImage로 설정
+            tempSelectedImage = settingViewModel.selectedImage
         }
     }
     
@@ -264,6 +308,107 @@ struct iOSProfileSelectorView: View {
             }
         }
         return false
+    }
+}
+
+// MARK: - Profile Cell
+struct ProfileCell: View {
+    let image: String
+    let isSelected: Bool
+    
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            // Base Image
+            if let uiImage = UIImage(named: image) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 100, height: 100)
+                    .clipShape(Circle())
+            } else {
+                // Fallback image
+                Circle()
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(width: 100, height: 100)
+            }
+            
+            // Selection overlay
+            if isSelected {
+                Circle()
+                    .stroke(
+                        LinearGradient.GradientSub,
+                        lineWidth: 2
+                    )
+                    .frame(width: 100, height: 100)
+                
+                // Check mark
+                Image("Check-Circle")
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                    .offset(x: -2, y: 2)
+            }
+        }
+        .frame(width: 100, height: 100)
+    }
+}
+
+// MARK: - PhotoPickerView
+struct PhotoPickerView: View {
+    @Binding var selectedItem: PhotosPickerItem?
+    @Binding var tempSelectedImage: ProfileImageSelection?
+    let isSelected: Bool
+    
+    var body: some View {
+        PhotosPicker(selection: $selectedItem, matching: .images) {
+            ZStack {
+                if case .custom(let image) = tempSelectedImage {
+                    Image("profile_bg")
+                        .resizable()
+                        .scaledToFill()
+                        .clipShape(Circle())
+                        .frame(width: 80, height: 80)
+                    
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 60, height: 60)
+                        .clipShape(Circle())
+                    
+                    Circle()
+                        .fill(.black.opacity(0.2))
+                        .frame(width: 80, height: 80)
+                    
+                    Image(systemName: "plus")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundColor(Colors.NebulaWhite.opacity(0.5))
+                    
+                    if isSelected {
+                        Circle()
+                            .stroke(
+                                LinearGradient.GradientSub,
+                                lineWidth: 2
+                            )
+                            .frame(width: 80, height: 80)
+                        
+                        // Check mark
+                        Image("Check-Circle")
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                            .offset(x: 30, y: -30)
+                    }
+                    
+                } else {
+                    Circle()
+                        .stroke(Color.gray.opacity(0.3), lineWidth: 2)
+                        .frame(width: 80, height: 80)
+                        .background(.clear)
+                    
+                    Image(systemName: "plus")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundColor(Colors.NebulaWhite.opacity(0.5))
+                }
+            }
+        }
     }
 }
 
@@ -300,3 +445,5 @@ struct ProfileImageCell: View {
         .frame(width: 100, height: 100)
     }
 }
+
+

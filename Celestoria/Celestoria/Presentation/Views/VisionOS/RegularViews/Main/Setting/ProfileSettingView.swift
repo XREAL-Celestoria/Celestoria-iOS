@@ -27,7 +27,7 @@ struct ProfileSettingView: View {
             HStack {
                 Text("Profile")
                     .font(.system(size: 29, weight: .bold))
-                    .foregroundColor(.NebulaWhite)
+                    .foregroundColor(Colors.NebulaWhite)
                 
                 Spacer()
                 
@@ -98,14 +98,14 @@ struct ProfileSettingView: View {
                     if isEditing {
                         TextField("Nickname", text: $nickname)
                             .font(.system(size: 28, weight: .bold))
-                            .foregroundColor(.NebulaWhite)
+                            .foregroundColor(Colors.NebulaWhite)
                             .multilineTextAlignment(.center)
                             .frame(width: 580)
                             .focused($isNicknameFocused)
                     } else {
                         Text(viewModel.profile?.name ?? "User")
                             .font(.system(size: 28, weight: .bold))
-                            .foregroundColor(.NebulaWhite)
+                            .foregroundColor(Colors.NebulaWhite)
                     }
                 }
             }

@@ -68,6 +68,16 @@ final class AppState: ObservableObject {
             Logger.info("showExploreNavigatorView : \(showExploreNavigatorView)")
         }
     }
+    @Published var showMemoryDetail = false {
+        didSet {
+            Logger.info("showMemoryDetail : \(showMemoryDetail)")
+        }
+    }
+    @Published var selectedMemoryForDetail: Memory? {
+        didSet {
+            Logger.info("selectedMemoryForDetail : \(selectedMemoryForDetail?.id ?? UUID())")
+        }
+    }
     @Published var hasAcceptedTerms = false {
         didSet {
             Logger.info("Terms Accepted: \(hasAcceptedTerms)")
@@ -84,6 +94,16 @@ final class AppState: ObservableObject {
         }
     }
     @Published var mainWindowActive: Bool = true  // 메인 윈도우 활성 상태를 추적
+    @Published var refreshMainView: Bool = false {
+        didSet {
+            Logger.info("Refresh Main View: \(refreshMainView)")
+        }
+    }
+    @Published var isGalaxyLoadingComplete: Bool = false {
+        didSet {
+            Logger.info("Galaxy Loading Complete: \(isGalaxyLoadingComplete)")
+        }
+    }
     
     // Galaxy Navigation
     @Published var galaxyTargetUserId: UUID? {

@@ -20,6 +20,7 @@ private func thumbnailName(for id: String) -> String {
 struct iOSThumbnailSettingView: View {
     @StateObject private var settingViewModel: SettingViewModel
     @State private var selectedThumbnail: String?
+    @Environment(\.dismiss) private var dismiss
     let diContainer: DIContainer
     
     init(diContainer: DIContainer) {
@@ -40,83 +41,82 @@ struct iOSThumbnailSettingView: View {
     }
     
     var body: some View {
-        ZStack {
+        ZStack(alignment: .bottom) {
             // Background
-            Color.black
+            Colors.BackgroundBlack
                 .ignoresSafeArea()
             
-            VStack(spacing: 0) {
-                // Grid of thumbnail options
-                ScrollView {
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                        ForEach(thumbnails, id: \.self) { thumbnail in
-                            Button(action: {
-                                selectedThumbnail = thumbnail
-                            }) {
-                                ZStack {
-                                    // Thumbnail image
-                                    Image(thumbnail)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                        .frame(height: 180)
-                                        .clipped()
-                                        .cornerRadius(16)
-                                    
-                                    if isSelected(thumbnail: thumbnail) {
-                                        // Selection overlay
-                                        RoundedRectangle(cornerRadius: 16)
-                                            .stroke(Color.white, lineWidth: 3)
-                                        
-                                        // Check mark
-                                        VStack {
-                                            HStack {
-                                                Spacer()
-                                                Circle()
-                                                    .fill(Color.white)
-                                                    .frame(width: 28, height: 28)
-                                                    .overlay(
-                                                        Image(systemName: "checkmark")
-                                                            .font(.system(size: 14, weight: .bold))
-                                                            .foregroundColor(.black)
-                                                    )
-                                                    .padding(8)
-                                            }
-                                            Spacer()
-                                        }
-                                    }
+            ScrollView {
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                    ForEach(thumbnails, id: \.self) { thumbnail in
+                        Button(action: {
+                            selectedThumbnail = thumbnail
+                        }) {
+                            ZStack {
+                                // Thumbnail image
+                                Image(thumbnail)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: (UIScreen.main.bounds.width - 40) / 2, height: 190)
+                                    .clipped()
+                                    .cornerRadius(10)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(
+                                                isSelected(thumbnail: thumbnail)
+                                                ? AnyShapeStyle(LinearGradient.GradientSub)
+                                                : AnyShapeStyle(Colors.GrayStroke),
+                                                lineWidth: isSelected(thumbnail: thumbnail) ? 1.5 : 1
+                                            )
+                                    )
+                                
+                                if isSelected(thumbnail: thumbnail) {
+                                    Image("Check-Circle")
+                                        .frame(width: 24, height: 24)
+                                        .offset(x: 68, y: -68)
                                 }
                             }
                         }
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 20)
                 }
-                
-                // Save Button
-                Button(action: {
-                    if let selected = selectedThumbnail,
-                       let index = thumbnails.firstIndex(of: selected) {
-                        Task {
-                            await settingViewModel.updateThumbnail(thumbnailId: String(index + 1))
-                        }
-                    }
-                }) {
-                    Text("Save")
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundColor(.NebulaBlack)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                        .background(
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(LinearGradient.GradientSub)
-                        )
-                }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 30)
-                .disabled(selectedThumbnail == nil)
+                .padding(.horizontal, 16)
+                .padding(.top, 20)
+                .padding(.bottom, 120)
             }
+            
+            VStack {
+                iOSUploadButton(
+                    title: "Save",
+                    action: {
+                        if let selected = selectedThumbnail,
+                           let index = thumbnails.firstIndex(of: selected) {
+                            Task {
+                                await settingViewModel.updateThumbnail(thumbnailId: String(index + 1))
+                                dismiss()
+                            }
+                        }
+                    },
+                    isEnabled: selectedThumbnail != nil
+                )
+                .padding(.horizontal, 24)
+                .padding(.bottom, 30)
+            }
+            .background(LinearGradient.BtnBackGrad)
         }
         .navigationTitle("Thumbnail")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    dismiss()
+                }) {
+                    Image("backButton")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+            }
+        }
     }
 }

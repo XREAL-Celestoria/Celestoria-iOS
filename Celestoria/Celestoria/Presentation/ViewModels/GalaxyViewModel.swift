@@ -159,6 +159,24 @@ class GalaxyViewModel: ObservableObject {
         return selectedImage == image
     }
     
+    // 갤럭시 새로고침 메서드
+    func refreshGalaxy() {
+        Logger.info("GalaxyViewModel: Refreshing galaxy")
+        Task {
+            if let userId = appState.galaxyTargetUserId {
+                do {
+                    if userId == appState.currentUserId {
+                        try await fetchCurrentUserMemories()
+                    } else {
+                        try await fetchMemoriesFromOtherUser(userId: userId)
+                    }
+                } catch {
+                    Logger.error("Failed to refresh galaxy: \(error)")
+                }
+            }
+        }
+    }
+    
     // iOS용 메서드 추가
     #if !os(visionOS)
     func fetchCurrentUserMemories() async throws {

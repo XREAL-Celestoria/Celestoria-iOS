@@ -44,7 +44,7 @@ struct AddMemoryMainView: View {
                                 .frame(height: 700)
                                 .frame(maxWidth: .infinity)
                                 .clipped()
-                                .overlay(Color.NebulaBlack.opacity(0.6))
+                                .overlay(Colors.NebulaBlack.opacity(0.6))
                         } else {
                             Color.NebulaBlack
                                 .frame(height: 700)
@@ -54,7 +54,7 @@ struct AddMemoryMainView: View {
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 0)
-                        .stroke(Color.NebulaWhite.opacity(0.1), lineWidth: 1)
+                        .stroke(Colors.NebulaWhite.opacity(0.1), lineWidth: 1)
                 )
             }
             
@@ -130,7 +130,7 @@ private struct LeftView: View {
             ZStack {
                 if viewModel.thumbnailImage == nil || isHovered {
                     RoundedRectangle(cornerRadius: 20)
-                        .fill(Color.NebulaBlack.opacity(0.5))
+                        .fill(Colors.NebulaBlack.opacity(0.5))
                         .stroke(Color(hex: "9D9D9D"), lineWidth: 2)
                         .frame(width: 260, height: 132)
                     
@@ -141,7 +141,7 @@ private struct LeftView: View {
                                 .scaledToFit()
                                 .frame(width: 24, height: 24)
                             Text("Select your spatial video")
-                                .foregroundColor(Color.NebulaWhite)
+                                .foregroundColor(Colors.NebulaWhite)
                                 .font(.system(size: 17))
                                 .padding(.top, 4)
                         }
@@ -161,7 +161,7 @@ private struct LeftView: View {
                                 dismissWindow(id: "Add-Memory")
                             }
                         }) {
-                            Color.NebulaBlack.opacity(0.5)
+                            Colors.NebulaBlack.opacity(0.5)
                         }
                         .frame(width: 260, height: 132)
                         .cornerRadius(20)
@@ -191,15 +191,15 @@ private struct RightView: View {
             Rectangle()
                 .fill(Color.clear)
                 .overlay(
-                    Color.NebulaBlack.opacity(0.3)
-                        .shadow(.inner(color: Color.NebulaWhite.opacity(0.8), radius: 24))
+                    Colors.NebulaBlack.opacity(0.3)
+                        .shadow(.inner(color: Colors.NebulaWhite.opacity(0.8), radius: 24))
                 )
                 .edgesIgnoringSafeArea(.all)
             
             VStack() {
                 // Category Section
                 Text("Category")
-                    .foregroundColor(.NebulaWhite)
+                    .foregroundColor(Colors.NebulaWhite)
                     .font(.system(size: 22, weight: .bold))
                     .padding(.top, 64)
                 
@@ -302,7 +302,7 @@ private struct NoteInputSection: View {
             if isBothEmpty {
                 return AnyShapeStyle(Color(hex:"9D9D9D"))
             } else if !isTitleValid || !isNoteValid {
-                return AnyShapeStyle(Color.NebulaRed)
+                return AnyShapeStyle(Colors.NebulaRed)
             } else {
                 return AnyShapeStyle(LinearGradient.GradientStroke)
             }
@@ -322,7 +322,7 @@ private struct NoteInputSection: View {
                         }
                     }
                     .font(.system(size: 19, weight: .bold))
-                    .foregroundColor(.NebulaWhite)
+                    .foregroundColor(Colors.NebulaWhite)
                     .padding(.top, 28)
                     .frame(width: 504, height: 64, alignment: .bottomLeading)
                 
@@ -338,14 +338,14 @@ private struct NoteInputSection: View {
                         }
                     }
                     .font(.system(size: 19, weight: .bold))
-                    .foregroundColor(.NebulaWhite)
+                    .foregroundColor(Colors.NebulaWhite)
                     .padding(.top, 12)
                     .frame(width: 504, height: 228, alignment: .topLeading)
                 
                 HStack {
                     Text("The content exceeds the character limit.")
                         .font(.system(size: 17, weight: .medium))
-                        .foregroundColor(.NebulaRed)
+                        .foregroundColor(Colors.NebulaRed)
                         .padding(.leading, 4)
                         .opacity(isExceedingLimit ? 1 : 0)
                 

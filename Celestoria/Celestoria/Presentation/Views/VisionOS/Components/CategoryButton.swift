@@ -37,7 +37,7 @@ struct CategoryButton: View {
                         .frame(width: 24, height: 24)
                         .foregroundStyle(isSelected ? 
                             AnyShapeStyle(LinearGradient.GradientSub) : 
-                            AnyShapeStyle(Color.NebulaWhite))
+                            AnyShapeStyle(Colors.NebulaWhite))
                         .id(isSelected)
                 }
             }
@@ -51,7 +51,7 @@ struct CategoryButton: View {
                 .fixedSize(horizontal: true, vertical: false)
                 .foregroundStyle(isSelected ?
                     AnyShapeStyle(LinearGradient.GradientSub) :
-                    AnyShapeStyle(Color.NebulaWhite))
+                    AnyShapeStyle(Colors.NebulaWhite))
                 .font(.system(size: 15, weight: .regular))
                 .padding(.top, 4)
         }
