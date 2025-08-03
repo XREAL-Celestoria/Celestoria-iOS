@@ -24,7 +24,7 @@ class iOS3DGalaxyViewModel: ObservableObject {
     
     // MARK: - Dependencies
     private let galaxyViewModel: GalaxyViewModel
-    private let appState: AppState
+    let appState: AppState
     let diContainer: DIContainer
     
     // MARK: - Constants

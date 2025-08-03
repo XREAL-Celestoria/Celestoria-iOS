@@ -29,7 +29,6 @@ struct UserInfoModalView: View {
         ZStack(alignment: .topTrailing) {
             if isExpanded {
                 Colors.BackgroundBlack
-                    .ignoresSafeArea()
                     .transition(.opacity)
             }
             
@@ -41,9 +40,9 @@ struct UserInfoModalView: View {
                 .padding(.horizontal, isExpanded ? 0 : 28)
                 .scaleEffect(isExpanded ? 1.0 : 1.0)
                 .frame(maxWidth: .infinity, maxHeight: isExpanded ? .infinity : 120)
-                .frame(height: isExpanded ? UIScreen.main.bounds.height - 100 : nil)
+                .frame(height: isExpanded ? UIScreen.main.bounds.height * 0.9 : 120)
+                .padding(.bottom, isExpanded ? 0 : 30)
                 .offset(y: dragOffset)
-                .ignoresSafeArea(.all, edges: isExpanded ? .bottom : [])
                 .gesture(
                     DragGesture()
                         .onChanged { value in

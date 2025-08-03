@@ -45,7 +45,6 @@ struct iOS3DGalaxyView: View {
                     }
             }
         }
-
     }
 }
 
@@ -146,14 +145,16 @@ struct iOS3DGalaxyContainerView: View {
     
     var body: some View {
         ZStack {
+            // 갤럭시 뷰
             iOS3DGalaxyView(
                 galaxyViewModel: galaxyViewModel,
                 appState: appState,
                 diContainer: diContainer
             )
             
+            // UI 오버레이
             VStack {
-                // Top bar with settings button
+                // 상단 설정 버튼
                 HStack {
                     Spacer()
                     
@@ -179,21 +180,18 @@ struct iOS3DGalaxyContainerView: View {
                 
                 Spacer()
                 
+                // 하단 유저 모달
                 if let targetUserId = appState.galaxyTargetUserId {
                     UserInfoModalView(
                         userId: targetUserId,
                         isOwnGalaxy: targetUserId == appState.currentUserId,
                         onAddMemory: {
-                            showAddMemory = true
+                            appState.showAddMemoryView = true
                         },
                         diContainer: diContainer
                     )
-                    .padding(.bottom, 20)
-                    .transition(.opacity.combined(with: .move(edge: .bottom)))
-                    .id("userInfoModal-\(targetUserId)-\(appState.refreshMainView)")
                 }
             }
-            .transition(.opacity)
         }
         .opacity(containerOpacity)
         .animation(.easeInOut(duration: 1.0), value: containerOpacity)
@@ -204,6 +202,9 @@ struct iOS3DGalaxyContainerView: View {
             }
         }
         .fullScreenCover(isPresented: $showAddMemory) {
+            iOSAddMemoryContentView(diContainer: diContainer)
+        }
+        .fullScreenCover(isPresented: $appState.showAddMemoryView) {
             iOSAddMemoryContentView(diContainer: diContainer)
         }
         .fullScreenCover(isPresented: $showSettings) {
