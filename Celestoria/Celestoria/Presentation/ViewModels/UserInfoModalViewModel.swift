@@ -28,6 +28,8 @@ class UserInfoModalViewModel: ObservableObject {
         self.userId = userId
         self.appState = diContainer.appState
         
+        Logger.info("UserInfoModalViewModel: Initialized for userId: \(userId)")
+        
         loadUserData()
         setupRefreshObserver()
     }
@@ -80,8 +82,26 @@ class UserInfoModalViewModel: ObservableObject {
             for await refreshState in appState.$refreshMainView.values {
                 if refreshState {
                     await loadUserData()
-                    // 리프레시 완료 후 상태 리셋
+                    // 리프레시 완료 후 상태 리셋 - 다른 옵저버들이 처리할 시간을 주기 위해 약간의 지연 추가
+                    try? await Task.sleep(nanoseconds: 100_000_000) // 0.1초 지연
                     appState.refreshMainView = false
+                }
+            }
+        }
+        
+        // appState.userProfile이 변경될 때마다 현재 사용자의 프로필 업데이트
+        Task {
+            for await newProfile in appState.$userProfile.values {
+                Logger.info("UserInfoModalViewModel: AppState userProfile changed - newProfile: \(newProfile?.name ?? "nil"), userId: \(newProfile?.userId ?? UUID()), current userId: \(userId)")
+                
+                // 현재 사용자의 프로필이 변경된 경우에만 업데이트
+                if let newProfile = newProfile, newProfile.userId == userId {
+                    userProfile = newProfile
+                    Logger.info("UserInfoModalViewModel: Profile updated for current user - name: \(newProfile.name), imageURL: \(newProfile.profileImageURL ?? "nil")")
+                    // 프로필이 업데이트되면 통계도 다시 로드
+                    await loadUserStats()
+                } else {
+                    Logger.info("UserInfoModalViewModel: Profile not updated - userId mismatch or nil profile")
                 }
             }
         }

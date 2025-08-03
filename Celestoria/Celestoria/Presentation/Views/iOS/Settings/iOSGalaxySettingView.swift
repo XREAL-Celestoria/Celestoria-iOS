@@ -17,7 +17,7 @@ import SwiftUI
 
 struct iOSGalaxySettingView: View {
     @StateObject private var galaxyViewModel: GalaxyViewModel
-    @State private var selectedStarfield: String?
+    @Environment(\.dismiss) private var dismiss
     let diContainer: DIContainer
     
     init(diContainer: DIContainer) {
@@ -31,88 +31,81 @@ struct iOSGalaxySettingView: View {
     ]
     
     private func isSelected(starfield: String) -> Bool {
-        if let selected = selectedStarfield {
-            return selected == starfield
-        }
-        return galaxyViewModel.selectedImage == starfield
+        return galaxyViewModel.isSelected(image: starfield)
     }
     
     var body: some View {
-        ZStack {
+        ZStack(alignment: .bottom) {
             // Background
-            Color.black
+            Colors.BackgroundBlack
                 .ignoresSafeArea()
             
-            VStack(spacing: 0) {
-                // Grid of galaxy options
-                ScrollView {
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                        ForEach(starfields, id: \.self) { starfield in
-                            Button(action: {
-                                selectedStarfield = starfield
-                            }) {
-                                ZStack {
-                                    // Galaxy image
-                                    Image(starfield)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                        .frame(height: 180)
-                                        .clipped()
-                                        .cornerRadius(16)
-                                    
-                                    if isSelected(starfield: starfield) {
-                                        // Selection overlay
-                                        RoundedRectangle(cornerRadius: 16)
-                                            .stroke(Color.white, lineWidth: 3)
-                                        
-                                        // Check mark
-                                        VStack {
-                                            HStack {
-                                                Spacer()
-                                                Circle()
-                                                    .fill(Color.white)
-                                                    .frame(width: 28, height: 28)
-                                                    .overlay(
-                                                        Image(systemName: "checkmark")
-                                                            .font(.system(size: 14, weight: .bold))
-                                                            .foregroundColor(.black)
-                                                    )
-                                                    .padding(8)
-                                            }
-                                            Spacer()
-                                        }
-                                    }
+            ScrollView {
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                    ForEach(starfields, id: \.self) { starfield in
+                        Button(action: {
+                            galaxyViewModel.selectImage(with: starfield)
+                        }) {
+                            ZStack {
+                                // Galaxy image
+                                Image(starfield)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: (UIScreen.main.bounds.width - 40) / 2 , height: 180)
+                                    .clipped()
+                                    .cornerRadius(10)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(
+                                                isSelected(starfield: starfield)
+                                                ? AnyShapeStyle(LinearGradient.GradientSub)
+                                                : AnyShapeStyle(Colors.GrayStroke),
+                                                lineWidth: isSelected(starfield: starfield) ? 1.5 : 1
+                                            )
+                                    )
+                                
+                                if isSelected(starfield: starfield) {
+                                    Image("Check-Circle")
+                                        .frame(width: 24, height: 24)
+                                        .offset(x: 68, y: -68)
                                 }
                             }
                         }
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 20)
                 }
-                
-                // Save Button
-                Button(action: {
-                    if let selected = selectedStarfield {
-                        galaxyViewModel.selectImage(with: selected)
-                        galaxyViewModel.saveSelectedImage()
-                    }
-                }) {
-                    Text("Save")
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundColor(Colors.NebulaBlack)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                        .background(
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(LinearGradient.GradientSub)
-                        )
-                }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 30)
-                .disabled(selectedStarfield == nil && galaxyViewModel.selectedImage == nil)
+                .padding(.horizontal, 16)
+                .padding(.top, 20)
+                .padding(.bottom, 120)
             }
+            
+            VStack {
+                iOSUploadButton (
+                    title: "Save",
+                    action: {
+                        galaxyViewModel.saveSelectedImage()
+                        dismiss()
+                    },
+                    isEnabled: galaxyViewModel.isUploadEnabled
+                )
+                .padding(.horizontal, 24)
+                .padding(.bottom, 30)
+            }
+            .background(LinearGradient.BtnBackGrad)
         }
         .navigationTitle("Galaxy")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    dismiss()
+                }) {
+                    Image("backButton")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+            }
+        }
     }
 }

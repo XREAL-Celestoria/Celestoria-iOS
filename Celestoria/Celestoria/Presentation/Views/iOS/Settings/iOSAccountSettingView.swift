@@ -31,8 +31,21 @@ struct iOSAccountSettingView: View {
             }
             .padding()
         }
-        .navigationTitle("Account")
+        .navigationTitle("Account Setting")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    dismiss()
+                }) {
+                    Image("backButton")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+            }
+        }
         .confirmationDialog(
             "Delete Account",
             isPresented: $showDeleteConfirmation,

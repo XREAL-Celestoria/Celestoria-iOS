@@ -130,15 +130,22 @@ struct GalaxySceneView: UIViewRepresentable {
     }
 }
 
+
+// 네비게이션 관리 
 struct iOS3DGalaxyContainerView: View {
     let diContainer: DIContainer
     @EnvironmentObject var appState: AppState
     @StateObject private var galaxyViewModel: GalaxyViewModel
     @State private var activeScreen: MainActiveScreen?
     @State private var containerOpacity: Double = 0
+    @State private var settingsNavigationPath: [SettingsScreen] = []
     
     enum MainActiveScreen {
         case explore, notification, addMemory, settings, memoryDetail(Memory)
+    }
+    
+    enum SettingsScreen: Hashable {
+        case galaxy, profile, thumbnail, account, blockedUsers
     }
     
     init(diContainer: DIContainer) {
@@ -166,21 +173,34 @@ struct iOS3DGalaxyContainerView: View {
             if let screen = activeScreen {
                 switch screen {
                 case .explore:
-                    NavigationView {
-                        ExploreView()
-                            .navigationTitle("Explore")
-                            .navigationBarTitleDisplayMode(.large)
-                    }
-                    .navigationViewStyle(StackNavigationViewStyle())
+                    ExploreView()
+                        .customNavigationView(title: "Explore", onBack: { activeScreen = nil })
                 case .notification:
                     NotificationView()
                 case .addMemory:
                     iOSAddMemoryContentView(diContainer: diContainer)
+                        .customNavigationView(title: "Add Memory", onBack: { activeScreen = nil })
                 case .settings:
-                    NavigationView {
-                        iOSSettingsView(diContainer: diContainer)
-                            .navigationTitle("Settings")
-                            .navigationBarTitleDisplayMode(.large)
+                    NavigationStack(path: $settingsNavigationPath) {
+                        iOSSettingsView(
+                            diContainer: diContainer, 
+                            navigationPath: $settingsNavigationPath,
+                            onBack: { activeScreen = nil }
+                        )
+                            .navigationDestination(for: SettingsScreen.self) { screen in
+                                switch screen {
+                                case .galaxy:
+                                    iOSGalaxySettingView(diContainer: diContainer)
+                                case .profile:
+                                    iOSProfileSettingView(diContainer: diContainer)
+                                case .thumbnail:
+                                    iOSThumbnailSettingView(diContainer: diContainer)
+                                case .account:
+                                    iOSAccountSettingView(diContainer: diContainer)
+                                case .blockedUsers:
+                                    iOSBlockedUsersSettingView(diContainer: diContainer)
+                                }
+                            }
                     }
                     .navigationViewStyle(StackNavigationViewStyle())
                 case .memoryDetail(let memory):
@@ -191,7 +211,10 @@ struct iOS3DGalaxyContainerView: View {
         .onChange(of: appState.refreshMainView) { _, shouldRefresh in
             if shouldRefresh {
                 galaxyViewModel.refreshGalaxy()
-                appState.refreshMainView = false
+                // 다른 옵저버들이 처리할 시간을 주기 위해 약간의 지연 추가
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    appState.refreshMainView = false
+                }
             }
         }
         .onReceive(appState.$selectedMemoryForDetail) { memory in

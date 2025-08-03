@@ -25,7 +25,7 @@ struct iOSContentView: View {
             // 스플래시 화면
             if showSplash {
                 iOSSplashView()
-                    .transition(.opacity.combined(with: .scale(scale: 1.05)))
+                    .transition(.opacity)
                     .zIndex(2)
             }
             
@@ -56,7 +56,7 @@ struct iOSContentView: View {
                     }
                     .navigationViewStyle(StackNavigationViewStyle())
                     .environmentObject(settingViewModel)
-                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                    .transition(.opacity)
                     .zIndex(0)
                     .opacity(mainViewOpacity)
                     .onAppear {
@@ -67,9 +67,9 @@ struct iOSContentView: View {
                 }
             }
         }
-        .animation(.easeInOut(duration: 1.5), value: showSplash)
-        .animation(.easeInOut(duration: 1.0), value: appState.navigationState)
-        .animation(.easeInOut(duration: 1.2), value: mainViewOpacity)
+        .animation(.easeInOut(duration: 0.8), value: showSplash)
+        .animation(.easeInOut(duration: 0.6), value: appState.navigationState)
+        .animation(.easeInOut(duration: 0.8), value: mainViewOpacity)
         .onAppear {
             // 스플래시 화면 표시 후 초기화 (스플래시는 갤럭시 로딩 완료 후에 사라짐)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -78,26 +78,19 @@ struct iOSContentView: View {
         }
         .onChange(of: appState.isGalaxyLoadingComplete) { _, isComplete in
             if isComplete && appState.navigationState == .main {
-                // 갤럭시 로딩이 완료되면 메인뷰를 먼저 페이드인
-                withAnimation(.easeInOut(duration: 1.0)) {
+                // 갤럭시 로딩이 완료되면 자연스럽게 크로스페이드
+                withAnimation(.easeInOut(duration: 0.8)) {
+                    showSplash = false
                     mainViewOpacity = 1
-                }
-                
-                // 메인뷰가 나타난 후 스플래시 사라짐 (더 긴 지연)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-                    withAnimation(.easeInOut(duration: 1.5)) {
-                        showSplash = false
-                    }
                 }
             }
         }
         .onChange(of: appState.navigationState) { _, newState in
-            // 네비게이션 상태가 변경될 때마다 메인뷰 투명도 조정
             if newState == .main {
-                // 메인뷰로 전환 시
                 if appState.isGalaxyLoadingComplete {
-                    // 갤럭시 로딩이 완료된 상태라면 바로 표시
+                    // 갤럭시 로딩이 완료된 상태라면 자연스럽게 크로스페이드
                     withAnimation(.easeInOut(duration: 0.8)) {
+                        showSplash = false
                         mainViewOpacity = 1
                     }
                 } else {
@@ -106,7 +99,7 @@ struct iOSContentView: View {
                 }
             } else {
                 // 다른 화면으로 전환 시
-                withAnimation(.easeInOut(duration: 0.6)) {
+                withAnimation(.easeInOut(duration: 0.4)) {
                     mainViewOpacity = 1
                 }
             }

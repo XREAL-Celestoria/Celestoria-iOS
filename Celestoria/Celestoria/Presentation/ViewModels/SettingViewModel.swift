@@ -20,7 +20,7 @@ class SettingViewModel: ObservableObject {
     private let signOutUseCase: SignOutUseCase
     private let profileUseCase: ProfileUseCase
     private let blockedUsersUseCase: BlockedUsersUseCase
-    private let appState: AppState
+    public let appState: AppState
     public var originalImage: ProfileImageSelection?
     
     //안에 닉네임
@@ -32,6 +32,10 @@ class SettingViewModel: ObservableObject {
     @Published var selectedImage: ProfileImageSelection?
     @Published var customPhotoselectedItem: PhotosPickerItem? = nil
     @Published var isUploadEnabled: Bool = false
+    
+    // 이미지 캐싱을 위한 프로퍼티
+    private var cachedCustomImage: UIImage?
+    private var cachedImageURL: String?
     
     init(deleteAccountUseCase: DeleteAccountUseCase,
          signOutUseCase: SignOutUseCase,
@@ -61,12 +65,36 @@ class SettingViewModel: ObservableObject {
                let predefined = PredefinedProfileImage.fromKey(key) {
                 originalImage = .predefined(predefined)
                 selectedImage = .predefined(predefined)
-            } else if let urlString = fetchedProfile.profileImageURL,
-                      let url = URL(string: urlString),
-                      let data = try? Data(contentsOf: url),
-                      let image = UIImage(data: data) {
-                originalImage = .custom(image)
-                selectedImage = .custom(image)
+            } else if let urlString = fetchedProfile.profileImageURL {
+                // 캐시된 이미지가 있고 URL이 같으면 캐시 사용
+                if let cachedImage = cachedCustomImage, cachedImageURL == urlString {
+                    originalImage = .custom(cachedImage)
+                    selectedImage = .custom(cachedImage)
+                } else {
+                    // 새로운 이미지 로드 (비동기 방식)
+                    if let url = URL(string: urlString) {
+                        do {
+                            let (data, _) = try await URLSession.shared.data(from: url)
+                            if let image = UIImage(data: data) {
+                                // 캐시에 저장
+                                cachedCustomImage = image
+                                cachedImageURL = urlString
+                                originalImage = .custom(image)
+                                selectedImage = .custom(image)
+                            } else {
+                                originalImage = nil
+                                selectedImage = nil
+                            }
+                        } catch {
+                            Logger.error("Error loading profile image: \(error.localizedDescription)")
+                            originalImage = nil
+                            selectedImage = nil
+                        }
+                    } else {
+                        originalImage = nil
+                        selectedImage = nil
+                    }
+                }
             } else {
                 originalImage = nil
                 selectedImage = nil
@@ -131,8 +159,16 @@ class SettingViewModel: ObservableObject {
             self.selectedImage = selectedImage
             self.originalImage = selectedImage  // 원본 이미지도 업데이트하여 다음 편집 시 올바른 상태 유지
             updateUploadEnabled()
+            
+            // AppState 업데이트하여 다른 뷰들에 반영
+            appState.userProfile = profile
+            
+            // userProfile 업데이트가 완전히 처리될 시간을 주기 위해 약간의 지연 추가
+            try? await Task.sleep(nanoseconds: 50_000_000) // 0.05초 지연
+            appState.refreshMainView = true
 
-            Logger.info("✅ 프로필 업데이트 완료")
+            Logger.info("✅ 프로필 업데이트 완료 - name: \(profile?.name ?? "nil"), imageURL: \(profile?.profileImageURL ?? "nil")")
+            Logger.info("✅ AppState 업데이트 완료 - userProfile: \(appState.userProfile?.name ?? "nil"), refreshMainView: \(appState.refreshMainView)")
         } catch {
             self.error = error
             Logger.error("❌ 프로필 업데이트 실패: \(error.localizedDescription)")

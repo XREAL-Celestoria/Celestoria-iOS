@@ -11,12 +11,23 @@ struct iOSSplashView: View {
     @State private var isAnimating = false
     
     var body: some View {
-        ZStack {
-            Image("splash")
-                .resizable()
-                .scaledToFill()
-                .ignoresSafeArea()
-                .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: isAnimating)
+        GeometryReader { geometry in
+            VStack {
+                Spacer()
+                    .frame(height: geometry.size.height * 0.24)
+                
+                Image("splashSquareImage")
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 150, height: 150)
+                
+                Spacer()
+                    .frame(height: 60)
+                
+                iOSHeaderView(title: "Celestoria", subtitle: "Spatial Video Social Network")
+                
+                Spacer()
+            }
         }
         .onAppear {
             isAnimating = true

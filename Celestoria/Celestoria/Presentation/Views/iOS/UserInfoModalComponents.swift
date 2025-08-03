@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import os
 
 // MARK: - Close Button Header
 struct CloseButtonHeader: View {
@@ -58,6 +59,9 @@ struct ProfileImageView: View {
                 Image(predefinedImage.rawValue)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
+                    .onAppear {
+                        Logger.info("ProfileImageView: Using predefined image - key: \(profileKey), image: \(predefinedImage.rawValue)")
+                    }
             } else if let profileImageURL = profile.profileImageURL {
                 AsyncImage(url: URL(string: profileImageURL)) { image in
                     image
@@ -68,10 +72,16 @@ struct ProfileImageView: View {
                         .font(.system(size: size))
                         .foregroundColor(.gray)
                 }
+                .onAppear {
+                    Logger.info("ProfileImageView: Using custom image - URL: \(profileImageURL)")
+                }
             } else {
                 Image(systemName: "person.circle.fill")
                     .font(.system(size: size))
                     .foregroundColor(.gray)
+                    .onAppear {
+                        Logger.info("ProfileImageView: Using fallback image - profileKey: \(profile.profileKey ?? -1), imageURL: \(profile.profileImageURL ?? "nil")")
+                    }
             }
         }
         .frame(width: size, height: size)
@@ -122,6 +132,7 @@ struct StatItem: View {
 struct LoadingView: View {
     var body: some View {
         HStack {
+            Spacer()
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
             Spacer()
@@ -168,19 +179,7 @@ struct AddMemoryButton: View {
             .overlay(
                 RoundedRectangle(cornerRadius: 40)
                     .inset(by: 0.75)
-                    .stroke(
-                        LinearGradient(
-                            gradient: Gradient(stops: [
-                                Gradient.Stop(color: Color(hex: "CFF4FF").opacity(0.4), location: 0.0),
-                                Gradient.Stop(color: Color.white.opacity(0.0), location: 0.41),
-                                Gradient.Stop(color: Color.white.opacity(0.0), location: 0.62),
-                                Gradient.Stop(color: Color(hex: "CFF4FF").opacity(0.2), location: 1.0)
-                            ]),
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        ),
-                        lineWidth: 1.5
-                    )
+                    .stroke(Color(red: 0.65, green: 0.91, blue: 1), lineWidth: 1.5)
             )
         }
         .offset(x: isExpanded ? -24 : -50, y: isExpanded ? 24 : -14)

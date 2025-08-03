@@ -104,6 +104,8 @@
 		5D707E892E3F324500CC1224 /* iOSAddMemoryContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E882E3F324500CC1224 /* iOSAddMemoryContentView.swift */; };
 		5D707E8F2E3F3E3500CC1224 /* iOSAddMemoryComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E8E2E3F3E3500CC1224 /* iOSAddMemoryComponents.swift */; };
 		5D707E912E3FBF6A00CC1224 /* iOSUploadButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E902E3FBF6A00CC1224 /* iOSUploadButton.swift */; };
+		5D707E942E400B7900CC1224 /* View+Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E932E400B7900CC1224 /* View+Navigation.swift */; };
+		5D707E952E400B7900CC1224 /* View+Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E932E400B7900CC1224 /* View+Navigation.swift */; };
 		A2198CA32D48812500B0AF65 /* ExploreUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2198CA22D48812500B0AF65 /* ExploreUseCase.swift */; };
 		A2198CA52D48814300B0AF65 /* ExploreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2198CA42D48814300B0AF65 /* ExploreViewModel.swift */; };
 		A2198CAA2D49063800B0AF65 /* Family.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A2198CA72D49063800B0AF65 /* Family.usdz */; };
@@ -274,6 +276,7 @@
 		5D707E882E3F324500CC1224 /* iOSAddMemoryContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSAddMemoryContentView.swift; sourceTree = "<group>"; };
 		5D707E8E2E3F3E3500CC1224 /* iOSAddMemoryComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSAddMemoryComponents.swift; sourceTree = "<group>"; };
 		5D707E902E3FBF6A00CC1224 /* iOSUploadButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSUploadButton.swift; sourceTree = "<group>"; };
+		5D707E932E400B7900CC1224 /* View+Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Navigation.swift"; sourceTree = "<group>"; };
 		A2198CA22D48812500B0AF65 /* ExploreUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreUseCase.swift; sourceTree = "<group>"; };
 		A2198CA42D48814300B0AF65 /* ExploreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewModel.swift; sourceTree = "<group>"; };
 		A2198CA62D49063800B0AF65 /* Enter.usdc */ = {isa = PBXFileReference; lastKnownFileType = file; path = Enter.usdc; sourceTree = "<group>"; };
@@ -613,6 +616,7 @@
 		2F8800D62D38D77700220F89 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				5D707E932E400B7900CC1224 /* View+Navigation.swift */,
 				2F3671CC2D3D7A150048D9AD /* Logger.swift */,
 				2F3671B22D3D6B660048D9AD /* Gradient+.swift */,
 				2F3671B02D3D6A9E0048D9AD /* Color+.swift */,
@@ -639,13 +643,12 @@
 				5D6C1A132E3E1238004A0B17 /* iOSSplashView.swift */,
 				5D6C1A152E3E2BCB004A0B17 /* Onboarding */,
 				5D707E622E3E6C2D00CC1224 /* Main */,
-				A2A286C82E2C3179001D89B2 /* iOSSettingsView.swift */,
+				A2A286B52E2C311A001D89B2 /* Settings */,
 				5D707E842E3F2CD300CC1224 /* AddMemory */,
 				5D707E672E3E8A9200CC1224 /* ModalStyleModifier.swift */,
 				5D707E652E3E8A8900CC1224 /* UserInfoModalExpandedContent.swift */,
 				5D707E632E3E8A8200CC1224 /* UserInfoModalComponents.swift */,
 				5D707E5D2E3E56AD00CC1224 /* UserInfoModalView.swift */,
-				A2A286B52E2C311A001D89B2 /* Settings */,
 				5D6C19FB2E3E05EA004A0B17 /* Components */,
 			);
 			path = iOS;
@@ -762,6 +765,7 @@
 		A2A286B52E2C311A001D89B2 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				A2A286C82E2C3179001D89B2 /* iOSSettingsView.swift */,
 				A2A287362E2D34B1001D89B2 /* iOSGalaxySettingView.swift */,
 				A2A286B62E2C3121001D89B2 /* iOSAccountSettingView.swift */,
 				A2A286BC2E2C3133001D89B2 /* iOSThumbnailSettingView.swift */,
@@ -922,6 +926,7 @@
 				5D6C1A0B2E3E0684004A0B17 /* Colors.swift in Sources */,
 				A2A2868C2E2C09AF001D89B2 /* iOSOnboardingView.swift in Sources */,
 				5D707E912E3FBF6A00CC1224 /* iOSUploadButton.swift in Sources */,
+				5D707E952E400B7900CC1224 /* View+Navigation.swift in Sources */,
 				A2A286BD2E2C3133001D89B2 /* iOSThumbnailSettingView.swift in Sources */,
 				A2A2867F2E2C0415001D89B2 /* ContentReport.swift in Sources */,
 				A2A286832E2C0434001D89B2 /* Logger.swift in Sources */,
@@ -1054,6 +1059,7 @@
 				A24775052E19695E00FEB8B5 /* Like.swift in Sources */,
 				2F3671CF2D3D7A660048D9AD /* MainView.swift in Sources */,
 				2FE858032D437BF20055902B /* VisualEffectBlur.swift in Sources */,
+				5D707E942E400B7900CC1224 /* View+Navigation.swift in Sources */,
 				2F3672202D3E1C2F0048D9AD /* LoginView.swift in Sources */,
 				2FBE4E692DE319D200796FAA /* ProfileSelectorView.swift in Sources */,
 				2F3671D12D3D7AF90048D9AD /* MainViewModel.swift in Sources */,
