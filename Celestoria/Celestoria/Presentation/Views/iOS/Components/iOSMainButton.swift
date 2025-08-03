@@ -31,7 +31,6 @@ struct iOSMainButton: View {
     }
 }
 
-
 struct iOSMainButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -44,3 +43,4 @@ struct iOSMainButtonStyle: ButtonStyle {
             .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
     }
 }
+

@@ -18,32 +18,7 @@ struct iOSTermsAndConditionsView: View {
             
             VStack {
                 // Header
-                ZStack {
-                    HStack {
-                        Button(action: {
-                            settingViewModel.resetToLogin()
-                        }) {
-                            Image("backButton")
-                                .resizable()
-                                .frame(width: 30, height: 30)
-                        }
-                        
-                        Spacer()
-                    }
-                    
-                    HStack(alignment: .center) {
-                        Spacer()
-                        
-                        Text("Terms and Conditions")
-                            .fontStyle(Fonts.headline)
-                            .foregroundColor(Colors.NebulaWhite)
-                        
-                        Spacer()
-                    }
-                }
-                .frame(maxWidth: .infinity, minHeight: 48)
-                .padding(.horizontal, 14)
-                .padding(.bottom, 20)
+                iOSNavigationView(title: "Terms and Conditions", onBack: {settingViewModel.resetToLogin()})
                 
                 // ScrollView Content
                 ScrollView {

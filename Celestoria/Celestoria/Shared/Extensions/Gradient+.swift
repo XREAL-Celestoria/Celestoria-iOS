@@ -74,6 +74,105 @@ extension LinearGradient {
         endPoint: .bottomTrailing
     )
     
+    // Design Tokens - Gradients
+    static let SubGradient = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#a7e9fe"), Color(hex: "#b5c9ff")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let MainGradient = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#babcff"), Color(hex: "#cff4ff")]),
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+    
+    static let MainStroke = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#ffffff"), Color(hex: "#cdefff")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let PopupStroke = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#ffffff"), Color(hex: "#cccccc")]),
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+    
+    static let IconGradient = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#cff4ff"), Color(hex: "#babcff")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let PopupMain = LinearGradient(
+        gradient: Gradient(stops: [
+            Gradient.Stop(color: Color(hex: "#17171733"), location: 0.0),
+            Gradient.Stop(color: Color(hex: "#4b4b4b33"), location: 0.65),
+            Gradient.Stop(color: Color(hex: "#54c3ff80"), location: 1.0)
+        ]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let SearchUsercardBG = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#a7e9fe"), Color(hex: "#515768")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let BtnFillColor = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#a7e9fe"), Color(hex: "#b5c9ff")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let BtnStroke = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#ffffff"), Color(hex: "#cdefff")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let CheckedBoxStroke = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#a7e9fe"), Color(hex: "#b5c9ff")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let BtnAfterSelect = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#a7e9fe"), Color(hex: "#b5c9ff")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let BtnBeforeSelect = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#aab8c6"), Color(hex: "#839dba")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let DimBlackGradation = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#00000000"), Color(hex: "#000000b2")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let DimSkyblueGradation = LinearGradient(
+        gradient: Gradient(stops: [
+            Gradient.Stop(color: Color(hex: "#17171733"), location: 0.0),
+            Gradient.Stop(color: Color(hex: "#4b4b4b33"), location: 0.51),
+            Gradient.Stop(color: Color(hex: "#217aaa80"), location: 1.0)
+        ]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
+    static let BtnBackGrad = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "#14141500"), Color(hex: "#141415")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+    
     // Other
     static let MainTabButtonBackground = LinearGradient(
         gradient: Gradient(stops: [

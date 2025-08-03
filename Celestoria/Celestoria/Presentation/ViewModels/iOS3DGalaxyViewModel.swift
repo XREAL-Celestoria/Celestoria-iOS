@@ -45,6 +45,7 @@ class iOS3DGalaxyViewModel: ObservableObject {
         self.diContainer = diContainer
         
         setupContentReady()
+        setupMemoryObserver()
     }
     
     // MARK: - Public Methods
@@ -66,8 +67,32 @@ class iOS3DGalaxyViewModel: ObservableObject {
                 }
                 
                 updateMemoryNodes()
+                
+                // 로딩 완료 후 AppState 업데이트
+                await MainActor.run {
+                    appState.isGalaxyLoadingComplete = true
+                    
+                    // 컨텐츠 준비 상태를 약간 지연시켜 부드러운 전환
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        withAnimation(.easeInOut(duration: 1.2)) {
+                            self.isContentReady = true
+                        }
+                    }
+                }
             } catch {
                 Logger.error("Error loading memories: \(error.localizedDescription)")
+                
+                // 에러가 발생해도 로딩 완료로 처리
+                await MainActor.run {
+                    appState.isGalaxyLoadingComplete = true
+                    
+                    // 에러 시에도 컨텐츠 준비 상태를 지연시켜 전환
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        withAnimation(.easeInOut(duration: 1.2)) {
+                            self.isContentReady = true
+                        }
+                    }
+                }
             }
         }
     }
@@ -88,9 +113,18 @@ class iOS3DGalaxyViewModel: ObservableObject {
     
     // MARK: - Private Methods
     private func setupContentReady() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-            withAnimation(.easeIn(duration: 0.3)) {
-                self.isContentReady = true
+        // 메모리 로딩 시작 (로딩 완료 시 isContentReady도 함께 설정됨)
+        loadMemories()
+    }
+    
+    private func setupMemoryObserver() {
+        // galaxyViewModel.memories의 변화를 감지하여 3D 노드 업데이트
+        Task {
+            for await _ in galaxyViewModel.$memories.values {
+                Logger.info("iOS3DGalaxyViewModel: Memories updated, refreshing 3D nodes")
+                await MainActor.run {
+                    updateMemoryNodes()
+                }
             }
         }
     }

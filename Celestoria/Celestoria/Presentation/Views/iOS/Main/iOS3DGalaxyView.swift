@@ -23,24 +23,15 @@ struct iOS3DGalaxyView: View {
             if viewModel.isContentReady {
                 GalaxySceneView(viewModel: viewModel)
                     .edgesIgnoringSafeArea(.all)
+                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
             } else {
-                // Loading screen while content is being prepared
-                ZStack {
-                    Color.black
-                        .edgesIgnoringSafeArea(.all)
-                    
-                    VStack(spacing: 20) {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            .scaleEffect(1.5)
-                        
-                        Text("Loading Memory Stars...")
-                            .font(.system(size: 18, weight: .medium))
-                            .foregroundColor(.white.opacity(0.8))
-                    }
-                }
+                // 로딩 중일 때는 빈 화면 (스플래시는 상위에서 처리)
+                Color.black
+                    .edgesIgnoringSafeArea(.all)
+                    .transition(.opacity)
             }
         }
+        .animation(.easeInOut(duration: 1.5), value: viewModel.isContentReady)
         .fullScreenCover(isPresented: $viewModel.showMemoryDetail, onDismiss: {
             viewModel.clearSelectedMemory()
         }) {
@@ -54,6 +45,7 @@ struct iOS3DGalaxyView: View {
                     }
             }
         }
+
     }
 }
 
@@ -145,6 +137,7 @@ struct iOS3DGalaxyContainerView: View {
     @StateObject private var galaxyViewModel: GalaxyViewModel
     @State private var showSettings = false
     @State private var showAddMemory = false
+    @State private var containerOpacity: Double = 0
     
     init(diContainer: DIContainer) {
         self.diContainer = diContainer
@@ -201,14 +194,30 @@ struct iOS3DGalaxyContainerView: View {
             }
             .transition(.opacity)
         }
-        .sheet(isPresented: $showAddMemory) {
-            NavigationView {
-                iOSAddMemoryView(diContainer: diContainer)
+        .opacity(containerOpacity)
+        .animation(.easeInOut(duration: 1.0), value: containerOpacity)
+        .onAppear {
+            // 컨테이너가 나타날 때 페이드인
+            withAnimation(.easeInOut(duration: 1.0).delay(0.3)) {
+                containerOpacity = 1
             }
         }
-        .sheet(isPresented: $showSettings) {
-            NavigationView {
-                iOSSettingsView(diContainer: diContainer)
+        .fullScreenCover(isPresented: $showAddMemory) {
+            iOSAddMemoryContentView(diContainer: diContainer)
+        }
+        .fullScreenCover(isPresented: $showSettings) {
+            iOSSettingsView(diContainer: diContainer)
+        }
+        .fullScreenCover(isPresented: $appState.showMemoryDetail) {
+            if let memory = appState.selectedMemoryForDetail {
+                iOSMemoryDetailView(memory: memory, diContainer: diContainer)
+            }
+        }
+        .onChange(of: appState.refreshMainView) { _, shouldRefresh in
+            if shouldRefresh {
+                // 메인뷰 새로고침
+                galaxyViewModel.refreshGalaxy()
+                appState.refreshMainView = false
             }
         }
     }

@@ -52,19 +52,7 @@ struct iOSMemoryDetailView: View {
                 .shadow(color: Color(red: 0.4, green: 0.7, blue: 1).opacity(0.6), radius: 12, x: 0, y: 0)
             
             VStack {
-                // Close button header
-                HStack {
-                    Button(action: { dismiss() }) {
-                        Image("backButton")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 30, height: 30)
-                    }
-                    .padding(.leading, 16)
-                    .padding(.top, 8)
-                    
-                    Spacer()
-                }
+                iOSNavigationView(title: "", onBack: {dismiss()})
                 .zIndex(1)
                 
                 Spacer()
