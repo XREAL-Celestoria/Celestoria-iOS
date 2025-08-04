@@ -178,12 +178,15 @@ final class AppState: ObservableObject {
         userId = nil
         userProfile = nil
         activeScreen = .login
+        isGalaxyLoadingComplete = false // 갤럭시 로딩 상태 초기화
+        galaxyTargetUserId = nil // 갤럭시 타겟 사용자 초기화
         logger.info("User signed out")
     }
     
     func setUser(_ user: UserProfile, userId: UUID) {
         self.userProfile = user
         self.userId = userId
+        self.galaxyTargetUserId = userId  // 로그인 시 Galaxy 대상을 현재 사용자로 설정
         self.activeScreen = .main
         logger.info("User set: \(userId)")
     }

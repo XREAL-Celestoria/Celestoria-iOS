@@ -13,7 +13,7 @@ struct iOSAccountSettingView: View {
     @EnvironmentObject var appState: AppState
     @State private var showDeleteConfirmation = false
     @State private var showDeleteAlert = false
-    @State private var deleteError: String?
+    @State private var errorMessage: String?
     @Environment(\.dismiss) private var dismiss
     let diContainer: DIContainer
     
@@ -67,13 +67,9 @@ struct iOSAccountSettingView: View {
                 Task {
                     do {
                         try await settingViewModel.deleteAccount()
-                        // Reset app state
-                        appState.activeScreen = .login
-                        appState.userId = nil
-                        appState.userProfile = nil
-                        dismiss()
+                        // SettingViewModel에서 이미 상태를 관리하므로 추가 처리 불필요
                     } catch {
-                        deleteError = error.localizedDescription
+                        errorMessage = error.localizedDescription
                     }
                 }
             }
@@ -82,11 +78,11 @@ struct iOSAccountSettingView: View {
         }
         .alert(
             "Error",
-            isPresented: .constant(deleteError != nil),
-            presenting: deleteError
+            isPresented: .constant(errorMessage != nil),
+            presenting: errorMessage
         ) { _ in
             Button("OK") {
-                deleteError = nil
+                errorMessage = nil
             }
         } message: { error in
             Text(error)
@@ -141,9 +137,9 @@ struct iOSAccountSettingView: View {
             Task {
                 do {
                     try await settingViewModel.signOut()
-                    dismiss()
+                    // SettingViewModel에서 이미 navigationState를 관리하므로 dismiss() 불필요
                 } catch {
-                    deleteError = error.localizedDescription
+                    errorMessage = error.localizedDescription
                 }
             }
         }) {

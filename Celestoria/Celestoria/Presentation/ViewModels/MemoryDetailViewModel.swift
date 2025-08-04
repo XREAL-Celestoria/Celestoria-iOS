@@ -221,7 +221,9 @@ final class MemoryDetailViewModel: ObservableObject {
         
         do {
             // 이미 신고했는지 확인
-            if try await memoryRepository.hasReported(memoryId: memory.id, reporterId: reporterId) {
+            if try await memoryRepository.hasReported(memoryId: memory.id,
+                                                      
+                                                      reporterId: reporterId) {
                 showReportCompletionPopup(
                     title: "Already Reported",
                     message: "You have already reported this post.\nThank you for helping us maintain a safe environment.",

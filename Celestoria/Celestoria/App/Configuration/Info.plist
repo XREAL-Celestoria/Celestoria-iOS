@@ -54,7 +54,12 @@
 	</dict>
 	<key>CFBundleIdentifier</key>
 	<string>com.Celestoria.Celestoria</string>
-	<key>UILaunchStoryboardName</key>
-	<string>Launch Screen.storyboard</string>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIImageName</key>
+		<string>Logo</string>
+		<key>UIColorName</key>
+		<string>LaunchScreenBackground</string>
+	</dict>
 </dict>
 </plist>

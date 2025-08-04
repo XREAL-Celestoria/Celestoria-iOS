@@ -70,11 +70,38 @@ class ImageCache {
             let session = URLSession(configuration: configuration)
             
             Logger.info("ImageCache: Starting network request - \(urlString)")
-            let (data, _) = try await session.data(from: url)
+            let (data, response) = try await session.data(from: url)
+            
+            // HTTP 응답 상태 확인
+            if let httpResponse = response as? HTTPURLResponse {
+                Logger.info("ImageCache: HTTP Status: \(httpResponse.statusCode), Content-Type: \(httpResponse.value(forHTTPHeaderField: "Content-Type") ?? "unknown"), data size: \(data.count) bytes - \(urlString)")
+                
+                // HTTP 에러 상태 확인
+                guard httpResponse.statusCode == 200 else {
+                    Logger.error("ImageCache: HTTP Error \(httpResponse.statusCode) - \(urlString)")
+                    // 에러 응답 데이터 내용 로깅 (최대 200자)
+                    if let errorString = String(data: data, encoding: .utf8) {
+                        let truncated = String(errorString.prefix(200))
+                        Logger.error("ImageCache: Error response: \(truncated)")
+                    }
+                    return nil
+                }
+                
+                // Content-Type 확인 (선택사항, 일부 서버는 올바른 Content-Type을 반환하지 않을 수 있음)
+                let contentType = httpResponse.value(forHTTPHeaderField: "Content-Type")?.lowercased()
+                if let contentType = contentType, !contentType.contains("image") {
+                    Logger.warning("ImageCache: Unexpected Content-Type: \(contentType) - \(urlString)")
+                }
+            }
+            
             Logger.info("ImageCache: Network request completed, data size: \(data.count) bytes - \(urlString)")
             
             guard let image = UIImage(data: data) else {
                 Logger.error("ImageCache: Failed to create image from data - \(urlString)")
+                // 데이터 시작 부분 로깅 (디버깅용)
+                let dataPrefix = data.prefix(50)
+                let hexString = dataPrefix.map { String(format: "%02x", $0) }.joined(separator: " ")
+                Logger.error("ImageCache: Data hex prefix: \(hexString)")
                 return nil
             }
             

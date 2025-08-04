@@ -179,6 +179,8 @@ class SettingViewModel: ObservableObject {
         try await signOutUseCase.execute()
         appState.userId = nil
         appState.userProfile = nil
+        appState.galaxyTargetUserId = nil  // Galaxy 대상 사용자 초기화
+        appState.isGalaxyLoadingComplete = false  // 갤럭시 로딩 상태 초기화
         
         #if os(visionOS)
         await dismissImmersiveSpace()
@@ -187,8 +189,10 @@ class SettingViewModel: ObservableObject {
         appState.activeScreen = .login
         #else
         // iOS에서는 navigationState 사용
+        appState.hasAcceptedTerms = false
         appState.navigationState = .login
-        // UserDefaults에서 약관 동의 상태 제거
+        // UserDefaults에서 관련 데이터 제거
+        UserDefaults.standard.removeObject(forKey: "userId")
         UserDefaults.standard.removeObject(forKey: "hasAcceptedTerms")
         #endif
     }
@@ -197,6 +201,8 @@ class SettingViewModel: ObservableObject {
         try await deleteAccountUseCase.execute()
         appState.userId = nil
         appState.userProfile = nil
+        appState.galaxyTargetUserId = nil  // Galaxy 대상 사용자 초기화
+        appState.isGalaxyLoadingComplete = false  // 갤럭시 로딩 상태 초기화
         
         #if os(visionOS)
         await dismissImmersiveSpace()
@@ -205,8 +211,10 @@ class SettingViewModel: ObservableObject {
         appState.activeScreen = .login
         #else
         // iOS에서는 navigationState 사용
+        appState.hasAcceptedTerms = false
         appState.navigationState = .login
-        // UserDefaults에서 약관 동의 상태 제거
+        // UserDefaults에서 관련 데이터 제거
+        UserDefaults.standard.removeObject(forKey: "userId")
         UserDefaults.standard.removeObject(forKey: "hasAcceptedTerms")
         #endif
     }
@@ -276,6 +284,8 @@ class SettingViewModel: ObservableObject {
         // AppState 초기화
         appState.userId = nil
         appState.userProfile = nil
+        appState.hasAcceptedTerms = false
+        appState.galaxyTargetUserId = nil  // Galaxy 대상 사용자 초기화
         
         // UserDefaults에서 관련 데이터 제거
         UserDefaults.standard.removeObject(forKey: "userId")
