@@ -21,14 +21,14 @@ class GalaxyViewModel: ObservableObject {
     @Published var memories: [Memory] = []
     @Published var isLoading = false
     @Published var spaceThumbnail: String?
-    private let memoryUseCase: FetchMemoriesUseCase?
+    private let memoryUseCase: FetchMemoriesUseCase
 
     #if os(visionOS)
-    init(appState: AppState, spaceCoordinator: SpaceCoordinator, profileUseCase: ProfileUseCase) {
+    init(appState: AppState, spaceCoordinator: SpaceCoordinator, profileUseCase: ProfileUseCase, memoryUseCase: FetchMemoriesUseCase) {
         self.appState = appState
         self.spaceCoordinator = spaceCoordinator
         self.profileUseCase = profileUseCase
-        self.memoryUseCase = nil
+        self.memoryUseCase = memoryUseCase
         
         // 초기 상태 설정
         self.selectedImage = StarField.FIELD_1.imageName
@@ -177,17 +177,15 @@ class GalaxyViewModel: ObservableObject {
         }
     }
     
-    // iOS용 메서드 추가
-    #if !os(visionOS)
+    // 메모리 관련 메서드들 (iOS와 visionOS 공통)
     func fetchCurrentUserMemories() async throws {
-        guard let memoryUseCase = memoryUseCase,
-              let userId = appState.userId else { return }
+        guard let userId = appState.userId else { return }
         isLoading = true
         defer { isLoading = false }
         
         do {
             memories = try await memoryUseCase.execute(for: userId)
-            // 프로필에서 썸네일 가져오기 (iOS는 이미 selectedImage 사용)
+            // 프로필에서 썸네일 가져오기
             if let profile = appState.userProfile,
                let thumbnailId = profile.spaceThumbnailId,
                let thumbnailIdInt = Int(thumbnailId) {
@@ -200,7 +198,6 @@ class GalaxyViewModel: ObservableObject {
     }
     
     func fetchMemoriesFromOtherUser(userId: UUID) async throws {
-        guard let memoryUseCase = memoryUseCase else { return }
         isLoading = true
         defer { isLoading = false }
         
@@ -221,5 +218,4 @@ class GalaxyViewModel: ObservableObject {
             throw error
         }
     }
-    #endif
 }

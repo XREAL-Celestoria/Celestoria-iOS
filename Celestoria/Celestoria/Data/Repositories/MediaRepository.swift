@@ -290,7 +290,9 @@ class MediaRepository {
                 configuration.timeoutIntervalForRequest = 3600
                 let session = URLSession(configuration: configuration)
                 
+                os.Logger.info("b2_upload_file 시작 - 파일 크기: \(data.count) bytes, 시도: \(currentRetry + 1)/\(maxRetries)")
                 let (responseData, response) = try await session.data(for: request)
+                os.Logger.info("b2_upload_file 응답 받음 - 응답 크기: \(responseData.count) bytes")
                 
                 if let httpResponse = response as? HTTPURLResponse {
                     if httpResponse.statusCode == 200 {
@@ -301,11 +303,11 @@ class MediaRepository {
                             os.Logger.error("b2_upload_file 실패 - HTTP 응답 코드: \(httpResponse.statusCode), 에러: \(errorString)")
                         }
                         
-                        // 500 에러인 경우 재시도
-                        if httpResponse.statusCode == 500 {
+                        // 재시도 가능한 HTTP 상태 코드인 경우 재시도
+                        if httpResponse.statusCode >= 500 || httpResponse.statusCode == 429 || httpResponse.statusCode == 408 {
                             currentRetry += 1
                             if currentRetry < maxRetries {
-                                os.Logger.info("b2_upload_file 재시도 중... (시도 \(currentRetry)/\(maxRetries))")
+                                os.Logger.info("b2_upload_file 재시도 중... (HTTP \(httpResponse.statusCode), 시도 \(currentRetry)/\(maxRetries))")
                                 try await Task.sleep(nanoseconds: UInt64(pow(2.0, Double(currentRetry)) * 1_000_000_000)) // 지수 백오프
                                 continue
                             }
@@ -317,11 +319,13 @@ class MediaRepository {
                     throw MediaError.uploadFailed()
                 }
             } catch {
+                os.Logger.error("b2_upload_file 에러 발생: \(error.localizedDescription)")
                 currentRetry += 1
                 if currentRetry >= maxRetries {
+                    os.Logger.error("b2_upload_file 최대 재시도 횟수 초과 - 에러: \(error)")
                     throw error
                 }
-                os.Logger.info("b2_upload_file 재시도 중... (시도 \(currentRetry)/\(maxRetries))")
+                os.Logger.info("b2_upload_file 재시도 중... (시도 \(currentRetry)/\(maxRetries)) - 에러: \(error.localizedDescription)")
                 try await Task.sleep(nanoseconds: UInt64(pow(2.0, Double(currentRetry)) * 1_000_000_000))
             }
         }

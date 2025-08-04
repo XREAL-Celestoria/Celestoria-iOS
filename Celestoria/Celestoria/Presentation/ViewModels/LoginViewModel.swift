@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import AuthenticationServices
+import os
 
 @MainActor
 class LoginViewModel: NSObject, ObservableObject, ASAuthorizationControllerDelegate {
@@ -63,6 +64,12 @@ class LoginViewModel: NSObject, ObservableObject, ASAuthorizationControllerDeleg
                             
                             // AppState 업데이트
                             self.appState.setUser(fetchedProfile, userId: userId)
+                            
+                            // 프로필 이미지 미리 로딩
+                            if let profileImageURL = fetchedProfile.profileImageURL {
+                                await ImageCache.shared.preloadProfileImage(urlString: profileImageURL)
+                                Logger.info("LoginViewModel: Preloaded profile image after successful login")
+                            }
                             
                             // iOS에서는 navigationState 사용, visionOS에서는 activeScreen 사용
                             #if os(iOS)
