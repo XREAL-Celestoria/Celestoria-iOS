@@ -143,21 +143,50 @@ final class DIContainer: ObservableObject {
             appState: self.appState
         )
 
-        // 모든 초기화가 끝난 후 자동 로그인 체크
-        if let currentUser = self.supabaseClient.auth.currentUser {
+        // 앱 첫 실행 체크 및 이전 세션 정리
+        let isFirstLaunch = !UserDefaults.standard.bool(forKey: "hasLaunchedBefore")
+        if isFirstLaunch {
+            UserDefaults.standard.set(true, forKey: "hasLaunchedBefore")
+            // 완전히 새로운 설치이므로 UserDefaults 초기화
+            UserDefaults.standard.removeObject(forKey: "hasCompletedOnboarding")
+            UserDefaults.standard.removeObject(forKey: "hasAcceptedTerms")
+            // 이전 세션이 있다면 정리
+            Task {
+                try? await self.supabaseClient.auth.signOut()
+                Logger.info("First launch detected: cleared any existing session and UserDefaults")
+            }
+        }
+        
+        // 모든 초기화가 끝난 후 자동 로그인 체크 (첫 실행이 아닌 경우에만)
+        if !isFirstLaunch, let currentUser = self.supabaseClient.auth.currentUser {
             // AppState 업데이트
             self.appState.userId = currentUser.id
+            self.appState.galaxyTargetUserId = currentUser.id  // 자동 로그인 시에도 Galaxy 대상 설정
+            
+            #if os(visionOS)
             self.appState.activeScreen = .main
+            #else
+            // iOS에서는 로그인된 사용자가 있으면 온보딩은 완료된 것으로 간주
+            let hasAcceptedTerms = UserDefaults.standard.bool(forKey: "hasAcceptedTerms")
+            
+            // 로그인된 상태면 온보딩은 완료된 것으로 설정
+            UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+            self.appState.hasCompletedOnboarding = true
+            self.appState.hasAcceptedTerms = hasAcceptedTerms
+            
+            // 약관 동의 여부에 따라 화면 결정
+            self.appState.navigationState = hasAcceptedTerms ? .main : .terms
+            #endif
             
             Task {
                 do {
                     let fetchedProfile = try await profileUseCase.fetchProfile()
                     self.appState.userProfile = fetchedProfile
                     
-                    // 프로필 이미지 미리 로딩
-                    if let profileImageURL = fetchedProfile.profileImageURL {
+                    // 약관 동의 완료된 사용자만 이미지 미리 로딩
+                    if hasAcceptedTerms, let profileImageURL = fetchedProfile.profileImageURL {
                         await ImageCache.shared.preloadProfileImage(urlString: profileImageURL)
-                        Logger.info("DIContainer: Preloaded profile image for auto-login user")
+                        Logger.info("DIContainer: Preloaded profile image for returning user")
                     }
                 } catch {
                     Logger.error("Failed to fetch profile: \(error.localizedDescription)")
@@ -166,8 +195,23 @@ final class DIContainer: ObservableObject {
         } else {
             // AppState 업데이트
             self.appState.userId = nil
-            self.appState.activeScreen = .login
             self.appState.userProfile = nil
+            
+            #if os(visionOS)
+            self.appState.activeScreen = .login
+            #else
+            // iOS에서는 UserDefaults 상태를 확인하여 navigationState 설정
+            let hasCompletedOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
+            
+            self.appState.hasCompletedOnboarding = hasCompletedOnboarding
+            self.appState.hasAcceptedTerms = UserDefaults.standard.bool(forKey: "hasAcceptedTerms")
+            
+            if hasCompletedOnboarding {
+                self.appState.navigationState = .login
+            } else {
+                self.appState.navigationState = .onboarding
+            }
+            #endif
         }
     }
     

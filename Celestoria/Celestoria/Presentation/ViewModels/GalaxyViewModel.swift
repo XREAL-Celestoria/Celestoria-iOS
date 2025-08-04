@@ -215,6 +215,17 @@ class GalaxyViewModel: ObservableObject {
             }
         } catch {
             Logger.error("Failed to fetch other user memories: \(error)")
+            
+            // Profile not found 에러인 경우 현재 사용자로 fallback
+            if error.localizedDescription.contains("Profile not found") {
+                Logger.info("Profile not found for user \(userId), falling back to current user")
+                if let currentUserId = appState.currentUserId {
+                    appState.galaxyTargetUserId = currentUserId
+                    try await fetchCurrentUserMemories()
+                    return
+                }
+            }
+            
             throw error
         }
     }

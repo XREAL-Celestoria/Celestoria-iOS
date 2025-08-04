@@ -92,7 +92,6 @@
 		5D6C1A112E3E06B2004A0B17 /* Text+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6C1A102E3E06B2004A0B17 /* Text+.swift */; };
 		5D6C1A122E3E06B2004A0B17 /* Text+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6C1A102E3E06B2004A0B17 /* Text+.swift */; };
 		5D6C1A142E3E1238004A0B17 /* iOSSplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6C1A132E3E1238004A0B17 /* iOSSplashView.swift */; };
-		5D6C1A442E3E3598004A0B17 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5D6C1A432E3E3598004A0B17 /* Launch Screen.storyboard */; };
 		5D707E5A2E3E47BF00CC1224 /* iOS3DGalaxyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E592E3E47BF00CC1224 /* iOS3DGalaxyViewModel.swift */; };
 		5D707E5C2E3E481000CC1224 /* UserInfoModalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E5B2E3E481000CC1224 /* UserInfoModalViewModel.swift */; };
 		5D707E5E2E3E56AD00CC1224 /* UserInfoModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E5D2E3E56AD00CC1224 /* UserInfoModalView.swift */; };
@@ -268,7 +267,6 @@
 		5D6C1A0D2E3E0691004A0B17 /* Fonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fonts.swift; sourceTree = "<group>"; };
 		5D6C1A102E3E06B2004A0B17 /* Text+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Text+.swift"; sourceTree = "<group>"; };
 		5D6C1A132E3E1238004A0B17 /* iOSSplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSSplashView.swift; sourceTree = "<group>"; };
-		5D6C1A432E3E3598004A0B17 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		5D707E592E3E47BF00CC1224 /* iOS3DGalaxyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOS3DGalaxyViewModel.swift; sourceTree = "<group>"; };
 		5D707E5B2E3E481000CC1224 /* UserInfoModalViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoModalViewModel.swift; sourceTree = "<group>"; };
 		5D707E5D2E3E56AD00CC1224 /* UserInfoModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoModalView.swift; sourceTree = "<group>"; };
@@ -504,7 +502,6 @@
 				2F3671AC2D3D61DD0048D9AD /* RealityKit */,
 				2F8800B12D38CE6800220F89 /* Preview Content */,
 				2F8800B32D38CE6800220F89 /* Assets.xcassets */,
-				5D6C1A432E3E3598004A0B17 /* Launch Screen.storyboard */,
 			);
 			path = Celestoria;
 			sourceTree = "<group>";
@@ -887,7 +884,6 @@
 				A2A286D92E2CC0C7001D89B2 /* Pet.usdz in Resources */,
 				A2A286D72E2CC0BD001D89B2 /* Enter.usdc in Resources */,
 				A2A286D82E2CC0C3001D89B2 /* Family.usdz in Resources */,
-				5D6C1A442E3E3598004A0B17 /* Launch Screen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

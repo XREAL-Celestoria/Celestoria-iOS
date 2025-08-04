@@ -29,6 +29,7 @@ struct iOSSplashView: View {
                 Spacer()
             }
         }
+        .background(Colors.backgroundMain)  // 배경색 추가
         .onAppear {
             isAnimating = true
         }

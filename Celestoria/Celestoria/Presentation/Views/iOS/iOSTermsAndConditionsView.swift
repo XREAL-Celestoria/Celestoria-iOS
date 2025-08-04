@@ -104,8 +104,10 @@ struct iOSTermsAndConditionsView: View {
                         iOSMainButton(title: "Cancel", action: {settingViewModel.resetToLogin()}, isEnabled: false)
                         
                         iOSMainButton(title: "Agree", action: {
+                            print("🔧 iOSTermsAndConditionsView: User agreed to terms")
                             UserDefaults.standard.set(true, forKey: "hasAcceptedTerms")
                             appState.hasAcceptedTerms = true
+                            print("🔧 iOSTermsAndConditionsView: Setting navigation state to main")
                             appState.navigationState = .main
                         }, isEnabled: true)
                     }

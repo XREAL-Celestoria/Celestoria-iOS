@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import os
 
 struct iOSTermsAndConditionsView: View {
     @EnvironmentObject var appState: AppState
@@ -80,6 +81,19 @@ struct iOSTermsAndConditionsView: View {
                         iOSMainButton(title: "Agree", action: {
                             UserDefaults.standard.set(true, forKey: "hasAcceptedTerms")
                             appState.hasAcceptedTerms = true
+                            
+                            // 약관 동의 후에만 리소스 로딩 시작
+                            Task {
+                                // 프로필 이미지 미리 로딩
+                                if let profileImageURL = appState.userProfile?.profileImageURL {
+                                    await ImageCache.shared.preloadProfileImage(urlString: profileImageURL)
+                                    Logger.info("Terms: Preloaded profile image after terms acceptance")
+                                }
+                            }
+                            
+                            // 갤럭시 로딩을 다시 시작하고 메인으로 이동
+                            // 이때 자동으로 스플래시가 다시 보여질 것임
+                            appState.isGalaxyLoadingComplete = false
                             appState.navigationState = .main
                         }, isEnabled: true)
                     }

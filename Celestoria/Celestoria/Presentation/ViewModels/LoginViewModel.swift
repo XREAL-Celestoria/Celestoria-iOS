@@ -62,18 +62,22 @@ class LoginViewModel: NSObject, ObservableObject, ASAuthorizationControllerDeleg
                             guard let self = self else { return }
                             let fetchedProfile = try await self.profileUseCase.fetchProfile()
                             
-                            // AppState 업데이트
+                            // AppState 업데이트 (이미지 로딩은 하지 않음)
                             self.appState.setUser(fetchedProfile, userId: userId)
-                            
-                            // 프로필 이미지 미리 로딩
-                            if let profileImageURL = fetchedProfile.profileImageURL {
-                                await ImageCache.shared.preloadProfileImage(urlString: profileImageURL)
-                                Logger.info("LoginViewModel: Preloaded profile image after successful login")
-                            }
                             
                             // iOS에서는 navigationState 사용, visionOS에서는 activeScreen 사용
                             #if os(iOS)
                             if self.appState.hasAcceptedTerms {
+                                // 약관 동의 완료된 사용자 - 리소스 로딩 후 메인으로 이동
+                                Task {
+                                    // 프로필 이미지 미리 로딩
+                                    if let profileImageURL = fetchedProfile.profileImageURL {
+                                        await ImageCache.shared.preloadProfileImage(urlString: profileImageURL)
+                                        Logger.info("LoginViewModel: Preloaded profile image for returning user")
+                                    }
+                                }
+                                // 갤럭시 로딩을 다시 시작하도록 설정
+                                self.appState.isGalaxyLoadingComplete = false
                                 self.appState.navigationState = .main
                             } else {
                                 self.appState.navigationState = .terms

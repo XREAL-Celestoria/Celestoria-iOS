@@ -25,6 +25,7 @@ struct iOSContentView: View {
             // 스플래시 화면
             if showSplash {
                 iOSSplashView()
+                    .id("splash-\(appState.navigationState)")  // 상태 변경 시 새로 생성
                     .transition(.opacity)
                     .zIndex(2)
             }
@@ -34,20 +35,19 @@ struct iOSContentView: View {
                 switch appState.navigationState {
                 case .onboarding:
                     iOSOnboardingView()
-                        .transition(.opacity.combined(with: .move(edge: .bottom)))
+                        .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
                         .opacity(mainViewOpacity)
                     
                 case .login:
                     iOSLoginView()
                         .environmentObject(loginViewModel)
-                        .transition(.opacity.combined(with: .move(edge: .trailing)))
+                        .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
                         .opacity(mainViewOpacity)
                     
                 case .terms:
                     iOSTermsAndConditionsView()
-                        .transition(.opacity.combined(with: .move(edge: .bottom)))
-                        .zIndex(1)
                         .opacity(mainViewOpacity)
+                        .zIndex(1)
                     
                 case .main:
                     NavigationView {
@@ -63,6 +63,15 @@ struct iOSContentView: View {
                         if appState.galaxyTargetUserId == nil {
                             appState.galaxyTargetUserId = appState.currentUserId
                         }
+                        
+                        // 갤럭시 로딩 완료 상태 체크 (안전장치)
+                        if appState.isGalaxyLoadingComplete && showSplash {
+                            print("🔧 iOSContentView: Galaxy already loaded, hiding splash immediately")
+                            withAnimation(.easeInOut(duration: 0.8)) {
+                                showSplash = false
+                                mainViewOpacity = 1
+                            }
+                        }
                     }
                 }
             }
@@ -71,35 +80,72 @@ struct iOSContentView: View {
         .animation(.easeInOut(duration: 0.6), value: appState.navigationState)
         .animation(.easeInOut(duration: 0.8), value: mainViewOpacity)
         .onAppear {
+            // 로그인된 사용자가 없으면 바로 스플래시 숨기고 초기화
+            if appState.userId == nil {
+                showSplash = false
+                mainViewOpacity = 1
+            }
+            
             // 스플래시 화면 표시 후 초기화 (스플래시는 갤럭시 로딩 완료 후에 사라짐)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 initializeAppState()
             }
         }
         .onChange(of: appState.isGalaxyLoadingComplete) { _, isComplete in
-            if isComplete && appState.navigationState == .main {
+            print("🔧 iOSContentView: Galaxy loading complete changed to \(isComplete), navigationState: \(appState.navigationState), showSplash: \(showSplash)")
+            if isComplete && appState.navigationState == .main && showSplash {
+                print("🔧 iOSContentView: Hiding splash screen due to galaxy loading complete")
                 // 갤럭시 로딩이 완료되면 자연스럽게 크로스페이드
                 withAnimation(.easeInOut(duration: 0.8)) {
                     showSplash = false
                     mainViewOpacity = 1
                 }
+            } else if isComplete && appState.navigationState == .main && !showSplash {
+                print("🔧 iOSContentView: Galaxy loading complete but splash already hidden - ensuring main view is visible")
+                // 스플래시가 이미 숨겨진 상태라면 메인 뷰만 보이도록
+                withAnimation(.easeInOut(duration: 0.4)) {
+                    mainViewOpacity = 1
+                }
             }
         }
-        .onChange(of: appState.navigationState) { _, newState in
-            if newState == .main {
+        .onChange(of: appState.navigationState) { oldState, newState in
+            print("🔧 iOSContentView: Navigation state changed from \(oldState) to \(newState), current showSplash: \(showSplash), galaxyLoading: \(appState.isGalaxyLoadingComplete)")
+            
+            if oldState == .terms && newState == .main {
+                // 약관에서 메인으로: 갤럭시 로딩 상태 확인
                 if appState.isGalaxyLoadingComplete {
-                    // 갤럭시 로딩이 완료된 상태라면 자연스럽게 크로스페이드
-                    withAnimation(.easeInOut(duration: 0.8)) {
+                    print("🔧 iOSContentView: Galaxy already loaded, going directly to main")
+                    // 이미 로딩 완료되었다면 바로 메인 화면 표시
+                    withAnimation(.easeInOut(duration: 0.5)) {
                         showSplash = false
                         mainViewOpacity = 1
                     }
                 } else {
-                    // 갤럭시 로딩이 완료되지 않았다면 0으로 유지
+                    print("🔧 iOSContentView: Galaxy not loaded, showing splash first")
+                    // 로딩이 안 되었다면 스플래시 표시 (딜레이 제거)
+                    withAnimation(.easeInOut(duration: 0.4)) {
+                        showSplash = true
+                        mainViewOpacity = 0
+                    }
+                }
+            } else if oldState == .login && newState == .main {
+                // 로그인에서 메인으로: 스플래시 상태 완전 초기화
+                print("🔧 iOSContentView: Login to main - initializing splash state")
+                showSplash = true
+                mainViewOpacity = 0
+                // 갤럭시 로딩 완료 후 자동으로 사라지도록
+            } else if newState == .main {
+                // 다른 화면에서 메인으로
+                print("🔧 iOSContentView: Other screen to main")
+                withAnimation(.easeInOut(duration: 0.4)) {
+                    showSplash = true
                     mainViewOpacity = 0
                 }
             } else {
-                // 다른 화면으로 전환 시
+                // 다른 화면으로 전환 시 (온보딩, 로그인, 약관 동의)
+                print("🔧 iOSContentView: Going to non-main screen")
                 withAnimation(.easeInOut(duration: 0.4)) {
+                    showSplash = false
                     mainViewOpacity = 1
                 }
             }
@@ -107,6 +153,13 @@ struct iOSContentView: View {
     }
     
     private func initializeAppState() {
+        // DIContainer에서 이미 로그인된 사용자가 있다면 초기화를 건너뜀
+        if appState.userId != nil {
+            print("iOS App State: User already logged in, skipping initialization - UserID: \(appState.userId?.uuidString ?? "nil"), NavigationState: \(appState.navigationState)")
+            return
+        }
+        
+        // 로그인되지 않은 경우에만 UserDefaults를 확인하여 초기화
         let hasCompletedOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
         let hasAcceptedTerms = UserDefaults.standard.bool(forKey: "hasAcceptedTerms")
         
@@ -115,15 +168,11 @@ struct iOSContentView: View {
         
         // Navigation Setting
         if hasCompletedOnboarding {
-            if appState.userId != nil {
-                appState.navigationState = hasAcceptedTerms ? .main : .terms
-            } else {
-                appState.navigationState = .login
-            }
+            appState.navigationState = .login
         } else {
             appState.navigationState = .onboarding
         }
         
-        print("iOS App State Initialized - Onboarding: \(hasCompletedOnboarding), Terms: \(hasAcceptedTerms), UserID: \(appState.userId?.uuidString ?? "nil"), NavigationState: \(appState.navigationState)")
+        print("iOS App State Initialized - Onboarding: \(hasCompletedOnboarding), Terms: \(hasAcceptedTerms), UserID: nil, NavigationState: \(appState.navigationState)")
     }
 }

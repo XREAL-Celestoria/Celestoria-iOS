@@ -58,8 +58,7 @@ struct AccountSettingView: View {
                 Task {
                     do {
                         try await settingViewModel.deleteAccount()
-                        appState.activeScreen = .login
-                        appState.userId = nil
+                        // SettingViewModel에서 이미 상태를 관리하므로 추가 처리 불필요
                     } catch {
                         errorMessage = error.localizedDescription
                         showError = true

@@ -70,32 +70,30 @@ class iOS3DGalaxyViewModel: ObservableObject {
                 
                 updateMemoryNodes()
                 
-                // 로딩 완료 후 AppState 업데이트 (중복 방지)
+                // 로딩 완료 후 AppState 업데이트
                 await MainActor.run {
-                    if isBackgroundLoaded && !appState.isGalaxyLoadingComplete {
-                        appState.isGalaxyLoadingComplete = true
-                        
-                        // 컨텐츠 준비 상태를 약간 지연시켜 부드러운 전환
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                            withAnimation(.easeInOut(duration: 0.6)) {
-                                self.isContentReady = true
-                            }
+                    print("🔧 iOS3DGalaxyViewModel: Setting galaxy loading complete = true")
+                    appState.isGalaxyLoadingComplete = true
+                    
+                    // 컨텐츠 준비 상태를 약간 지연시켜 부드러운 전환
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        withAnimation(.easeInOut(duration: 0.6)) {
+                            self.isContentReady = true
                         }
                     }
                 }
             } catch {
                 Logger.error("Error loading memories: \(error.localizedDescription)")
                 
-                // 에러가 발생해도 로딩 완료로 처리 (중복 방지)
+                // 에러가 발생해도 로딩 완료로 처리
                 await MainActor.run {
-                    if isBackgroundLoaded && !appState.isGalaxyLoadingComplete {
-                        appState.isGalaxyLoadingComplete = true
-                        
-                        // 에러 시에도 컨텐츠 준비 상태를 지연시켜 전환
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                            withAnimation(.easeInOut(duration: 0.6)) {
-                                self.isContentReady = true
-                            }
+                    print("🔧 iOS3DGalaxyViewModel: Setting galaxy loading complete = true (with error)")
+                    appState.isGalaxyLoadingComplete = true
+                    
+                    // 에러 시에도 컨텐츠 준비 상태를 지연시켜 전환
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        withAnimation(.easeInOut(duration: 0.6)) {
+                            self.isContentReady = true
                         }
                     }
                 }
