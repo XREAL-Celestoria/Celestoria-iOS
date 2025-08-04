@@ -46,6 +46,13 @@ class UserInfoModalViewModel: ObservableObject {
     private func loadUserProfile() async {
         do {
             userProfile = try await diContainer.profileUseCase.fetchProfileByUserId(userId: userId)
+            
+            // 프로필 이미지 미리 로딩
+            if let profileImageURL = userProfile?.profileImageURL {
+                Task {
+                    await ImageCache.shared.preloadProfileImage(urlString: profileImageURL)
+                }
+            }
         } catch {
             Logger.error("Error loading user profile: \(error.localizedDescription)")
         }

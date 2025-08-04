@@ -35,6 +35,13 @@ final class AppState: ObservableObject {
                 // 로그인 안되거나 starfield가 없다면 Gray로 고정
                 self.selectedStarfield = .FIELD_1
             }
+            
+            // 프로필 이미지 미리 로딩
+            if let profileImageURL = userProfile?.profileImageURL {
+                Task {
+                    await ImageCache.shared.preloadProfileImage(urlString: profileImageURL)
+                }
+            }
         }
     }
     @Published var activeScreen: ActiveScreen = .login {
@@ -101,7 +108,9 @@ final class AppState: ObservableObject {
     }
     @Published var isGalaxyLoadingComplete: Bool = false {
         didSet {
-            Logger.info("Galaxy Loading Complete: \(isGalaxyLoadingComplete)")
+            if isGalaxyLoadingComplete && oldValue != isGalaxyLoadingComplete {
+                Logger.info("Galaxy Loading Complete: \(isGalaxyLoadingComplete)")
+            }
         }
     }
     

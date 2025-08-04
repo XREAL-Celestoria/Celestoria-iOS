@@ -24,8 +24,6 @@ struct UserInfoModalView: View {
         self.onAddMemory = onAddMemory
         self.diContainer = diContainer
         _viewModel = StateObject(wrappedValue: diContainer.makeUserInfoModalViewModel(userId: userId))
-        
-        Logger.info("UserInfoModalView: Created for userId: \(userId), isOwnGalaxy: \(isOwnGalaxy)")
     }
     
     var body: some View {

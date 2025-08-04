@@ -243,9 +243,23 @@ struct iOSMemoryDetailView: View {
             }
         )
         .task {
-            await loadOwnerProfile()
-            await loadLikeData()
-            await refreshURLs()
+            // Task 취소 체크
+            guard !Task.isCancelled else {
+                print("ℹ️ INFO: Memory detail view task cancelled before starting")
+                return
+            }
+            
+            // 병렬 실행
+            async let ownerProfileTask = loadOwnerProfile()
+            async let likeDataTask = loadLikeData()
+            async let refreshURLsTask = refreshURLs()
+            
+            // 모든 작업 완료 대기
+            await ownerProfileTask
+            await likeDataTask
+            await refreshURLsTask
+            
+            print("✅ INFO: Memory detail view data loaded successfully")
         }
         .fullScreenCover(isPresented: $showFullScreenVideo) {
             let videoURLToUse = refreshedVideoURL ?? memory.videoURL
@@ -289,10 +303,19 @@ struct iOSMemoryDetailView: View {
     }
     
     private func loadOwnerProfile() async {
+        guard !Task.isCancelled else {
+            print("ℹ️ INFO: Owner profile loading cancelled")
+            return
+        }
+        
         do {
             ownerProfile = try await diContainer.profileUseCase.fetchProfileByUserId(userId: memory.userId)
         } catch {
-            print("Error loading owner profile: \(error)")
+            if Task.isCancelled {
+                print("ℹ️ INFO: Owner profile loading cancelled during request")
+            } else {
+                print("Error loading owner profile: \(error)")
+            }
         }
     }
     
@@ -333,6 +356,10 @@ struct iOSMemoryDetailView: View {
     
     private func loadLikeData() async {
         guard let currentUserId = appState.userId else { return }
+        guard !Task.isCancelled else {
+            print("ℹ️ INFO: Like data loading cancelled")
+            return
+        }
         
         do {
             // Load like count and current user's like status
@@ -341,10 +368,19 @@ struct iOSMemoryDetailView: View {
             
             let (count, liked) = try await (likeCountResult, hasLikedResult)
             
+            guard !Task.isCancelled else {
+                print("ℹ️ INFO: Like data loading cancelled after request")
+                return
+            }
+            
             likeCount = count
             isLiked = liked
         } catch {
-            print("Error loading like data: \(error)")
+            if Task.isCancelled {
+                print("ℹ️ INFO: Like data loading cancelled during request")
+            } else {
+                print("Error loading like data: \(error)")
+            }
         }
     }
     

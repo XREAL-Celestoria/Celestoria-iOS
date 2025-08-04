@@ -47,7 +47,7 @@ final class DIContainer: ObservableObject {
     init() {
         Logger.info("Initializing DIContainer...")
 
-        // Initialize Supabase Client
+        // Initialize Supabase Client with basic configuration
         self.supabaseClient = SupabaseClient(
             supabaseURL: Config.supabaseURL,
             supabaseKey: Config.supabaseAnonKey,
@@ -130,7 +130,8 @@ final class DIContainer: ObservableObject {
         self.galaxyViewModel = GalaxyViewModel(
             appState: self.appState,
             spaceCoordinator: spaceCoordinator,
-            profileUseCase: profileUseCase
+            profileUseCase: profileUseCase,
+            memoryUseCase: fetchMemoriesUseCase
         )
         #endif
         
@@ -152,6 +153,12 @@ final class DIContainer: ObservableObject {
                 do {
                     let fetchedProfile = try await profileUseCase.fetchProfile()
                     self.appState.userProfile = fetchedProfile
+                    
+                    // 프로필 이미지 미리 로딩
+                    if let profileImageURL = fetchedProfile.profileImageURL {
+                        await ImageCache.shared.preloadProfileImage(urlString: profileImageURL)
+                        Logger.info("DIContainer: Preloaded profile image for auto-login user")
+                    }
                 } catch {
                     Logger.error("Failed to fetch profile: \(error.localizedDescription)")
                 }

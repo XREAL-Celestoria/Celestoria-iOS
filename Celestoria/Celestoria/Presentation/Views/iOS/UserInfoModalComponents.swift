@@ -63,29 +63,27 @@ struct ProfileImageView: View {
                         Logger.info("ProfileImageView: Using predefined image - key: \(profileKey), image: \(predefinedImage.rawValue)")
                     }
             } else if let profileImageURL = profile.profileImageURL {
-                AsyncImage(url: URL(string: profileImageURL)) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } placeholder: {
-                    Image(systemName: "person.circle.fill")
-                        .font(.system(size: size))
-                        .foregroundColor(.gray)
-                }
-                .onAppear {
-                    Logger.info("ProfileImageView: Using custom image - URL: \(profileImageURL)")
-                }
-            } else {
-                Image(systemName: "person.circle.fill")
-                    .font(.system(size: size))
-                    .foregroundColor(.gray)
+                CachedAsyncImage(urlString: profileImageURL, size: size)
+                    .id(profileImageURL) // URL 기반 ID로 불필요한 재로딩 방지
                     .onAppear {
-                        Logger.info("ProfileImageView: Using fallback image - profileKey: \(profile.profileKey ?? -1), imageURL: \(profile.profileImageURL ?? "nil")")
+                        Logger.info("ProfileImageView: Using CachedAsyncImage - URL: \(profileImageURL)")
                     }
+            } else {
+                fallbackImageView
             }
         }
         .frame(width: size, height: size)
         .clipShape(Circle())
+    }
+    
+    @ViewBuilder
+    private var fallbackImageView: some View {
+        Image(systemName: "person.circle.fill")
+            .font(.system(size: size))
+            .foregroundColor(.gray)
+            .onAppear {
+                Logger.info("ProfileImageView: Using fallback image - profileKey: \(profile.profileKey ?? -1), imageURL: \(profile.profileImageURL ?? "nil")")
+            }
     }
 }
 

@@ -29,6 +29,7 @@ class AddMemoryMainViewModel: ObservableObject {
     @Published private(set) var lastUploadedMemory: Memory?
     @Published var thumbnailImage: UIImage?
     @Published var isUploading = false
+    @Published var uploadStatus: String = ""
     
     @Published var title: String = ""
     @Published var note: String = ""
@@ -64,29 +65,141 @@ class AddMemoryMainViewModel: ObservableObject {
         }
 
         isUploading = true
-        defer { isUploading = false }
+        uploadStatus = "Preparing upload..."
+        
+        // 재시도 로직 변수
+        let maxRetries = 3
+        var currentRetry = 0
+        var lastError: Error?
 
         do {
+            uploadStatus = "Loading video data..."
             guard let videoItem = selectedVideoItem,
                   let videoData = try await videoItem.loadTransferable(type: Data.self) else {
-                errorMessage = "비디오 데이터를 불러올 수 없습니다."
+                errorMessage = "Failed to load video data."
+                // 실패 시 상태 초기화
+                isUploading = false
+                uploadStatus = ""
                 return
             }
 
-            let memory = try await createMemoryUseCase.execute(
-                note: note,
-                title: title,
-                category: selectedCategory!,
-                videoData: videoData,
-                thumbnailImage: thumbnailImage!,
-                userId: userId
-            )
+            // 재시도 로직으로 메모리 업로드 시도
+            while currentRetry < maxRetries {
+                do {
+                    // 상태별 메시지 업데이트
+                    if currentRetry == 0 {
+                        uploadStatus = "Uploading files..."
+                    } else {
+                        uploadStatus = "Retrying... (\(currentRetry)/\(maxRetries-1))"
+                    }
+                    
+                    let memory = try await createMemoryUseCase.execute(
+                        note: note,
+                        title: title,
+                        category: selectedCategory!,
+                        videoData: videoData,
+                        thumbnailImage: thumbnailImage!,
+                        userId: userId
+                    )
 
-            lastUploadedMemory = memory
-            logger.notice("Memory uploaded successfully: \(memory.id)")
+                    uploadStatus = "Upload Success"
+                    print("🔍 Memory upload successful, setting lastUploadedMemory")
+                    print("✅ Uploaded memory ID: \(memory.id.uuidString)")
+                    print("✅ Uploaded memory title: \(memory.title)")
+                    print("✅ Uploaded memory note: \(memory.note)")
+                    print("✅ Uploaded memory category: \(memory.category)")
+                    
+                    lastUploadedMemory = memory
+                    print("✅ lastUploadedMemory successfully set")
+                    
+                    // 성공 시 상태 초기화
+                    isUploading = false
+                    uploadStatus = ""
+                    return
+                    
+                } catch {
+                    lastError = error
+                    currentRetry += 1
+                    
+                    // 네트워크 오류인 경우에만 재시도
+                    if isNetworkError(error) && currentRetry < maxRetries {
+                        uploadStatus = "Connection lost, retrying... (\(currentRetry)/\(maxRetries-1))"
+                        
+                        // 지수 백오프로 지연
+                        let delay = min(pow(2.0, Double(currentRetry)), 8.0)
+                        try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                        continue
+                    } else {
+                        throw error
+                    }
+                }
+            }
+            
+            // 최대 재시도 횟수 초과
+            if let lastError = lastError {
+                throw lastError
+            }
+            
         } catch {
-            errorMessage = error.localizedDescription
+            uploadStatus = ""
+            logger.error("Memory upload failed: \(error.localizedDescription)")
+            
+            // 사용자 친화적 에러 메시지와 팝업
+            let userFriendlyMessage: String
+            if isNetworkError(error) {
+                userFriendlyMessage = "Network connection issue occurred.\nPlease check your internet connection and try again."
+            } else {
+                userFriendlyMessage = "An error occurred during upload.\nPlease try again in a moment."
+            }
+            
+            // 에러 팝업 표시
+            popupData = PopupData(
+                title: "Upload Failed",
+                notes: userFriendlyMessage,
+                leadingButtonText: "",
+                trailingButtonText: "OK",
+                buttonImageString: "xmark",
+                circularAction: { [weak self] in
+                    self?.popupData = nil
+                },
+                leadingButtonAction: nil,
+                trailingButtonAction: { [weak self] in
+                    self?.popupData = nil
+                }
+            )
+            
+            errorMessage = userFriendlyMessage
+            
+            // 실패 시 상태 초기화  
+            isUploading = false
+            uploadStatus = ""
         }
+    }
+    
+    // 네트워크 오류 판별 함수
+    private func isNetworkError(_ error: Error) -> Bool {
+        if let urlError = error as? URLError {
+            switch urlError.code {
+            case .notConnectedToInternet, .networkConnectionLost, .timedOut, .cannotConnectToHost, .cannotFindHost, .dnsLookupFailed:
+                return true
+            default:
+                return false
+            }
+        }
+        
+        if let nsError = error as NSError? {
+            // NSURLError 도메인 체크
+            if nsError.domain == NSURLErrorDomain {
+                switch nsError.code {
+                case NSURLErrorNotConnectedToInternet, NSURLErrorNetworkConnectionLost, NSURLErrorTimedOut, NSURLErrorCannotConnectToHost, NSURLErrorCannotFindHost, NSURLErrorDNSLookupFailed:
+                    return true
+                default:
+                    return false
+                }
+            }
+        }
+        
+        return false
     }
     
     func handleViewDisappearance() {
@@ -141,29 +254,32 @@ class AddMemoryMainViewModel: ObservableObject {
         logger.notice("Starting thumbnail generation for selected video")
         isThumbnailGenerating = true
         
-        Task {
-            await self.processVideoSelection(item: item)
+        Task { [weak self] in
+            await self?.processVideoSelection(item: item)
         }
     }
     
     private func processVideoSelection(item: PhotosPickerItem) async {
-            do {
-                guard let videoData = try await item.loadTransferable(type: Data.self) else {
-                    throw NSError(domain: "Thumbnail Error", code: -1, userInfo: [NSLocalizedDescriptionKey: "Could not load video data."])
-                }
+        do {
+            guard let videoData = try await item.loadTransferable(type: Data.self) else {
+                throw NSError(domain: "Thumbnail Error", code: -1, userInfo: [NSLocalizedDescriptionKey: "Could not load video data."])
+            }
+            
+            // Check file size with detailed logging
+            let fileSize = Int64(videoData.count)
+            logger.notice("Checking file size: \(fileSize) bytes (Max: \(self.MAX_FILE_SIZE) bytes)")
+            
+            if fileSize >= MAX_FILE_SIZE {
+                logger.error("File size (\(self.formatFileSize(fileSize))) exceeds limit of 1GB")
                 
-                // Check file size with detailed logging
-                let fileSize = Int64(videoData.count)
-                logger.notice("Checking file size: \(fileSize) bytes (Max: \(self.MAX_FILE_SIZE) bytes)")
-                
-                if fileSize >= MAX_FILE_SIZE {
-                    logger.error("File size (\(self.formatFileSize(fileSize))) exceeds limit of 1GB")
-                    selectedVideoItem = nil  // Reset selection
+                await MainActor.run { [weak self] in
+                    guard let self = self else { return }
+                    self.selectedVideoItem = nil  // Reset selection
                     
                     // Show error popup instead of just setting error message
-                    popupData = PopupData(
+                    self.popupData = PopupData(
                         title: "File Size Exceeded",
-                        notes: "Your video file (\(formatFileSize(fileSize))) is too large.\nPlease choose a video under 1GB.",
+                        notes: "Your video file (\(self.formatFileSize(fileSize))) is too large.\nPlease choose a video under 1GB.",
                         leadingButtonText: "",
                         trailingButtonText: "OK",
                         buttonImageString: "xmark",
@@ -178,40 +294,56 @@ class AddMemoryMainViewModel: ObservableObject {
                         }
                     )
                     
-                    setThumbnailGeneratingFalseWithDelay()
-                    return
+                    self.setThumbnailGeneratingFalseWithDelay()
                 }
-                
-                // Format file size for display
-                uploadingFileSize = formatFileSize(fileSize)
-                logger.notice("File size accepted: \(self.uploadingFileSize)")
+                return
+            }
+            
+            // Format file size for display and update UI on main thread
+            await MainActor.run { [weak self] in
+                guard let self = self else { return }
+                self.uploadingFileSize = self.formatFileSize(fileSize)
+                self.logger.notice("File size accepted: \(self.uploadingFileSize)")
+            }
 
-                let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).mov")
-                try videoData.write(to: tempURL)
-                logger.notice("Video data saved to temporary URL.")
+            let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).mov")
+            try videoData.write(to: tempURL)
+            logger.notice("Video data saved to temporary URL.")
 
-                let thumbnail = await generateThumbnail(from: tempURL)
+            let thumbnail = await generateThumbnail(from: tempURL)
+            
+            // Clean up temp file
+            try? FileManager.default.removeItem(at: tempURL)
+            
+            await MainActor.run { [weak self] in
+                guard let self = self else { return }
                 
                 if let thumbnail = thumbnail {
                     self.thumbnailImage = thumbnail
+                    self.selectedVideoItem = item  // Only set video item if thumbnail generation succeeds
                     let size = thumbnail.size
                     self.logger.notice("Thumbnail set successfully. Image size: \(size.width)x\(size.height)")
                 } else {
                     self.errorMessage = "썸네일 추출에 실패했습니다."
+                    self.selectedVideoItem = nil  // Reset if thumbnail generation fails
                     self.logger.error("Thumbnail generation failed - thumbnail is nil")
                 }
                 self.setThumbnailGeneratingFalseWithDelay()
-            } catch {
-                errorMessage = "Video loading failed: \(error.localizedDescription)"
-                logger.error("Video selection error: \(error.localizedDescription)")
-                isPickerBlocked = false
-                setThumbnailGeneratingFalseWithDelay()
             }
+        } catch {
+            await MainActor.run { [weak self] in
+                guard let self = self else { return }
+                self.errorMessage = "Video loading failed: \(error.localizedDescription)"
+                self.logger.error("Video selection error: \(error.localizedDescription)")
+                self.isPickerBlocked = false
+                self.setThumbnailGeneratingFalseWithDelay()
+            }
+        }
     }
 
     private func setThumbnailGeneratingFalseWithDelay() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.isThumbnailGenerating = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.isThumbnailGenerating = false
         }
     }
 
@@ -221,39 +353,55 @@ class AddMemoryMainViewModel: ObservableObject {
         imageGenerator.appliesPreferredTrackTransform = true
         imageGenerator.maximumSize = CGSize(width: 1920, height: 1080)
         
-        let time = CMTime(seconds: 2.0, preferredTimescale: 600)
+        // Try multiple time points sequentially instead of nested async calls
+        let timePoints = [
+            CMTime(seconds: 2.0, preferredTimescale: 600),
+            CMTime(seconds: 1.0, preferredTimescale: 600),
+            CMTime(seconds: 0.5, preferredTimescale: 600),
+            CMTime.zero
+        ]
         
-        do {
-            return try await withCheckedThrowingContinuation { continuation in
-                imageGenerator.generateCGImagesAsynchronously(forTimes: [NSValue(time: time)]) { _, cgImage, _, result, error in
-                    if let cgImage = cgImage, result == .succeeded {
-                        let thumbnail = UIImage(cgImage: cgImage)
-                        self.logger.notice("Thumbnail generated successfully using AVAssetImageGenerator.")
-                        continuation.resume(returning: thumbnail)
-                    } else if let error = error {
-                        self.logger.error("Failed to generate thumbnail: \(error.localizedDescription)")
+        for timePoint in timePoints {
+            do {
+                let cgImage = try await withCheckedThrowingContinuation { [weak self] continuation in
+                    var hasResumed = false
+                    
+                    imageGenerator.generateCGImagesAsynchronously(forTimes: [NSValue(time: timePoint)]) { _, cgImage, _, result, error in
+                        // Prevent multiple continuations
+                        guard !hasResumed else { return }
+                        hasResumed = true
                         
-                        // Fallback: Try to get the first frame
-                        let firstFrameTime = CMTime(seconds: 0.0, preferredTimescale: 600)
-                        imageGenerator.generateCGImagesAsynchronously(forTimes: [NSValue(time: firstFrameTime)]) { _, cgImage, _, result, error in
-                            if let cgImage = cgImage, result == .succeeded {
-                                let thumbnail = UIImage(cgImage: cgImage)
-                                self.logger.notice("Thumbnail generated successfully from first frame.")
-                                continuation.resume(returning: thumbnail)
-                            } else {
-                                self.logger.error("Failed to generate thumbnail from first frame: \(error?.localizedDescription ?? "Unknown error")")
-                                continuation.resume(returning: nil)
-                            }
+                        if let cgImage = cgImage, result == .succeeded {
+                            self?.logger.notice("Thumbnail generated successfully at time \(timePoint.seconds)s")
+                            continuation.resume(returning: cgImage)
+                        } else {
+                            let errorMsg = error?.localizedDescription ?? "Unknown error"
+                            self?.logger.warning("Failed to generate thumbnail at time \(timePoint.seconds)s: \(errorMsg)")
+                            continuation.resume(throwing: error ?? NSError(domain: "ThumbnailError", code: -1))
                         }
-                    } else {
-                        continuation.resume(returning: nil)
+                    }
+                    
+                    // Timeout after 10 seconds
+                    DispatchQueue.global().asyncAfter(deadline: .now() + 10) {
+                        guard !hasResumed else { return }
+                        hasResumed = true
+                        self?.logger.warning("Thumbnail generation timeout at time \(timePoint.seconds)s")
+                        continuation.resume(throwing: NSError(domain: "ThumbnailError", code: -2, userInfo: [NSLocalizedDescriptionKey: "Timeout"]))
                     }
                 }
+                
+                let thumbnail = UIImage(cgImage: cgImage)
+                logger.notice("Thumbnail created successfully from CGImage")
+                return thumbnail
+                
+            } catch {
+                logger.warning("Thumbnail generation failed at time \(timePoint.seconds)s: \(error.localizedDescription)")
+                continue
             }
-        } catch {
-            logger.error("Failed to generate thumbnail: \(error.localizedDescription)")
-            return nil
         }
+        
+        logger.error("All thumbnail generation attempts failed")
+        return nil
     }
     
     private func checkPlayerReadyStatus(for playerItem: AVPlayerItem) async -> Bool {
@@ -301,6 +449,14 @@ class AddMemoryMainViewModel: ObservableObject {
     }
     
     func getLastUploadedMemory() -> Memory? {
+        print("🔍 getLastUploadedMemory() called")
+        print("🔍 lastUploadedMemory state: \(String(describing: lastUploadedMemory))")
+        if let memory = lastUploadedMemory {
+            print("🔍 Returning memory with ID: \(memory.id.uuidString)")
+            print("🔍 Memory title: \(memory.title)")
+        } else {
+            print("❌ lastUploadedMemory is nil")
+        }
         return lastUploadedMemory
     }
 }

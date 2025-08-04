@@ -91,7 +91,7 @@ struct ProfileSettingView: View {
                 // nickname view
                 ZStack {
                     RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.Profile)
+                        .fill(Colors.ProfileNamebox)
                         .frame(width: 600, height: 90)
                     
                     // editing 중일때는 textfield로, 아닐때는 text로

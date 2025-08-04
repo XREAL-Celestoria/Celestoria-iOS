@@ -106,6 +106,10 @@
 		5D707E912E3FBF6A00CC1224 /* iOSUploadButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E902E3FBF6A00CC1224 /* iOSUploadButton.swift */; };
 		5D707E942E400B7900CC1224 /* View+Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E932E400B7900CC1224 /* View+Navigation.swift */; };
 		5D707E952E400B7900CC1224 /* View+Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E932E400B7900CC1224 /* View+Navigation.swift */; };
+		5D707E972E405FEE00CC1224 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E962E405FEE00CC1224 /* ImageCache.swift */; };
+		5D707E992E40600600CC1224 /* CachedAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E982E40600600CC1224 /* CachedAsyncImage.swift */; };
+		5D707E9C2E40D3EC00CC1224 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E962E405FEE00CC1224 /* ImageCache.swift */; };
+		5D707E9D2E40D3F200CC1224 /* CachedAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E982E40600600CC1224 /* CachedAsyncImage.swift */; };
 		A2198CA32D48812500B0AF65 /* ExploreUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2198CA22D48812500B0AF65 /* ExploreUseCase.swift */; };
 		A2198CA52D48814300B0AF65 /* ExploreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2198CA42D48814300B0AF65 /* ExploreViewModel.swift */; };
 		A2198CAA2D49063800B0AF65 /* Family.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A2198CA72D49063800B0AF65 /* Family.usdz */; };
@@ -277,6 +281,8 @@
 		5D707E8E2E3F3E3500CC1224 /* iOSAddMemoryComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSAddMemoryComponents.swift; sourceTree = "<group>"; };
 		5D707E902E3FBF6A00CC1224 /* iOSUploadButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSUploadButton.swift; sourceTree = "<group>"; };
 		5D707E932E400B7900CC1224 /* View+Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Navigation.swift"; sourceTree = "<group>"; };
+		5D707E962E405FEE00CC1224 /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
+		5D707E982E40600600CC1224 /* CachedAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedAsyncImage.swift; sourceTree = "<group>"; };
 		A2198CA22D48812500B0AF65 /* ExploreUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreUseCase.swift; sourceTree = "<group>"; };
 		A2198CA42D48814300B0AF65 /* ExploreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewModel.swift; sourceTree = "<group>"; };
 		A2198CA62D49063800B0AF65 /* Enter.usdc */ = {isa = PBXFileReference; lastKnownFileType = file; path = Enter.usdc; sourceTree = "<group>"; };
@@ -608,7 +614,9 @@
 		2F8800D52D38D76F00220F89 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				5D707E982E40600600CC1224 /* CachedAsyncImage.swift */,
 				2FE858022D437BF20055902B /* VisualEffectBlur.swift */,
+				5D707E962E405FEE00CC1224 /* ImageCache.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -919,6 +927,7 @@
 				A2A286C72E2C3173001D89B2 /* iOSMemoryDetailView.swift in Sources */,
 				A2A286702E2BFA17001D89B2 /* iOSLoginView.swift in Sources */,
 				A2A286B92E2C3129001D89B2 /* iOSBlockedUsersSettingView.swift in Sources */,
+				5D707E972E405FEE00CC1224 /* ImageCache.swift in Sources */,
 				A2A286C12E2C3157001D89B2 /* iOS3DMemoryStarNode.swift in Sources */,
 				5D707E6A2E3E9D6800CC1224 /* iOSConfirmationPopupView.swift in Sources */,
 				A2A286782E2C03E1001D89B2 /* DIContainer.swift in Sources */,
@@ -971,6 +980,7 @@
 				A2A286BF2E2C314B001D89B2 /* iOS3DGalaxyView.swift in Sources */,
 				5D6C1A142E3E1238004A0B17 /* iOSSplashView.swift in Sources */,
 				5D6C1A0E2E3E0691004A0B17 /* Fonts.swift in Sources */,
+				5D707E992E40600600CC1224 /* CachedAsyncImage.swift in Sources */,
 				A2A2869A2E2C0D44001D89B2 /* PredefinedProfileImage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1027,6 +1037,7 @@
 				A29437CD2D51135700982EAC /* NavigationBarWithMenu.swift in Sources */,
 				2F3671B32D3D6B660048D9AD /* Gradient+.swift in Sources */,
 				2F8800BC2D38CE6800220F89 /* ContentView.swift in Sources */,
+				5D707E9D2E40D3F200CC1224 /* CachedAsyncImage.swift in Sources */,
 				2F36721A2D3E19A30048D9AD /* GalaxyView.swift in Sources */,
 				2FBE4E672DE317C600796FAA /* ProfileSettingView.swift in Sources */,
 				2FB501E02D4655D9005FB0B6 /* ExploreUserCardItem.swift in Sources */,
@@ -1034,6 +1045,7 @@
 				2F3672172D3DAB120048D9AD /* SpaceEntity.swift in Sources */,
 				2F3672052D3DA2FE0048D9AD /* FetchMemoriesUseCase.swift in Sources */,
 				2F3671CD2D3D7A150048D9AD /* Logger.swift in Sources */,
+				5D707E9C2E40D3EC00CC1224 /* ImageCache.swift in Sources */,
 				2F3672342D3E652C0048D9AD /* ErrorOvelayView.swift in Sources */,
 				2F36722E2D3E35830048D9AD /* DeleteAccountUseCase.swift in Sources */,
 				2F510CE22D4134EE004171E8 /* AddMemoryContentView.swift in Sources */,

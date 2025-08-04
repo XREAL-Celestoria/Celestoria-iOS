@@ -14,36 +14,34 @@ import os
 struct iOS3DGalaxyView: View {
     @StateObject private var viewModel: iOS3DGalaxyViewModel
     
-    init(galaxyViewModel: GalaxyViewModel, appState: AppState, diContainer: DIContainer) {
+    init(galaxyViewModel: GalaxyViewModel, appState: AppState, diContainer: DIContainer, onMemorySelected: @escaping (Memory) -> Void) {
         _viewModel = StateObject(wrappedValue: iOS3DGalaxyViewModel(galaxyViewModel: galaxyViewModel, appState: appState, diContainer: diContainer))
+        
+        // 콜백 설정은 onAppear에서 처리 (StateObject 초기화 후)
+        self.onMemorySelectedCallback = onMemorySelected
     }
+    
+    private let onMemorySelectedCallback: (Memory) -> Void
     
     var body: some View {
         ZStack {
-            if viewModel.isContentReady {
-                GalaxySceneView(viewModel: viewModel)
-                    .edgesIgnoringSafeArea(.all)
-                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
-            } else {
-                // 로딩 중일 때는 빈 화면 (스플래시는 상위에서 처리)
+            // Scene은 항상 렌더링하되, opacity로 표시 여부 제어
+            GalaxySceneView(viewModel: viewModel)
+                .edgesIgnoringSafeArea(.all)
+                .opacity(viewModel.isContentReady ? 1.0 : 0.0)
+                .transition(.opacity.combined(with: .scale(scale: 0.95)))
+            
+            // 로딩 중일 때 검은 화면 오버레이
+            if !viewModel.isContentReady {
                 Color.black
                     .edgesIgnoringSafeArea(.all)
                     .transition(.opacity)
             }
         }
         .animation(.easeInOut(duration: 1.5), value: viewModel.isContentReady)
-        .fullScreenCover(isPresented: $viewModel.showMemoryDetail, onDismiss: {
-            viewModel.clearSelectedMemory()
-        }) {
-            if let memory = viewModel.selectedMemory {
-                iOSMemoryDetailView(memory: memory, diContainer: viewModel.diContainer)
-            } else {
-                Text("No memory selected")
-                    .foregroundColor(.white)
-                    .onAppear {
-                        Logger.error("ERROR: showMemoryDetail is true but selectedMemory is nil!")
-                    }
-            }
+        .onAppear {
+            // 콜백 설정
+            viewModel.onMemorySelected = onMemorySelectedCallback
         }
     }
 }
@@ -91,29 +89,29 @@ struct GalaxySceneView: UIViewRepresentable {
             let location = gesture.location(in: scnView)
             let hitResults = scnView.hitTest(location, options: [:])
             
-            Logger.debug("=== TAP DEBUG ===")
-            Logger.debug("Tap detected at: \(location)")
-            Logger.debug("Hit results count: \(hitResults.count)")
-            Logger.debug("Total memory nodes: \(viewModel.memoryNodes.count)")
+            print("🔍 === TAP DEBUG ===")
+            print("🔍 Tap detected at: \(location)")
+            print("🔍 Hit results count: \(hitResults.count)")
+            print("🔍 Total memory nodes: \(viewModel.memoryNodes.count)")
             
             if let result = hitResults.first {
-                Logger.debug("Hit node: \(result.node)")
-                Logger.debug("Hit node name: \(result.node.name ?? "no name")")
+                print("🔍 Hit node: \(result.node)")
+                print("🔍 Hit node name: \(result.node.name ?? "no name")")
                 
                 // Check if the hit node is a child of iOS3DMemoryStarNode
                 var checkNode: SCNNode? = result.node
                 var depth = 0
                 while checkNode != nil {
-                    Logger.debug("Checking node at depth \(depth): \(checkNode?.description ?? "nil")")
+                    print("🔍 Checking node at depth \(depth): \(checkNode?.description ?? "nil")")
                     if let memoryNode = checkNode as? iOS3DMemoryStarNode {
                         AudioServicesPlaySystemSound(1104)
-                        Logger.debug("Memory data before selection:")
-                        Logger.debug("  - ID: \(memoryNode.memory.id)")
-                        Logger.debug("  - Title: \(memoryNode.memory.title)")
-                        Logger.debug("  - Note: \(memoryNode.memory.note)")
-                        Logger.debug("  - Category: \(memoryNode.memory.category)")
-                        Logger.debug("  - VideoURL: \(memoryNode.memory.videoURL ?? "nil")")
-                        Logger.debug("  - ThumbnailURL: \(memoryNode.memory.thumbnailURL ?? "nil")")
+                        print("🔍 Memory data before selection:")
+                        print("🔍   - ID: \(memoryNode.memory.id)")
+                        print("🔍   - Title: \(memoryNode.memory.title)")
+                        print("🔍   - Note: \(memoryNode.memory.note)")
+                        print("🔍   - Category: \(memoryNode.memory.category)")
+                        print("🔍   - VideoURL: \(memoryNode.memory.videoURL ?? "nil")")
+                        print("🔍   - ThumbnailURL: \(memoryNode.memory.thumbnailURL ?? "nil")")
                         
                         viewModel.handleMemorySelection(memoryNode.memory)
                         return
@@ -121,11 +119,11 @@ struct GalaxySceneView: UIViewRepresentable {
                     checkNode = checkNode?.parent
                     depth += 1
                 }
-                Logger.debug("No memory node found in hierarchy after checking \(depth) levels")
+                print("🔍 No memory node found in hierarchy after checking \(depth) levels")
             } else {
-                Logger.debug("No hit results")
+                print("🔍 No hit results")
             }
-            Logger.debug("=== END TAP DEBUG ===")
+            print("🔍 === END TAP DEBUG ===")
         }
     }
 }
@@ -139,6 +137,8 @@ struct iOS3DGalaxyContainerView: View {
     @State private var activeScreen: MainActiveScreen?
     @State private var containerOpacity: Double = 0
     @State private var settingsNavigationPath: [SettingsScreen] = []
+    @State private var lastTargetUserId: UUID? // UserInfoModal 안정화를 위해
+    @State private var shouldShowUserModal: Bool = false // 모달 표시 제어
     
     enum MainActiveScreen {
         case explore, notification, addMemory, settings, memoryDetail(Memory)
@@ -157,14 +157,30 @@ struct iOS3DGalaxyContainerView: View {
         iOS3DGalaxyView(
             galaxyViewModel: galaxyViewModel,
             appState: appState,
-            diContainer: diContainer
+            diContainer: diContainer,
+            onMemorySelected: { memory in
+                print("🔍 iOS3DGalaxyContainerView - Memory selected from 3D view: \(memory.id.uuidString)")
+                activeScreen = .memoryDetail(memory)
+            }
         )
         .opacity(containerOpacity)
         .animation(.easeInOut(duration: 1.0), value: containerOpacity)
         .onAppear {
+            print("🔍 iOS3DGalaxyContainerView - onAppear")
             withAnimation(.easeInOut(duration: 1.0).delay(0.3)) {
                 containerOpacity = 1
             }
+            
+            // 초기 UserInfoModal 상태 설정 (안정화)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                if let targetUserId = appState.galaxyTargetUserId {
+                    shouldShowUserModal = true
+                    lastTargetUserId = targetUserId
+                }
+            }
+        }
+        .onDisappear {
+            print("🔍 iOS3DGalaxyContainerView - onDisappear")
         }
         .fullScreenCover(isPresented: Binding(
             get: { activeScreen != nil },
@@ -178,8 +194,20 @@ struct iOS3DGalaxyContainerView: View {
                 case .notification:
                     NotificationView()
                 case .addMemory:
-                    iOSAddMemoryContentView(diContainer: diContainer)
-                        .customNavigationView(title: "Add Memory", onBack: { activeScreen = nil })
+                    iOSAddMemoryContentView(
+                        diContainer: diContainer,
+                        onShowMemoryDetail: { memory in
+                            print("🔍 iOS3DGalaxyContainerView - Callback received from AddMemory")
+                            print("🔍 Memory ID: \(memory.id.uuidString)")
+                            print("🔍 Current activeScreen: \(String(describing: activeScreen))")
+                            print("🔍 Setting activeScreen to memoryDetail")
+                            
+                            DispatchQueue.main.async {
+                                activeScreen = .memoryDetail(memory)
+                                print("🔍 ActiveScreen successfully set to memoryDetail(\(memory.id.uuidString))")
+                            }
+                        }
+                    )
                 case .settings:
                     NavigationStack(path: $settingsNavigationPath) {
                         iOSSettingsView(
@@ -205,23 +233,34 @@ struct iOS3DGalaxyContainerView: View {
                     .navigationViewStyle(StackNavigationViewStyle())
                 case .memoryDetail(let memory):
                     iOSMemoryDetailView(memory: memory, diContainer: diContainer)
+                        .onAppear {
+                            print("🔍 iOSMemoryDetailView appeared for memory: \(memory.id.uuidString)")
+                        }
+                        .onDisappear {
+                            print("🔍 iOSMemoryDetailView disappeared for memory: \(memory.id.uuidString)")
+                        }
                 }
             }
         }
         .onChange(of: appState.refreshMainView) { _, shouldRefresh in
             if shouldRefresh {
+                print("ℹ️ INFO: Refresh Main View: \(shouldRefresh)")
                 galaxyViewModel.refreshGalaxy()
-                // 다른 옵저버들이 처리할 시간을 주기 위해 약간의 지연 추가
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    appState.refreshMainView = false
-                }
+                // 즉시 false로 설정하여 중복 리프레시 방지
+                appState.refreshMainView = false
             }
         }
-        .onReceive(appState.$selectedMemoryForDetail) { memory in
-            if let memory = memory {
-                activeScreen = .memoryDetail(memory)
+        .onChange(of: appState.galaxyTargetUserId) { _, newTargetUserId in
+            // UserInfoModal 표시 조건 최적화
+            if let newUserId = newTargetUserId, newUserId != lastTargetUserId {
+                shouldShowUserModal = true
+                lastTargetUserId = newUserId
+            } else if newTargetUserId == nil {
+                shouldShowUserModal = false
+                lastTargetUserId = nil
             }
         }
+
         .overlay(
             // 상단 버튼들 - 독립적인 ZStack
             VStack {
@@ -258,23 +297,27 @@ struct iOS3DGalaxyContainerView: View {
             }
         )
         .overlay(
-            // 하단 유저 모달 - 독립적인 ZStack
+            // 하단 유저 모달 - 최적화된 조건부 렌더링
             VStack {
                 Spacer()
                     .frame(minHeight: 52)
                 
-                if let targetUserId = appState.galaxyTargetUserId {
+                if let targetUserId = appState.galaxyTargetUserId,
+                   shouldShowUserModal {
                     UserInfoModalView(
                         userId: targetUserId,
                         isOwnGalaxy: targetUserId == appState.currentUserId,
                         onAddMemory: {
-                            appState.showAddMemoryView = true
+                            activeScreen = .addMemory
                         },
                         diContainer: diContainer
                     )
+                    .id("UserInfoModal-\(targetUserId.uuidString)")
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
         )
+        .animation(.easeInOut(duration: 0.3), value: shouldShowUserModal)
     }
 }
 

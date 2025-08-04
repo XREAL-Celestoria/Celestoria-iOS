@@ -17,10 +17,13 @@ struct iOSAddMemoryContentView: View {
     @State private var showFileSizePopup = false
     @State private var showUploadProgress = false
     @State private var showLoadingPopup = false
+    @State private var isUploadCompleted = false // 업로드 완료 상태
     let diContainer: DIContainer
+    let onShowMemoryDetail: (Memory) -> Void
     
-    init(diContainer: DIContainer) {
+    init(diContainer: DIContainer, onShowMemoryDetail: @escaping (Memory) -> Void) {
         self.diContainer = diContainer
+        self.onShowMemoryDetail = onShowMemoryDetail
         _viewModel = StateObject(wrappedValue: diContainer.makeAddMemoryMainViewModel())
     }
     
@@ -53,7 +56,11 @@ struct iOSAddMemoryContentView: View {
                             .padding(.top, 50)
                             .zIndex(1) // Done 뷰 위에 표시되도록 z-index 설정
                         }
+                        .background(
+                            Colors.BackgroundBlack
+                        )
                     }
+                    
                     
                     
                     if showDoneView {
@@ -61,6 +68,7 @@ struct iOSAddMemoryContentView: View {
                         iOSAddMemoryDoneView(
                             viewModel: viewModel,
                             diContainer: diContainer,
+                            onShowMemoryDetail: onShowMemoryDetail,
                             onComplete: {
                                 dismiss()
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -69,6 +77,7 @@ struct iOSAddMemoryContentView: View {
                                 }
                             }
                         )
+                        .ignoresSafeArea()
                     } else if viewModel.thumbnailImage == nil {
                         // 초기 상태: 비디오 선택 화면
                         VideoSelectionView(viewModel: viewModel)
@@ -81,8 +90,10 @@ struct iOSAddMemoryContentView: View {
                         )
                     }
                 }
-                
-                // Overlay for loading and popups
+            }
+        }
+        .overlay(
+            Group {
                 if showLoadingPopup {
                     loadingOverlay
                 }
@@ -95,7 +106,8 @@ struct iOSAddMemoryContentView: View {
                     fileSizePopup
                 }
             }
-        }
+        )
+        
         .animation(.easeInOut(duration: 0.3), value: viewModel.thumbnailImage != nil)
         .onChange(of: viewModel.selectedVideoItem) { _, newItem in
             viewModel.handleVideoSelection(item: newItem)
@@ -103,16 +115,31 @@ struct iOSAddMemoryContentView: View {
         .onChange(of: viewModel.lastUploadedMemory) { _, memory in
             print("🔍 MainView - lastUploadedMemory changed: \(memory?.id ?? UUID())")
             if memory != nil {
-                print("✅ MainView - Setting showDoneView to true")
-                showDoneView = true
-                print("🔍 MainView - showDoneView is now: \(showDoneView)")
+                print("✅ MainView - Upload completed, will show Done view after delay")
+                
+                // 업로드 완료 후 약간의 지연을 두고 Done 뷰 표시
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    showUploadProgress = false // 로딩 화면 숨김
+                    showDoneView = true
+                    print("🔍 MainView - showDoneView is now: \(showDoneView)")
+                }
             }
         }
         .onChange(of: viewModel.isThumbnailGenerating) { _, isGenerating in
             showLoadingPopup = isGenerating
         }
         .onChange(of: viewModel.isUploading) { _, isUploading in
-            showUploadProgress = isUploading
+            print("🔍 MainView - isUploading changed: \(isUploading)")
+            
+            // 업로드가 시작되면 Done 뷰를 숨김
+            if isUploading {
+                showDoneView = false
+                showUploadProgress = true
+            }
+            // 업로드가 끝나도 Done 뷰가 나타날 때까지 로딩 유지
+            // (lastUploadedMemory 변경 시에 직접 제어)
+            
+            print("🔍 MainView - showUploadProgress: \(showUploadProgress)")
         }
         .onReceive(viewModel.$popupData) { popupData in
             showFileSizePopup = popupData != nil
@@ -144,9 +171,26 @@ struct iOSAddMemoryContentView: View {
                 .font(.system(size: 20, weight: .semibold))
                 .foregroundColor(.white)
             
-            Text("Uploading \(viewModel.uploadingFileSize) video file...")
-                .font(.system(size: 16))
-                .foregroundColor(.white.opacity(0.8))
+            // 업로드 상태 메시지 표시
+            if !viewModel.uploadStatus.isEmpty {
+                VStack(spacing: 4) {
+                    Text(viewModel.uploadStatus)
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
+                    
+                    if !viewModel.uploadingFileSize.isEmpty {
+                        Text("File size: \(viewModel.uploadingFileSize)")
+                            .font(.system(size: 14))
+                            .foregroundColor(.white.opacity(0.7))
+                    }
+                }
+            } else {
+                Text("Uploading \(viewModel.uploadingFileSize) video file...")
+                    .font(.system(size: 16))
+                    .foregroundColor(.white.opacity(0.8))
+            }
             
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
@@ -288,7 +332,11 @@ struct MemoryEditView: View {
                         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                         
                         Task {
-                            guard let userId = appState.userId else { return }
+                            guard let userId = appState.userId else { 
+                                print("❌ UserId is nil, cannot upload memory")
+                                return 
+                            }
+                            print("🔍 Starting memory upload for user: \(userId)")
                             await viewModel.saveMemory(note: viewModel.note, title: viewModel.title, userId: userId)
                         }
                     },

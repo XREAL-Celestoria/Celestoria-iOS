@@ -35,23 +35,21 @@ struct AddMemoryMainView: View {
                     RightView()
                         .frame(width: geometry.size.width / 2, height: geometry.size.height)
                 }
-                .background(
-                    Group {
-                        if let thumbnail = viewModel.thumbnailImage {
-                            Image(uiImage: thumbnail)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(height: 700)
-                                .frame(maxWidth: .infinity)
-                                .clipped()
-                                .overlay(Colors.NebulaBlack.opacity(0.6))
-                        } else {
-                            Color.NebulaBlack
-                                .frame(height: 700)
-                                .frame(maxWidth: .infinity)
-                        }
+                .background {
+                    if let thumbnail = viewModel.thumbnailImage {
+                        Image(uiImage: thumbnail)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(height: 700)
+                            .frame(maxWidth: .infinity)
+                            .clipped()
+                            .overlay(Colors.NebulaBlack.opacity(0.6))
+                    } else {
+                        Colors.NebulaBlack
+                            .frame(height: 700)
+                            .frame(maxWidth: .infinity)
                     }
-                )
+                }
                 .overlay(
                     RoundedRectangle(cornerRadius: 0)
                         .stroke(Colors.NebulaWhite.opacity(0.1), lineWidth: 1)
