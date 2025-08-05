@@ -9,10 +9,8 @@ import SwiftUI
 
 // MARK: - Expanded Content
 struct UserInfoModalExpandedContent: View {
+    @ObservedObject var viewModel: UserInfoModalViewModel
     let profile: UserProfile
-    let memoryCount: Int
-    let commentCount: Int
-    let likeCount: Int
     
     var body: some View {
         VStack(spacing: 20) {
@@ -23,9 +21,7 @@ struct UserInfoModalExpandedContent: View {
                 
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
-                        Text(profile.name)
-                            .font(.system(size: 18, weight: .semibold))
-                            .foregroundColor(.white)
+                        AnimatedProfileName(profileName: profile.name)
                         
                         Image(systemName: "pencil")
                             .font(.system(size: 14))
@@ -39,7 +35,7 @@ struct UserInfoModalExpandedContent: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 16, height: 16)
-                            Text("\(memoryCount)")
+                            Text("\(viewModel.memoryCount)")
                                 .font(.system(size: 14))
                                 .foregroundColor(.white.opacity(0.8))
                         }
@@ -49,7 +45,7 @@ struct UserInfoModalExpandedContent: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 16, height: 16)
-                            Text("\(commentCount)")
+                            Text("\(viewModel.commentCount)")
                                 .font(.system(size: 14))
                                 .foregroundColor(.white.opacity(0.8))
                         }
@@ -59,7 +55,7 @@ struct UserInfoModalExpandedContent: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 16, height: 16)
-                            Text("\(likeCount)")
+                            Text("\(viewModel.likeCount)")
                                 .font(.system(size: 14))
                                 .foregroundColor(.white.opacity(0.8))
                         }
@@ -70,48 +66,11 @@ struct UserInfoModalExpandedContent: View {
             }
             
             // Sort section
-            HStack {
-                Text("Sort by")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.white.opacity(0.7))
-                
-                Text("Latest")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.white)
-                
-                Spacer()
-                
-                Image(systemName: "chevron.down")
-                    .font(.system(size: 14))
-                    .foregroundColor(.white.opacity(0.6))
-            }
-            .padding(.vertical, 12)
-            .padding(.horizontal, 16)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.white.opacity(0.1))
-            )
+            SortSectionView(viewModel: viewModel)
             
-            // Placeholder content to fill the screen
-            ForEach(0..<10, id: \.self) { index in
-                HStack {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.white.opacity(0.1))
-                        .frame(width: 80, height: 60)
-                    
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Memory \(index + 1)")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.white)
-                        
-                        Text("\(Int.random(in: 10...100)) views • \(Int.random(in: 1...7)) days ago")
-                            .font(.system(size: 14))
-                            .foregroundColor(.white.opacity(0.6))
-                    }
-                    
-                    Spacer()
-                }
-                .padding(.horizontal, 16)
+            // Memory list using viewModel data
+            ForEach(viewModel.mockMemories) { mockMemory in
+                MemoryListItemView(mockMemory: mockMemory)
             }
             
             Spacer(minLength: 100)

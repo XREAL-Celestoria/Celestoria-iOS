@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 import os
 
 @MainActor
@@ -186,75 +187,21 @@ class UserInfoModalViewModel: ObservableObject {
             }
         }
         
-        // appState.userProfile이 변경될 때마다 프로필 업데이트 체크
+        // appState.userProfile이 변경될 때마다 현재 사용자의 프로필 업데이트
         Task {
             for await newProfile in appState.$userProfile.values {
                 Logger.info("UserInfoModalViewModel: AppState userProfile changed - newProfile: \(newProfile?.name ?? "nil"), userId: \(newProfile?.userId ?? UUID()), current userId: \(userId)")
                 
-                await handleProfileUpdate(newProfile)
-            }
-        }
-        
-        // 정기적으로 프로필 업데이트 체크 (30초마다)
-        Task {
-            while !Task.isCancelled {
-                try? await Task.sleep(nanoseconds: 30_000_000_000) // 30초 대기
-                await checkForProfileUpdates()
-            }
-        }
-    }
-    
-    private func handleProfileUpdate(_ newProfile: UserProfile?) async {
-        // 현재 관찰 중인 사용자의 프로필이 변경된 경우
-        if let newProfile = newProfile, newProfile.userId == userId {
-            let hasChanged = userProfile?.name != newProfile.name || 
-                           userProfile?.profileImageURL != newProfile.profileImageURL ||
-                           userProfile?.profileKey != newProfile.profileKey
-            
-            if hasChanged {
-                userProfile = newProfile
-                Logger.info("UserInfoModalViewModel: Profile updated for current user - name: \(newProfile.name), imageURL: \(newProfile.profileImageURL ?? "nil")")
-                
-                // 프로필 이미지 미리 로딩
-                if let profileImageURL = newProfile.profileImageURL {
-                    Task {
-                        await ImageCache.shared.preloadProfileImage(urlString: profileImageURL)
-                    }
+                // 현재 사용자의 프로필이 변경된 경우에만 업데이트
+                if let newProfile = newProfile, newProfile.userId == userId {
+                    userProfile = newProfile
+                    Logger.info("UserInfoModalViewModel: Profile updated for current user - name: \(newProfile.name), imageURL: \(newProfile.profileImageURL ?? "nil")")
+                    // 프로필이 업데이트되면 통계도 다시 로드
+                    await loadUserStats()
+                } else {
+                    Logger.info("UserInfoModalViewModel: Profile not updated - userId mismatch or nil profile")
                 }
             }
-        } else if newProfile == nil && userId == appState.currentUserId {
-            // 현재 사용자가 로그아웃한 경우
-            userProfile = nil
-            Logger.info("UserInfoModalViewModel: Profile cleared for logged out user")
-        } else {
-            // 다른 사용자의 프로필 변경이거나 현재 관찰 중인 사용자가 아닌 경우
-            // 직접 프로필을 다시 로드
-            await reloadUserProfile()
-        }
-    }
-    
-    private func checkForProfileUpdates() async {
-        // 현재 프로필과 서버의 최신 프로필을 비교하여 업데이트가 필요한지 체크
-        do {
-            let latestProfile = try await diContainer.profileUseCase.fetchProfileByUserId(userId: userId)
-            
-            let hasChanged = userProfile?.name != latestProfile.name || 
-                           userProfile?.profileImageURL != latestProfile.profileImageURL ||
-                           userProfile?.profileKey != latestProfile.profileKey
-            
-            if hasChanged {
-                userProfile = latestProfile
-                Logger.info("UserInfoModalViewModel: Profile auto-updated - name: \(latestProfile.name), imageURL: \(latestProfile.profileImageURL ?? "nil")")
-                
-                // 프로필 이미지 미리 로딩
-                if let profileImageURL = latestProfile.profileImageURL {
-                    Task {
-                        await ImageCache.shared.preloadProfileImage(urlString: profileImageURL)
-                    }
-                }
-            }
-        } catch {
-            Logger.error("UserInfoModalViewModel: Failed to check profile updates: \(error.localizedDescription)")
         }
     }
     

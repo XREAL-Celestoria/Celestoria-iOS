@@ -12,6 +12,7 @@ import CoreMotion
 struct iOSMemoryDetailView: View {
     let memory: Memory
     let diContainer: DIContainer
+    @StateObject private var viewModel: iOSMemoryDetailViewModel
     @State private var showFullScreenVideo = false
     @State private var thumbnailLoaded = false
     @State private var isPlayingInline = false
@@ -20,21 +21,13 @@ struct iOSMemoryDetailView: View {
     @EnvironmentObject var appState: AppState
     @Environment(\.dismiss) private var dismiss
     
-    // State for data loading
-    @State private var userProfile: UserProfile?
-    @State private var likeCount: Int = 0
-    @State private var isLiked: Bool = false
-    @State private var isLikeLoading: Bool = false
-    @State private var isLoading: Bool = false
-    @State private var errorMessage: String?
-    
-    // Delete confirmation
-    @State private var showDeleteAlert: Bool = false
-    
-    var formattedDate: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy.MM.dd HH:mm"
-        return formatter.string(from: memory.createdAt)
+    init(memory: Memory, diContainer: DIContainer) {
+        self.memory = memory
+        self.diContainer = diContainer
+        _viewModel = StateObject(wrappedValue: iOSMemoryDetailViewModel(
+            memory: memory,
+            diContainer: diContainer
+        ))
     }
     
     var body: some View {
@@ -69,21 +62,21 @@ struct iOSMemoryDetailView: View {
                             // Like button
                             Button(action: {
                                 Task {
-                                    await toggleLike()
+                                    await viewModel.toggleLike()
                                 }
                             }) {
                                 HStack(spacing: 8) {
-                                    Image(isLiked ? "likeWhiteIcon" : "likeWhiteIcon")
+                                    Image(viewModel.isLiked ? "likeWhiteIcon" : "likeWhiteIcon")
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: 24, height: 24)
                                     
-                                    Text("\(likeCount)")
+                                    Text("\(viewModel.likeCount)")
                                         .fontStyle(Fonts.caption1)
                                         .foregroundStyle(Colors.NebulaWhite)
                                 }
                             }
-                            .disabled(isLikeLoading || memory.userId == appState.userId)
+                            .disabled(!viewModel.canLike)
                             
                             // Comment count (placeholder)
                             HStack(spacing: 8) {
@@ -100,9 +93,9 @@ struct iOSMemoryDetailView: View {
                             Spacer()
                             
                             // Delete button (only for owner)
-                            if memory.userId == appState.userId {
+                            if viewModel.isOwner {
                                 Button(action: {
-                                    showDeleteAlert = true
+                                    viewModel.showDeleteConfirmation()
                                 }) {
                                     Image("trashIcon")
                                         .resizable()
@@ -117,7 +110,7 @@ struct iOSMemoryDetailView: View {
                         // Memory Info
                         VStack(alignment: .leading) {
                             // Date
-                            Text(formattedDate)
+                            Text(viewModel.formattedDate)
                                 .fontStyle(Fonts.caption2)
                                 .foregroundColor(Colors.NebulaWhite)
                             
@@ -142,7 +135,7 @@ struct iOSMemoryDetailView: View {
                             }
                             
                             // Owner Info
-                            if let profile = userProfile {
+                            if let profile = viewModel.userProfile {
                                 HStack(spacing: 12) {
                                     Group {
                                         if let profileKey = profile.profileKey,
@@ -189,7 +182,7 @@ struct iOSMemoryDetailView: View {
             }
             
             // Loading indicator
-            if isLoading {
+            if viewModel.isLoading {
                 ProgressView("Loading...")
                     .frame(width: 120, height: 120)
                     .background(Color.black.opacity(0.7))
@@ -198,7 +191,7 @@ struct iOSMemoryDetailView: View {
             }
             
             // Error message
-            if let errorMessage = errorMessage {
+            if let errorMessage = viewModel.errorMessage {
                 Text(errorMessage)
                     .foregroundColor(.red)
                     .bold()
@@ -209,19 +202,25 @@ struct iOSMemoryDetailView: View {
                     .transition(.opacity)
                     .zIndex(1)
                     .onTapGesture {
-                        self.errorMessage = nil
+                        viewModel.clearError()
                 }
             }
         }
         .navigationBarHidden(true)
-        .task {
-            await loadData()
+        .onAppear {
+            viewModel.setup(appState: appState)
         }
-        .alert("Delete Memory Star", isPresented: $showDeleteAlert) {
+        .task {
+            await viewModel.loadData()
+        }
+        .alert("Delete Memory Star", isPresented: $viewModel.showDeleteAlert) {
             Button("Cancel", role: .cancel) { }
             Button("Delete", role: .destructive) {
-                            Task {
-                    await deleteMemory()
+                Task {
+                    let success = await viewModel.deleteMemory()
+                    if success {
+                        dismiss()
+                    }
                 }
             }
         } message: {
@@ -265,362 +264,5 @@ struct iOSMemoryDetailView: View {
                     }
             }
         }
-    }
-    
-    // MARK: - Data Loading
-    private func loadData() async {
-        isLoading = true
-        defer { isLoading = false }
-        
-        // Load all data in parallel
-        async let profileTask = loadUserProfile()
-        async let likeDataTask = loadLikeData()
-        
-        await profileTask
-        await likeDataTask
-    }
-    
-    private func loadUserProfile() async {
-        do {
-            let profile = try await diContainer.profileUseCase.fetchProfileByUserId(userId: memory.userId)
-            await MainActor.run {
-                self.userProfile = profile
-            }
-        } catch {
-            print("Error loading user profile: \(error)")
-            await MainActor.run {
-                self.errorMessage = "Failed to load user profile"
-            }
-        }
-    }
-    
-    private func loadLikeData() async {
-        guard let currentUserId = appState.userId else { return }
-        
-        do {
-            // Load like count and current user's like status
-            async let likeCountResult = diContainer.memoryRepository.getLikeCount(for: memory.id)
-            async let hasLikedResult = diContainer.memoryRepository.hasLiked(memoryId: memory.id, userId: currentUserId)
-            
-            let (count, liked) = try await (likeCountResult, hasLikedResult)
-            
-            await MainActor.run {
-                self.likeCount = count
-                self.isLiked = liked
-            }
-        } catch {
-            print("Error loading like data: \(error)")
-        }
-    }
-    
-    // MARK: - Like Toggle
-    private func toggleLike() async {
-        guard let currentUserId = appState.userId else { return }
-        guard !isLikeLoading else { return }
-        
-        // Check if user is trying to like their own memory
-        if memory.userId == currentUserId {
-            await MainActor.run {
-                self.errorMessage = "자신의 메모리에는 좋아요를 할 수 없습니다."
-            }
-            return
-        }
-        
-        await MainActor.run {
-            self.isLikeLoading = true
-        }
-        defer {
-            Task { @MainActor in
-                self.isLikeLoading = false
-            }
-        }
-        
-        do {
-            if isLiked {
-                // Unlike
-                try await diContainer.memoryRepository.deleteLike(memoryId: memory.id, userId: currentUserId)
-                await MainActor.run {
-                    self.likeCount = max(0, self.likeCount - 1)
-                    self.isLiked = false
-                }
-            } else {
-                // Like
-                try await diContainer.memoryRepository.createLike(memoryId: memory.id, userId: currentUserId)
-                await MainActor.run {
-                    self.likeCount += 1
-                    self.isLiked = true
-                }
-            }
-        } catch {
-            print("Error toggling like: \(error)")
-            await MainActor.run {
-                self.errorMessage = "좋아요 처리 중 오류가 발생했습니다."
-            }
-        }
-    }
-    
-    // MARK: - Delete Memory
-    private func deleteMemory() async {
-        isLoading = true
-        defer { isLoading = false }
-        
-        do {
-            // Extract paths from URLs for file deletion
-            let videoPath = extractPathFromURL(memory.videoURL)
-            let thumbnailPath = extractPathFromURL(memory.thumbnailURL)
-            
-            // Delete memory using UseCase
-            try await diContainer.deleteMemoryUseCase.execute(
-                memoryId: memory.id,
-                videoPath: videoPath,
-                thumbnailPath: thumbnailPath
-            )
-            
-            // Refresh main view and dismiss
-            await MainActor.run {
-                appState.refreshMainView = true
-                dismiss()
-            }
-            
-        } catch {
-            print("Error deleting memory: \(error)")
-            await MainActor.run {
-                self.errorMessage = "메모리 삭제 중 오류가 발생했습니다."
-            }
-        }
-    }
-    
-    // URL에서 경로 추출하는 헬퍼 메서드
-    private func extractPathFromURL(_ urlString: String?) -> String? {
-        guard let urlString = urlString,
-              let url = URL(string: urlString) else {
-            return nil
-        }
-        
-        let pathComponents = url.pathComponents
-        
-        // files.applevisionpro.xyz 형식: /celestoria/thumbnails/path/to/file
-        if urlString.contains("files.applevisionpro.xyz") {
-            if pathComponents.count >= 4 {
-                let bucketName = pathComponents[2] // thumbnails 또는 spatial_videos
-                let filePath = pathComponents.dropFirst(3).joined(separator: "/")
-                return "\(bucketName)/\(filePath)"
-            }
-        }
-        
-        // Supabase 형식: /storage/v1/object/sign/thumbnails/path/to/file
-        if let signIndex = pathComponents.firstIndex(of: "sign"),
-           signIndex + 1 < pathComponents.count {
-            let bucketName = pathComponents[signIndex + 1]
-            let filePath = pathComponents.dropFirst(signIndex + 2).joined(separator: "/")
-            return "\(bucketName)/\(filePath)"
-        }
-        
-        return nil
-    }
-}
-
-// MARK: - Gyroscope Video View (Simplified)
-struct GyroscopeVideoView: View {
-    let memory: Memory
-    @Binding var isPlayingInline: Bool
-    @Binding var showFullScreenVideo: Bool
-    @Binding var player: AVPlayer?
-    @ObservedObject var motionManager: MotionManager
-    @State private var thumbnailLoaded = false
-    @State private var imageLoadError = false
-    
-    var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                // Main content - exactly like visionOS structure
-                if isPlayingInline, let player = player {
-                    // Video player
-                    VideoPlayer(player: player)
-                        .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                        .onAppear {
-                            player.play()
-                        }
-                        .onDisappear {
-                            player.pause()
-                        }
-                } else if let thumbnailURL = URL(string: memory.thumbnailURL ?? "") {
-                    // AsyncImage - EXACTLY like visionOS (no complex overlay structure)
-                    AsyncImage(url: thumbnailURL) { phase in
-                        switch phase {
-                        case .empty:
-                            ProgressView()
-                                .frame(width: 44, height: 44)
-                                .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
-                                .background(Color.gray.opacity(0.3))
-                                .clipShape(RoundedRectangle(cornerRadius: 20))
-                                .onAppear { 
-                                    thumbnailLoaded = false 
-                                    print("🔄 DEBUG: Loading thumbnail: \(thumbnailURL)")
-                                }
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
-                                .clipShape(RoundedRectangle(cornerRadius: 20))
-                                .onAppear { 
-                                    thumbnailLoaded = true 
-                                    imageLoadError = false
-                                    print("✅ DEBUG: Thumbnail loaded successfully")
-                                }
-                        case .failure(let error):
-                            Color.gray
-                                .opacity(0.3)
-                                .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
-                                .clipShape(RoundedRectangle(cornerRadius: 20))
-                                .onAppear {
-                                    imageLoadError = true
-                                    print("❌ DEBUG: AsyncImage failed to load: \(error)")
-                                    print("❌ DEBUG: Failed URL: \(thumbnailURL)")
-                                }
-                        @unknown default:
-                            Color.gray.opacity(0.3)
-                                .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
-                                .clipShape(RoundedRectangle(cornerRadius: 20))
-                        }
-                    }
-            } else {
-                    // No thumbnail URL available
-                    Color.gray.opacity(0.3)
-                        .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                        .overlay(
-                            VStack {
-                                Image(systemName: "video")
-                                    .font(.system(size: 30))
-                                    .foregroundColor(.white.opacity(0.6))
-                                Text("No thumbnail available")
-                                    .font(.caption)
-                                    .foregroundColor(.white.opacity(0.6))
-                            }
-                        )
-                }
-                
-                // Play button overlay - positioned like visionOS
-                if (thumbnailLoaded || memory.videoURL != nil) && !isPlayingInline && !imageLoadError {
-                    Button(action: {
-                        if let videoURLString = memory.videoURL,
-                           let videoURL = URL(string: videoURLString) {
-                            player = AVPlayer(url: videoURL)
-                            isPlayingInline = true
-                        }
-                    }) {
-                        ZStack {
-                            Circle()
-                                .fill(Color.white.opacity(0.3))
-                                .frame(width: 60, height: 60)
-                                .overlay(
-                                    Circle()
-                                        .stroke(Color.white.opacity(0.5), lineWidth: 2)
-                                )
-                            
-                            Image(systemName: "play.fill")
-                                .font(.system(size: 24))
-                                .foregroundColor(.white)
-                                .offset(x: 3)
-                        }
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    .position(x: geometry.size.width / 2, y: geometry.size.width * 0.28)
-                }
-                
-                // Fullscreen button (bottom right)
-                if ((thumbnailLoaded || memory.videoURL != nil) && !imageLoadError) || isPlayingInline {
-                    Button(action: {
-                        showFullScreenVideo = true
-                    }) {
-                        Image(systemName: "arrow.up.left.and.arrow.down.right")
-                            .font(.system(size: 16))
-                            .foregroundColor(.white)
-                            .padding(8)
-                            .background(Color.black.opacity(0.5))
-                            .clipShape(RoundedRectangle(cornerRadius: 4))
-                    }
-                    .position(x: geometry.size.width * 0.85, y: geometry.size.width * 0.45)
-                }
-            }
-            // Apply gyroscope effect to the entire ZStack
-            .rotation3DEffect(
-                .degrees(motionManager.pitch * 20),
-                axis: (x: 1, y: 0, z: 0)
-            )
-            .rotation3DEffect(
-                .degrees(motionManager.roll * 20),
-                axis: (x: 0, y: 1, z: 0)
-            )
-            .shadow(color: Color.black.opacity(0.3), radius: 20, x: 0, y: 10)
-            .frame(width: geometry.size.width, height: geometry.size.width * 0.56)
-            .animation(.easeOut(duration: 0.2), value: motionManager.roll)
-            .animation(.easeOut(duration: 0.2), value: motionManager.pitch)
-        }
-    }
-}
-
-// MARK: - Motion Manager
-class MotionManager: ObservableObject {
-    private let motionManager = CMMotionManager()
-    @Published var pitch: Double = 0
-    @Published var roll: Double = 0
-    
-    // Baseline values for calibration
-    private var baselinePitch: Double = 0
-    private var baselineRoll: Double = 0
-    private var calibrationTimer: Timer?
-    private let calibrationSpeed: Double = 0.1 // Higher = faster calibration
-    private var isInitialized = false
-    
-    init() {
-        if motionManager.isDeviceMotionAvailable {
-            motionManager.deviceMotionUpdateInterval = 1.0 / 60.0
-            motionManager.startDeviceMotionUpdates(to: .main) { [weak self] motion, error in
-                guard let motion = motion else { return }
-                
-                // Initialize baseline on first update
-                if !(self?.isInitialized ?? false) {
-                    self?.baselinePitch = motion.attitude.pitch
-                    self?.baselineRoll = motion.attitude.roll
-                    self?.isInitialized = true
-                }
-                
-                self?.updateRotation(motion: motion)
-            }
-            
-            // Start calibration timer
-            calibrationTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-                self?.calibrateBaseline()
-            }
-        }
-    }
-    
-    private func updateRotation(motion: CMDeviceMotion) {
-        let rawPitch = motion.attitude.pitch
-        let rawRoll = motion.attitude.roll
-        
-        // Apply differential rotation (current - baseline)
-        pitch = rawPitch - baselinePitch
-        roll = rawRoll - baselineRoll
-    }
-    
-    private func calibrateBaseline() {
-        guard let motion = motionManager.deviceMotion else { return }
-        
-        let targetPitch = motion.attitude.pitch
-        let targetRoll = motion.attitude.roll
-        
-        // Slowly lerp baseline towards current orientation
-        baselinePitch += (targetPitch - baselinePitch) * calibrationSpeed
-        baselineRoll += (targetRoll - baselineRoll) * calibrationSpeed
-    }
-    
-    deinit {
-        calibrationTimer?.invalidate()
-        motionManager.stopDeviceMotionUpdates()
     }
 }

@@ -133,7 +133,9 @@ class SettingViewModel: ObservableObject {
 
         switch selectedImage {
         case .custom(let image):
-            imageDataToUpload = image.jpegData(compressionQuality: 0.8)
+            // 프로필 이미지 최적화 적용 (더 공격적 압축)
+            let optimizedImage = image.optimizedForProfile(size: 300)
+            imageDataToUpload = optimizedImage.optimizedJPEGData(compressionQuality: 0.5)
             profileKeyToUpload = nil 
         case .predefined(let predefined):
             imageDataToUpload = nil

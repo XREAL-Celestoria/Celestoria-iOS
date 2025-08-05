@@ -15,8 +15,6 @@ struct UserInfoModalView: View {
     let onAddMemory: () -> Void
     let diContainer: DIContainer
     @StateObject private var viewModel: UserInfoModalViewModel
-    @State private var isExpanded = false
-    @State private var dragOffset: CGFloat = 0
     
     init(userId: UUID, isOwnGalaxy: Bool, onAddMemory: @escaping () -> Void, diContainer: DIContainer) {
         self.userId = userId
@@ -34,50 +32,50 @@ struct UserInfoModalView: View {
                     profileContentView(profile: profile)
                 }
                 .modifier(ModalStyleModifier())
-                .padding(.horizontal, isExpanded ? 0 : 28)
-                .scaleEffect(isExpanded ? 1.0 : 1.0)
-                .frame(maxWidth: .infinity, maxHeight: isExpanded ? .infinity : 120)
-                .frame(height: isExpanded ? UIScreen.main.bounds.height - 52 : 120)
-                .padding(.bottom, isExpanded ? 0 : 30)
-                .offset(y: dragOffset)
+                .padding(.horizontal, viewModel.isExpanded ? 0 : 28)
+                .scaleEffect(viewModel.isExpanded ? 1.0 : 1.0)
+                .frame(maxWidth: .infinity, maxHeight: viewModel.isExpanded ? .infinity : 120)
+                .frame(height: viewModel.isExpanded ? UIScreen.main.bounds.height - 52 : 120)
+                .padding(.bottom, viewModel.isExpanded ? 0 : 30)
+                .offset(y: viewModel.dragOffset)
                 .gesture(
                     DragGesture()
                         .onChanged { value in
-                            if value.translation.height < 0 {
-                                dragOffset = value.translation.height * 0.3
-                            }
+                            viewModel.handleDragChanged(value)
                         }
                         .onEnded { value in
-                            if value.translation.height < -60 {
-                                withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-                                    isExpanded = true
-                                    dragOffset = 0
-                                }
-                            } else {
-                                withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-                                    dragOffset = 0
-                                }
-                            }
+                            viewModel.handleDragEnded(value)
                         }
                 )
                 .onTapGesture {
-                    if isExpanded {
-                        withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-                            isExpanded = false
-                        }
+                    if viewModel.isExpanded {
+                        viewModel.closeModal()
                     }
                 }
                 
                 // Add memory button
                 if isOwnGalaxy {
-                    AddMemoryButton(onAddMemory: onAddMemory, isExpanded: isExpanded)
+                    AddMemoryButton(onAddMemory: onAddMemory, isExpanded: viewModel.isExpanded)
                 }
                 
-            } else {
+            } else if viewModel.isLoading {
                 LoadingView()
                     .modifier(ModalStyleModifier())
                     .padding(.horizontal, 20)
+            } else {
+                // Empty state or error state
+                EmptyProfileView()
+                    .modifier(ModalStyleModifier())
+                    .padding(.horizontal, 20)
             }
+        }
+        .onAppear {
+            // 뷰가 나타날 때마다 프로필 데이터 새로고침
+            viewModel.refreshProfileData()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            // 앱이 foreground로 돌아올 때 프로필 데이터 새로고침
+            viewModel.refreshProfileData()
         }
     }
     
@@ -85,15 +83,13 @@ struct UserInfoModalView: View {
     private func profileContentView(profile: UserProfile) -> some View {
         VStack(spacing: 0) {
             // Close button for expanded state
-            if isExpanded {
+            if viewModel.isExpanded {
                 CloseButtonHeader {
-                    withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-                        isExpanded = false
-                    }
+                    viewModel.closeModal()
                 }
             }
             
-            if isExpanded {
+            if viewModel.isExpanded {
                 ScrollView {
                     VStack(spacing: 0) {
                         Spacer()
@@ -114,10 +110,8 @@ struct UserInfoModalView: View {
                             .frame(height: 20)
                         
                         UserInfoModalExpandedContent(
-                            profile: profile,
-                            memoryCount: viewModel.memoryCount,
-                            commentCount: viewModel.commentCount,
-                            likeCount: viewModel.likeCount
+                            viewModel: viewModel,
+                            profile: profile
                         )
                         
                         Spacer()

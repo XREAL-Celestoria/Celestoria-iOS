@@ -163,12 +163,13 @@ final class DIContainer: ObservableObject {
             self.appState.userId = currentUser.id
             self.appState.galaxyTargetUserId = currentUser.id  // 자동 로그인 시에도 Galaxy 대상 설정
             
+            // 약관 동의 상태 확인 (플랫폼 공통)
+            let hasAcceptedTerms = UserDefaults.standard.bool(forKey: "hasAcceptedTerms")
+            
             #if os(visionOS)
             self.appState.activeScreen = .main
             #else
             // iOS에서는 로그인된 사용자가 있으면 온보딩은 완료된 것으로 간주
-            let hasAcceptedTerms = UserDefaults.standard.bool(forKey: "hasAcceptedTerms")
-            
             // 로그인된 상태면 온보딩은 완료된 것으로 설정
             UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
             self.appState.hasCompletedOnboarding = true

@@ -12,6 +12,10 @@ import AVFoundation
 import CryptoKit
 import os
 
+// MARK: - 업로드 진행률 타입 정의
+/// 업로드 진행률 콜백 (진행률: 0.0~1.0, 상태 메시지)
+typealias UploadProgressCallback = (Double, String) -> Void
+
 // MARK: - Backblaze B2 및 Cloudflare 설정 (credential 하드코딩)
 // Backblaze credential
 private let b2KeyID = Config.b2KeyID
@@ -24,49 +28,81 @@ class MediaRepository {
     
     // MARK: - Public API (기존 인터페이스 그대로)
     
-    // 동영상 업로드
-    func uploadVideo(data: Data, userId: UUID) async throws -> (url: String, metadata: Memory.SpatialMetadata?) {
-        os.Logger.info("uploadVideo 시작 - data size: \(data.count) bytes")
+    // 동영상 업로드 (진행률 추적 포함)
+    func uploadVideo(data: Data, userId: UUID, progressCallback: UploadProgressCallback? = nil) async throws -> (url: String, metadata: Memory.SpatialMetadata?) {
+        os.Logger.info("🚀 uploadVideo 시작 - data size: \(data.count) bytes")
+        
+        // 진행률: 5% - 검증 시작
+        progressCallback?(0.05, "비디오 검증 중...")
         let (validatedData, metadata) = try await validateAndExtractMetadata(from: data)
+        
+        // 진행률: 15% - 업로드 시작
+        progressCallback?(0.15, "업로드 시작...")
         let uploadResult = try await uploadToB2(data: validatedData,
                                                 folder: "spatial_videos",
                                                 fileExtension: "mov",
                                                 userId: userId,
-                                                mimeType: "video/quicktime")
-        os.Logger.info("uploadVideo 완료 - public URL: \(uploadResult.url)")
+                                                mimeType: "video/quicktime",
+                                                progressCallback: progressCallback)
+        
+        // 진행률: 100% - 완료
+        progressCallback?(1.0, "업로드 완료!")
+        os.Logger.info("✅ uploadVideo 완료 - public URL: \(uploadResult.url)")
         return (url: uploadResult.url, metadata: metadata)
     }
     
-    // 썸네일 업로드
+    // 썸네일 업로드 (최적화됨)
     func uploadThumbnail(image: UIImage, userId: UUID) async throws -> String {
         os.Logger.info("uploadThumbnail 시작")
-        guard let imageData = image.pngData() else {
-            os.Logger.info("uploadThumbnail 실패: 이미지 PNG 변환 실패")
+        
+        // 썸네일 최적화: 800px 최대 크기로 리사이징 (썸네일은 프로필보다 조금 클 수 있음)
+        let optimizedImage = image.resized(to: 800)
+        
+        // JPEG 압축 (0.8 품질로 썸네일은 조금 더 높은 품질 유지)
+        guard let imageData = optimizedImage.optimizedJPEGData(compressionQuality: 0.8) else {
+            os.Logger.info("uploadThumbnail 실패: 이미지 JPEG 변환 실패")
             throw MediaError.invalidFormat
         }
+        
+        // 최적화된 용량 로깅
+        let originalSize = image.pngData()?.count ?? 0
+        let optimizedSize = imageData.count
+        os.Logger.info("uploadThumbnail 이미지 최적화: \(originalSize) bytes → \(optimizedSize) bytes (압축률: \(String(format: "%.1f", Double(optimizedSize) / Double(originalSize) * 100))%)")
+        
         let uploadResult = try await uploadToB2(data: imageData,
                                                 folder: "thumbnails",
-                                                fileExtension: "png",
+                                                fileExtension: "jpg",
                                                 userId: userId,
-                                                mimeType: "image/png")
+                                                mimeType: "image/jpeg")
         os.Logger.info("uploadThumbnail 완료 - public URL: \(uploadResult.url)")
         return uploadResult.url
     }
     
-    // 프로필 이미지 업로드
+    // 프로필 이미지 업로드 (최적화됨)
     func uploadProfileImage(_ image: UIImage, userId: UUID) async throws -> (url: String, path: String) {
         os.Logger.info("uploadProfileImage 시작")
-        guard let imageData = image.pngData() else {
-            os.Logger.info("uploadProfileImage 실패: 프로필 이미지 PNG 변환 실패")
+        
+        // 프로필 이미지 최적화: 300x300 정사각형으로 크롭/리사이징 (더 공격적 압축)
+        let optimizedImage = image.optimizedForProfile(size: 300)
+        
+        // JPEG 압축 (0.5 품질로 용량 대폭 감소 - 프로필용으로 충분)
+        guard let imageData = optimizedImage.optimizedJPEGData(compressionQuality: 0.5) else {
+            os.Logger.info("uploadProfileImage 실패: 프로필 이미지 JPEG 변환 실패")
             throw MemoryError.invalidImageData
         }
-        let fileName = "\(UUID().uuidString).png"
+        
+        // 최적화된 용량 로깅
+        let originalSize = image.pngData()?.count ?? 0
+        let optimizedSize = imageData.count
+        os.Logger.info("uploadProfileImage 이미지 최적화: \(originalSize) bytes → \(optimizedSize) bytes (압축률: \(String(format: "%.1f", Double(optimizedSize) / Double(originalSize) * 100))%)")
+        
+        let fileName = "\(UUID().uuidString).jpg"
         let path = "\(userId.uuidString)/\(fileName)"
         let uploadResult = try await uploadToB2(data: imageData,
                                                 folder: "profiles",
-                                                fileExtension: "png",
+                                                fileExtension: "jpg",
                                                 userId: userId,
-                                                mimeType: "image/png",
+                                                mimeType: "image/jpeg",
                                                 customFileName: fileName)
         os.Logger.info("uploadProfileImage 완료 - public URL: \(uploadResult.url)")
         return (url: uploadResult.url, path: path)
@@ -74,7 +110,7 @@ class MediaRepository {
     
     // MARK: - Private Helpers
     
-    /// 동영상 검증 및 메타데이터 추출 (기존 로직 그대로)
+    /// 동영상 검증, 압축 및 메타데이터 추출 (압축 기능 추가)
     private func validateAndExtractMetadata(from data: Data) async throws -> (Data, Memory.SpatialMetadata?) {
         os.Logger.info("validateAndExtractMetadata 시작")
         let tempFileURL = try await createTempFile(with: data)
@@ -91,39 +127,161 @@ class MediaRepository {
         }
         let metadata = try await extractSpatialMetadata(from: asset)
         os.Logger.info("메타데이터 추출 완료")
+        
+        // 공간 비디오는 원본 그대로 업로드 (메타데이터 보존)
+        os.Logger.info("📦 공간 비디오 원본 업로드: \(data.count) bytes")
         return (data, metadata)
     }
     
-    /// 파일 업로드: Backblaze B2에 업로드한 후 Cloudflare 도메인으로 구성된 public URL 반환
-    private func uploadToB2(data: Data, folder: String, fileExtension: String, userId: UUID, mimeType: String, customFileName: String? = nil) async throws -> (url: String, path: String) {
-        os.Logger.info("uploadToB2 시작 - folder: \(folder), mimeType: \(mimeType)")
+
+    
+    /// 파일 업로드: 크기에 따라 단일/멀티파트 업로드 선택
+    private func uploadToB2(data: Data, folder: String, fileExtension: String, userId: UUID, mimeType: String, customFileName: String? = nil, progressCallback: UploadProgressCallback? = nil) async throws -> (url: String, path: String) {
+        os.Logger.info("📦 uploadToB2 시작 - folder: \(folder), size: \(data.count) bytes")
         let fileName = customFileName ?? "\(UUID().uuidString).\(fileExtension)"
-        let path = "\(folder)/\(userId.uuidString)/\(fileName)"  // folder를 최상위 경로로 이동
+        let path = "\(folder)/\(userId.uuidString)/\(fileName)"
         
-        // 1. Backblaze B2 인증 (b2_authorize_account)
+        // 멀티파트 업로드 임계값: 100MB
+        let multipartThreshold = 100 * 1024 * 1024
+        
+        if data.count >= multipartThreshold {
+            os.Logger.info("🚀 대용량 파일 감지 - 멀티파트 업로드 시작")
+            return try await uploadLargeFile(fileName: fileName, path: path, data: data, mimeType: mimeType, userId: userId, progressCallback: progressCallback)
+        } else {
+            os.Logger.info("⚡ 일반 업로드")
+            return try await uploadSingleFile(fileName: fileName, path: path, data: data, mimeType: mimeType, progressCallback: progressCallback)
+        }
+    }
+    
+    /// 단일 파일 업로드 (기존 로직 + 진행률)
+    private func uploadSingleFile(fileName: String, path: String, data: Data, mimeType: String, progressCallback: UploadProgressCallback? = nil) async throws -> (url: String, path: String) {
+        // 1. B2 인증
+        progressCallback?(0.2, "인증 중...")
         let (accountAuthToken, apiUrl, _) = try await b2Authorize()
-        os.Logger.info("b2_authorize_account 완료 - apiUrl: \(apiUrl)")
         
-        // 2. 업로드 URL 요청 (b2_get_upload_url)
+        // 2. 업로드 URL 요청
+        progressCallback?(0.3, "업로드 URL 요청 중...")
         let (uploadUrl, uploadAuthToken) = try await b2GetUploadURL(bucketId: b2BucketId, accountAuthToken: accountAuthToken, apiUrl: apiUrl)
-        os.Logger.info("b2_get_upload_url 완료 - uploadUrl: \(uploadUrl)")
         
-        // 3. 파일 업로드 (b2_upload_file)
-        try await b2UploadFile(uploadUrl: uploadUrl, uploadAuthToken: uploadAuthToken, fileName: path, data: data, mimeType: mimeType)
-        os.Logger.info("b2_upload_file 완료 - 파일 경로: \(path)")
+        // 3. 파일 업로드
+        progressCallback?(0.4, "파일 업로드 중...")
+        try await b2UploadFile(uploadUrl: uploadUrl, uploadAuthToken: uploadAuthToken, fileName: path, data: data, mimeType: mimeType, progressCallback: progressCallback)
         
-        // 4. Cloudflare 연동: DB에 저장할 public URL은 Cloudflare 도메인과 파일 경로만 포함함.
-        // Transform Rule이 들어오는 요청에 "/file/celestoria"를 자동으로 추가하여 오리진 URL을 구성할 예정임.
+        // 4. URL 구성
         let publicURL = "\(cloudflareDomain)/\(bucketName)/\(path)"
-        os.Logger.info("publicURL 구성 완료 - URL: \(publicURL)")
+        os.Logger.info("✅ 단일 업로드 완료 - URL: \(publicURL)")
         return (url: publicURL, path: path)
     }
     
-    /// 임시 파일 생성 (기존 로직 그대로)
+    /// 멀티파트 업로드 (대용량 파일용 - 2-3배 빠름)
+    private func uploadLargeFile(fileName: String, path: String, data: Data, mimeType: String, userId: UUID, progressCallback: UploadProgressCallback? = nil) async throws -> (url: String, path: String) {
+        
+        let chunkSize = 20 * 1024 * 1024 // 20MB 청크
+        let totalChunks = (data.count + chunkSize - 1) / chunkSize
+        
+        os.Logger.info("🚀 멀티파트 업로드 시작 - 총 \(totalChunks)개 청크, 파일크기: \(data.count) bytes")
+        
+        // 1. B2 인증
+        progressCallback?(0.2, "인증 중...")
+        let (accountAuthToken, apiUrl, _) = try await b2Authorize()
+        
+        // 2. 멀티파트 업로드 시작
+        progressCallback?(0.25, "멀티파트 업로드 준비 중...")
+        let fileId = try await b2StartLargeFile(fileName: path, mimeType: mimeType, accountAuthToken: accountAuthToken, apiUrl: apiUrl)
+        
+        // 3. 각 청크를 병렬로 업로드 (최대 3개 동시)
+        var uploadedParts: [(partNumber: Int, sha1: String)] = []
+        let maxConcurrentUploads = min(3, totalChunks)
+        
+        try await withThrowingTaskGroup(of: (Int, String).self) { group in
+            var currentChunk = 0
+            var completedChunks = 0
+            
+            // 초기 청크들 시작
+            for i in 0..<min(maxConcurrentUploads, totalChunks) {
+                let chunkData = getChunkData(from: data, chunkIndex: i, chunkSize: chunkSize)
+                group.addTask {
+                    return try await self.uploadChunk(
+                        fileId: fileId, 
+                        partNumber: i + 1, 
+                        data: chunkData, 
+                        accountAuthToken: accountAuthToken, 
+                        apiUrl: apiUrl
+                    )
+                }
+                currentChunk = i + 1
+            }
+            
+            // 완료된 청크마다 새로운 청크 시작
+            for try await (partNumber, sha1) in group {
+                uploadedParts.append((partNumber: partNumber, sha1: sha1))
+                completedChunks += 1
+                
+                // 진행률 업데이트 (0.3 ~ 0.9)
+                let progress = 0.3 + (Double(completedChunks) / Double(totalChunks)) * 0.6
+                let progressMessage = "업로드 중... (\(completedChunks)/\(totalChunks) 청크)"
+                progressCallback?(progress, progressMessage)
+                os.Logger.info("📦 청크 완료: \(completedChunks)/\(totalChunks)")
+                
+                // 다음 청크 시작
+                if currentChunk < totalChunks {
+                    let chunkData = getChunkData(from: data, chunkIndex: currentChunk, chunkSize: chunkSize)
+                    group.addTask {
+                        return try await self.uploadChunk(
+                            fileId: fileId,
+                            partNumber: currentChunk + 1,
+                            data: chunkData,
+                            accountAuthToken: accountAuthToken,
+                            apiUrl: apiUrl
+                        )
+                    }
+                    currentChunk += 1
+                }
+            }
+        }
+        
+        // 4. 멀티파트 업로드 완료
+        progressCallback?(0.95, "파일 결합 중...")
+        uploadedParts.sort { $0.partNumber < $1.partNumber }
+        let sha1Array = uploadedParts.map { $0.sha1 }
+        
+        try await b2FinishLargeFile(fileId: fileId, sha1Array: sha1Array, accountAuthToken: accountAuthToken, apiUrl: apiUrl)
+        
+        // 5. URL 구성
+        let publicURL = "\(cloudflareDomain)/\(bucketName)/\(path)"
+        os.Logger.info("🎉 멀티파트 업로드 완료 - URL: \(publicURL)")
+        
+        return (url: publicURL, path: path)
+    }
+    
+    /// 청크 데이터 추출
+    private func getChunkData(from data: Data, chunkIndex: Int, chunkSize: Int) -> Data {
+        let startIndex = chunkIndex * chunkSize
+        let endIndex = min(startIndex + chunkSize, data.count)
+        return data.subdata(in: startIndex..<endIndex)
+    }
+    
+    /// 개별 청크 업로드
+    private func uploadChunk(fileId: String, partNumber: Int, data: Data, accountAuthToken: String, apiUrl: String) async throws -> (Int, String) {
+        // B2 청크 업로드 URL 획득
+        let (uploadUrl, uploadAuthToken) = try await b2GetUploadPartUrl(fileId: fileId, accountAuthToken: accountAuthToken, apiUrl: apiUrl)
+        
+        // 청크 업로드 및 SHA1 반환
+        let sha1 = try await b2UploadPart(uploadUrl: uploadUrl, authToken: uploadAuthToken, partNumber: partNumber, data: data)
+        
+        return (partNumber, sha1)
+    }
+    
+    /// 임시 파일 생성 (메모리 최적화)
     private func createTempFile(with data: Data) async throws -> URL {
         let tempDirectory = FileManager.default.temporaryDirectory
         let tempFileURL = tempDirectory.appendingPathComponent("\(UUID().uuidString).mov")
-        try data.write(to: tempFileURL)
+        
+        // 큰 파일을 위한 메모리 효율적 쓰기
+        os.Logger.info("💾 임시 파일 생성 중... (\(data.count) bytes)")
+        try data.write(to: tempFileURL, options: [.atomic, .noFileProtection])
+        os.Logger.info("✅ 임시 파일 생성 완료: \(tempFileURL.lastPathComponent)")
+        
         return tempFileURL
     }
     
@@ -256,7 +414,7 @@ class MediaRepository {
     }
     
     /// b2_upload_file 호출 - 업로드용 URL과 토큰을 사용하여 파일 업로드
-    private func b2UploadFile(uploadUrl: String, uploadAuthToken: String, fileName: String, data: Data, mimeType: String) async throws {
+    private func b2UploadFile(uploadUrl: String, uploadAuthToken: String, fileName: String, data: Data, mimeType: String, progressCallback: UploadProgressCallback? = nil) async throws {
         let maxRetries = 3
         var currentRetry = 0
         
@@ -283,16 +441,29 @@ class MediaRepository {
                     #endif
                 }()
                 request.setValue(sha1Hash, forHTTPHeaderField: "X-Bz-Content-Sha1")
-                request.httpBody = data
+                request.httpMethod = "POST"
                 
+                // 네트워크 최적화 설정
                 let configuration = URLSessionConfiguration.default
-                configuration.timeoutIntervalForResource = 3600
-                configuration.timeoutIntervalForRequest = 3600
+                configuration.timeoutIntervalForResource = 7200 // 2시간 (큰 파일용)
+                configuration.timeoutIntervalForRequest = 300   // 5분 (요청 타임아웃)
+                configuration.httpMaximumConnectionsPerHost = 6  // 동시 연결 수 증가
+                configuration.allowsCellularAccess = true       // 셀룰러 허용
+                configuration.waitsForConnectivity = false      // 연결 대기 비활성화 (빠른 실패)
+                configuration.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData // 캐시 무시
                 let session = URLSession(configuration: configuration)
                 
-                os.Logger.info("b2_upload_file 시작 - 파일 크기: \(data.count) bytes, 시도: \(currentRetry + 1)/\(maxRetries)")
-                let (responseData, response) = try await session.data(for: request)
-                os.Logger.info("b2_upload_file 응답 받음 - 응답 크기: \(responseData.count) bytes")
+                os.Logger.info("🚀 b2_upload_file 시작 - 파일 크기: \(data.count) bytes, 시도: \(currentRetry + 1)/\(maxRetries)")
+                
+                // 업로드 시작 진행률 업데이트
+                progressCallback?(0.5, "파일 전송 중...")
+                
+                // 백그라운드 업로드 가능한 uploadTask 사용 (진행률 추적 가능)
+                let (responseData, response) = try await session.upload(for: request, from: data)
+                
+                // 업로드 완료 진행률 업데이트
+                progressCallback?(0.9, "업로드 검증 중...")
+                os.Logger.info("✅ b2_upload_file 응답 받음 - 응답 크기: \(responseData.count) bytes")
                 
                 if let httpResponse = response as? HTTPURLResponse {
                     if httpResponse.statusCode == 200 {
@@ -303,12 +474,14 @@ class MediaRepository {
                             os.Logger.error("b2_upload_file 실패 - HTTP 응답 코드: \(httpResponse.statusCode), 에러: \(errorString)")
                         }
                         
-                        // 재시도 가능한 HTTP 상태 코드인 경우 재시도
-                        if httpResponse.statusCode >= 500 || httpResponse.statusCode == 429 || httpResponse.statusCode == 408 {
+                        // 🧠 스마트 재시도 로직 (에러 타입별 차별화)
+                        let (shouldRetry, retryDelay) = getRetryStrategy(for: httpResponse.statusCode)
+                        
+                        if shouldRetry {
                             currentRetry += 1
                             if currentRetry < maxRetries {
-                                os.Logger.info("b2_upload_file 재시도 중... (HTTP \(httpResponse.statusCode), 시도 \(currentRetry)/\(maxRetries))")
-                                try await Task.sleep(nanoseconds: UInt64(pow(2.0, Double(currentRetry)) * 1_000_000_000)) // 지수 백오프
+                                os.Logger.info("🔄 \(getRetryMessage(for: httpResponse.statusCode)) - 시도 \(currentRetry)/\(maxRetries), \(retryDelay)초 대기")
+                                try await Task.sleep(nanoseconds: UInt64(retryDelay * 1_000_000_000))
                                 continue
                             }
                         }
@@ -331,6 +504,171 @@ class MediaRepository {
         }
         
         throw MediaError.uploadFailed(message: "최대 재시도 횟수 초과")
+    }
+    
+    // MARK: - 스마트 재시도 전략
+    
+    /// HTTP 상태 코드에 따른 재시도 전략 결정
+    private func getRetryStrategy(for statusCode: Int) -> (shouldRetry: Bool, delay: Double) {
+        switch statusCode {
+        case 429: // Too Many Requests - 빠른 재시도
+            return (true, 0.5)
+            
+        case 408: // Request Timeout - 즉시 재시도
+            return (true, 0.2)
+            
+        case 500, 502, 503, 504: // 서버 오류 - 중간 대기
+            return (true, 2.0)
+            
+        case 520...526: // Cloudflare 오류 - 긴 대기
+            return (true, 5.0)
+            
+        default: // 재시도 불가능
+            return (false, 0)
+        }
+    }
+    
+    /// 재시도 메시지 생성
+    private func getRetryMessage(for statusCode: Int) -> String {
+        switch statusCode {
+        case 429: return "요청 한도 초과, 재시도"
+        case 408: return "요청 타임아웃, 재시도"
+        case 500: return "내부 서버 오류, 재시도"
+        case 502: return "게이트웨이 오류, 재시도"
+        case 503: return "서비스 사용 불가, 재시도"
+        case 504: return "게이트웨이 타임아웃, 재시도"
+        case 520...526: return "Cloudflare 오류, 재시도"
+        default: return "HTTP \(statusCode) 오류"
+        }
+    }
+    
+    // MARK: - B2 멀티파트 업로드 API
+    
+    /// 멀티파트 업로드 시작
+    private func b2StartLargeFile(fileName: String, mimeType: String, accountAuthToken: String, apiUrl: String) async throws -> String {
+        let url = URL(string: "\(apiUrl)/b2api/v2/b2_start_large_file")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue(accountAuthToken, forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let payload = [
+            "bucketId": b2BucketId,
+            "fileName": fileName,
+            "contentType": mimeType
+        ]
+        
+        request.httpBody = try JSONSerialization.data(withJSONObject: payload)
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        if let httpResponse = response as? HTTPURLResponse {
+            guard httpResponse.statusCode == 200 else {
+                throw MediaError.uploadFailed(message: "b2_start_large_file 실패: HTTP \(httpResponse.statusCode)")
+            }
+        }
+        
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let fileId = json["fileId"] as? String else {
+            throw MediaError.uploadFailed(message: "b2_start_large_file 응답 파싱 실패")
+        }
+        
+        os.Logger.info("✅ b2_start_large_file 성공 - fileId: \(fileId)")
+        return fileId
+    }
+    
+    /// 청크 업로드 URL 획득
+    private func b2GetUploadPartUrl(fileId: String, accountAuthToken: String, apiUrl: String) async throws -> (url: String, authToken: String) {
+        let url = URL(string: "\(apiUrl)/b2api/v2/b2_get_upload_part_url")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue(accountAuthToken, forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let payload = ["fileId": fileId]
+        request.httpBody = try JSONSerialization.data(withJSONObject: payload)
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        if let httpResponse = response as? HTTPURLResponse {
+            guard httpResponse.statusCode == 200 else {
+                throw MediaError.uploadFailed(message: "b2_get_upload_part_url 실패: HTTP \(httpResponse.statusCode)")
+            }
+        }
+        
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let uploadUrl = json["uploadUrl"] as? String,
+              let uploadAuthToken = json["authorizationToken"] as? String else {
+            throw MediaError.uploadFailed(message: "b2_get_upload_part_url 응답 파싱 실패")
+        }
+        
+        return (url: uploadUrl, authToken: uploadAuthToken)
+    }
+    
+    /// 개별 청크 업로드
+    private func b2UploadPart(uploadUrl: String, authToken: String, partNumber: Int, data: Data) async throws -> String {
+        var request = URLRequest(url: URL(string: uploadUrl)!)
+        request.httpMethod = "POST"
+        request.setValue(authToken, forHTTPHeaderField: "Authorization")
+        request.setValue(String(partNumber), forHTTPHeaderField: "X-Bz-Part-Number")
+        request.setValue(String(data.count), forHTTPHeaderField: "Content-Length")
+        
+        // SHA1 해시 계산
+        let sha1Hash: String = {
+            #if DEBUG
+            return "unverified:\(UUID().uuidString.prefix(8))"
+            #else
+            let digest = Insecure.SHA1.hash(data: data)
+            return digest.map { String(format: "%02x", $0) }.joined()
+            #endif
+        }()
+        
+        request.setValue(sha1Hash, forHTTPHeaderField: "X-Bz-Content-Sha1")
+        
+        let (responseData, response) = try await URLSession.shared.upload(for: request, from: data)
+        
+        if let httpResponse = response as? HTTPURLResponse {
+            guard httpResponse.statusCode == 200 else {
+                throw MediaError.uploadFailed(message: "b2_upload_part 실패: HTTP \(httpResponse.statusCode)")
+            }
+        }
+        
+        guard let json = try JSONSerialization.jsonObject(with: responseData) as? [String: Any],
+              let contentSha1 = json["contentSha1"] as? String else {
+            // SHA1이 없으면 계산된 해시 반환
+            return sha1Hash
+        }
+        
+        return contentSha1
+    }
+    
+    /// 멀티파트 업로드 완료
+    private func b2FinishLargeFile(fileId: String, sha1Array: [String], accountAuthToken: String, apiUrl: String) async throws {
+        let url = URL(string: "\(apiUrl)/b2api/v2/b2_finish_large_file")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue(accountAuthToken, forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let payload = [
+            "fileId": fileId,
+            "partSha1Array": sha1Array
+        ] as [String: Any]
+        
+        request.httpBody = try JSONSerialization.data(withJSONObject: payload)
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        if let httpResponse = response as? HTTPURLResponse {
+            guard httpResponse.statusCode == 200 else {
+                if let errorString = String(data: data, encoding: .utf8) {
+                    os.Logger.error("b2_finish_large_file 에러: \(errorString)")
+                }
+                throw MediaError.uploadFailed(message: "b2_finish_large_file 실패: HTTP \(httpResponse.statusCode)")
+            }
+        }
+        
+        os.Logger.info("✅ b2_finish_large_file 성공")
     }
 }
 

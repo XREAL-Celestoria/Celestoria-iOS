@@ -16,6 +16,10 @@ class ImageCache {
     private let fileManager = FileManager.default
     private let cacheDirectory: URL
     
+    // 진행 중인 요청 추적 (동시 요청 방지)
+    private var ongoingRequests: [String: Task<UIImage?, Never>] = [:]
+    private let requestsLock = NSLock()
+    
     private init() {
         // 캐시 디렉토리 설정
         let paths = fileManager.urls(for: .cachesDirectory, in: .userDomainMask)
@@ -53,9 +57,34 @@ class ImageCache {
             return diskCachedImage
         }
         
-        Logger.info("ImageCache: Not found in disk cache, loading from network - \(urlString)")
+        // 3. 진행 중인 요청 확인 (동시 요청 방지)
+        requestsLock.lock()
+        if let ongoingTask = ongoingRequests[urlString] {
+            requestsLock.unlock()
+            Logger.info("ImageCache: Request already in progress, waiting - \(urlString)")
+            return await ongoingTask.value
+        }
         
-        // 3. 네트워크에서 로딩
+        // 4. 새로운 네트워크 요청 시작
+        let task = Task<UIImage?, Never> {
+            await self.loadImageFromNetwork(urlString: urlString, timeout: timeout)
+        }
+        ongoingRequests[urlString] = task
+        requestsLock.unlock()
+        
+        Logger.info("ImageCache: Starting new network request - \(urlString)")
+        let result = await task.value
+        
+        // 완료된 요청 제거
+        requestsLock.lock()
+        ongoingRequests.removeValue(forKey: urlString)
+        requestsLock.unlock()
+        
+        return result
+    }
+    
+    /// 네트워크에서 이미지 로딩 (내부 메서드)
+    private func loadImageFromNetwork(urlString: String, timeout: TimeInterval) async -> UIImage? {
         guard let url = URL(string: urlString) else {
             Logger.error("ImageCache: Invalid URL - \(urlString)")
             return nil
@@ -106,6 +135,7 @@ class ImageCache {
             }
             
             // 메모리와 디스크에 캐시
+            let key = NSString(string: urlString)
             cache.setObject(image, forKey: key)
             saveToDisk(image: image, key: key)
             
