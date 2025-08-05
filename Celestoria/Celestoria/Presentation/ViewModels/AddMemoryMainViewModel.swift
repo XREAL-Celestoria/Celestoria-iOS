@@ -320,7 +320,7 @@ class AddMemoryMainViewModel: ObservableObject {
                     
                     // 파일 크기 초과 시에도 현재 처리 중인 아이템 초기화
                     self.currentProcessingItem = nil
-                    self.setThumbnailGeneratingFalseWithDelay()
+                    self.setThumbnailGeneratingComplete()
                 }
                 return
             }
@@ -352,7 +352,7 @@ class AddMemoryMainViewModel: ObservableObject {
                 
                 // 처리 완료 후 현재 처리 중인 아이템 초기화
                 self.currentProcessingItem = nil
-                self.setThumbnailGeneratingFalseWithDelay()
+                self.setThumbnailGeneratingComplete()
             }
         } catch {
             await MainActor.run { [weak self] in
@@ -363,13 +363,14 @@ class AddMemoryMainViewModel: ObservableObject {
                 
                 // 에러 발생 시에도 현재 처리 중인 아이템 초기화
                 self.currentProcessingItem = nil
-                self.setThumbnailGeneratingFalseWithDelay()
+                self.setThumbnailGeneratingComplete()
             }
         }
     }
 
-    private func setThumbnailGeneratingFalseWithDelay() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+    private func setThumbnailGeneratingComplete() {
+        // 썸네일 생성 완료 즉시 로딩뷰 숨김
+        DispatchQueue.main.async { [weak self] in
             self?.isThumbnailGenerating = false
         }
     }

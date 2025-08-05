@@ -183,11 +183,7 @@ struct iOSMemoryDetailView: View {
             
             // Loading indicator
             if viewModel.isLoading {
-                ProgressView("Loading...")
-                    .frame(width: 120, height: 120)
-                    .background(Color.black.opacity(0.7))
-                    .cornerRadius(12)
-                    .foregroundColor(.white)
+                iOSUnifiedLoadingView.memoryDetail()
             }
             
             // Error message

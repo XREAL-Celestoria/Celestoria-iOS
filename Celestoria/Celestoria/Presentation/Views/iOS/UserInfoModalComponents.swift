@@ -173,15 +173,7 @@ struct StatItem: View {
 // MARK: - Loading View
 struct LoadingView: View {
     var body: some View {
-        HStack {
-            Spacer()
-            ProgressView()
-                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-            Spacer()
-        }
-        .padding(16)
-        .frame(maxWidth: .infinity)
-        .frame(height: 100)
+        iOSUnifiedLoadingView.fullscreen()
     }
 }
 
