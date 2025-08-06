@@ -24,28 +24,21 @@ class UserInfoModalViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var sortOption: SortOption = .latest
     
-    // MARK: - Mock Data for Expanded Content
-    @Published var mockMemories: [MockMemory] = []
+    // MARK: - Real Data for Expanded Content
+    @Published var memories: [Memory] = []
     
     // MARK: - Dependencies
     private let diContainer: DIContainer
     private let userId: UUID
     private let appState: AppState
+    private let memoryRepository: MemoryRepository
     
     // MARK: - Enums
     enum SortOption: String, CaseIterable {
         case latest = "Latest"
         case oldest = "Oldest"
-        case popular = "Popular"
         
         var displayName: String { rawValue }
-    }
-    
-    struct MockMemory: Identifiable {
-        let id = UUID()
-        let title: String
-        let views: Int
-        let daysAgo: Int
     }
     
     // MARK: - Initialization
@@ -53,10 +46,10 @@ class UserInfoModalViewModel: ObservableObject {
         self.diContainer = diContainer
         self.userId = userId
         self.appState = diContainer.appState
+        self.memoryRepository = diContainer.memoryRepository
         
         Logger.info("UserInfoModalViewModel: Initialized for userId: \(userId)")
         
-        generateMockMemories()
         loadUserData()
         setupRefreshObserver()
     }
@@ -67,6 +60,7 @@ class UserInfoModalViewModel: ObservableObject {
         Task {
             await loadUserProfile()
             await loadUserStats()
+            await loadMemories()
             isLoading = false
         }
     }
@@ -82,35 +76,65 @@ class UserInfoModalViewModel: ObservableObject {
     }
     
     func handleDragChanged(_ value: DragGesture.Value) {
-        if value.translation.height < 0 {
-            dragOffset = value.translation.height * 0.3
+        if isExpanded {
+            // 확장된 상태에서는 아래로 드래그만 허용 (축소)
+            if value.translation.height > 0 {
+                dragOffset = value.translation.height * 0.3
+            }
+        } else {
+            // 축소된 상태에서는 위로 드래그만 허용 (확장)
+            if value.translation.height < 0 {
+                dragOffset = value.translation.height * 0.3
+            }
         }
     }
     
     func handleDragEnded(_ value: DragGesture.Value) {
-        if value.translation.height < -60 {
-            withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-                isExpanded = true
-                dragOffset = 0
+        if isExpanded {
+            // 확장된 상태에서 아래로 충분히 드래그하면 축소
+            if value.translation.height > 100 {
+                withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+                    isExpanded = false
+                    dragOffset = 0
+                }
+            } else {
+                withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+                    dragOffset = 0
+                }
             }
         } else {
-            withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-                dragOffset = 0
+            // 축소된 상태에서 위로 충분히 드래그하면 확장
+            if value.translation.height < -60 {
+                withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+                    isExpanded = true
+                    dragOffset = 0
+                }
+            } else {
+                withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+                    dragOffset = 0
+                }
             }
+        }
+    }
+    
+    func expandModal() {
+        withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+            isExpanded = true
+            dragOffset = 0
         }
     }
     
     func closeModal() {
         withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
             isExpanded = false
+            dragOffset = 0
         }
     }
     
     func changeSortOption(_ newOption: SortOption) {
         sortOption = newOption
-        // Here you would typically resort the data based on the new option
-        // For now, we'll just regenerate mock data
-        generateMockMemories()
+        // Sort the memories based on the new option
+        sortMemories()
     }
     
     func refreshProfileData() {
@@ -122,14 +146,27 @@ class UserInfoModalViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Mock Data Generation
-    private func generateMockMemories() {
-        mockMemories = (1...10).map { index in
-            MockMemory(
-                title: "Memory \(index)",
-                views: Int.random(in: 10...100),
-                daysAgo: Int.random(in: 1...7)
-            )
+    // MARK: - Memory Loading
+    private func loadMemories() async {
+        do {
+            let fetchedMemories = try await memoryRepository.fetchMemories(for: userId)
+            await MainActor.run {
+                self.memories = fetchedMemories
+                self.memoryCount = fetchedMemories.count
+                self.sortMemories()
+            }
+            Logger.info("UserInfoModalViewModel: Loaded \(fetchedMemories.count) memories for user \(userId)")
+        } catch {
+            Logger.error("UserInfoModalViewModel: Failed to load memories - \(error.localizedDescription)")
+        }
+    }
+    
+    private func sortMemories() {
+        switch sortOption {
+        case .latest:
+            memories.sort { $0.createdAt > $1.createdAt }
+        case .oldest:
+            memories.sort { $0.createdAt < $1.createdAt }
         }
     }
     
@@ -194,10 +231,17 @@ class UserInfoModalViewModel: ObservableObject {
                 
                 // 현재 사용자의 프로필이 변경된 경우에만 업데이트
                 if let newProfile = newProfile, newProfile.userId == userId {
-                    userProfile = newProfile
-                    Logger.info("UserInfoModalViewModel: Profile updated for current user - name: \(newProfile.name), imageURL: \(newProfile.profileImageURL ?? "nil")")
-                    // 프로필이 업데이트되면 통계도 다시 로드
-                    await loadUserStats()
+                    let hasChanged = userProfile?.name != newProfile.name || 
+                                   userProfile?.profileImageURL != newProfile.profileImageURL ||
+                                   userProfile?.profileKey != newProfile.profileKey ||
+                                   userProfile?.spaceThumbnailId != newProfile.spaceThumbnailId
+                    
+                    if hasChanged {
+                        userProfile = newProfile
+                        Logger.info("UserInfoModalViewModel: Profile updated for current user - name: \(newProfile.name), imageURL: \(newProfile.profileImageURL ?? "nil"), thumbnailId: \(newProfile.spaceThumbnailId ?? "nil")")
+                        // 프로필이 업데이트되면 통계도 다시 로드
+                        await loadUserStats()
+                    }
                 } else {
                     Logger.info("UserInfoModalViewModel: Profile not updated - userId mismatch or nil profile")
                 }
@@ -211,11 +255,12 @@ class UserInfoModalViewModel: ObservableObject {
             
             let hasChanged = userProfile?.name != freshProfile.name || 
                            userProfile?.profileImageURL != freshProfile.profileImageURL ||
-                           userProfile?.profileKey != freshProfile.profileKey
+                           userProfile?.profileKey != freshProfile.profileKey ||
+                           userProfile?.spaceThumbnailId != freshProfile.spaceThumbnailId
             
             if hasChanged {
                 userProfile = freshProfile
-                Logger.info("UserInfoModalViewModel: Profile reloaded - name: \(freshProfile.name), imageURL: \(freshProfile.profileImageURL ?? "nil")")
+                Logger.info("UserInfoModalViewModel: Profile reloaded - name: \(freshProfile.name), imageURL: \(freshProfile.profileImageURL ?? "nil"), thumbnailId: \(freshProfile.spaceThumbnailId ?? "nil")")
                 
                 // 프로필 이미지 미리 로딩
                 if let profileImageURL = freshProfile.profileImageURL {

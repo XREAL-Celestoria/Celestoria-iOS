@@ -45,21 +45,45 @@ struct iOSProfileSettingView: View {
                     }
                     
                     // Nickname Section - styled like visionOS
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Colors.ProfileNamebox)
-                            .frame(width: UIScreen.main.bounds.width - 48, height: 84)
-                            .overlay(nicknameStroke)
+                    VStack(spacing: 12) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(Colors.ProfileNamebox)
+                                .frame(width: UIScreen.main.bounds.width - 48, height: 84)
+                                .overlay(nicknameStroke)
+                            
+                            TextField("Nickname", text: $tempNickname)
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(Colors.NebulaWhite)
+                                .multilineTextAlignment(.center)
+                                .frame(width: UIScreen.main.bounds.width - 52)
+                                .focused($isNicknameFocused)
+                                .onChange(of: tempNickname) { _, newValue in
+                                    if newValue.count > 20 {
+                                        tempNickname = String(newValue.prefix(20))
+                                    }
+                                }
+                        }
+                        .onTapGesture {
+                            isNicknameFocused = true
+                        }
                         
-                        TextField("Nickname", text: $tempNickname)
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundColor(Colors.NebulaWhite)
-                            .multilineTextAlignment(.center)
-                            .frame(width: UIScreen.main.bounds.width - 52)
-                            .focused($isNicknameFocused)
-                    }
-                    .onTapGesture {
-                        isNicknameFocused = true
+                        // Character count and error message
+                        HStack {
+                            if tempNickname.count >= 20 {
+                                Text("The content exceeds the character limit.")
+                                    .fontStyle(Fonts.caption1)
+                                    .foregroundColor(Colors.NebulaRed)
+                                    .opacity(tempNickname.count >= 20 ? 1.0 : 0.0)
+                            }
+                            
+                            Spacer()
+                            
+                            Text("\(tempNickname.count) / 20")
+                                .fontStyle(Fonts.body1)
+                                .foregroundStyle(tempNickname.count >= 20 ? AnyShapeStyle(Colors.NebulaRed) : AnyShapeStyle(LinearGradient.MainGradient))
+                        }
+                        .padding(.horizontal, 24)
                     }
                 }
                 .padding(.top, 30)
@@ -128,6 +152,7 @@ struct iOSProfileSettingView: View {
                         LoadingView()
                         Spacer()
                     }
+                    .ignoresSafeArea()
                     .frame(maxWidth: UIScreen.main.bounds.width , maxHeight: .infinity)
                 }
             }
@@ -220,9 +245,27 @@ struct iOSProfileSettingView: View {
     private var nicknameStroke: some View {
         RoundedRectangle(cornerRadius: 16)
             .stroke(
-                isNicknameFocused ? AnyShapeStyle(LinearGradient.GradientSub) : AnyShapeStyle(Color.clear),
-                lineWidth: isNicknameFocused ? 2 : 0
+                strokeColor,
+                lineWidth: strokeWidth
             )
+    }
+    
+    private var strokeColor: AnyShapeStyle {
+        if tempNickname.count >= 20 {
+            return AnyShapeStyle(Colors.NebulaRed)
+        } else if isNicknameFocused {
+            return AnyShapeStyle(LinearGradient.GradientSub)
+        } else {
+            return AnyShapeStyle(Color.clear)
+        }
+    }
+    
+    private var strokeWidth: CGFloat {
+        if tempNickname.count >= 20 || isNicknameFocused {
+            return 2
+        } else {
+            return 0
+        }
     }
 }
 

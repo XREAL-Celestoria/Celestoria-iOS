@@ -45,6 +45,7 @@ class UserInfoModalViewModel: ObservableObject {
         let title: String
         let views: Int
         let daysAgo: Int
+        let duration: String
     }
     
     // MARK: - Initialization
@@ -123,11 +124,13 @@ class UserInfoModalViewModel: ObservableObject {
     
     // MARK: - Mock Data Generation
     private func generateMockMemories() {
+        let durations = ["0:15", "0:32", "1:05", "0:48", "2:12", "0:23", "1:34", "0:56", "1:18", "0:41"]
         mockMemories = (1...10).map { index in
             MockMemory(
                 title: "Memory \(index)",
                 views: Int.random(in: 10...100),
-                daysAgo: Int.random(in: 1...7)
+                daysAgo: Int.random(in: 1...7),
+                duration: durations.randomElement() ?? "0:30"
             )
         }
     }

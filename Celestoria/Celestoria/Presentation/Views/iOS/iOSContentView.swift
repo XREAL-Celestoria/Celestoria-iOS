@@ -58,6 +58,7 @@ struct iOSContentView: View {
                 }
             
         case .main:
+            ZStack {
                 // 갤럭시 뷰 (항상 보이게)
                 NavigationView {
                     iOS3DGalaxyContainerView(diContainer: diContainer)
@@ -74,8 +75,17 @@ struct iOSContentView: View {
                 // 로딩 중일 때만 갤럭시뷰 위에 블러 오버레이
                 if !appState.isGalaxyLoadingComplete {
                     iOSUnifiedLoadingView.stars()
+                        .onAppear {
+                            // 4초 후 자동으로 로딩뷰 숨김 (안전장치)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+                                if !appState.isGalaxyLoadingComplete {
+                                    print("⏰ Auto-hiding loading view after 4 seconds timeout")
+                                    appState.isGalaxyLoadingComplete = true
+                                }
+                            }
+                        }
                 }
-
+            }
         }
     }
     

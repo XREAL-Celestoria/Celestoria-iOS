@@ -264,6 +264,19 @@ struct iOS3DGalaxyContainerView: View {
                 lastTargetUserId = nil
             }
         }
+        .onChange(of: appState.shouldNavigateToProfileEdit) { _, shouldNavigate in
+            if shouldNavigate {
+                // 프로필 편집 네비게이션 처리
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    // 세팅 화면으로 이동
+                    activeScreen = .settings
+                    // 프로필 설정으로 바로 네비게이션
+                    settingsNavigationPath = [.profile]
+                }
+                // 상태 리셋
+                appState.shouldNavigateToProfileEdit = false
+            }
+        }
 
         .overlay(
             // 상단 버튼들 - 독립적인 ZStack

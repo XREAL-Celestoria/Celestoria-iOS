@@ -121,6 +121,13 @@ final class AppState: ObservableObject {
         }
     }
     
+    // Profile Edit Navigation
+    @Published var shouldNavigateToProfileEdit: Bool = false {
+        didSet {
+            Logger.info("Should Navigate To Profile Edit: \(shouldNavigateToProfileEdit)")
+        }
+    }
+    
     var currentUserId: UUID? {
         return userId
     }

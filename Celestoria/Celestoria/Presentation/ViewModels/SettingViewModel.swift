@@ -236,7 +236,16 @@ class SettingViewModel: ObservableObject {
                 spaceThumbnailId: thumbnailId,
                 userId: userId
             )
+            
+            // AppState 업데이트하여 다른 뷰들에 반영
+            appState.userProfile = profile
+            
+            // userProfile 업데이트가 완전히 처리될 시간을 주기 위해 약간의 지연 추가
+            try? await Task.sleep(nanoseconds: 50_000_000) // 0.05초 지연
+            appState.refreshMainView = true
+            
             Logger.info("✅ Thumbnail updated successfully")
+            Logger.info("✅ AppState updated - userProfile: \(appState.userProfile?.name ?? "nil"), refreshMainView: \(appState.refreshMainView)")
         } catch {
             self.error = error
             Logger.error("❌ Error updating thumbnail: \(error.localizedDescription)")

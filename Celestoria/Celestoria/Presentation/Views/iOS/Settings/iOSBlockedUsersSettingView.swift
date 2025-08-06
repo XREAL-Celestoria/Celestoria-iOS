@@ -20,22 +20,33 @@ struct iOSBlockedUsersSettingView: View {
     
     var body: some View {
         ZStack {
+            Colors.BackgroundBlack
+                .ignoresSafeArea()
+            
             if settingViewModel.blockedUsers.isEmpty {
-                VStack(spacing: 20) {
+                VStack(alignment: .center) {
                     Spacer()
                     
-                    Image(systemName: "hand.raised.slash.fill")
-                        .font(.system(size: 60))
-                        .foregroundColor(.gray)
+                    Image("blockedIcon")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 120, height: 120)
                     
-                    Text("No Blocked Users")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(.primary)
+                    Spacer()
+                        .frame(height: 44)
                     
-                    Text("Users you block will appear here")
-                        .font(.system(size: 16))
-                        .foregroundColor(.secondary)
+                    Text("You haven't blocked anyone")
+                        .fontStyle(Fonts.title2)
+                        .foregroundStyle(Colors.NebulaWhite)
+                    
+                    Spacer()
+                        .frame(height: 24)
+                    
+                    Text("Once you block someone, you and that person will no longer be able to see each other's uploads.")
+                        .fontStyle(Fonts.body1)
+                        .foregroundStyle(Colors.NebulaWhite)
                         .multilineTextAlignment(.center)
+                        .padding(.horizontal, 56)
                     
                     Spacer()
                 }
@@ -61,28 +72,18 @@ struct iOSBlockedUsersSettingView: View {
                                             .fill(Color.gray.opacity(0.3))
                                     }
                                 } else {
-                                    Circle()
-                                        .fill(LinearGradient.GradientMain)
-                                        .overlay(
-                                            Text(blockedUser.profile.name.prefix(1).uppercased())
-                                                .font(.system(size: 20, weight: .bold))
-                                                .foregroundColor(Colors.NebulaBlack)
-                                        )
+                                    Image(PredefinedProfileImage.profile_blue.rawValue)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
                                 }
                             }
-                            .frame(width: 50, height: 50)
+                            .frame(width: 32, height: 32)
                             .clipShape(Circle())
                             
                             // User Info
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(blockedUser.profile.name)
-                                    .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.primary)
-                                
-                                Text("Blocked")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.secondary)
-                            }
+                            Text(blockedUser.profile.name)
+                                .fontStyle(Fonts.title3)
+                                .foregroundColor(Colors.NebulaWhite)
                             
                             Spacer()
                             
@@ -93,18 +94,20 @@ struct iOSBlockedUsersSettingView: View {
                                 }
                             }) {
                                 Text("Unblock")
-                                    .font(.system(size: 15, weight: .medium))
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 8)
-                                    .background(Color.red)
-                                    .cornerRadius(8)
+                                    .fontStyle(Fonts.caption1)
+                                    .foregroundColor(Colors.NebulaWhite)
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 10)
+                                    .background(Colors.AccountSelectedBtn)
+                                    .cornerRadius(10)
                             }
                         }
                         .padding(.vertical, 8)
                     }
                 }
                 .listStyle(PlainListStyle())
+                .scrollContentBackground(.hidden)
+                .background(Colors.BackgroundBlack)
             }
         }
         .navigationTitle("Blocked Users")
