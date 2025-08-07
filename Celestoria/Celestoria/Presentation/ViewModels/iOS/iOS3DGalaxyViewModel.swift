@@ -70,10 +70,9 @@ class iOS3DGalaxyViewModel: ObservableObject {
                 
                 updateMemoryNodes()
                 
-                // 로딩 완료 후 AppState 업데이트
+                // 메모리 로딩 완료 후 컨텐츠 준비만 설정, 갤럭시 로딩 완료는 배경 로딩에서 처리
                 await MainActor.run {
-                    print("🔧 iOS3DGalaxyViewModel: Setting galaxy loading complete = true")
-                    appState.isGalaxyLoadingComplete = true
+                    print("🔧 iOS3DGalaxyViewModel: Memories loaded, preparing content...")
                     
                     // 컨텐츠 준비 상태를 약간 지연시켜 부드러운 전환
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
@@ -85,15 +84,20 @@ class iOS3DGalaxyViewModel: ObservableObject {
             } catch {
                 Logger.error("Error loading memories: \(error.localizedDescription)")
                 
-                // 에러가 발생해도 로딩 완료로 처리
+                // 에러가 발생해도 로딩 완료로 처리 (딜레이 적용)
                 await MainActor.run {
-                    print("🔧 iOS3DGalaxyViewModel: Setting galaxy loading complete = true (with error)")
-                    appState.isGalaxyLoadingComplete = true
+                    print("🔧 iOS3DGalaxyViewModel: Error occurred, preparing content...")
                     
-                    // 에러 시에도 컨텐츠 준비 상태를 지연시켜 전환
+                    // 에러 시에도 컨텐츠 준비 상태를 지연시켜 전환 후 로딩 완료
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                         withAnimation(.easeInOut(duration: 0.6)) {
                             self.isContentReady = true
+                        }
+                        
+                        // 에러 시에도 충분한 시간 후 로딩 완료 설정
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                            print("🔧 iOS3DGalaxyViewModel: Setting galaxy loading complete after error")
+                            self.appState.isGalaxyLoadingComplete = true
                         }
                     }
                 }
@@ -241,16 +245,17 @@ class iOS3DGalaxyViewModel: ObservableObject {
             material.diffuse.contents = backgroundImage
             isBackgroundLoaded = true
             
-            // 배경이 로딩되면 갤럭시 로딩 완료 상태로 설정 (중복 방지)
-            if !appState.isGalaxyLoadingComplete {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                    self.appState.isGalaxyLoadingComplete = true
-                    
-                    // 컨텐츠 준비 상태를 약간 지연시켜 부드러운 전환
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                        withAnimation(.easeInOut(duration: 0.6)) {
-                            self.isContentReady = true
-                        }
+            // 배경이 로딩되면 컨텐츠 준비 상태만 설정, 갤럭시 로딩 완료는 나중에
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                withAnimation(.easeInOut(duration: 0.6)) {
+                    self.isContentReady = true
+                }
+                
+                // 3D 모델들이 모두 렌더링된 후 로딩 완료 설정
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                    if !self.appState.isGalaxyLoadingComplete {
+                        print("🔧 iOS3DGalaxyViewModel: Setting galaxy loading complete after background + 3D render")
+                        self.appState.isGalaxyLoadingComplete = true
                     }
                 }
             }

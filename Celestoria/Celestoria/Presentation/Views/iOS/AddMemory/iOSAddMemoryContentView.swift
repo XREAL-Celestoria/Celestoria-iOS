@@ -94,13 +94,9 @@ struct iOSAddMemoryContentView: View {
         }
         .overlay(
             Group {
-                if showLoadingPopup {
-                    loadingOverlay
-                }
-                
-                if showUploadProgress {
-                    uploadProgressOverlay
-                }
+                        if showLoadingPopup || showUploadProgress {
+            loadingOverlay
+        }
                 
                 if showFileSizePopup {
                     fileSizePopup
@@ -148,65 +144,30 @@ struct iOSAddMemoryContentView: View {
     
     @ViewBuilder
     private var loadingOverlay: some View {
-        Color.black.opacity(0.7)
-            .ignoresSafeArea()
-        
-        VStack {
-            ProgressView("Loading...")
-                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                .foregroundColor(.white)
-                .padding()
-                .background(Color.black.opacity(0.8))
-                .cornerRadius(12)
+        if viewModel.isThumbnailGenerating {
+            iOSUnifiedLoadingView.thumbnail()
+        } else if viewModel.isUploading || showUploadProgress {
+            // 업로드 상태에 따라 적절한 로딩뷰 표시
+            if !viewModel.uploadStatus.isEmpty {
+                // 특별한 상태 메시지가 있으면 (CDN 업로딩 등)
+                iOSUnifiedLoadingView.uploadWithStatus(
+                    fileSize: viewModel.uploadingFileSize,
+                    status: viewModel.uploadStatus
+                )
+            } else if viewModel.uploadProgress > 0 {
+                // 진행률이 있으면
+                iOSUnifiedLoadingView.uploadWithProgress(
+                    fileSize: viewModel.uploadingFileSize,
+                    progress: viewModel.uploadProgress
+                )
+            } else {
+                // 기본 업로드
+                iOSUnifiedLoadingView.upload(fileSize: viewModel.uploadingFileSize)
+            }
         }
     }
     
-    @ViewBuilder
-    private var uploadProgressOverlay: some View {
-        Color.black.opacity(0.7)
-            .ignoresSafeArea()
-        
-        VStack(spacing: 20) {
-            Text("Uploading Memory")
-                .font(.system(size: 20, weight: .semibold))
-                .foregroundColor(.white)
-            
-            // 업로드 상태 메시지 표시
-            if !viewModel.uploadStatus.isEmpty {
-                VStack(spacing: 4) {
-                    Text(viewModel.uploadStatus)
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.white)
-                        .multilineTextAlignment(.center)
-                        .lineLimit(2)
-                    
-                    if !viewModel.uploadingFileSize.isEmpty {
-                        Text("File size: \(viewModel.uploadingFileSize)")
-                            .font(.system(size: 14))
-                            .foregroundColor(.white.opacity(0.7))
-                    }
-                }
-            } else {
-                Text("Uploading \(viewModel.uploadingFileSize) video file...")
-                    .font(.system(size: 16))
-                    .foregroundColor(.white.opacity(0.8))
-            }
-            
-            ProgressView()
-                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                .scaleEffect(1.5)
-                .padding(.top, 10)
-        }
-        .padding(40)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Colors.NebulaBlack)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                )
-        )
-    }
+    // uploadProgressOverlay 제거됨 - 모든 업로드 관련 뷰는 loadingOverlay에서 통합 처리
     
     @ViewBuilder
     private var fileSizePopup: some View {

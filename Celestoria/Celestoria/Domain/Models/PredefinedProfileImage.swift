@@ -42,7 +42,9 @@ enum ProfileImageSelection: Equatable {
 
     var imageData: Data? {
         if case .custom(let image) = self {
-            return image.jpegData(compressionQuality: 0.8)
+            // 프로필 이미지 최적화 적용 (더 공격적 압축)
+            let optimizedImage = image.optimizedForProfile(size: 300)
+            return optimizedImage.optimizedJPEGData(compressionQuality: 0.5)
         }
         return nil
     }

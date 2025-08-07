@@ -13,13 +13,24 @@ struct iOSConfirmationPopupView: View {
     let message: String
     let cancelTitle: String
     let confirmTitle: String
+    let isDestructive: Bool
     let onCancel: () -> Void
     let onConfirm: () -> Void
+    
+    init(title: String, message: String, cancelTitle: String, confirmTitle: String, isDestructive: Bool = false, onCancel: @escaping () -> Void, onConfirm: @escaping () -> Void) {
+        self.title = title
+        self.message = message
+        self.cancelTitle = cancelTitle
+        self.confirmTitle = confirmTitle
+        self.isDestructive = isDestructive
+        self.onCancel = onCancel
+        self.onConfirm = onConfirm
+    }
     
     var body: some View {
         ZStack {
             // Background overlay
-            Color.black.opacity(0.6)
+            Color.clear
                 .ignoresSafeArea()
                 .onTapGesture {
                     onCancel()
@@ -69,12 +80,12 @@ struct iOSConfirmationPopupView: View {
                     Button(action: onConfirm) {
                         Text(confirmTitle)
                             .fontStyle(Fonts.callout)
-                            .foregroundColor(Colors.BackgroundBlack)
+                            .foregroundColor(isDestructive ? Colors.NebulaWhite : Colors.BackgroundBlack)
                             .frame(maxWidth: .infinity)
                             .frame(height: 40)
                             .background(
                                 RoundedRectangle(cornerRadius: 10)
-                                    .fill(LinearGradient.GradientSub)
+                                    .fill(isDestructive ? AnyShapeStyle(Colors.NebulaRed) : AnyShapeStyle(LinearGradient.GradientSub))
                             )
                     }
                 }
@@ -103,25 +114,8 @@ struct iOSConfirmationPopupView: View {
                         lineWidth: 2
                     )
             )
-            .modifier(ModalStyleModifier())
+            .modifier(ModalStyleModifier(cornerRadius: 40))
         }
         .transition(.opacity.combined(with: .scale(scale: 0.9)))
-    }
-}
-
-// MARK: - Delete Memory Confirmation Popup
-struct DeleteMemoryConfirmationPopup: View {
-    let onCancel: () -> Void
-    let onDelete: () -> Void
-    
-    var body: some View {
-        iOSConfirmationPopupView(
-            title: "Delete Memory Star",
-            message: "Are you sure you want to delete this? This action cannot be undone.",
-            cancelTitle: "Cancel",
-            confirmTitle: "Delete",
-            onCancel: onCancel,
-            onConfirm: onDelete
-        )
     }
 }

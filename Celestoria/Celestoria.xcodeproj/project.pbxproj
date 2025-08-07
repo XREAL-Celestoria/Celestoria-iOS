@@ -96,7 +96,6 @@
 		5D707E5C2E3E481000CC1224 /* UserInfoModalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E5B2E3E481000CC1224 /* UserInfoModalViewModel.swift */; };
 		5D707E5E2E3E56AD00CC1224 /* UserInfoModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E5D2E3E56AD00CC1224 /* UserInfoModalView.swift */; };
 		5D707E642E3E8A8200CC1224 /* UserInfoModalComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E632E3E8A8200CC1224 /* UserInfoModalComponents.swift */; };
-		5D707E662E3E8A8900CC1224 /* UserInfoModalExpandedContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E652E3E8A8900CC1224 /* UserInfoModalExpandedContent.swift */; };
 		5D707E682E3E8A9200CC1224 /* ModalStyleModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E672E3E8A9200CC1224 /* ModalStyleModifier.swift */; };
 		5D707E6A2E3E9D6800CC1224 /* iOSConfirmationPopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E692E3E9D6800CC1224 /* iOSConfirmationPopupView.swift */; };
 		5D707E862E3F2FF200CC1224 /* iOSNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E852E3F2FF200CC1224 /* iOSNavigationView.swift */; };
@@ -109,6 +108,24 @@
 		5D707E992E40600600CC1224 /* CachedAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E982E40600600CC1224 /* CachedAsyncImage.swift */; };
 		5D707E9C2E40D3EC00CC1224 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E962E405FEE00CC1224 /* ImageCache.swift */; };
 		5D707E9D2E40D3F200CC1224 /* CachedAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707E982E40600600CC1224 /* CachedAsyncImage.swift */; };
+		5D707EBB2E41FB0000CC1224 /* iOSGyroscopeVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707EBA2E41FB0000CC1224 /* iOSGyroscopeVideoView.swift */; };
+		5D707EBD2E41FB2A00CC1224 /* GyroscopeMotionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707EBC2E41FB2A00CC1224 /* GyroscopeMotionManager.swift */; };
+		5D707EBE2E41FB2A00CC1224 /* GyroscopeMotionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707EBC2E41FB2A00CC1224 /* GyroscopeMotionManager.swift */; };
+		5D707EC12E41FC3000CC1224 /* iOSMemoryDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707EC02E41FC3000CC1224 /* iOSMemoryDetailViewModel.swift */; };
+		5D707EC32E41FDDE00CC1224 /* iOS3DMemoryStarNodeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707EC22E41FDDE00CC1224 /* iOS3DMemoryStarNodeViewModel.swift */; };
+		5D707EC82E4217F800CC1224 /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707EC72E4217F800CC1224 /* UIImage+Extensions.swift */; };
+		5D707EC92E4217F800CC1224 /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707EC72E4217F800CC1224 /* UIImage+Extensions.swift */; };
+		5D707EDB2E42293E00CC1224 /* iOSUnifiedLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707EDA2E42293E00CC1224 /* iOSUnifiedLoadingView.swift */; };
+		5D707EDD2E4266AA00CC1224 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5D707EDC2E4266AA00CC1224 /* LaunchScreen.storyboard */; };
+		5D707EE72E4276ED00CC1224 /* CornerRadius.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707EE62E4276ED00CC1224 /* CornerRadius.swift */; };
+		5D707EE82E4276ED00CC1224 /* CornerRadius.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707EE62E4276ED00CC1224 /* CornerRadius.swift */; };
+		5D76F3EC2E43EE930026579D /* CommentListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76F3EB2E43EE930026579D /* CommentListItemView.swift */; };
+		5D76F3EE2E43EEB50026579D /* LikeListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76F3ED2E43EEB50026579D /* LikeListItemView.swift */; };
+		5D76F3F02E43EEE90026579D /* MemoryReviewItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76F3EF2E43EEE90026579D /* MemoryReviewItemView.swift */; };
+		5D76F3F32E43EF160026579D /* LikeTapContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76F3F22E43EF160026579D /* LikeTapContent.swift */; };
+		5D76F3F72E43EF4D0026579D /* CommentTapContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76F3F62E43EF4D0026579D /* CommentTapContent.swift */; };
+		5D76F3FA2E43EF950026579D /* MemoryTabContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76F3F92E43EF950026579D /* MemoryTabContent.swift */; };
+		5D76F4002E4410A70026579D /* CategoryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76F3FF2E4410A70026579D /* CategoryButton.swift */; };
 		A2198CA32D48812500B0AF65 /* ExploreUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2198CA22D48812500B0AF65 /* ExploreUseCase.swift */; };
 		A2198CA52D48814300B0AF65 /* ExploreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2198CA42D48814300B0AF65 /* ExploreViewModel.swift */; };
 		A2198CAA2D49063800B0AF65 /* Family.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A2198CA72D49063800B0AF65 /* Family.usdz */; };
@@ -271,7 +288,6 @@
 		5D707E5B2E3E481000CC1224 /* UserInfoModalViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoModalViewModel.swift; sourceTree = "<group>"; };
 		5D707E5D2E3E56AD00CC1224 /* UserInfoModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoModalView.swift; sourceTree = "<group>"; };
 		5D707E632E3E8A8200CC1224 /* UserInfoModalComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoModalComponents.swift; sourceTree = "<group>"; };
-		5D707E652E3E8A8900CC1224 /* UserInfoModalExpandedContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoModalExpandedContent.swift; sourceTree = "<group>"; };
 		5D707E672E3E8A9200CC1224 /* ModalStyleModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalStyleModifier.swift; sourceTree = "<group>"; };
 		5D707E692E3E9D6800CC1224 /* iOSConfirmationPopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSConfirmationPopupView.swift; sourceTree = "<group>"; };
 		5D707E852E3F2FF200CC1224 /* iOSNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSNavigationView.swift; sourceTree = "<group>"; };
@@ -281,6 +297,21 @@
 		5D707E932E400B7900CC1224 /* View+Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Navigation.swift"; sourceTree = "<group>"; };
 		5D707E962E405FEE00CC1224 /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
 		5D707E982E40600600CC1224 /* CachedAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedAsyncImage.swift; sourceTree = "<group>"; };
+		5D707EBA2E41FB0000CC1224 /* iOSGyroscopeVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSGyroscopeVideoView.swift; sourceTree = "<group>"; };
+		5D707EBC2E41FB2A00CC1224 /* GyroscopeMotionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GyroscopeMotionManager.swift; sourceTree = "<group>"; };
+		5D707EC02E41FC3000CC1224 /* iOSMemoryDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSMemoryDetailViewModel.swift; sourceTree = "<group>"; };
+		5D707EC22E41FDDE00CC1224 /* iOS3DMemoryStarNodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOS3DMemoryStarNodeViewModel.swift; sourceTree = "<group>"; };
+		5D707EC72E4217F800CC1224 /* UIImage+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Extensions.swift"; sourceTree = "<group>"; };
+		5D707EDA2E42293E00CC1224 /* iOSUnifiedLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSUnifiedLoadingView.swift; sourceTree = "<group>"; };
+		5D707EDC2E4266AA00CC1224 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		5D707EE62E4276ED00CC1224 /* CornerRadius.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CornerRadius.swift; sourceTree = "<group>"; };
+		5D76F3EB2E43EE930026579D /* CommentListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentListItemView.swift; sourceTree = "<group>"; };
+		5D76F3ED2E43EEB50026579D /* LikeListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeListItemView.swift; sourceTree = "<group>"; };
+		5D76F3EF2E43EEE90026579D /* MemoryReviewItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryReviewItemView.swift; sourceTree = "<group>"; };
+		5D76F3F22E43EF160026579D /* LikeTapContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeTapContent.swift; sourceTree = "<group>"; };
+		5D76F3F62E43EF4D0026579D /* CommentTapContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTapContent.swift; sourceTree = "<group>"; };
+		5D76F3F92E43EF950026579D /* MemoryTabContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryTabContent.swift; sourceTree = "<group>"; };
+		5D76F3FF2E4410A70026579D /* CategoryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryButton.swift; sourceTree = "<group>"; };
 		A2198CA22D48812500B0AF65 /* ExploreUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreUseCase.swift; sourceTree = "<group>"; };
 		A2198CA42D48814300B0AF65 /* ExploreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewModel.swift; sourceTree = "<group>"; };
 		A2198CA62D49063800B0AF65 /* Enter.usdc */ = {isa = PBXFileReference; lastKnownFileType = file; path = Enter.usdc; sourceTree = "<group>"; };
@@ -424,7 +455,7 @@
 		2F3671B42D3D74810048D9AD /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				5D707E592E3E47BF00CC1224 /* iOS3DGalaxyViewModel.swift */,
+				5D707EBF2E41FC0D00CC1224 /* iOS */,
 				2F3671C82D3D76ED0048D9AD /* SpaceCoordinator.swift */,
 				2F3671D02D3D7AF90048D9AD /* MainViewModel.swift */,
 				A2198CA42D48814300B0AF65 /* ExploreViewModel.swift */,
@@ -433,7 +464,6 @@
 				A2B8DB842D440536001B5663 /* SettingViewModel.swift */,
 				2FB501D22D454FA3005FB0B6 /* GalaxyViewModel.swift */,
 				2FB501E52D46CDD6005FB0B6 /* MemoryDetailViewModel.swift */,
-				5D707E5B2E3E481000CC1224 /* UserInfoModalViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -591,6 +621,7 @@
 			isa = PBXGroup;
 			children = (
 				2F8800B72D38CE6800220F89 /* Info.plist */,
+				5D707EDC2E4266AA00CC1224 /* LaunchScreen.storyboard */,
 				2F36720A2D3DA3F20048D9AD /* Config.swift */,
 				2FC41AD72DDE33E000E03025 /* Debug.xcconfig */,
 				2FC41AD92DDE33EF00E03025 /* Release.xcconfig */,
@@ -614,6 +645,7 @@
 				5D707E982E40600600CC1224 /* CachedAsyncImage.swift */,
 				2FE858022D437BF20055902B /* VisualEffectBlur.swift */,
 				5D707E962E405FEE00CC1224 /* ImageCache.swift */,
+				5D707EBC2E41FB2A00CC1224 /* GyroscopeMotionManager.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -627,6 +659,8 @@
 				2F3671B02D3D6A9E0048D9AD /* Color+.swift */,
 				2FE858042D43D3980055902B /* TextField+.swift */,
 				5D6C1A102E3E06B2004A0B17 /* Text+.swift */,
+				5D707EC72E4217F800CC1224 /* UIImage+Extensions.swift */,
+				5D707EE62E4276ED00CC1224 /* CornerRadius.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -651,9 +685,6 @@
 				A2A286B52E2C311A001D89B2 /* Settings */,
 				5D707E842E3F2CD300CC1224 /* AddMemory */,
 				5D707E672E3E8A9200CC1224 /* ModalStyleModifier.swift */,
-				5D707E652E3E8A8900CC1224 /* UserInfoModalExpandedContent.swift */,
-				5D707E632E3E8A8200CC1224 /* UserInfoModalComponents.swift */,
-				5D707E5D2E3E56AD00CC1224 /* UserInfoModalView.swift */,
 				5D6C19FB2E3E05EA004A0B17 /* Components */,
 			);
 			path = iOS;
@@ -691,6 +722,7 @@
 		5D6C19FB2E3E05EA004A0B17 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				5D707EDA2E42293E00CC1224 /* iOSUnifiedLoadingView.swift */,
 				5D707E8E2E3F3E3500CC1224 /* iOSAddMemoryComponents.swift */,
 				5D6C19F82E3E05EA004A0B17 /* iOSHeaderView.swift */,
 				5D6C19F92E3E05EA004A0B17 /* iOSMainButton.swift */,
@@ -725,8 +757,10 @@
 			isa = PBXGroup;
 			children = (
 				A2A286C62E2C3173001D89B2 /* iOSMemoryDetailView.swift */,
+				5D707EBA2E41FB0000CC1224 /* iOSGyroscopeVideoView.swift */,
 				A2A286C02E2C3157001D89B2 /* iOS3DMemoryStarNode.swift */,
 				A2A286BE2E2C314B001D89B2 /* iOS3DGalaxyView.swift */,
+				5D76F3F12E43EEF30026579D /* UserModal */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -738,6 +772,57 @@
 				A2A286C22E2C3162001D89B2 /* iOSAddMemoryDoneView.swift */,
 			);
 			path = AddMemory;
+			sourceTree = "<group>";
+		};
+		5D707EBF2E41FC0D00CC1224 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				5D707E5B2E3E481000CC1224 /* UserInfoModalViewModel.swift */,
+				5D707EC22E41FDDE00CC1224 /* iOS3DMemoryStarNodeViewModel.swift */,
+				5D707EC02E41FC3000CC1224 /* iOSMemoryDetailViewModel.swift */,
+				5D707E592E3E47BF00CC1224 /* iOS3DGalaxyViewModel.swift */,
+			);
+			path = iOS;
+			sourceTree = "<group>";
+		};
+		5D76F3F12E43EEF30026579D /* UserModal */ = {
+			isa = PBXGroup;
+			children = (
+				5D707E632E3E8A8200CC1224 /* UserInfoModalComponents.swift */,
+				5D76F3FF2E4410A70026579D /* CategoryButton.swift */,
+				5D707E5D2E3E56AD00CC1224 /* UserInfoModalView.swift */,
+				5D76F3FB2E43EF9F0026579D /* Memory */,
+				5D76F3F82E43EF730026579D /* Comment */,
+				5D76F3F52E43EF290026579D /* Like */,
+			);
+			path = UserModal;
+			sourceTree = "<group>";
+		};
+		5D76F3F52E43EF290026579D /* Like */ = {
+			isa = PBXGroup;
+			children = (
+				5D76F3F22E43EF160026579D /* LikeTapContent.swift */,
+				5D76F3ED2E43EEB50026579D /* LikeListItemView.swift */,
+			);
+			path = Like;
+			sourceTree = "<group>";
+		};
+		5D76F3F82E43EF730026579D /* Comment */ = {
+			isa = PBXGroup;
+			children = (
+				5D76F3F62E43EF4D0026579D /* CommentTapContent.swift */,
+				5D76F3EB2E43EE930026579D /* CommentListItemView.swift */,
+			);
+			path = Comment;
+			sourceTree = "<group>";
+		};
+		5D76F3FB2E43EF9F0026579D /* Memory */ = {
+			isa = PBXGroup;
+			children = (
+				5D76F3F92E43EF950026579D /* MemoryTabContent.swift */,
+				5D76F3EF2E43EEE90026579D /* MemoryReviewItemView.swift */,
+			);
+			path = Memory;
 			sourceTree = "<group>";
 		};
 		A21E476F2D38CD55002B60FA = {
@@ -884,6 +969,7 @@
 				A2A286D92E2CC0C7001D89B2 /* Pet.usdz in Resources */,
 				A2A286D72E2CC0BD001D89B2 /* Enter.usdc in Resources */,
 				A2A286D82E2CC0C3001D89B2 /* Family.usdz in Resources */,
+				5D707EDD2E4266AA00CC1224 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -914,24 +1000,30 @@
 				A2A2868D2E2C09D3001D89B2 /* DeleteAccountUseCase.swift in Sources */,
 				A2A286822E2C0421001D89B2 /* PopupData.swift in Sources */,
 				A2A286842E2C0438001D89B2 /* Gradient+.swift in Sources */,
+				5D707EC12E41FC3000CC1224 /* iOSMemoryDetailViewModel.swift in Sources */,
 				A2A2868E2E2C09D7001D89B2 /* SignOutUseCase.swift in Sources */,
 				5D707E5C2E3E481000CC1224 /* UserInfoModalViewModel.swift in Sources */,
 				A2A286992E2C0D37001D89B2 /* StarField.swift in Sources */,
 				A2A286932E2C0A29001D89B2 /* CreateMemoryUseCase.swift in Sources */,
 				A2A286902E2C0A1E001D89B2 /* DeleteMemoryUseCase.swift in Sources */,
+				5D76F3EC2E43EE930026579D /* CommentListItemView.swift in Sources */,
+				5D707EC32E41FDDE00CC1224 /* iOS3DMemoryStarNodeViewModel.swift in Sources */,
 				A2A286872E2C0958001D89B2 /* AuthRepositoryProtocol.swift in Sources */,
 				A2A286C72E2C3173001D89B2 /* iOSMemoryDetailView.swift in Sources */,
+				5D76F3FA2E43EF950026579D /* MemoryTabContent.swift in Sources */,
 				A2A286702E2BFA17001D89B2 /* iOSLoginView.swift in Sources */,
 				A2A286B92E2C3129001D89B2 /* iOSBlockedUsersSettingView.swift in Sources */,
 				5D707E972E405FEE00CC1224 /* ImageCache.swift in Sources */,
 				A2A286C12E2C3157001D89B2 /* iOS3DMemoryStarNode.swift in Sources */,
 				5D707E6A2E3E9D6800CC1224 /* iOSConfirmationPopupView.swift in Sources */,
 				A2A286782E2C03E1001D89B2 /* DIContainer.swift in Sources */,
+				5D707EBD2E41FB2A00CC1224 /* GyroscopeMotionManager.swift in Sources */,
 				A2A2866D2E2BF9FB001D89B2 /* iOSTermsAndConditionsView.swift in Sources */,
 				5D6C1A0B2E3E0684004A0B17 /* Colors.swift in Sources */,
 				A2A2868C2E2C09AF001D89B2 /* iOSOnboardingView.swift in Sources */,
 				5D707E912E3FBF6A00CC1224 /* iOSUploadButton.swift in Sources */,
 				5D707E952E400B7900CC1224 /* View+Navigation.swift in Sources */,
+				5D707EC92E4217F800CC1224 /* UIImage+Extensions.swift in Sources */,
 				A2A286BD2E2C3133001D89B2 /* iOSThumbnailSettingView.swift in Sources */,
 				A2A2867F2E2C0415001D89B2 /* ContentReport.swift in Sources */,
 				A2A286832E2C0434001D89B2 /* Logger.swift in Sources */,
@@ -939,22 +1031,26 @@
 				A2A2868F2E2C0A1B001D89B2 /* SignInWithAppleUseCase.swift in Sources */,
 				A2A2867C2E2C0408001D89B2 /* Category.swift in Sources */,
 				5D6C19FC2E3E05EA004A0B17 /* iOSHeaderView.swift in Sources */,
+				5D76F3F32E43EF160026579D /* LikeTapContent.swift in Sources */,
 				5D6C19FD2E3E05EA004A0B17 /* iOSMainButton.swift in Sources */,
 				5D6C19FE2E3E05EA004A0B17 /* iOSNavigationBar.swift in Sources */,
+				5D76F3EE2E43EEB50026579D /* LikeListItemView.swift in Sources */,
 				A2A286962E2C0A3C001D89B2 /* AuthRepository.swift in Sources */,
 				A2A286942E2C0A2C001D89B2 /* FetchMemoriesUseCase.swift in Sources */,
 				5D707E682E3E8A9200CC1224 /* ModalStyleModifier.swift in Sources */,
 				A2A2867E2E2C0410001D89B2 /* UserProfile.swift in Sources */,
 				5D707E5E2E3E56AD00CC1224 /* UserInfoModalView.swift in Sources */,
+				5D76F3F72E43EF4D0026579D /* CommentTapContent.swift in Sources */,
 				A2A286BB2E2C312E001D89B2 /* iOSProfileSettingView.swift in Sources */,
 				A2A2867D2E2C040C001D89B2 /* Memory.swift in Sources */,
 				5D707E8F2E3F3E3500CC1224 /* iOSAddMemoryComponents.swift in Sources */,
 				A2A286952E2C0A39001D89B2 /* MemoryRepository.swift in Sources */,
 				5D707E5A2E3E47BF00CC1224 /* iOS3DGalaxyViewModel.swift in Sources */,
 				A2A286772E2C03DB001D89B2 /* AppState.swift in Sources */,
-				5D707E662E3E8A8900CC1224 /* UserInfoModalExpandedContent.swift in Sources */,
 				A2A286C92E2C3179001D89B2 /* iOSSettingsView.swift in Sources */,
+				5D707EE82E4276ED00CC1224 /* CornerRadius.swift in Sources */,
 				A2A2867B2E2C0405001D89B2 /* Like.swift in Sources */,
+				5D707EBB2E41FB0000CC1224 /* iOSGyroscopeVideoView.swift in Sources */,
 				A2A286882E2C0973001D89B2 /* BlockedUsersUseCase.swift in Sources */,
 				A2A286792E2C03E9001D89B2 /* LoginViewModel.swift in Sources */,
 				A2A286862E2C043F001D89B2 /* TextField+.swift in Sources */,
@@ -966,10 +1062,13 @@
 				A2A286B72E2C3121001D89B2 /* iOSAccountSettingView.swift in Sources */,
 				A2A286912E2C0A22001D89B2 /* ProfileUseCase.swift in Sources */,
 				A2A286972E2C0A40001D89B2 /* MediaRepository.swift in Sources */,
+				5D76F4002E4410A70026579D /* CategoryButton.swift in Sources */,
 				A2A286802E2C0419001D89B2 /* Screen.swift in Sources */,
 				2FAA9CED2E22352200A0CAD7 /* iOSCelestoriaApp.swift in Sources */,
 				A2A286982E2C0A47001D89B2 /* Config.swift in Sources */,
+				5D707EDB2E42293E00CC1224 /* iOSUnifiedLoadingView.swift in Sources */,
 				A2A286712E2BFA1D001D89B2 /* iOSContentView.swift in Sources */,
+				5D76F3F02E43EEE90026579D /* MemoryReviewItemView.swift in Sources */,
 				5D707E862E3F2FF200CC1224 /* iOSNavigationView.swift in Sources */,
 				A2A287372E2D34B1001D89B2 /* iOSGalaxySettingView.swift in Sources */,
 				5D707E892E3F324500CC1224 /* iOSAddMemoryContentView.swift in Sources */,
@@ -1053,6 +1152,7 @@
 				2FB501D32D454FA3005FB0B6 /* GalaxyViewModel.swift in Sources */,
 				A29437CB2D4FEA9F00982EAC /* TermsAndConditionsView.swift in Sources */,
 				2F3D38272DDED21400DD181E /* PredefinedProfileImage.swift in Sources */,
+				5D707EBE2E41FB2A00CC1224 /* GyroscopeMotionManager.swift in Sources */,
 				2F6738212D4945FF00882ADC /* GradientBorderSmall.swift in Sources */,
 				2F36720B2D3DA3F20048D9AD /* Config.swift in Sources */,
 				2F8800C42D38D3AE00220F89 /* DIContainer.swift in Sources */,
@@ -1060,6 +1160,7 @@
 				2F510CEA2D41449A004171E8 /* AddMemoryMainViewModel.swift in Sources */,
 				2F3671D52D3D7C3C0048D9AD /* ErrorBannerView.swift in Sources */,
 				A2198CA32D48812500B0AF65 /* ExploreUseCase.swift in Sources */,
+				5D707EE72E4276ED00CC1224 /* CornerRadius.swift in Sources */,
 				2FB501E62D46CDD6005FB0B6 /* MemoryDetailViewModel.swift in Sources */,
 				2F3672362D4111130048D9AD /* NavigationBar.swift in Sources */,
 				2FB501D52D455130005FB0B6 /* NavigationMenuButton.swift in Sources */,
@@ -1069,6 +1170,7 @@
 				2FE858032D437BF20055902B /* VisualEffectBlur.swift in Sources */,
 				5D707E942E400B7900CC1224 /* View+Navigation.swift in Sources */,
 				2F3672202D3E1C2F0048D9AD /* LoginView.swift in Sources */,
+				5D707EC82E4217F800CC1224 /* UIImage+Extensions.swift in Sources */,
 				2FBE4E692DE319D200796FAA /* ProfileSelectorView.swift in Sources */,
 				2F3671D12D3D7AF90048D9AD /* MainViewModel.swift in Sources */,
 			);
@@ -1086,11 +1188,9 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = "Celestoria/Celestoria-iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = B3CU8MA548;
+				DEVELOPMENT_TEAM = B3CU8MA548;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Celestoria/App/Configuration/Info.plist;
@@ -1109,7 +1209,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Celestoria.Celestoria;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = seyoung;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				SUPPORTS_MACCATALYST = NO;
@@ -1130,11 +1229,9 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = "Celestoria/Celestoria-iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = B3CU8MA548;
+				DEVELOPMENT_TEAM = B3CU8MA548;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Celestoria/App/Configuration/Info.plist;
@@ -1153,7 +1250,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Celestoria.Celestoria;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = seyoung;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
 				SUPPORTS_MACCATALYST = NO;

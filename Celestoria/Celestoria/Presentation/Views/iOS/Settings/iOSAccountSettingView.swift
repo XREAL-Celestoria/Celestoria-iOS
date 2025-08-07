@@ -12,7 +12,6 @@ struct iOSAccountSettingView: View {
     @StateObject private var settingViewModel: SettingViewModel
     @EnvironmentObject var appState: AppState
     @State private var showDeleteConfirmation = false
-    @State private var showDeleteAlert = false
     @State private var errorMessage: String?
     @Environment(\.dismiss) private var dismiss
     let diContainer: DIContainer
@@ -23,13 +22,32 @@ struct iOSAccountSettingView: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 30) {
-                accountInfoSection
-                signOutButton
-                dangerZoneSection
+        ZStack {
+            // Background
+            Colors.BackgroundBlack
+                .ignoresSafeArea()
+            
+            VStack(spacing: 24) {
+                
+                deleteAccountButton
+                
+                signoutButton
+                
+                Spacer()
             }
-            .padding()
+            .padding(.top, 20)
+            
+            if showDeleteConfirmation {
+                iOSConfirmationPopupView(title: "Delete Your Account", message: "Are you sure you want to continue? This action cannot be undone.", cancelTitle: "Cancel", confirmTitle: "Delete", isDestructive: true, onCancel: {dismiss()}, onConfirm: {
+                    Task {
+                        do {
+                            try await settingViewModel.deleteAccount()
+                        } catch {
+                            errorMessage = error.localizedDescription
+                        }
+                    }
+                })
+            }
         }
         .navigationTitle("Account Setting")
         .navigationBarTitleDisplayMode(.inline)
@@ -46,147 +64,48 @@ struct iOSAccountSettingView: View {
                 }
             }
         }
-        .confirmationDialog(
-            "Delete Account",
-            isPresented: $showDeleteConfirmation,
-            titleVisibility: .visible
-        ) {
-            Button("Delete Account", role: .destructive) {
-                showDeleteAlert = true
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("Are you sure you want to delete your account? This action cannot be undone.")
-        }
-        .alert(
-            "Final Confirmation",
-            isPresented: $showDeleteAlert
-        ) {
-            Button("Cancel", role: .cancel) {}
-            Button("Delete Forever", role: .destructive) {
-                Task {
-                    do {
-                        try await settingViewModel.deleteAccount()
-                        // SettingViewModel에서 이미 상태를 관리하므로 추가 처리 불필요
-                    } catch {
-                        errorMessage = error.localizedDescription
-                    }
-                }
-            }
-        } message: {
-            Text("This will permanently delete your account and all associated data. This action is irreversible.")
-        }
-        .alert(
-            "Error",
-            isPresented: .constant(errorMessage != nil),
-            presenting: errorMessage
-        ) { _ in
-            Button("OK") {
-                errorMessage = nil
-            }
-        } message: { error in
-            Text(error)
-        }
     }
     
     // MARK: - View Components
-    
-    @ViewBuilder
-    private var accountInfoSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Account Information")
-                .font(.system(size: 20, weight: .semibold))
-                .foregroundColor(.primary)
-            
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Text("User ID")
-                        .font(.system(size: 16))
-                        .foregroundColor(.secondary)
-                    Spacer()
-                    Text(appState.userId?.uuidString ?? "Unknown")
-                        .font(.system(size: 16))
-                        .foregroundColor(.primary)
-                }
+    private var deleteAccountButton: some View {
+        Button(action: {
+            showDeleteConfirmation = true
+        }) {
+            HStack {
+                Spacer()
+                    .frame(width: 20)
                 
-                Divider()
+                Text("Delete Account")
+                    .fontStyle(Fonts.body1)
+                    .foregroundStyle(Colors.NebulaWhite)
                 
-                HStack {
-                    Text("Account Type")
-                        .font(.system(size: 16))
-                        .foregroundColor(.secondary)
-                    Spacer()
-                    HStack(spacing: 4) {
-                        Image(systemName: "apple.logo")
-                            .font(.system(size: 14))
-                        Text("Sign in with Apple")
-                            .font(.system(size: 16))
-                    }
-                    .foregroundColor(.primary)
-                }
+                Spacer()
             }
-            .padding()
-            .background(Color.gray.opacity(0.1))
-            .cornerRadius(12)
+            .padding(.vertical, 12)
         }
     }
     
-    @ViewBuilder
-    private var signOutButton: some View {
+    private var signoutButton: some View {
         Button(action: {
             Task {
                 do {
                     try await settingViewModel.signOut()
-                    // SettingViewModel에서 이미 navigationState를 관리하므로 dismiss() 불필요
                 } catch {
                     errorMessage = error.localizedDescription
                 }
             }
         }) {
             HStack {
-                Image(systemName: "rectangle.portrait.and.arrow.right")
-                    .font(.system(size: 18))
-                Text("Sign Out")
-                    .font(.system(size: 17, weight: .semibold))
+                Spacer()
+                    .frame(width: 20)
+                
+                Text("Sign out")
+                    .fontStyle(Fonts.body1)
+                    .foregroundStyle(Colors.NebulaWhite)
+                
+                Spacer()
             }
-            .foregroundColor(Colors.NebulaBlack)
-            .frame(maxWidth: .infinity)
-            .frame(height: 50)
-            .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(LinearGradient.GradientSub)
-            )
+            .padding(.vertical, 12)
         }
-        .padding(.top, 10)
-    }
-    
-    @ViewBuilder
-    private var dangerZoneSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Danger Zone")
-                .font(.system(size: 20, weight: .semibold))
-                .foregroundColor(.red)
-            
-            Text("Once you delete your account, there is no going back. Please be certain.")
-                .font(.system(size: 14))
-                .foregroundColor(.secondary)
-            
-            Button(action: {
-                showDeleteConfirmation = true
-            }) {
-                HStack {
-                    Image(systemName: "trash.fill")
-                        .font(.system(size: 18))
-                    Text("Delete Account")
-                        .font(.system(size: 17, weight: .medium))
-                }
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
-                .background(Color.red)
-                .cornerRadius(12)
-            }
-        }
-        .padding(.top, 30)
     }
 }

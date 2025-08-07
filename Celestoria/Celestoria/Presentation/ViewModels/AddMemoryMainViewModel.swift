@@ -39,6 +39,9 @@ class AddMemoryMainViewModel: ObservableObject {
     @Published var uploadProgress: Double = 0
     @Published var uploadingFileSize: String = ""
     
+    // 중복 처리 방지를 위한 변수
+    private var currentProcessingItem: PhotosPickerItem?
+    
     var isUploadEnabled: Bool {
         selectedVideoItem != nil &&
         thumbnailImage != nil &&
@@ -99,7 +102,17 @@ class AddMemoryMainViewModel: ObservableObject {
                         category: selectedCategory!,
                         videoData: videoData,
                         thumbnailImage: thumbnailImage!,
-                        userId: userId
+                        userId: userId,
+                        progressCallback: { [weak self] progress, message in
+                            Task { @MainActor in
+                                self?.uploadProgress = progress
+                                self?.uploadStatus = message
+                                
+                                // 상세한 진행률 로깅
+                                let percentage = Int(progress * 100)
+                                self?.logger.info("📊 업로드 진행률: \(percentage)% - \(message)")
+                            }
+                        }
                     )
 
                     uploadStatus = "Upload Success"
@@ -241,6 +254,7 @@ class AddMemoryMainViewModel: ObservableObject {
         selectedVideoItem = nil
         title = ""
         note = ""
+        currentProcessingItem = nil // 현재 처리 중인 아이템도 초기화
     }
     
     func handleVideoSelection(item: PhotosPickerItem?) {
@@ -248,8 +262,18 @@ class AddMemoryMainViewModel: ObservableObject {
         
         guard let item = item else {
             logger.notice("No video item selected.")
+            currentProcessingItem = nil // 선택이 해제되면 현재 처리 중인 아이템도 초기화
             return
         }
+
+        // 중복 처리 방지: 이미 같은 아이템을 처리 중이면 무시
+        if currentProcessingItem == item {
+            logger.notice("Same video item is already being processed, ignoring duplicate call")
+            return
+        }
+        
+        // 현재 처리 중인 아이템 업데이트
+        currentProcessingItem = item
 
         logger.notice("Starting thumbnail generation for selected video")
         isThumbnailGenerating = true
@@ -294,7 +318,9 @@ class AddMemoryMainViewModel: ObservableObject {
                         }
                     )
                     
-                    self.setThumbnailGeneratingFalseWithDelay()
+                    // 파일 크기 초과 시에도 현재 처리 중인 아이템 초기화
+                    self.currentProcessingItem = nil
+                    self.setThumbnailGeneratingComplete()
                 }
                 return
             }
@@ -306,14 +332,9 @@ class AddMemoryMainViewModel: ObservableObject {
                 self.logger.notice("File size accepted: \(self.uploadingFileSize)")
             }
 
-            let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).mov")
-            try videoData.write(to: tempURL)
-            logger.notice("Video data saved to temporary URL.")
-
-            let thumbnail = await generateThumbnail(from: tempURL)
-            
-            // Clean up temp file
-            try? FileManager.default.removeItem(at: tempURL)
+            // 썸네일 생성 최적화 - 새로운 고속 메서드 사용
+            logger.notice("최적화된 썸네일 생성 시작")
+            let thumbnail = await generateThumbnailFromData(videoData)
             
             await MainActor.run { [weak self] in
                 guard let self = self else { return }
@@ -328,7 +349,10 @@ class AddMemoryMainViewModel: ObservableObject {
                     self.selectedVideoItem = nil  // Reset if thumbnail generation fails
                     self.logger.error("Thumbnail generation failed - thumbnail is nil")
                 }
-                self.setThumbnailGeneratingFalseWithDelay()
+                
+                // 처리 완료 후 현재 처리 중인 아이템 초기화
+                self.currentProcessingItem = nil
+                self.setThumbnailGeneratingComplete()
             }
         } catch {
             await MainActor.run { [weak self] in
@@ -336,72 +360,128 @@ class AddMemoryMainViewModel: ObservableObject {
                 self.errorMessage = "Video loading failed: \(error.localizedDescription)"
                 self.logger.error("Video selection error: \(error.localizedDescription)")
                 self.isPickerBlocked = false
-                self.setThumbnailGeneratingFalseWithDelay()
+                
+                // 에러 발생 시에도 현재 처리 중인 아이템 초기화
+                self.currentProcessingItem = nil
+                self.setThumbnailGeneratingComplete()
             }
         }
     }
 
-    private func setThumbnailGeneratingFalseWithDelay() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+    private func setThumbnailGeneratingComplete() {
+        // 썸네일 생성 완료 즉시 로딩뷰 숨김
+        DispatchQueue.main.async { [weak self] in
             self?.isThumbnailGenerating = false
         }
     }
 
     private func generateThumbnail(from url: URL) async -> UIImage? {
-        let asset = AVURLAsset(url: url)
+        logger.notice("🚀 레거시 썸네일 함수 - 최적화 적용")
+        let startTime = Date()
+        
+        let asset = AVURLAsset(url: url, options: [
+            AVURLAssetPreferPreciseDurationAndTimingKey: false // 속도 우선
+        ])
+        
         let imageGenerator = AVAssetImageGenerator(asset: asset)
         imageGenerator.appliesPreferredTrackTransform = true
-        imageGenerator.maximumSize = CGSize(width: 1920, height: 1080)
         
-        // Try multiple time points sequentially instead of nested async calls
-        let timePoints = [
-            CMTime(seconds: 2.0, preferredTimescale: 600),
-            CMTime(seconds: 1.0, preferredTimescale: 600),
-            CMTime(seconds: 0.5, preferredTimescale: 600),
-            CMTime.zero
-        ]
+        // ⚡ 최적화: 400px로 크기 제한 (기존 1920x1080 → 400x400)
+        imageGenerator.maximumSize = CGSize(width: 400, height: 400)
         
-        for timePoint in timePoints {
+        // ⚡ 속도 최적화: 허용 오차 확대
+        imageGenerator.requestedTimeToleranceBefore = CMTime(seconds: 2, preferredTimescale: 600)
+        imageGenerator.requestedTimeToleranceAfter = CMTime(seconds: 2, preferredTimescale: 600)
+        
+        // ⚡ 동기식으로 빠르게 처리 (비동기 → 동기)
+        do {
+            let timePoint = CMTime(seconds: 1.0, preferredTimescale: 600)
+            #if os(visionOS)
+            // visionOS에서는 비동기 방식 사용
+            let (cgImage, _) = try await imageGenerator.image(at: timePoint)
+            #else
+            // iOS에서는 동기 방식 사용
+            let cgImage = try imageGenerator.copyCGImage(at: timePoint, actualTime: nil)
+            #endif
+            let thumbnail = UIImage(cgImage: cgImage)
+            
+            let duration = Date().timeIntervalSince(startTime)
+            logger.notice("🎯 레거시 썸네일 생성 성공 - 소요시간: \(String(format: "%.3f", duration))초")
+            return thumbnail
+            
+        } catch {
+            // 실패 시 0초 지점에서 재시도
             do {
-                let cgImage = try await withCheckedThrowingContinuation { [weak self] continuation in
-                    var hasResumed = false
-                    
-                    imageGenerator.generateCGImagesAsynchronously(forTimes: [NSValue(time: timePoint)]) { _, cgImage, _, result, error in
-                        // Prevent multiple continuations
-                        guard !hasResumed else { return }
-                        hasResumed = true
-                        
-                        if let cgImage = cgImage, result == .succeeded {
-                            self?.logger.notice("Thumbnail generated successfully at time \(timePoint.seconds)s")
-                            continuation.resume(returning: cgImage)
-                        } else {
-                            let errorMsg = error?.localizedDescription ?? "Unknown error"
-                            self?.logger.warning("Failed to generate thumbnail at time \(timePoint.seconds)s: \(errorMsg)")
-                            continuation.resume(throwing: error ?? NSError(domain: "ThumbnailError", code: -1))
-                        }
-                    }
-                    
-                    // Timeout after 10 seconds
-                    DispatchQueue.global().asyncAfter(deadline: .now() + 10) {
-                        guard !hasResumed else { return }
-                        hasResumed = true
-                        self?.logger.warning("Thumbnail generation timeout at time \(timePoint.seconds)s")
-                        continuation.resume(throwing: NSError(domain: "ThumbnailError", code: -2, userInfo: [NSLocalizedDescriptionKey: "Timeout"]))
-                    }
-                }
-                
+                #if os(visionOS)
+                // visionOS에서는 비동기 방식 사용
+                let (cgImage, _) = try await imageGenerator.image(at: CMTime.zero)
+                #else
+                // iOS에서는 동기 방식 사용
+                let cgImage = try imageGenerator.copyCGImage(at: CMTime.zero, actualTime: nil)
+                #endif
                 let thumbnail = UIImage(cgImage: cgImage)
-                logger.notice("Thumbnail created successfully from CGImage")
+                
+                let duration = Date().timeIntervalSince(startTime)
+                logger.notice("🎯 레거시 썸네일 생성 성공 (0초) - 소요시간: \(String(format: "%.3f", duration))초")
                 return thumbnail
                 
             } catch {
-                logger.warning("Thumbnail generation failed at time \(timePoint.seconds)s: \(error.localizedDescription)")
-                continue
+                let duration = Date().timeIntervalSince(startTime)
+                logger.error("❌ 레거시 썸네일 생성 실패 - 소요시간: \(String(format: "%.3f", duration))초")
+                return nil
             }
         }
+    }
+    
+    /// 메모리에서 직접 썸네일 생성 (파일 I/O 최적화)
+    private func generateThumbnailFromData(_ videoData: Data) async -> UIImage? {
+        logger.notice("메모리에서 썸네일 생성 시작")
+        let startTime = Date()
         
-        logger.error("All thumbnail generation attempts failed")
-        return nil
+        // 임시 파일 생성 (메모리 맵핑 최적화)
+        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).mov")
+        defer {
+            try? FileManager.default.removeItem(at: tempURL)
+        }
+        
+        do {
+            // 파일 쓰기 최적화
+            try videoData.write(to: tempURL, options: .atomic)
+            
+            // AVAsset 생성 최적화
+            let asset = AVURLAsset(url: tempURL, options: [
+                AVURLAssetPreferPreciseDurationAndTimingKey: false, // 정밀도 낮춤
+                AVURLAssetReferenceRestrictionsKey: AVAssetReferenceRestrictions([]).rawValue
+            ])
+            
+            let imageGenerator = AVAssetImageGenerator(asset: asset)
+            imageGenerator.appliesPreferredTrackTransform = true
+            imageGenerator.maximumSize = CGSize(width: 400, height: 400)
+            
+            // 썸네일 품질 vs 속도 최적화
+            imageGenerator.requestedTimeToleranceBefore = CMTime(seconds: 2, preferredTimescale: 600)
+            imageGenerator.requestedTimeToleranceAfter = CMTime(seconds: 2, preferredTimescale: 600)
+            
+            // 가장 빠른 동기 방식 사용
+            let timePoint = CMTime(seconds: 1.0, preferredTimescale: 600)
+            #if os(visionOS)
+            // visionOS에서는 비동기 방식 사용
+            let (cgImage, _) = try await imageGenerator.image(at: timePoint)
+            #else
+            // iOS에서는 동기 방식 사용
+            let cgImage = try imageGenerator.copyCGImage(at: timePoint, actualTime: nil)
+            #endif
+            
+            let thumbnail = UIImage(cgImage: cgImage)
+            let duration = Date().timeIntervalSince(startTime)
+            logger.notice("메모리 썸네일 생성 성공 - 소요시간: \(String(format: "%.3f", duration))초")
+            return thumbnail
+            
+        } catch {
+            let duration = Date().timeIntervalSince(startTime)
+            logger.error("메모리 썸네일 생성 실패 - 소요시간: \(String(format: "%.3f", duration))초, 에러: \(error.localizedDescription)")
+            return nil
+        }
     }
     
     private func checkPlayerReadyStatus(for playerItem: AVPlayerItem) async -> Bool {

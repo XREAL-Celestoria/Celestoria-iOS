@@ -25,17 +25,30 @@ class CreateMemoryUseCase {
         category: Category,
         videoData: Data,
         thumbnailImage: UIImage?,
-        userId: UUID
+        userId: UUID,
+        progressCallback: UploadProgressCallback? = nil
     ) async throws -> Memory {
         var videoUploadResult: (url: String, metadata: Memory.SpatialMetadata?)? = nil
         var thumbnailURL: String = ""
         
         do {
-            // 비디오와 썸네일 업로드를 병렬로 처리
-            async let videoUpload: (url: String, metadata: Memory.SpatialMetadata?) = mediaRepository.uploadVideo(data: videoData, userId: userId)
+            // 비디오와 썸네일 업로드를 병렬로 처리 (진행률 추적 포함)
+            async let videoUpload: (url: String, metadata: Memory.SpatialMetadata?) = mediaRepository.uploadVideo(
+                data: videoData, 
+                userId: userId, 
+                progressCallback: { progress, message in
+                    // 비디오 업로드는 전체 진행률의 80%를 차지
+                    let adjustedProgress = progress * 0.8
+                    progressCallback?(adjustedProgress, message)
+                }
+            )
             async let thumbnailUpload: String = {
-        if let thumbnailImage = thumbnailImage {
-                    return try await mediaRepository.uploadThumbnail(image: thumbnailImage, userId: userId)
+                if let thumbnailImage = thumbnailImage {
+                    // 썸네일 업로드 시작 알림
+                    progressCallback?(0.8, "썸네일 업로드 중...")
+                    let result = try await mediaRepository.uploadThumbnail(image: thumbnailImage, userId: userId)
+                    progressCallback?(0.85, "썸네일 업로드 완료")
+                    return result
                 } else {
                     return ""
                 }
@@ -46,9 +59,11 @@ class CreateMemoryUseCase {
             thumbnailURL = try await thumbnailUpload
             
             // CDN 전파 대기
+            progressCallback?(0.9, "CDN 전파 대기 중...")
             try await Task.sleep(nanoseconds: 1_000_000_000)
             
             // URL 유효성 검증
+            progressCallback?(0.95, "업로드 검증 중...")
             try await quickValidateUploadedFiles(videoURL: videoUploadResult?.url, thumbnailURL: thumbnailURL)
 
         // 메모리 객체 생성
@@ -66,8 +81,12 @@ class CreateMemoryUseCase {
             isHidden: false
         )
 
-        // 메모리 저장
+                    // 메모리 저장
+            progressCallback?(0.98, "메모리 생성 중...")
             try await quickCreateMemory(memory)
+            
+            // 완료!
+            progressCallback?(1.0, "업로드 완료!")
 
         return memory
             

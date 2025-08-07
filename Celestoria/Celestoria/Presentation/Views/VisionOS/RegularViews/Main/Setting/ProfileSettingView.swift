@@ -89,23 +89,58 @@ struct ProfileSettingView: View {
                 }
                 
                 // nickname view
-                ZStack {
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Colors.ProfileNamebox)
-                        .frame(width: 600, height: 90)
+                VStack(spacing: 12) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Colors.ProfileNamebox)
+                            .frame(width: 600, height: 90)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .stroke(
+                                        nickname.count >= 20 ? AnyShapeStyle(Colors.NebulaRed) : 
+                                        isNicknameFocused ? AnyShapeStyle(LinearGradient.GradientSub) : AnyShapeStyle(Color.clear),
+                                        lineWidth: nickname.count >= 20 || isNicknameFocused ? 2 : 0
+                                    )
+                            )
+                        
+                        // editing 중일때는 textfield로, 아닐때는 text로
+                        if isEditing {
+                            TextField("Nickname", text: $nickname)
+                                .font(.system(size: 28, weight: .bold))
+                                .foregroundColor(Colors.NebulaWhite)
+                                .multilineTextAlignment(.center)
+                                .frame(width: 580)
+                                .focused($isNicknameFocused)
+                                .onChange(of: nickname) { newValue in
+                                    if newValue.count > 20 {
+                                        nickname = String(newValue.prefix(20))
+                                    }
+                                }
+                        } else {
+                            Text(viewModel.profile?.name ?? "User")
+                                .font(.system(size: 28, weight: .bold))
+                                .foregroundColor(Colors.NebulaWhite)
+                        }
+                    }
                     
-                    // editing 중일때는 textfield로, 아닐때는 text로
+                    // Character count and error message (only show when editing)
                     if isEditing {
-                        TextField("Nickname", text: $nickname)
-                            .font(.system(size: 28, weight: .bold))
-                            .foregroundColor(Colors.NebulaWhite)
-                            .multilineTextAlignment(.center)
-                            .frame(width: 580)
-                            .focused($isNicknameFocused)
-                    } else {
-                        Text(viewModel.profile?.name ?? "User")
-                            .font(.system(size: 28, weight: .bold))
-                            .foregroundColor(Colors.NebulaWhite)
+                        HStack {
+                            if nickname.count >= 20 {
+                                Text("The content exceeds the character limit.")
+                                    .font(.system(size: 17, weight: .medium))
+                                    .foregroundColor(Colors.NebulaRed)
+                                    .opacity(nickname.count >= 20 ? 1 : 0)
+                            }
+                            
+                            Spacer()
+                            
+                            Text("\(nickname.count) / 20")
+                                .font(.system(size: 17, weight: .medium))
+                                .foregroundStyle(nickname.count >= 20 ? AnyShapeStyle(Colors.NebulaRed) : AnyShapeStyle(LinearGradient.GradientStroke))
+                        }
+                        .frame(width: 600)
+                        .padding(.top, 4)
                     }
                 }
             }

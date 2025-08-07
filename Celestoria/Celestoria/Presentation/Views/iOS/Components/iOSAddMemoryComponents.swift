@@ -24,11 +24,11 @@ struct iOSCategoryButton: View {
                                 AnyShapeStyle(Colors.IconBackground))
                         .stroke(isSelected ?
                             AnyShapeStyle(LinearGradient.GradientSub) :
-                            AnyShapeStyle(Colors.IconBackground),
+                            AnyShapeStyle(Colors.NonCheckedBoxStroke),
                             lineWidth: 0.5)
                         .frame(width: 50, height: 50)
                     
-                    Image(category.iconName)
+                    Image(isSelected ? category.iconName : "\(category.iconName)Off")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 24, height: 24)
