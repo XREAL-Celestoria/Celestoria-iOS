@@ -10,6 +10,7 @@ import SwiftUI
 // MARK: - Memory List Item View
 struct MemoryListItemView: View {
     let memory: Memory
+    @EnvironmentObject var appState: AppState
     
     private var daysAgo: Int {
         let calendar = Calendar.current
@@ -137,5 +138,11 @@ struct MemoryListItemView: View {
             Spacer(minLength: 0)
         }
         .padding(.horizontal, 16)
+        .contentShape(Rectangle()) // 전체 영역을 탭 가능하게 만듦
+        .onTapGesture {
+            // 메모리 디테일로 이동
+            appState.selectedMemoryForDetail = memory
+            appState.shouldNavigateToMemoryDetail = true
+        }
     }
 }

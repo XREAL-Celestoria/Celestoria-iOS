@@ -12,6 +12,7 @@ struct MemoriesTabContentView: View {
     @ObservedObject var viewModel: UserInfoModalViewModel
     let selectedCategories: Set<MemoryCategory>
     @State private var sortOption: MemorySortOption = .latest
+    @EnvironmentObject var appState: AppState
     
     enum MemorySortOption: String, CaseIterable {
         case latest = "Latest"
@@ -56,6 +57,7 @@ struct MemoriesTabContentView: View {
                 LazyVStack(spacing: 40) {
                     ForEach(sortedAndFilteredMemories) { memory in
                         MemoryListItemView(memory: memory)
+                            .environmentObject(appState)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .top)
@@ -69,6 +71,12 @@ struct MemoriesTabContentView: View {
                 
                 Spacer()
 
+            }
+        }
+        .onChange(of: appState.shouldNavigateToMemoryDetail) { shouldNavigate in
+            if shouldNavigate {
+                // 네비게이션 상태를 리셋
+                appState.shouldNavigateToMemoryDetail = false
             }
         }
     }

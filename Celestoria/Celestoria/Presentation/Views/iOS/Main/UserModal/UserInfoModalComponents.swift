@@ -491,6 +491,7 @@ struct TabContentView: View {
     @Binding var selectedTab: ProfileTab
     @ObservedObject var viewModel: UserInfoModalViewModel
     let selectedCategories: Set<MemoriesTabContentView.MemoryCategory>
+    @EnvironmentObject var appState: AppState
     
     var body: some View {
         VStack(spacing: 0) {
@@ -499,6 +500,7 @@ struct TabContentView: View {
                 switch selectedTab {
                 case .memories:
                     MemoriesTabContentView(viewModel: viewModel, selectedCategories: selectedCategories)
+                        .environmentObject(appState)
                 case .comments:
                     CommentsTabContentView(viewModel: viewModel)
                 case .likes:

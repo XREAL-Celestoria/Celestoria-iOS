@@ -128,6 +128,13 @@ final class AppState: ObservableObject {
         }
     }
     
+    // Memory Detail Navigation
+    @Published var shouldNavigateToMemoryDetail: Bool = false {
+        didSet {
+            Logger.info("Should Navigate To Memory Detail: \(shouldNavigateToMemoryDetail)")
+        }
+    }
+    
     var currentUserId: UUID? {
         return userId
     }

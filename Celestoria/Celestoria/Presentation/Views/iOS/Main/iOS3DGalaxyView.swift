@@ -13,6 +13,7 @@ import os
 
 struct iOS3DGalaxyView: View {
     @StateObject private var viewModel: iOS3DGalaxyViewModel
+    @EnvironmentObject var appState: AppState
     
     init(galaxyViewModel: GalaxyViewModel, appState: AppState, diContainer: DIContainer, onMemorySelected: @escaping (Memory) -> Void) {
         _viewModel = StateObject(wrappedValue: iOS3DGalaxyViewModel(galaxyViewModel: galaxyViewModel, appState: appState, diContainer: diContainer))
@@ -40,8 +41,15 @@ struct iOS3DGalaxyView: View {
         }
         .animation(.easeInOut(duration: 1.5), value: viewModel.isContentReady)
         .onAppear {
-            // 콜백 설정
-            viewModel.onMemorySelected = onMemorySelectedCallback
+            // 콜백 설정 - 앱 스테이트를 사용하도록 수정
+            viewModel.onMemorySelected = { memory in
+                print("🔍 iOS3DGalaxyView - Memory selected from 3D view: \(memory.id.uuidString)")
+                // 앱 스테이트를 통해 메모리 디테일 네비게이션
+                appState.selectedMemoryForDetail = memory
+                appState.shouldNavigateToMemoryDetail = true
+                // 기존 콜백도 호출 (호환성을 위해)
+                onMemorySelectedCallback(memory)
+            }
         }
     }
 }
@@ -142,7 +150,7 @@ struct iOS3DGalaxyContainerView: View {
     @State private var modalRefreshCounter = 0 // UserInfoModal 강제 리프레시용
     
     enum MainActiveScreen {
-        case explore, notification, addMemory, settings, memoryDetail(Memory)
+        case explore, notification, addMemory, settings
     }
     
     enum SettingsScreen: Hashable {
@@ -161,9 +169,10 @@ struct iOS3DGalaxyContainerView: View {
             diContainer: diContainer,
             onMemorySelected: { memory in
                 print("🔍 iOS3DGalaxyContainerView - Memory selected from 3D view: \(memory.id.uuidString)")
-                activeScreen = .memoryDetail(memory)
+                // 앱 스테이트를 통해 메모리 디테일 네비게이션 (iOS3DGalaxyView에서 처리됨)
             }
         )
+        .environmentObject(appState)
         .opacity(containerOpacity)
         .animation(.easeInOut(duration: 1.0), value: containerOpacity)
         .onAppear {
@@ -200,13 +209,11 @@ struct iOS3DGalaxyContainerView: View {
                         onShowMemoryDetail: { memory in
                             print("🔍 iOS3DGalaxyContainerView - Callback received from AddMemory")
                             print("🔍 Memory ID: \(memory.id.uuidString)")
-                            print("🔍 Current activeScreen: \(String(describing: activeScreen))")
-                            print("🔍 Setting activeScreen to memoryDetail")
+                            print("🔍 Using app state for memory detail navigation")
                             
-                            DispatchQueue.main.async {
-                                activeScreen = .memoryDetail(memory)
-                                print("🔍 ActiveScreen successfully set to memoryDetail(\(memory.id.uuidString))")
-                            }
+                            // 앱 스테이트를 통해 메모리 디테일 네비게이션
+                            appState.selectedMemoryForDetail = memory
+                            appState.shouldNavigateToMemoryDetail = true
                         }
                     )
                 case .settings:
@@ -232,14 +239,6 @@ struct iOS3DGalaxyContainerView: View {
                             }
                     }
                     .navigationViewStyle(StackNavigationViewStyle())
-                case .memoryDetail(let memory):
-                    iOSMemoryDetailView(memory: memory, diContainer: diContainer)
-                        .onAppear {
-                            print("🔍 iOSMemoryDetailView appeared for memory: \(memory.id.uuidString)")
-                        }
-                        .onDisappear {
-                            print("🔍 iOSMemoryDetailView disappeared for memory: \(memory.id.uuidString)")
-                        }
                 }
             }
         }

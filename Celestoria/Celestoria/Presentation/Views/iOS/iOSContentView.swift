@@ -13,6 +13,8 @@ struct iOSContentView: View {
     @EnvironmentObject var settingViewModel: SettingViewModel
     let diContainer: DIContainer
     @State private var showSplash = true
+    @State private var showMemoryDetail = false
+    @State private var selectedMemory: Memory?
     
     init(diContainer: DIContainer) {
         self.diContainer = diContainer
@@ -31,6 +33,25 @@ struct iOSContentView: View {
         }
         .onAppear {
             initializeApp()
+        }
+        .onChange(of: appState.shouldNavigateToMemoryDetail) { shouldNavigate in
+            if shouldNavigate, let memory = appState.selectedMemoryForDetail {
+                print("🔍 iOSContentView - Memory detail navigation triggered from app state")
+                print("🔍 Memory ID: \(memory.id.uuidString)")
+                selectedMemory = memory
+                showMemoryDetail = true
+            }
+        }
+        .fullScreenCover(isPresented: $showMemoryDetail) {
+            if let memory = selectedMemory {
+                iOSMemoryDetailView(memory: memory, diContainer: diContainer)
+                    .onDisappear {
+                        // 메모리 디테일 관련 앱 스테이트 리셋
+                        appState.selectedMemoryForDetail = nil
+                        appState.shouldNavigateToMemoryDetail = false
+                        selectedMemory = nil
+                    }
+            }
         }
     }
     

@@ -164,6 +164,7 @@ struct UserInfoModalView: View {
                             
                             TabContentView(selectedTab: $selectedTab, viewModel: viewModel, selectedCategories: selectedCategories)
                                 .frame(minHeight: 400)
+                                .environmentObject(appState)
                             
                             
                             Spacer()

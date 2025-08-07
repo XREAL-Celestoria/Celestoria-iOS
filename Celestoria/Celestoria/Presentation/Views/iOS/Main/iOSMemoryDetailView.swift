@@ -38,15 +38,12 @@ struct iOSMemoryDetailView: View {
                 .shadow(color: Color(red: 0.4, green: 0.7, blue: 1).opacity(0.9), radius: 8, x: 0, y: 0)
                 .shadow(color: Color(red: 0.4, green: 0.7, blue: 1).opacity(0.6), radius: 12, x: 0, y: 0)
             
-            VStack {
+            VStack(alignment: .leading, spacing: 0) {
                 iOSNavigationView(title: "", onBack: {dismiss()})
                     .zIndex(1)
                 
-                Spacer()
-                    .frame(height: 8)
-                
                 ScrollView {
-                    VStack(spacing: 0) {
+                    VStack(alignment: .leading, spacing: 0) {
                         // Gyroscope Video Section
                         GyroscopeVideoView(
                             memory: memory,
@@ -56,6 +53,7 @@ struct iOSMemoryDetailView: View {
                             motionManager: motionManager
                         )
                         .frame(height: UIScreen.main.bounds.width * 0.56)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         
                         // Info Bar
                         HStack(spacing: 20) {
@@ -106,9 +104,10 @@ struct iOSMemoryDetailView: View {
                         }
                         .padding(.horizontal, 20)
                         .padding(.vertical, 16)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         
                         // Memory Info
-                        VStack(alignment: .leading) {
+                        VStack(alignment: .leading, spacing: 0) {
                             // Date
                             Text(viewModel.formattedDate)
                                 .fontStyle(Fonts.caption2)
@@ -135,51 +134,58 @@ struct iOSMemoryDetailView: View {
                             }
                             
                             // Owner Info
-                            if let profile = viewModel.userProfile {
-                                HStack(spacing: 12) {
-                                    Group {
-                                        if let profileKey = profile.profileKey,
-                                           let predefinedImage = PredefinedProfileImage.fromKey(profileKey) {
-                                            Image(predefinedImage.rawValue)
-                                                .resizable()
-                                                .aspectRatio(contentMode: .fill)
-                                        } else if let profileImageURL = profile.profileImageURL {
-                                            AsyncImage(url: URL(string: profileImageURL)) { image in
-                                                image
+                            if !viewModel.isOwner {
+                                if let profile = viewModel.userProfile {
+                                    HStack(spacing: 12) {
+                                        Group {
+                                            if let profileKey = profile.profileKey,
+                                               let predefinedImage = PredefinedProfileImage.fromKey(profileKey) {
+                                                Image(predefinedImage.rawValue)
                                                     .resizable()
                                                     .aspectRatio(contentMode: .fill)
-                                            } placeholder: {
+                                            } else if let profileImageURL = profile.profileImageURL {
+                                                AsyncImage(url: URL(string: profileImageURL)) { image in
+                                                    image
+                                                        .resizable()
+                                                        .aspectRatio(contentMode: .fill)
+                                                } placeholder: {
+                                                    Circle()
+                                                        .fill(Color.gray)
+                                                }
+                                            } else {
                                                 Circle()
                                                     .fill(Color.gray)
                                             }
-                                        } else {
-                                            Circle()
-                                                .fill(Color.gray)
                                         }
+                                        .frame(width: 50, height: 50)
+                                        .clipShape(Circle())
+                                        
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text(profile.name)
+                                                .font(.system(size: 16, weight: .semibold))
+                                                .foregroundColor(.white)
+                                        }
+                                        
+                                        Spacer()
                                     }
-                                    .frame(width: 50, height: 50)
-                                    .clipShape(Circle())
+                                    .padding(.top, 16)
+                                    .padding(.bottom, 8)
                                     
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text(profile.name)
-                                            .font(.system(size: 16, weight: .semibold))
-                                            .foregroundColor(.white)
-                                        Text("Owner")
-                                            .font(.system(size: 14))
-                                            .foregroundColor(.white.opacity(0.6))
-                                    }
-                                    
-                                    Spacer()
                                 }
-                                .padding(.top, 16)
-                                .padding(.bottom, 8)
+    
                             }
+                            
                         }
                         .padding(.horizontal, 20)
                         .padding(.vertical, 16)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             
             // Loading indicator
             if viewModel.isLoading {
@@ -199,7 +205,7 @@ struct iOSMemoryDetailView: View {
                     .zIndex(1)
                     .onTapGesture {
                         viewModel.clearError()
-                }
+                    }
             }
         }
         .navigationBarHidden(true)
@@ -229,8 +235,23 @@ struct iOSMemoryDetailView: View {
                     Color.black
                         .edgesIgnoringSafeArea(.all)
                     
-                    VideoPlayer(player: AVPlayer(url: videoURL))
+                    // Use the existing player if available, otherwise create new one
+                    VideoPlayer(player: player ?? AVPlayer(url: videoURL))
                         .edgesIgnoringSafeArea(.all)
+                        .onAppear {
+                            // If we're using a new player, start playing
+                            if player == nil {
+                                let newPlayer = AVPlayer(url: videoURL)
+                                newPlayer.play()
+                            } else {
+                                // Resume existing player
+                                player?.play()
+                            }
+                        }
+                        .onDisappear {
+                            // Pause when leaving fullscreen
+                            player?.pause()
+                        }
                     
                     // Close button
                     VStack {
