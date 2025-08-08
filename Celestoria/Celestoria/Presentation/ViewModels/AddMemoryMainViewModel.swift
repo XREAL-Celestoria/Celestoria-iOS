@@ -178,6 +178,11 @@ class AddMemoryMainViewModel: ObservableObject {
                 leadingButtonAction: nil,
                 trailingButtonAction: { [weak self] in
                     self?.popupData = nil
+                    // 업로드 상태도 함께 리셋
+                    self?.isUploading = false
+                    self?.uploadProgress = 0
+                    self?.uploadStatus = ""
+                    self?.uploadingFileSize = ""
                 }
             )
             
@@ -238,6 +243,11 @@ class AddMemoryMainViewModel: ObservableObject {
             leadingButtonAction: { [weak self] in
                 self?.popupData = nil
                 self?.isPickerBlocked = true
+                // 업로드 상태도 함께 리셋
+                self?.isUploading = false
+                self?.uploadProgress = 0
+                self?.uploadStatus = ""
+                self?.uploadingFileSize = ""
                 dismissWindow()
             },
             trailingButtonAction: { [weak self] in
@@ -315,6 +325,11 @@ class AddMemoryMainViewModel: ObservableObject {
                         trailingButtonAction: { [weak self] in
                             self?.popupData = nil
                             self?.isPickerBlocked = false
+                            // 업로드 상태도 함께 리셋
+                            self?.isUploading = false
+                            self?.uploadProgress = 0
+                            self?.uploadStatus = ""
+                            self?.uploadingFileSize = ""
                         }
                     )
                     

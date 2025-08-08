@@ -11,17 +11,17 @@ import os
 // MARK: - Profile Tab Enum
 enum ProfileTab: String, CaseIterable {
     case memories = "memories"
-    case comments = "comments"
-    case likes = "likes"
+    // case comments = "comments"  // Temporarily disabled for App Store submission
+    // case likes = "likes"        // Temporarily disabled for App Store submission
     
     var displayName: String {
         switch self {
         case .memories:
             return "Memories"
-        case .comments:
-            return "Comments"
-        case .likes:
-            return "Likes"
+        // case .comments:
+        //     return "Comments"
+        // case .likes:
+        //     return "Likes"
         }
     }
 }
@@ -222,23 +222,23 @@ struct ProfileHeaderStatsView: View {
                             isSelected: selectedTab == .memories,
                             onTap: { onTabSelected(.memories) }
                         )
-                        TabStatItem(
-                            tab: .comments,
-                            count: commentCount,
-                            isSelected: selectedTab == .comments,
-                            onTap: { onTabSelected(.comments) }
-                        )
-                        TabStatItem(
-                            tab: .likes,
-                            count: likeCount,
-                            isSelected: selectedTab == .likes,
-                            onTap: { onTabSelected(.likes) }
-                        )
+                        // TabStatItem(
+                        //     tab: .comments,
+                        //     count: commentCount,
+                        //     isSelected: selectedTab == .comments,
+                        //     onTap: { onTabSelected(.comments) }
+                        // )
+                        // TabStatItem(
+                        //     tab: .likes,
+                        //     count: likeCount,
+                        //     isSelected: selectedTab == .likes,
+                        //     onTap: { onTabSelected(.likes) }
+                        // )
                     } else {
                         // 축소 상태에서는 일반 스탯 아이템
                         StatItem(icon: "Memory-icon", count: memoryCount)
-                        StatItem(icon: "CommentIcon", count: commentCount)
-                        StatItem(icon: "Like-on", count: likeCount)
+                        // StatItem(icon: "CommentIcon", count: commentCount)  // Temporarily disabled
+                        // StatItem(icon: "Like-on", count: likeCount)        // Temporarily disabled
                     }
                 }
                 Spacer()
@@ -267,8 +267,8 @@ struct StatsView: View {
             Spacer()
             HStack(alignment: .center, spacing: 50) {
                 StatItem(icon: "Memory-icon", count: memoryCount)
-                StatItem(icon: "CommentIcon", count: commentCount)
-                StatItem(icon: "Like-on", count: likeCount)
+                // StatItem(icon: "CommentIcon", count: commentCount)  // Temporarily disabled
+                // StatItem(icon: "Like-on", count: likeCount)        // Temporarily disabled
             }
             Spacer()
         }
@@ -307,10 +307,10 @@ struct TabStatItem: View {
         switch tab {
         case .memories:
             return isSelected ? "Memory-icon" : "memoryOff"
-        case .comments:
-            return isSelected ? "CommentIcon" : "commentOff"
-        case .likes:
-            return isSelected ? "likeIcon" : "likeOff"
+        // case .comments:
+        //     return isSelected ? "CommentIcon" : "commentOff"
+        // case .likes:
+        //     return isSelected ? "likeIcon" : "likeOff"
         }
     }
     
@@ -501,10 +501,10 @@ struct TabContentView: View {
                 case .memories:
                     MemoriesTabContentView(viewModel: viewModel, selectedCategories: selectedCategories)
                         .environmentObject(appState)
-                case .comments:
-                    CommentsTabContentView(viewModel: viewModel)
-                case .likes:
-                    LikesTabContentView(viewModel: viewModel)
+                // case .comments:
+                //     CommentsTabContentView(viewModel: viewModel)
+                // case .likes:
+                //     LikesTabContentView(viewModel: viewModel)
                 }
             }
             .transition(.opacity)

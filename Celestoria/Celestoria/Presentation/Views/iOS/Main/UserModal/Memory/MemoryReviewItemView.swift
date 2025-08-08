@@ -110,30 +110,30 @@ struct MemoryListItemView: View {
                     Spacer()
                 }
                 
-                HStack(spacing: 16) {
-                    // comment, like
-                    HStack(spacing: 4) {
-                        Image("commentWhiteIcon")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 14, height: 14)
-                        
-                        Text("0")
-                            .fontStyle(Fonts.caption1)
-                            .foregroundStyle(Colors.NebulaWhite)
-                    }
-                    
-                    HStack(spacing: 4) {
-                        Image("likeWhiteIcon")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 14, height: 14)
-                        
-                        Text("0")
-                            .fontStyle(Fonts.caption1)
-                            .foregroundStyle(Colors.NebulaWhite)
-                    }
-                }
+                // HStack(spacing: 16) {
+                //     // comment, like (temporarily disabled for App Store submission)
+                //     HStack(spacing: 4) {
+                //         Image("commentWhiteIcon")
+                //             .resizable()
+                //             .scaledToFit()
+                //             .frame(width: 14, height: 14)
+                //         
+                //         Text("0")
+                //             .fontStyle(Fonts.caption1)
+                //             .foregroundStyle(Colors.NebulaWhite)
+                //     }
+                //     
+                //     HStack(spacing: 4) {
+                //         Image("likeWhiteIcon")
+                //             .resizable()
+                //             .scaledToFit()
+                //             .frame(width: 14, height: 14)
+                //         
+                //         Text("0")
+                //             .fontStyle(Fonts.caption1)
+                //             .foregroundStyle(Colors.NebulaWhite)
+                //     }
+                // }
             }
             Spacer(minLength: 0)
         }

@@ -180,10 +180,12 @@ struct iOSAddMemoryContentView: View {
                 confirmTitle: popupData.trailingButtonText,
                 onCancel: {
                     showFileSizePopup = false
+                    showUploadProgress = false  // 업로딩 프로그레스 화면도 함께 숨김
                     popupData.leadingButtonAction?()
                 },
                 onConfirm: {
                     showFileSizePopup = false
+                    showUploadProgress = false  // 업로딩 프로그레스 화면도 함께 숨김
                     popupData.trailingButtonAction()
                 }
             )

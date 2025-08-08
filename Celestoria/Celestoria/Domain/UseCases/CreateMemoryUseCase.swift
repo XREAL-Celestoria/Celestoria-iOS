@@ -32,12 +32,12 @@ class CreateMemoryUseCase {
         var thumbnailURL: String = ""
         
         do {
-            // 비디오와 썸네일 업로드를 병렬로 처리 (진행률 추적 포함)
+            // Process video and thumbnail uploads in parallel (with progress tracking)
             async let videoUpload: (url: String, metadata: Memory.SpatialMetadata?) = mediaRepository.uploadVideo(
                 data: videoData, 
                 userId: userId, 
                 progressCallback: { progress, message in
-                    // 비디오 업로드는 전체 진행률의 80%를 차지
+                    // Video upload takes 80% of total progress
                     let adjustedProgress = progress * 0.8
                     progressCallback?(adjustedProgress, message)
                 }
@@ -45,9 +45,9 @@ class CreateMemoryUseCase {
             async let thumbnailUpload: String = {
                 if let thumbnailImage = thumbnailImage {
                     // 썸네일 업로드 시작 알림
-                    progressCallback?(0.8, "썸네일 업로드 중...")
+                    progressCallback?(0.8, "Uploading Thumbnail...")
                     let result = try await mediaRepository.uploadThumbnail(image: thumbnailImage, userId: userId)
-                    progressCallback?(0.85, "썸네일 업로드 완료")
+                    progressCallback?(0.85, "Thumbnail Upload Complete")
                     return result
                 } else {
                     return ""
@@ -59,11 +59,11 @@ class CreateMemoryUseCase {
             thumbnailURL = try await thumbnailUpload
             
             // CDN 전파 대기
-            progressCallback?(0.9, "CDN 전파 대기 중...")
+            progressCallback?(0.9, "Waiting for CDN Propagation...")
             try await Task.sleep(nanoseconds: 1_000_000_000)
             
             // URL 유효성 검증
-            progressCallback?(0.95, "업로드 검증 중...")
+            progressCallback?(0.95, "Verifying Upload...")
             try await quickValidateUploadedFiles(videoURL: videoUploadResult?.url, thumbnailURL: thumbnailURL)
 
         // 메모리 객체 생성
@@ -82,16 +82,16 @@ class CreateMemoryUseCase {
         )
 
                     // 메모리 저장
-            progressCallback?(0.98, "메모리 생성 중...")
+            progressCallback?(0.98, "Creating Memory...")
             try await quickCreateMemory(memory)
             
             // 완료!
-            progressCallback?(1.0, "업로드 완료!")
+            progressCallback?(1.0, "Upload Complete!")
 
         return memory
             
         } catch {
-            logger.error("메모리 생성 실패: \(error.localizedDescription)")
+            logger.error("Memory creation failed: \(error.localizedDescription)")
             
             // 부분적으로 업로드된 파일들 정리
             await cleanupPartialUpload(videoURL: videoUploadResult?.url, thumbnailURL: thumbnailURL, userId: userId)
@@ -147,9 +147,9 @@ class CreateMemoryUseCase {
         return true
     }
     
-    // Supabase 연결 준비 (cold start 문제 해결)
-    private func warmupSupabaseConnection() async throws {
-        logger.info("Supabase 연결 준비 중...")
+            // Supabase 연결 준비 (cold start 문제 해결)
+        private func warmupSupabaseConnection() async throws {
+            logger.info("Preparing Supabase connection...")
         
         let maxWarmupRetries = 2
         var currentRetry = 0
@@ -159,12 +159,12 @@ class CreateMemoryUseCase {
                 // 가벼운 쿼리로 연결 테스트 (실제 메모리 조회하되 결과는 무시)
                 let _: [Memory] = try await memoryRepository.fetchMemories(for: UUID())
                 
-                logger.info("Supabase 연결 준비 완료 (빈 결과는 정상)")
+                logger.info("Supabase connection preparation complete (empty result is normal)")
                 return
                 
             } catch {
                 currentRetry += 1
-                logger.warning("Supabase 연결 준비 실패 (시도 \(currentRetry)/\(maxWarmupRetries)): \(error.localizedDescription)")
+                logger.warning("Supabase connection preparation failed (attempt \(currentRetry)/\(maxWarmupRetries)): \(error.localizedDescription)")
                 
                 if currentRetry < maxWarmupRetries {
                     try await Task.sleep(nanoseconds: 1_000_000_000) // 1초 대기
@@ -172,7 +172,7 @@ class CreateMemoryUseCase {
                 }
                 
                 // warmup 실패는 로그만 남기고 계속 진행 (실제 요청에서 재시도 할 것)
-                logger.warning("Supabase 연결 준비 최종 실패, 실제 요청에서 재시도 예정")
+                logger.warning("Supabase connection preparation final failure, will retry in actual request")
             }
         }
     }
