@@ -49,11 +49,11 @@ struct MemoryListItemView: View {
                                 )
                             )
                     }
-                    .frame(width: UIScreen.main.bounds.width * 0.4, height: UIScreen.main.bounds.height * 0.1)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .frame(width: UIScreen.main.bounds.height * 0.1 * (150.0 / 95.0), height: UIScreen.main.bounds.height * 0.1)
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
                 } else {
                     // Fallback placeholder
-                    RoundedRectangle(cornerRadius: 12)
+                    RoundedRectangle(cornerRadius: 20)
                         .fill(
                             LinearGradient(
                                 gradient: Gradient(colors: [
@@ -64,7 +64,7 @@ struct MemoryListItemView: View {
                                 endPoint: .bottomTrailing
                             )
                         )
-                        .frame(width: 120, height: 80)
+                        .frame(width: UIScreen.main.bounds.height * 0.1 * (150.0 / 95.0), height: UIScreen.main.bounds.height * 0.1)
                         .overlay(
                             Image(systemName: "play.circle.fill")
                                 .font(.system(size: 24))

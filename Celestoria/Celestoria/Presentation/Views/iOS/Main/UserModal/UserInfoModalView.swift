@@ -35,7 +35,7 @@ struct UserInfoModalView: View {
                 VStack(spacing: 0) {
                     profileContentView(profile: profile)
                 }
-                .modifier(ModalStyleModifier(isExpanded: viewModel.isExpanded))
+                .modifier(ModalStyleModifier(cornerRadius: 24, isExpanded: viewModel.isExpanded))
                 .padding(.horizontal, viewModel.isExpanded ? 0 : 28)
                 .scaleEffect(viewModel.isExpanded ? 1.0 : 1.0)
                 .frame(maxWidth: .infinity, maxHeight: viewModel.isExpanded ? .infinity : 120)

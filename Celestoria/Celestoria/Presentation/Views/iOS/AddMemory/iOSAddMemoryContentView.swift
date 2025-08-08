@@ -94,9 +94,10 @@ struct iOSAddMemoryContentView: View {
         }
         .overlay(
             Group {
-                        if showLoadingPopup || showUploadProgress {
-            loadingOverlay
-        }
+                if showLoadingPopup || showUploadProgress {
+                    loadingOverlay
+                        .allowsHitTesting(false) // 터치 이벤트 통과 (업로드 중에도 취소 가능)
+                }
                 
                 if showFileSizePopup {
                     fileSizePopup

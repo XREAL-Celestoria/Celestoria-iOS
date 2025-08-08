@@ -11,10 +11,13 @@ import SwiftUI
 struct ModalStyleModifier: ViewModifier {
     let cornerRadius: CGFloat
     let isExpanded: Bool
+    let corners: UIRectCorner
     
-    init(cornerRadius: CGFloat = 24, isExpanded: Bool = false) {
+    init(cornerRadius: CGFloat = 24, isExpanded: Bool = false, corners: UIRectCorner = .allCorners) {
         self.cornerRadius = cornerRadius
         self.isExpanded = isExpanded
+        // 확장 상태일 때는 위쪽 모서리만, 축소 상태일 때는 모든 모서리
+        self.corners = isExpanded ? [.topLeft, .topRight] : .allCorners
     }
     
     func body(content: Content) -> some View {
@@ -51,7 +54,7 @@ struct ModalStyleModifier: ViewModifier {
                         lineWidth: 1
                     )
             )
-            .cornerRadius(cornerRadius)
+            .cornerRadius(cornerRadius, corners: corners)
             .shadow(
                 color: Color(red: 0.4, green: 0.7, blue: 1).opacity(0.5), 
                 radius: 6,

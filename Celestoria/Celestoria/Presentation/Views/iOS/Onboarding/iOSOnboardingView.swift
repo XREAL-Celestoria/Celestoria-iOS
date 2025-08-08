@@ -24,55 +24,54 @@ struct iOSOnboardingView: View {
     ]
     
     var body: some View {
-        ZStack {
+        VStack(alignment: .center) {
+            switch onboardingData[currentStep - 1].position {
+            case .top:
+                content
+                    .padding(.top, UIScreen.main.bounds.height * 0.07)
+                Spacer()
+            case .bottom:
+                Spacer()
+                content
+                    .padding(.bottom, UIScreen.main.bounds.height * 0.05)
+            }
+            
+            iOSMainButton(
+                title: currentStep < 4 ? "Next" : "Get Started",
+                action: {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        if currentStep < 4 {
+                            currentStep += 1
+                        } else {
+                            // 온보딩 완료 시 UserDefaults에 상태 저장
+                            UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+                            appState.hasCompletedOnboarding = true
+                            appState.navigationState = .login
+                        }
+                    }
+                },
+                isEnabled: true
+            )
+            .padding(.horizontal, 24)
+            .padding(.bottom, 60)
+        }
+        .background(
             Image("Onboarding\(currentStep)")
                 .resizable()
                 .scaledToFill()
                 .clipped()
                 .ignoresSafeArea()
-            
-            VStack(alignment: .center) {
-                switch onboardingData[currentStep - 1].position {
-                case .top:
-                    content
-                        .padding(.top, 120)
-                    Spacer()
-                case .bottom:
-                    Spacer()
-                    content
-                        .padding(.bottom, 50)
-                }
-                
-                iOSMainButton(
-                    title: currentStep < 4 ? "Next" : "Get Started",
-                    action: {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            if currentStep < 4 {
-                                currentStep += 1
-                            } else {
-                                // 온보딩 완료 시 UserDefaults에 상태 저장
-                                UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
-                                appState.hasCompletedOnboarding = true
-                                appState.navigationState = .login
-                            }
-                        }
-                    },
-                    isEnabled: true
-                )
-                .padding(.horizontal, 24)
-                .padding(.bottom, 60)
-            }
-        }
+        )
     }
     
     private var content: some View {
-           VStack(spacing: 16) {
-               Text(onboardingData[currentStep - 1].title)
-                   .fontStyle(Fonts.title3)
-
-               Text(onboardingData[currentStep - 1].subtitle)
-                   .fontStyle(Fonts.subheadline)
-                   .multilineTextAlignment(.center)
-           }
-       }
+        VStack(spacing: 16) {
+            Text(onboardingData[currentStep - 1].title)
+                .fontStyle(Fonts.title3)
+            
+            Text(onboardingData[currentStep - 1].subtitle)
+                .fontStyle(Fonts.subheadline)
+                .multilineTextAlignment(.center)
+        }
+    }
 }
