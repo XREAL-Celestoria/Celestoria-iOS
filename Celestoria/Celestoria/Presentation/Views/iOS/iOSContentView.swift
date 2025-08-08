@@ -13,7 +13,6 @@ struct iOSContentView: View {
     @EnvironmentObject var settingViewModel: SettingViewModel
     let diContainer: DIContainer
     @State private var showSplash = true
-    @State private var showMemoryDetail = false
     @State private var selectedMemory: Memory?
     
     init(diContainer: DIContainer) {
@@ -39,20 +38,25 @@ struct iOSContentView: View {
                 print("🔍 iOSContentView - Memory detail navigation triggered from app state")
                 print("🔍 Memory ID: \(memory.id.uuidString)")
                 selectedMemory = memory
-                showMemoryDetail = true
             }
         }
-        .fullScreenCover(isPresented: $showMemoryDetail) {
-            if let memory = selectedMemory {
-                iOSMemoryDetailView(memory: memory, diContainer: diContainer)
-                    .onDisappear {
-                        // 메모리 디테일 관련 앱 스테이트 리셋
-                        appState.selectedMemoryForDetail = nil
-                        appState.shouldNavigateToMemoryDetail = false
-                        selectedMemory = nil
-                    }
+        .onChange(of: appState.selectedMemoryForDetail) { newMemory in
+            // bool 플래그 레이스를 피하기 위해 메모리 자체 변경에도 반응
+            if let memory = newMemory {
+                print("🔍 iOSContentView - Memory selected via selectedMemoryForDetail change: \(memory.id.uuidString)")
+                selectedMemory = memory
             }
         }
+        .fullScreenCover(item: $selectedMemory) { memory in
+            iOSMemoryDetailView(memory: memory, diContainer: diContainer)
+                .onDisappear {
+                    // 메모리 디테일 관련 앱 스테이트 리셋
+                    appState.selectedMemoryForDetail = nil
+                    appState.shouldNavigateToMemoryDetail = false
+                }
+        }
+        .presentationBackground(.clear) // iPad에서 배경 투명하게
+        .presentationDragIndicator(.hidden) // 드래그 인디케이터 숨김
     }
     
     @ViewBuilder
@@ -93,9 +97,10 @@ struct iOSContentView: View {
                     }
                 }
                 
-                // 로딩 중일 때만 갤럭시뷰 위에 블러 오버레이
+                // 로딩 중일 때만 갤럭시뷰 위에 블러 오버레이 (터치는 통과)
                 if !appState.isGalaxyLoadingComplete {
                     iOSUnifiedLoadingView.stars()
+                        .allowsHitTesting(false) // 터치 이벤트 통과
                         .onAppear {
                             // 4초 후 자동으로 로딩뷰 숨김 (안전장치)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {

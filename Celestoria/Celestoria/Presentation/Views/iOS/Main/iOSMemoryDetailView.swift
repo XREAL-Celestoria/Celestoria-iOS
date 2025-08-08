@@ -34,7 +34,7 @@ struct iOSMemoryDetailView: View {
         ZStack {
             // Background shadow effect for modal presentation
             Colors.BackgroundBlack
-                .ignoresSafeArea()
+                .ignoresSafeArea(.all)
                 .shadow(color: Color(red: 0.4, green: 0.7, blue: 1).opacity(0.9), radius: 8, x: 0, y: 0)
                 .shadow(color: Color(red: 0.4, green: 0.7, blue: 1).opacity(0.6), radius: 12, x: 0, y: 0)
             
@@ -210,6 +210,7 @@ struct iOSMemoryDetailView: View {
         }
         .navigationBarHidden(true)
         .onAppear {
+            print("🔍 iOSMemoryDetailView appeared - Memory ID: \(memory.id)")
             viewModel.setup(appState: appState)
         }
         .task {
@@ -239,12 +240,12 @@ struct iOSMemoryDetailView: View {
                     VideoPlayer(player: player ?? AVPlayer(url: videoURL))
                         .edgesIgnoringSafeArea(.all)
                         .onAppear {
-                            // If we're using a new player, start playing
+                            // 동기화를 위해 기존 플레이어 재사용
                             if player == nil {
-                                let newPlayer = AVPlayer(url: videoURL)
-                                newPlayer.play()
-                            } else {
-                                // Resume existing player
+                                player = AVPlayer(url: videoURL)
+                            }
+                            // 약간의 지연 후 재생으로 동기화 보장
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 player?.play()
                             }
                         }

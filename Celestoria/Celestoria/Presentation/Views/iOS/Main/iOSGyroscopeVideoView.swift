@@ -28,7 +28,10 @@ struct GyroscopeVideoView: View {
                         .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
                         .clipShape(RoundedRectangle(cornerRadius: 20))
                         .onAppear {
-                            player.play()
+                            // 재생 시작 시 동기화를 위해 약간의 지연 후 재생
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                player.play()
+                            }
                         }
                         .onDisappear {
                             player.pause()
@@ -96,7 +99,15 @@ struct GyroscopeVideoView: View {
                     Button(action: {
                         if let videoURLString = memory.videoURL,
                            let videoURL = URL(string: videoURLString) {
-                            player = AVPlayer(url: videoURL)
+                            // 기존 플레이어가 있으면 재사용, 없으면 새로 생성
+                            if player == nil {
+                                player = AVPlayer(url: videoURL)
+                            } else {
+                                // 기존 플레이어의 URL이 다르면 새로 설정
+                                if player?.currentItem?.asset as? AVURLAsset != AVURLAsset(url: videoURL) {
+                                    player?.replaceCurrentItem(with: AVPlayerItem(url: videoURL))
+                                }
+                            }
                             isPlayingInline = true
                         }
                     }) {
