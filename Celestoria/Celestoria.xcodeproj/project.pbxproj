@@ -257,7 +257,7 @@
 		2F8800B72D38CE6800220F89 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2F8800C32D38D3AE00220F89 /* DIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DIContainer.swift; sourceTree = "<group>"; };
 		2FA858DE2D4A5D74005F131D /* PopupErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupErrorView.swift; sourceTree = "<group>"; };
-		2FAA9CDA2E22341800A0CAD7 /* Celestoria-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Celestoria-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2FAA9CDA2E22341800A0CAD7 /* CelestoriaMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CelestoriaMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2FAA9CEB2E2234E900A0CAD7 /* iOSCelestoriaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSCelestoriaApp.swift; sourceTree = "<group>"; };
 		2FB501D22D454FA3005FB0B6 /* GalaxyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalaxyViewModel.swift; sourceTree = "<group>"; };
 		2FB501D42D455130005FB0B6 /* NavigationMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationMenuButton.swift; sourceTree = "<group>"; };
@@ -839,7 +839,7 @@
 			isa = PBXGroup;
 			children = (
 				A21E47782D38CD55002B60FA /* Celestoria.app */,
-				2FAA9CDA2E22341800A0CAD7 /* Celestoria-iOS.app */,
+				2FAA9CDA2E22341800A0CAD7 /* CelestoriaMobile.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -868,9 +868,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2FAA9CD92E22341800A0CAD7 /* Celestoria-iOS */ = {
+		2FAA9CD92E22341800A0CAD7 /* CelestoriaMobile */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2FAA9CE22E22341900A0CAD7 /* Build configuration list for PBXNativeTarget "Celestoria-iOS" */;
+			buildConfigurationList = 2FAA9CE22E22341900A0CAD7 /* Build configuration list for PBXNativeTarget "CelestoriaMobile" */;
 			buildPhases = (
 				2FAA9CD62E22341800A0CAD7 /* Sources */,
 				2FAA9CD72E22341800A0CAD7 /* Frameworks */,
@@ -880,12 +880,12 @@
 			);
 			dependencies = (
 			);
-			name = "Celestoria-iOS";
+			name = CelestoriaMobile;
 			packageProductDependencies = (
 				2FAA9CF32E22372B00A0CAD7 /* Supabase */,
 			);
 			productName = "Celestoria-iOS";
-			productReference = 2FAA9CDA2E22341800A0CAD7 /* Celestoria-iOS.app */;
+			productReference = 2FAA9CDA2E22341800A0CAD7 /* CelestoriaMobile.app */;
 			productType = "com.apple.product-type.application";
 		};
 		A21E47772D38CD55002B60FA /* Celestoria */ = {
@@ -953,7 +953,7 @@
 			projectRoot = "";
 			targets = (
 				A21E47772D38CD55002B60FA /* Celestoria */,
-				2FAA9CD92E22341800A0CAD7 /* Celestoria-iOS */,
+				2FAA9CD92E22341800A0CAD7 /* CelestoriaMobile */,
 			);
 		};
 /* End PBXProject section */
@@ -1194,11 +1194,13 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Celestoria/App/Configuration/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Celestoria;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow access to your photos to choose a profile picture.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1235,11 +1237,13 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Celestoria/App/Configuration/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Celestoria;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow access to your photos to choose a profile picture.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1269,7 +1273,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Celestoria/Celestoria.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=xros*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=xros*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1.1.1;
 				DEVELOPMENT_ASSET_PATHS = "\"Celestoria/Preview Content\"";
@@ -1287,7 +1291,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Celestoria.Celestoria;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=xros*]" = Celestoria;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=xros*]" = "Celestoria Release";
 				SUPPORTED_PLATFORMS = "xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -1303,7 +1307,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Celestoria/Celestoria.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=xros*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=xros*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1.1.1;
 				DEVELOPMENT_ASSET_PATHS = "\"Celestoria/Preview Content\"";
@@ -1321,7 +1325,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Celestoria.Celestoria;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=xros*]" = Celestoria;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=xros*]" = "Celestoria Release";
 				SUPPORTED_PLATFORMS = "xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -1453,7 +1457,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2FAA9CE22E22341900A0CAD7 /* Build configuration list for PBXNativeTarget "Celestoria-iOS" */ = {
+		2FAA9CE22E22341900A0CAD7 /* Build configuration list for PBXNativeTarget "CelestoriaMobile" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2FAA9CE32E22341900A0CAD7 /* Debug */,

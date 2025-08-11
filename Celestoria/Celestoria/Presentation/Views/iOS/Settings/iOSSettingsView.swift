@@ -111,6 +111,7 @@ struct iOSSettingsView: View {
                     }
                     
                     // Blocked Users
+                    /*
                     Button(action: {
                         navigationPath.append(.blockedUsers)
                     }) {
@@ -129,6 +130,7 @@ struct iOSSettingsView: View {
                         .padding(.horizontal, 24)
                         .padding(.vertical, 8)
                     }
+                    */
                 }
                 .padding(.top, 20)
             }
