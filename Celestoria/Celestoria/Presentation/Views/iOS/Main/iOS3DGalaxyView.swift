@@ -284,19 +284,19 @@ struct iOS3DGalaxyContainerView: View {
                     Spacer()
                     
                     HStack(spacing: 16) {
-                        Button(action: { activeScreen = .explore }) {
-                            Image("exploreIcon")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 24, height: 24)
-                        }
-                        
-                        Button(action: { activeScreen = .notification }) {
-                            Image("NotificationIcon")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 24, height: 24)
-                        }
+//                        Button(action: { activeScreen = .explore }) {
+//                            Image("exploreIcon")
+//                                .resizable()
+//                                .scaledToFit()
+//                                .frame(width: 24, height: 24)
+//                        }
+//                        
+//                        Button(action: { activeScreen = .notification }) {
+//                            Image("NotificationIcon")
+//                                .resizable()
+//                                .scaledToFit()
+//                                .frame(width: 24, height: 24)
+//                        }
                         
                         Button(action: { activeScreen = .settings }) {
                             Image("menuIcon")

@@ -30,11 +30,20 @@ struct CelestoriaApp: App {
                         .environmentObject(diContainer.galaxyViewModel)
                         .environmentObject(diContainer.exploreViewModel)
                 } else {
-                    iOSUnifiedLoadingView.fullscreen()
-                        .frame(width: 1280, height: 720)
-                        .onAppear {
-                            os.Logger().error("🔴 ViewModels not initialized!")
+                    ZStack {
+                        Color.black.ignoresSafeArea()
+                        VStack(spacing: 12) {
+                            ProgressView()
+                                .progressViewStyle(.circular)
+                            Text("Loading...")
+                                .foregroundColor(.white)
+                                .font(.system(size: 16, weight: .medium))
                         }
+                    }
+                    .frame(width: 1280, height: 720)
+                    .onAppear {
+                        os.Logger().error("🔴 ViewModels not initialized!")
+                    }
                 }
             }
         }

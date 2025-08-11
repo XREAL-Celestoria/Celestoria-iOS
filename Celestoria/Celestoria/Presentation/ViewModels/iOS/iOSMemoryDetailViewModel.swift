@@ -71,7 +71,7 @@ final class iOSMemoryDetailViewModel: ObservableObject {
             self.userProfile = profile
         } catch {
             logger.error("Error loading user profile: \(error.localizedDescription)")
-            self.errorMessage = "Failed to load user profile"
+            self.errorMessage = "Failed to load user profile."
         }
     }
     
@@ -101,7 +101,7 @@ final class iOSMemoryDetailViewModel: ObservableObject {
         
         // Check if user is trying to like their own memory
         if memory.userId == currentUserId {
-            self.errorMessage = "자신의 메모리에는 좋아요를 할 수 없습니다."
+            self.errorMessage = "You cannot like your own memory."
             return
         }
         
@@ -122,7 +122,7 @@ final class iOSMemoryDetailViewModel: ObservableObject {
             }
         } catch {
             logger.error("Error toggling like: \(error.localizedDescription)")
-            self.errorMessage = "좋아요 처리 중 오류가 발생했습니다."
+            self.errorMessage = "An error occurred while processing the like."
         }
     }
     
@@ -157,7 +157,7 @@ final class iOSMemoryDetailViewModel: ObservableObject {
             
         } catch {
             logger.error("Error deleting memory: \(error.localizedDescription)")
-            self.errorMessage = "메모리 삭제 중 오류가 발생했습니다."
+            self.errorMessage = "An error occurred while deleting the memory."
             return false
         }
     }

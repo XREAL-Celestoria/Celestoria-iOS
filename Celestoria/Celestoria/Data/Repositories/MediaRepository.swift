@@ -30,14 +30,14 @@ class MediaRepository {
     
     // 동영상 업로드 (진행률 추적 포함)
     func uploadVideo(data: Data, userId: UUID, progressCallback: UploadProgressCallback? = nil) async throws -> (url: String, metadata: Memory.SpatialMetadata?) {
-        os.Logger.info("🚀 uploadVideo 시작 - data size: \(data.count) bytes")
+        os.Logger.info("uploadVideo started - data size: \(data.count) bytes")
         
         // 진행률: 5% - 검증 시작
-        progressCallback?(0.05, "비디오 검증 중...")
+        progressCallback?(0.05, "Validating Video...")
         let (validatedData, metadata) = try await validateAndExtractMetadata(from: data)
         
         // 진행률: 15% - 업로드 시작
-        progressCallback?(0.15, "업로드 시작...")
+        progressCallback?(0.15, "Starting Upload...")
         let uploadResult = try await uploadToB2(data: validatedData,
                                                 folder: "spatial_videos",
                                                 fileExtension: "mov",
@@ -46,14 +46,14 @@ class MediaRepository {
                                                 progressCallback: progressCallback)
         
         // 진행률: 100% - 완료
-        progressCallback?(1.0, "업로드 완료!")
-        os.Logger.info("✅ uploadVideo 완료 - public URL: \(uploadResult.url)")
+        progressCallback?(1.0, "Upload Success!")
+        os.Logger.info("✅ uploadVideo completed - public URL: \(uploadResult.url)")
         return (url: uploadResult.url, metadata: metadata)
     }
     
     // 썸네일 업로드 (최적화됨)
     func uploadThumbnail(image: UIImage, userId: UUID) async throws -> String {
-        os.Logger.info("uploadThumbnail 시작")
+        os.Logger.info("uploadThumbnail started")
         
         // 썸네일 최적화: 800px 최대 크기로 리사이징 (썸네일은 프로필보다 조금 클 수 있음)
         let optimizedImage = image.resized(to: 800)
@@ -114,10 +114,10 @@ class MediaRepository {
     private func validateAndExtractMetadata(from data: Data) async throws -> (Data, Memory.SpatialMetadata?) {
         os.Logger.info("validateAndExtractMetadata 시작")
         let tempFileURL = try await createTempFile(with: data)
-        os.Logger.info("임시 파일 생성됨: \(tempFileURL.path)")
+        os.Logger.info("Temporary file created: \(tempFileURL.path)")
         defer {
             try? FileManager.default.removeItem(at: tempFileURL)
-            os.Logger.info("임시 파일 삭제됨: \(tempFileURL.path)")
+            os.Logger.info("Temporary file deleted: \(tempFileURL.path)")
         }
         
         let asset = AVURLAsset(url: tempFileURL)
@@ -129,7 +129,7 @@ class MediaRepository {
         os.Logger.info("메타데이터 추출 완료")
         
         // 공간 비디오는 원본 그대로 업로드 (메타데이터 보존)
-        os.Logger.info("📦 공간 비디오 원본 업로드: \(data.count) bytes")
+        os.Logger.info("📦 Spatial video original upload: \(data.count) bytes")
         return (data, metadata)
     }
     
@@ -137,7 +137,7 @@ class MediaRepository {
     
     /// 파일 업로드: 크기에 따라 단일/멀티파트 업로드 선택
     private func uploadToB2(data: Data, folder: String, fileExtension: String, userId: UUID, mimeType: String, customFileName: String? = nil, progressCallback: UploadProgressCallback? = nil) async throws -> (url: String, path: String) {
-        os.Logger.info("📦 uploadToB2 시작 - folder: \(folder), size: \(data.count) bytes")
+        os.Logger.info("📦 uploadToB2 started - folder: \(folder), size: \(data.count) bytes")
         let fileName = customFileName ?? "\(UUID().uuidString).\(fileExtension)"
         let path = "\(folder)/\(userId.uuidString)/\(fileName)"
         
@@ -145,10 +145,10 @@ class MediaRepository {
         let multipartThreshold = 100 * 1024 * 1024
         
         if data.count >= multipartThreshold {
-            os.Logger.info("🚀 대용량 파일 감지 - 멀티파트 업로드 시작")
+            os.Logger.info("🚀 Large file detected - Starting multipart upload")
             return try await uploadLargeFile(fileName: fileName, path: path, data: data, mimeType: mimeType, userId: userId, progressCallback: progressCallback)
         } else {
-            os.Logger.info("⚡ 일반 업로드")
+            os.Logger.info("⚡ Standard upload")
             return try await uploadSingleFile(fileName: fileName, path: path, data: data, mimeType: mimeType, progressCallback: progressCallback)
         }
     }
@@ -156,92 +156,67 @@ class MediaRepository {
     /// 단일 파일 업로드 (기존 로직 + 진행률)
     private func uploadSingleFile(fileName: String, path: String, data: Data, mimeType: String, progressCallback: UploadProgressCallback? = nil) async throws -> (url: String, path: String) {
         // 1. B2 인증
-        progressCallback?(0.2, "인증 중...")
+        progressCallback?(0.2, "Authenticating...")
         let (accountAuthToken, apiUrl, _) = try await b2Authorize()
         
         // 2. 업로드 URL 요청
-        progressCallback?(0.3, "업로드 URL 요청 중...")
+        progressCallback?(0.3, "Requesting Upload URL...")
         let (uploadUrl, uploadAuthToken) = try await b2GetUploadURL(bucketId: b2BucketId, accountAuthToken: accountAuthToken, apiUrl: apiUrl)
         
         // 3. 파일 업로드
-        progressCallback?(0.4, "파일 업로드 중...")
+        progressCallback?(0.4, "Uploading files...")
         try await b2UploadFile(uploadUrl: uploadUrl, uploadAuthToken: uploadAuthToken, fileName: path, data: data, mimeType: mimeType, progressCallback: progressCallback)
         
         // 4. URL 구성
         let publicURL = "\(cloudflareDomain)/\(bucketName)/\(path)"
-        os.Logger.info("✅ 단일 업로드 완료 - URL: \(publicURL)")
+        os.Logger.info("✅ Single upload completed - URL: \(publicURL)")
         return (url: publicURL, path: path)
     }
     
     /// 멀티파트 업로드 (대용량 파일용 - 2-3배 빠름)
     private func uploadLargeFile(fileName: String, path: String, data: Data, mimeType: String, userId: UUID, progressCallback: UploadProgressCallback? = nil) async throws -> (url: String, path: String) {
         
-        let chunkSize = 20 * 1024 * 1024 // 20MB 청크
+        let chunkSize = 10 * 1024 * 1024 // 10MB 청크 (안정성을 위해 20MB에서 10MB로 조정)
         let totalChunks = (data.count + chunkSize - 1) / chunkSize
         
         os.Logger.info("🚀 멀티파트 업로드 시작 - 총 \(totalChunks)개 청크, 파일크기: \(data.count) bytes")
         
         // 1. B2 인증
-        progressCallback?(0.2, "인증 중...")
+        progressCallback?(0.2, "Authenticating...")
         let (accountAuthToken, apiUrl, _) = try await b2Authorize()
         
         // 2. 멀티파트 업로드 시작
-        progressCallback?(0.25, "멀티파트 업로드 준비 중...")
+        progressCallback?(0.25, "Preparing")
         let fileId = try await b2StartLargeFile(fileName: path, mimeType: mimeType, accountAuthToken: accountAuthToken, apiUrl: apiUrl)
         
-        // 3. 각 청크를 병렬로 업로드 (최대 3개 동시)
+        // 3. 각 청크를 순차적으로 업로드 (안정성을 위해 병렬 업로드 제거)
         var uploadedParts: [(partNumber: Int, sha1: String)] = []
-        let maxConcurrentUploads = min(3, totalChunks)
+        var completedChunks = 0
         
-        try await withThrowingTaskGroup(of: (Int, String).self) { group in
-            var currentChunk = 0
-            var completedChunks = 0
+        for i in 0..<totalChunks {
+            let chunkData = getChunkData(from: data, chunkIndex: i, chunkSize: chunkSize)
             
-            // 초기 청크들 시작
-            for i in 0..<min(maxConcurrentUploads, totalChunks) {
-                let chunkData = getChunkData(from: data, chunkIndex: i, chunkSize: chunkSize)
-                group.addTask {
-                    return try await self.uploadChunk(
-                        fileId: fileId, 
-                        partNumber: i + 1, 
-                        data: chunkData, 
-                        accountAuthToken: accountAuthToken, 
-                        apiUrl: apiUrl
-                    )
-                }
-                currentChunk = i + 1
-            }
+            // 진행률 업데이트 (0.3 ~ 0.9)
+            let progress = 0.3 + (Double(completedChunks) / Double(totalChunks)) * 0.6
+            let progressMessage = "Uploading... (\(completedChunks)/\(totalChunks) chunks)"
+            progressCallback?(progress, progressMessage)
             
-            // 완료된 청크마다 새로운 청크 시작
-            for try await (partNumber, sha1) in group {
-                uploadedParts.append((partNumber: partNumber, sha1: sha1))
-                completedChunks += 1
-                
-                // 진행률 업데이트 (0.3 ~ 0.9)
-                let progress = 0.3 + (Double(completedChunks) / Double(totalChunks)) * 0.6
-                let progressMessage = "업로드 중... (\(completedChunks)/\(totalChunks) 청크)"
-                progressCallback?(progress, progressMessage)
-                os.Logger.info("📦 청크 완료: \(completedChunks)/\(totalChunks)")
-                
-                // 다음 청크 시작
-                if currentChunk < totalChunks {
-                    let chunkData = getChunkData(from: data, chunkIndex: currentChunk, chunkSize: chunkSize)
-                    group.addTask {
-                        return try await self.uploadChunk(
-                            fileId: fileId,
-                            partNumber: currentChunk + 1,
-                            data: chunkData,
-                            accountAuthToken: accountAuthToken,
-                            apiUrl: apiUrl
-                        )
-                    }
-                    currentChunk += 1
-                }
-            }
+            // 청크 업로드 (재시도 로직 포함)
+            let (partNumber, sha1) = try await uploadChunkWithRetry(
+                fileId: fileId,
+                partNumber: i + 1,
+                data: chunkData,
+                accountAuthToken: accountAuthToken,
+                apiUrl: apiUrl
+            )
+            
+            uploadedParts.append((partNumber: partNumber, sha1: sha1))
+            completedChunks += 1
+            os.Logger.info("📦 Chunk completed: \(completedChunks)/\(totalChunks)")
         }
         
         // 4. 멀티파트 업로드 완료
-        progressCallback?(0.95, "파일 결합 중...")
+        progressCallback?(0.95, "Combining Files...")
         uploadedParts.sort { $0.partNumber < $1.partNumber }
         let sha1Array = uploadedParts.map { $0.sha1 }
         
@@ -249,7 +224,7 @@ class MediaRepository {
         
         // 5. URL 구성
         let publicURL = "\(cloudflareDomain)/\(bucketName)/\(path)"
-        os.Logger.info("🎉 멀티파트 업로드 완료 - URL: \(publicURL)")
+        os.Logger.info("🎉 Multipart upload completed - URL: \(publicURL)")
         
         return (url: publicURL, path: path)
     }
@@ -258,10 +233,50 @@ class MediaRepository {
     private func getChunkData(from data: Data, chunkIndex: Int, chunkSize: Int) -> Data {
         let startIndex = chunkIndex * chunkSize
         let endIndex = min(startIndex + chunkSize, data.count)
-        return data.subdata(in: startIndex..<endIndex)
+        let chunkData = data.subdata(in: startIndex..<endIndex)
+        
+        // 마지막 청크가 5MB 미만인 경우 경고
+        let totalChunks = (data.count + chunkSize - 1) / chunkSize
+        if chunkIndex == totalChunks - 1 && chunkData.count < 5 * 1024 * 1024 {
+            os.Logger.warning("⚠️ Final chunk size is less than 5MB: \(chunkData.count) bytes")
+            os.Logger.warning("⚠️ This may cause B2 upload issues. Consider increasing chunk size.")
+        }
+        
+        return chunkData
     }
     
-    /// 개별 청크 업로드
+    /// 개별 청크 업로드 (재시도 로직 포함)
+    private func uploadChunkWithRetry(fileId: String, partNumber: Int, data: Data, accountAuthToken: String, apiUrl: String) async throws -> (Int, String) {
+        let maxRetries = 3
+        var currentRetry = 0
+        var lastError: Error?
+        
+        while currentRetry < maxRetries {
+            do {
+                // B2 청크 업로드 URL 획득
+                let (uploadUrl, uploadAuthToken) = try await b2GetUploadPartUrl(fileId: fileId, accountAuthToken: accountAuthToken, apiUrl: apiUrl)
+                
+                // 청크 업로드 및 SHA1 반환
+                let sha1 = try await b2UploadPart(uploadUrl: uploadUrl, authToken: uploadAuthToken, partNumber: partNumber, data: data)
+                
+                return (partNumber, sha1)
+            } catch {
+                lastError = error
+                currentRetry += 1
+                
+                if currentRetry < maxRetries {
+                    os.Logger.warning("🔄 Chunk \(partNumber) upload failed, retrying (\(currentRetry)/\(maxRetries)): \(error.localizedDescription)")
+                    let delay = pow(2.0, Double(currentRetry - 1)) // 1s, 2s, 4s
+                    try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                    continue
+                }
+            }
+        }
+        
+        throw lastError ?? MediaError.uploadFailed(message: "Chunk \(partNumber) upload failed")
+    }
+    
+    /// 개별 청크 업로드 (기존 함수 - 재시도 로직 없음)
     private func uploadChunk(fileId: String, partNumber: Int, data: Data, accountAuthToken: String, apiUrl: String) async throws -> (Int, String) {
         // B2 청크 업로드 URL 획득
         let (uploadUrl, uploadAuthToken) = try await b2GetUploadPartUrl(fileId: fileId, accountAuthToken: accountAuthToken, apiUrl: apiUrl)
@@ -278,9 +293,9 @@ class MediaRepository {
         let tempFileURL = tempDirectory.appendingPathComponent("\(UUID().uuidString).mov")
         
         // 큰 파일을 위한 메모리 효율적 쓰기
-        os.Logger.info("💾 임시 파일 생성 중... (\(data.count) bytes)")
+        os.Logger.info("💾 Creating temporary file... (\(data.count) bytes)")
         try data.write(to: tempFileURL, options: [.atomic, .noFileProtection])
-        os.Logger.info("✅ 임시 파일 생성 완료: \(tempFileURL.lastPathComponent)")
+        os.Logger.info("✅ Temporary file created: \(tempFileURL.lastPathComponent)")
         
         return tempFileURL
     }
@@ -432,14 +447,9 @@ class MediaRepository {
                 request.setValue(String(data.count), forHTTPHeaderField: "Content-Length")
                 request.timeoutInterval = 3600
                 
-                let sha1Hash: String = {
-                    #if DEBUG
-                    return "do_not_verify"
-                    #else
-                    let digest = Insecure.SHA1.hash(data: data)
-                    return digest.map { String(format: "%02x", $0) }.joined()
-                    #endif
-                }()
+                // Always calculate SHA1 hash for security
+                let digest = Insecure.SHA1.hash(data: data)
+                let sha1Hash = digest.map { String(format: "%02x", $0) }.joined()
                 request.setValue(sha1Hash, forHTTPHeaderField: "X-Bz-Content-Sha1")
                 request.httpMethod = "POST"
                 
@@ -607,21 +617,28 @@ class MediaRepository {
     
     /// 개별 청크 업로드
     private func b2UploadPart(uploadUrl: String, authToken: String, partNumber: Int, data: Data) async throws -> String {
+        // B2 청크 크기 검증 (5MB ~ 5GB)
+        let minChunkSize = 5 * 1024 * 1024 // 5MB
+        let maxChunkSize = 5 * 1024 * 1024 * 1024 // 5GB
+        
+        guard data.count >= minChunkSize else {
+            throw MediaError.uploadFailed(message: "Chunk size too small. Minimum 5MB required, current: \(data.count) bytes")
+        }
+        
+        guard data.count <= maxChunkSize else {
+            throw MediaError.uploadFailed(message: "Chunk size too large. Maximum 5GB, current: \(data.count) bytes")
+        }
+        
         var request = URLRequest(url: URL(string: uploadUrl)!)
         request.httpMethod = "POST"
         request.setValue(authToken, forHTTPHeaderField: "Authorization")
+        request.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
         request.setValue(String(partNumber), forHTTPHeaderField: "X-Bz-Part-Number")
         request.setValue(String(data.count), forHTTPHeaderField: "Content-Length")
         
-        // SHA1 해시 계산
-        let sha1Hash: String = {
-            #if DEBUG
-            return "unverified:\(UUID().uuidString.prefix(8))"
-            #else
-            let digest = Insecure.SHA1.hash(data: data)
-            return digest.map { String(format: "%02x", $0) }.joined()
-            #endif
-        }()
+        // Always calculate SHA1 hash for security
+        let digest = Insecure.SHA1.hash(data: data)
+        let sha1Hash = digest.map { String(format: "%02x", $0) }.joined()
         
         request.setValue(sha1Hash, forHTTPHeaderField: "X-Bz-Content-Sha1")
         
@@ -680,11 +697,11 @@ enum MediaError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidFormat:
-            return "비디오 포맷이 올바르지 않습니다. Spatial Video 형식인지 확인해주세요."
+            return "Video format is invalid. Please check if it's a Spatial Video format."
         case .metadataExtractionFailed:
-            return "메타데이터 추출에 실패했습니다."
+            return "Failed to extract metadata."
         case .uploadFailed(let message):
-            return message ?? "비디오 업로드에 실패했습니다."
+            return message ?? "Video upload failed."
         }
     }
 }
