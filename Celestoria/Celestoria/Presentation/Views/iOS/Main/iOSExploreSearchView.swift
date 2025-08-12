@@ -14,12 +14,23 @@ struct iOSExploreSearchView: View {
     @FocusState private var isSearchFocused: Bool
     let onClose: (() -> Void)?
     @State private var searchHistory: [String] = []
+    @State private var showingSuggestions: Bool = false
+    @State private var hasSubmittedSearch: Bool = false
+    @State private var isLoadingSuggestions: Bool = false
     private let historyKey = "ExploreSearchHistory"
-    private enum Phase { case history, suggest, result, empty }
+    
+    private enum Phase { 
+        case history, suggest, result, empty 
+    }
+    
     private var phase: Phase {
-        if viewModel.searchText.isEmpty { return .history }
-        if viewModel.isLoading { return .suggest }
-        return viewModel.exploreUsers.isEmpty ? .empty : .result
+        if viewModel.searchText.isEmpty {
+            return showingSuggestions ? .suggest : .history
+        }
+        if hasSubmittedSearch {
+            return viewModel.exploreUsers.isEmpty ? .empty : .result
+        }
+        return .suggest
     }
     
     var body: some View {
@@ -27,81 +38,86 @@ struct iOSExploreSearchView: View {
             Colors.backgroundMain.ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Custom Navigation Bar
-                HStack {
-                    Button(action: {
-                        if let onClose { onClose() } else { dismiss() }
-                    }) {
-                        Image("backButton")
+                // Search Bar
+                HStack(spacing: 6) {
+                    HStack(spacing: 8) {
+                        Image("searchIcon")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 24, height: 24)
-                            .foregroundStyle(Colors.NebulaWhite)
-                    }
-                    
-                    Spacer()
-                    
-                    Text("Search")
-                        .fontStyle(Fonts.title1)
-                        .foregroundStyle(Colors.NebulaWhite)
-                    
-                    Spacer()
-                    
-                    // 빈 공간으로 균형 맞추기
-                    Image("backButton")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                        .opacity(0)
-                }
-                .padding(.horizontal, 24)
-                .padding(.top, 16)
-                .padding(.bottom, 20)
-                
-                // Search Bar
-                HStack(spacing: 16) {
-                    HStack(spacing: 12) {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size: 18, weight: .medium))
+                            .frame(width: 18, height: 18)
                             .foregroundStyle(Colors.Placeholder)
                         
-                        TextField("Search users...", text: $viewModel.searchText)
+                        TextField("Search...", text: $viewModel.searchText)
                             .font(.system(size: 18))
                             .foregroundStyle(Colors.NebulaWhite)
                             .focused($isSearchFocused)
-                            .onChange(of: viewModel.searchText) { _, _ in
+                            .onChange(of: viewModel.searchText) { _, newValue in
+                                if newValue.isEmpty {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        showingSuggestions = false
+                                        hasSubmittedSearch = false
+                                    }
+                                } else {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        showingSuggestions = true
+                                        hasSubmittedSearch = false
+                                    }
+                                }
                                 Task { await viewModel.onChangeSearchText() }
                             }
                             .onSubmit {
                                 addHistory(viewModel.searchText)
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    hasSubmittedSearch = true
+                                    showingSuggestions = false
+                                }
                             }
                         
                         if !viewModel.searchText.isEmpty {
                             Button(action: {
                                 viewModel.searchText = ""
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    showingSuggestions = false
+                                    hasSubmittedSearch = false
+                                }
                             }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .font(.system(size: 18))
-                                    .foregroundStyle(Colors.Placeholder)
+                                Image("searchXIcon")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 18, height: 18)
                             }
                         }
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 12)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Colors.NebulaBlack.opacity(0.3))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .stroke(Colors.Placeholder.opacity(0.3), lineWidth: 1)
-                            )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 30)
+                            .stroke(LinearGradient.SearchUsercardBG, lineWidth: 2)
                     )
+                    .background(
+                        RoundedRectangle(cornerRadius: 30)
+                            .fill(Colors.ProfileNamebox)
+                    )
+                    
+                    Button(action: {
+                        if let onClose { onClose() } else { dismiss() }
+                    }) {
+                        HStack(alignment: .center) {
+                            Spacer().frame(width: 10)
+                            
+                            Text("Cancel")
+                                .fontStyle(Fonts.subheadline)
+                                .foregroundStyle(LinearGradient.MainGradient)
+                        }
+                    }
                 }
-                .padding(.horizontal, 24)
-                .padding(.bottom, 24)
+                .padding(.horizontal, 16)
+                .padding(.top, 16)
+                .padding(.bottom, 28)
                 
-                switch phase {
-                case .history:
+                // All Views with Opacity Control
+                ZStack {
+                    // History View
                     ScrollView {
                         LazyVStack(spacing: 20) {
                             ForEach(searchHistory, id: \.self) { term in
@@ -111,39 +127,90 @@ struct iOSExploreSearchView: View {
                                         .foregroundStyle(Colors.NebulaWhite)
                                         .onTapGesture {
                                             viewModel.searchText = term
+                                            withAnimation(.easeInOut(duration: 0.3)) {
+                                                hasSubmittedSearch = true
+                                                showingSuggestions = false
+                                            }
                                             Task { await viewModel.onChangeSearchText() }
                                         }
                                     Spacer()
                                     Button(action: { removeHistory(term) }) {
-                                        Image(systemName: "xmark")
-                                            .font(.system(size: 14, weight: .semibold))
-                                            .foregroundStyle(Colors.Placeholder)
+                                        Image("searchXMark")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 18, height: 18)
                                     }
                                 }
-                                .padding(.horizontal, 24)
+                                .padding(.horizontal, 16)
                             }
                         }
+                        .padding(.bottom, 100) // 하단 여백 추가
                     }
-                case .suggest:
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                    .opacity(phase == .history ? 1 : 0)
+                    .animation(.easeInOut(duration: 0.3), value: phase)
+                    
+                    // Suggest View
                     ScrollView {
                         LazyVStack(spacing: 20) {
-                            ForEach(viewModel.exploreUsers, id: \.profile.userId) { user in
-                                if let card = viewModel.getCardItem(by: user.profile.userId) {
-                                    Button(action: {
-                                        addHistory(viewModel.searchText)
-                                        viewModel.selectedUser = user
-                                        viewModel.showingUserSpace = true
-                                        if let onClose { onClose() } else { dismiss() }
-                                    }) { SuggestionRow(card: card, user: user) }
-                                    .buttonStyle(PlainButtonStyle())
+                            if viewModel.searchText.isEmpty {
+                                // 포커싱만 되었을 때 기본 추천 유저들 표시
+                                if isLoadingSuggestions {
+                                    // 추천 로딩 중일 때
+                                    VStack(spacing: 16) {
+                                        ProgressView()
+                                            .progressViewStyle(CircularProgressViewStyle(tint: Colors.NebulaWhite))
+                                            .scaleEffect(1.2)
+                                        Text("Loading recommendations...")
+                                            .fontStyle(Fonts.caption1)
+                                            .foregroundStyle(Colors.Placeholder)
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 40)
+                                } else {
+                                    // 추천 유저들 표시
+                                    ForEach(viewModel.popularUsers.prefix(5), id: \.profile.userId) { user in
+                                        if let card = viewModel.getCardItem(by: user.profile.userId) {
+                                            Button(action: {
+                                                addHistory(user.profile.name)
+                                                viewModel.selectedUser = user
+                                                viewModel.showingUserSpace = true
+                                                if let onClose { onClose() } else { dismiss() }
+                                            }) { 
+                                                SuggestionRow(card: card, user: user) 
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
+                                        }
+                                    }
+                                }
+                            } else {
+                                // 검색어가 있을 때 작은 추천 뷰 표시
+                                ForEach(viewModel.exploreUsers, id: \.profile.userId) { user in
+                                    if let card = viewModel.getCardItem(by: user.profile.userId) {
+                                        Button(action: {
+                                            addHistory(viewModel.searchText)
+                                            viewModel.selectedUser = user
+                                            viewModel.showingUserSpace = true
+                                            if let onClose { onClose() } else { dismiss() }
+                                        }) { 
+                                            SuggestionRow(card: card, user: user) 
+                                        }
+                                        .buttonStyle(PlainButtonStyle())
+                                    }
                                 }
                             }
                         }
-                        .padding(.horizontal, 24)
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 100) // 하단 여백 추가
                     }
-                case .result:
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                    .opacity(phase == .suggest ? 1 : 0)
+                    .animation(.easeInOut(duration: 0.3), value: phase)
+                    
+                    // Result View
                     ScrollView {
                         LazyVStack(spacing: 24) {
+                            Spacer().frame(height: 4)
                             ForEach(viewModel.exploreUsers, id: \.profile.userId) { user in
                                 if let card = viewModel.getCardItem(by: user.profile.userId) {
                                     Button(action: {
@@ -151,116 +218,112 @@ struct iOSExploreSearchView: View {
                                         viewModel.selectedUser = user
                                         viewModel.showingUserSpace = true
                                         if let onClose { onClose() } else { dismiss() }
-                                    }) { LargeResultRow(card: card, user: user) }
+                                    }) { 
+                                        LargeResultRow(card: card, user: user) 
+                                    }
                                     .buttonStyle(PlainButtonStyle())
                                 }
                             }
                         }
-                        .padding(.horizontal, 24)
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 100) // 하단 여백 추가
                     }
-                case .empty:
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                    .opacity(phase == .result ? 1 : 0)
+                    .animation(.easeInOut(duration: 0.3), value: phase)
+                    
+                    // Empty View
                     VStack(spacing: 16) {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size: 48))
+                        Image("searchEmptyIcon")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 120, height: 120)
                             .foregroundStyle(Colors.Placeholder)
                         Text("We couldn't find a match")
-                            .fontStyle(Fonts.title3)
+                            .fontStyle(Fonts.title2)
                             .foregroundStyle(Colors.NebulaWhite)
-                        Text("Try adjusting your search to find what you are looking for!")
-                            .fontStyle(Fonts.caption1)
-                            .foregroundStyle(Colors.Placeholder)
+                        
+                        Text("Try adjusting your search\nto find what you are looking for!")
+                            .fontStyle(Fonts.body1)
+                            .foregroundStyle(Colors.NebulaWhite)
                     }
-                    .frame(maxWidth: .infinity)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding(.vertical, 40)
+                    .opacity(phase == .empty ? 1 : 0)
+                    .animation(.easeInOut(duration: 0.3), value: phase)
                 }
-                
-                Spacer()
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
         }
         .onAppear {
-            isSearchFocused = true
             loadHistory()
+            // 초기 상태 설정 - 처음에는 검색 히스토리 표시
+            showingSuggestions = false
+            hasSubmittedSearch = false
+            isLoadingSuggestions = false
+            
+            // 검색 결과 초기화 및 모스트 스탈스 데이터 리프레시
+            Task {
+                viewModel.clearSearchResults()
+                await viewModel.refreshMostStarsData()
+            }
         }
-        .toolbar(.hidden, for: .navigationBar)
+        .onDisappear {
+            // 서치뷰가 사라질 때 검색 결과 완전 정리
+            viewModel.clearSearchResults()
+            
+            // 모스트 스탈스 데이터 복원
+            Task {
+                await viewModel.refreshMostStarsData()
+            }
+        }
+        .onChange(of: isSearchFocused) { _, isFocused in
+            if isFocused {
+                // 포커싱 시 즉시 로딩 상태로 전환
+                isLoadingSuggestions = true
+                
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    showingSuggestions = true
+                    hasSubmittedSearch = false
+                }
+                
+                // 1초 후에 로딩 완료
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        isLoadingSuggestions = false
+                    }
+                }
+            } else {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    showingSuggestions = false
+                    isLoadingSuggestions = false
+                }
+            }
+        }
+        .ignoresSafeArea(.keyboard, edges: .bottom)
     }
     
+    // MARK: - Private Methods
     private func loadHistory() {
         if let data = UserDefaults.standard.array(forKey: historyKey) as? [String] {
             searchHistory = data
         }
     }
+    
     private func addHistory(_ term: String) {
         let trimmed = term.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         searchHistory.removeAll { $0.caseInsensitiveCompare(trimmed) == .orderedSame }
         searchHistory.insert(trimmed, at: 0)
-        if searchHistory.count > 10 { searchHistory = Array(searchHistory.prefix(10)) }
+        if searchHistory.count > 10 { 
+            searchHistory = Array(searchHistory.prefix(10)) 
+        }
         UserDefaults.standard.set(searchHistory, forKey: historyKey)
     }
+    
     private func removeHistory(_ term: String) {
         searchHistory.removeAll { $0 == term }
         UserDefaults.standard.set(searchHistory, forKey: historyKey)
-    }
-}
-
-// MARK: - Search Result Item View
-private struct SearchResultItemView: View {
-    let card: ExploreUserCardItem
-    let user: ExploreUser
-    
-    var body: some View {
-        HStack(spacing: 16) {
-            // Profile Image
-            ProfileImageView(
-                profile: user.profile,
-                size: 56
-            )
-            
-            // User Info
-            VStack(alignment: .leading, spacing: 8) {
-                Text(card.userName)
-                    .fontStyle(Fonts.title3)
-                    .foregroundStyle(Colors.NebulaWhite)
-                    .lineLimit(1)
-                
-                HStack(spacing: 16) {
-                    VStack(spacing: 4) {
-                        Text("\(card.memoryStars)")
-                            .fontStyle(Fonts.subheadline)
-                            .foregroundStyle(Colors.NebulaWhite)
-                        Text("Memories")
-                            .fontStyle(Fonts.caption2)
-                            .foregroundStyle(Colors.Placeholder)
-                    }
-                    
-                    VStack(spacing: 4) {
-                        Text("\(card.likeCount)")
-                            .fontStyle(Fonts.subheadline)
-                            .foregroundStyle(Colors.NebulaWhite)
-                        Text("Likes")
-                            .fontStyle(Fonts.caption2)
-                            .foregroundStyle(Colors.Placeholder)
-                    }
-                }
-            }
-            
-            Spacer()
-            
-            // Arrow Icon
-            Image(systemName: "chevron.right")
-                .font(.system(size: 16, weight: .medium))
-                .foregroundStyle(Colors.Placeholder)
-        }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 16)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Colors.NebulaBlack.opacity(0.3))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(Colors.Placeholder.opacity(0.2), lineWidth: 1)
-                )
-        )
     }
 }
 
@@ -268,71 +331,70 @@ private struct SearchResultItemView: View {
 private struct SuggestionRow: View {
     let card: ExploreUserCardItem
     let user: ExploreUser
+    
     var body: some View {
-        HStack(spacing: 12) {
-            Circle()
-                .stroke(Colors.Placeholder, lineWidth: 2)
-                .frame(width: 22, height: 22)
+        HStack(spacing: 8) {
+            // Profile Image
+            ProfileImageView(
+                profile: user.profile,
+                size: 32
+            )
+            
             VStack(alignment: .leading, spacing: 4) {
-                Text(card.userName)
-                    .fontStyle(Fonts.body1)
-                    .foregroundStyle(Colors.NebulaWhite)
-                Text("\(card.memoryStars) Memory Stars, \(card.likeCount) Likes")
-                    .fontStyle(Fonts.caption2)
-                    .foregroundStyle(Colors.Placeholder)
-            }
-            Spacer()
-        }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 8)
-    }
-}
-
-// MARK: - Large Result Row (thumbnail + info)
-private struct LargeResultRow: View {
-    let card: ExploreUserCardItem
-    let user: ExploreUser
-    var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(card.imageName)
-                .resizable()
-                .scaledToFill()
-                .frame(width: UIScreen.main.bounds.width * 0.61,
-                       height: UIScreen.main.bounds.width * 0.61 * (152.0 / 240.0))
-                .clipShape(RoundedRectangle(cornerRadius: 20))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(LinearGradient.SearchUsercardBG, lineWidth: 3)
-                )
-            VStack(alignment: .leading, spacing: 8) {
                 Text(card.userName)
                     .fontStyle(Fonts.subheadline)
                     .foregroundStyle(Colors.NebulaWhite)
+                    .lineLimit(1)
                 Text("\(card.memoryStars) Memory Stars")
                     .fontStyle(Fonts.caption2)
                     .foregroundStyle(Colors.Placeholder)
+                    .lineLimit(1)
             }
+    
             Spacer()
         }
     }
 }
 
-#Preview {
-    iOSExploreSearchView(
-        viewModel: ExploreViewModel(
-            exploreUseCase: ExploreUseCase(
-                authRepository: AuthRepository(supabase: SupabaseClient(
-                    supabaseURL: URL(string: "https://example.com")!,
-                    supabaseKey: "key"
-                )),
-                memoryRepository: MemoryRepository(supabase: SupabaseClient(
-                    supabaseURL: URL(string: "https://example.com")!,
-                    supabaseKey: "key"
-                ))
-            ),
-            appState: AppState(),
-            diContainer: DIContainer()
-        ),
-        onClose: nil
-    )
+// MARK: - Large Result Row 
+private struct LargeResultRow: View {
+    let card: ExploreUserCardItem
+    let user: ExploreUser
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .top, spacing: 12) {
+                Image(card.imageName)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: UIScreen.main.bounds.width * 0.61,
+                           height: UIScreen.main.bounds.width * 0.61 * (152.0 / 240.0))
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(LinearGradient.SearchUsercardBG, lineWidth: 5)
+                    )
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    ProfileImageView(
+                        profile: user.profile,
+                        size: 32
+                    )
+                    
+                    Text(card.userName)
+                        .fontStyle(Fonts.subheadline)
+                        .foregroundStyle(Colors.NebulaWhite)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                    
+                    Text("\(card.memoryStars) Memory Stars")
+                        .fontStyle(Fonts.caption2)
+                        .foregroundStyle(Colors.Placeholder)
+                        .lineLimit(1)
+                }
+                
+                Spacer(minLength: 0)
+            }
+        }
+    }
 }

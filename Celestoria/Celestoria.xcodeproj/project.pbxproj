@@ -123,7 +123,7 @@
 		5D76A4CE2E4B8D9B00C688DE /* iOSNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76A4CD2E4B8D9B00C688DE /* iOSNotificationView.swift */; };
 		5D76A4CF2E4B93FE00C688DE /* ExploreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2198CA42D48814300B0AF65 /* ExploreViewModel.swift */; };
 		5D76A4D02E4B945200C688DE /* ExploreUserCardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB501DF2D4655D9005FB0B6 /* ExploreUserCardItem.swift */; };
-		5D76A4D42E4BB8BE00C688DE /* ExploreSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76A4D32E4BB8BE00C688DE /* ExploreSearchView.swift */; };
+		5D76A4D42E4BB8BE00C688DE /* iOSExploreSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76A4D32E4BB8BE00C688DE /* iOSExploreSearchView.swift */; };
 		5D76F3EC2E43EE930026579D /* CommentListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76F3EB2E43EE930026579D /* CommentListItemView.swift */; };
 		5D76F3EE2E43EEB50026579D /* LikeListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76F3ED2E43EEB50026579D /* LikeListItemView.swift */; };
 		5D76F3F02E43EEE90026579D /* MemoryReviewItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76F3EF2E43EEE90026579D /* MemoryReviewItemView.swift */; };
@@ -328,7 +328,7 @@
 		5D707EE62E4276ED00CC1224 /* CornerRadius.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CornerRadius.swift; sourceTree = "<group>"; };
 		5D76A4CA2E4B8D5E00C688DE /* iOSExpolreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSExpolreView.swift; sourceTree = "<group>"; };
 		5D76A4CD2E4B8D9B00C688DE /* iOSNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSNotificationView.swift; sourceTree = "<group>"; };
-		5D76A4D32E4BB8BE00C688DE /* ExploreSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreSearchView.swift; sourceTree = "<group>"; };
+		5D76A4D32E4BB8BE00C688DE /* iOSExploreSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSExploreSearchView.swift; sourceTree = "<group>"; };
 		5D76F3EB2E43EE930026579D /* CommentListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentListItemView.swift; sourceTree = "<group>"; };
 		5D76F3ED2E43EEB50026579D /* LikeListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeListItemView.swift; sourceTree = "<group>"; };
 		5D76F3EF2E43EEE90026579D /* MemoryReviewItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryReviewItemView.swift; sourceTree = "<group>"; };
@@ -805,7 +805,7 @@
 				A2A286C02E2C3157001D89B2 /* iOS3DMemoryStarNode.swift */,
 				A2A286BE2E2C314B001D89B2 /* iOS3DGalaxyView.swift */,
 				5D76A4CA2E4B8D5E00C688DE /* iOSExpolreView.swift */,
-				5D76A4D32E4BB8BE00C688DE /* ExploreSearchView.swift */,
+				5D76A4D32E4BB8BE00C688DE /* iOSExploreSearchView.swift */,
 				5D76A4CD2E4B8D9B00C688DE /* iOSNotificationView.swift */,
 				5D76F3F12E43EEF30026579D /* UserModal */,
 			);
@@ -1076,6 +1076,7 @@
 				5D707EC92E4217F800CC1224 /* UIImage+Extensions.swift in Sources */,
 				A2A286BD2E2C3133001D89B2 /* iOSThumbnailSettingView.swift in Sources */,
 				A2A2867F2E2C0415001D89B2 /* ContentReport.swift in Sources */,
+				5D76A4D42E4BB8BE00C688DE /* iOSExploreSearchView.swift in Sources */,
 				A2D6E0C82E4B99E60087C203 /* NotificationUseCase.swift in Sources */,
 				5D76A4D42E4BB8BE00C688DE /* ExploreSearchView.swift in Sources */,
 				A2A286832E2C0434001D89B2 /* Logger.swift in Sources */,

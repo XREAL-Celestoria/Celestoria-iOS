@@ -39,7 +39,7 @@ struct iOSExploreView: View {
                     Spacer().frame(height: 20)
                     
                     LazyVGrid(columns: columns, spacing: 40) {
-                        let topUsers = Array(viewModel.exploreUsers.prefix(3))
+                        let topUsers = Array(viewModel.mostStarsUsers.prefix(3))
                         ForEach(Array(topUsers.enumerated()), id: \.offset) { index, user in
                             if let card = viewModel.getCardItem(by: user.profile.userId) {
                                 Button(action: {
@@ -139,7 +139,7 @@ struct iOSExploreView: View {
             }
             
             .task {
-                await viewModel.fetchExploreUsers()
+                await viewModel.fetchMostStarsUsers()
                 await viewModel.fetchPopularUsers()
                 await viewModel.fetchLatestUsers()
             }
@@ -150,7 +150,7 @@ struct iOSExploreView: View {
                 }
             }
             .fullScreenCover(isPresented: $showingSearchView) {
-                ExploreSearchView(viewModel: viewModel, onClose: { showingSearchView = false })
+                iOSExploreSearchView(viewModel: viewModel, onClose: { showingSearchView = false })
                     .toolbar(.hidden, for: .navigationBar)
             }
             // Removed own-galaxy popup sheet
