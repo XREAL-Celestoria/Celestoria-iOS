@@ -17,6 +17,7 @@ struct iOSExploreSearchView: View {
     @State private var showingSuggestions: Bool = false
     @State private var hasSubmittedSearch: Bool = false
     @State private var isLoadingSuggestions: Bool = false
+    @State private var showingGalaxyFromSearch: Bool = false
     private let historyKey = "ExploreSearchHistory"
     
     private enum Phase { 
@@ -174,8 +175,7 @@ struct iOSExploreSearchView: View {
                                             Button(action: {
                                                 addHistory(user.profile.name)
                                                 viewModel.selectedUser = user
-                                                viewModel.showingUserSpace = true
-                                                if let onClose { onClose() } else { dismiss() }
+                                                showingGalaxyFromSearch = true
                                             }) { 
                                                 SuggestionRow(card: card, user: user) 
                                             }
@@ -190,8 +190,7 @@ struct iOSExploreSearchView: View {
                                         Button(action: {
                                             addHistory(viewModel.searchText)
                                             viewModel.selectedUser = user
-                                            viewModel.showingUserSpace = true
-                                            if let onClose { onClose() } else { dismiss() }
+                                            showingGalaxyFromSearch = true
                                         }) { 
                                             SuggestionRow(card: card, user: user) 
                                         }
@@ -216,8 +215,7 @@ struct iOSExploreSearchView: View {
                                     Button(action: {
                                         addHistory(viewModel.searchText)
                                         viewModel.selectedUser = user
-                                        viewModel.showingUserSpace = true
-                                        if let onClose { onClose() } else { dismiss() }
+                                        showingGalaxyFromSearch = true
                                     }) { 
                                         LargeResultRow(card: card, user: user) 
                                     }
@@ -300,7 +298,19 @@ struct iOSExploreSearchView: View {
                 }
             }
         }
+        .toolbar(.hidden, for: .navigationBar)
+        // 키보드가 올라와도 하단이 잘리지 않도록 여유 inset 추가
+        .safeAreaInset(edge: .bottom) {
+            Color.clear.frame(height: 24)
+        }
         .ignoresSafeArea(.keyboard, edges: .bottom)
+        // Present Galaxy directly from Search
+        .fullScreenCover(isPresented: $showingGalaxyFromSearch) {
+            if let selected = viewModel.selectedUser {
+                iOS3DGalaxyView(diContainer: viewModel.diContainer, targetUserId: selected.profile.userId)
+                    .toolbar(.hidden, for: .navigationBar)
+            }
+        }
     }
     
     // MARK: - Private Methods
