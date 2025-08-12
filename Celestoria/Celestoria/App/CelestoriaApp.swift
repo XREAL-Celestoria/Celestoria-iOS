@@ -91,11 +91,13 @@ struct CelestoriaApp: App {
                         profileUseCase: diContainer.profileUseCase,
                         authRepository: diContainer.authRepository,
                         appState: diContainer.appState,
-                        spaceCoordinator: spaceCoordinator
+                        spaceCoordinator: spaceCoordinator,
+                        commentUseCase: diContainer.commentUseCase
                     )
                     .frame(width: 1280, height: 720)
                     .environmentObject(diContainer.appState)
                     .environmentObject(spaceCoordinator)
+                    .environmentObject(diContainer)
                 } else {
                     Text("Loading...")
                         .frame(width: 1280, height: 720)

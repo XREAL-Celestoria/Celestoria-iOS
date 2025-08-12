@@ -16,9 +16,17 @@ struct NavigationMenuButton: View {
     var body: some View {
         Button(action: action) {
             HStack(alignment: .center, spacing: 40) {
-                Image(isSelected ? menuItem.imageSelected : menuItem.imageUnselected)
-                    .resizable()
-                    .frame(width: 40, height: 40)
+                // Check if it's a system image (bell icons for notifications)
+                if menuItem.title == "Notifications" {
+                    Image(systemName: isSelected ? menuItem.imageSelected : menuItem.imageUnselected)
+                        .font(.system(size: 28))
+                        .foregroundColor(isSelected ? Colors.StarfieldPurple : Colors.NebulaWhite.opacity(0.6))
+                        .frame(width: 40, height: 40)
+                } else {
+                    Image(isSelected ? menuItem.imageSelected : menuItem.imageUnselected)
+                        .resizable()
+                        .frame(width: 40, height: 40)
+                }
                 Text(menuItem.title)
                     .font(
                         .system(size: 22, weight: .semibold)
@@ -55,6 +63,7 @@ struct MenuItem {
 let settingsMenuItems = [
     MenuItem(title: "Profile", imageSelected: "settings-profile-on", imageUnselected: "settings-profile-off"),
     MenuItem(title: "Thumbnail", imageSelected: "settings-thumbnail-on", imageUnselected: "settings-thumbnail-off"),
+    MenuItem(title: "Notifications", imageSelected: "bell.fill", imageUnselected: "bell"),
     MenuItem(title: "Blocked Users", imageSelected: "settings-blocked-on", imageUnselected: "settings-blocked-off"),
     MenuItem(title: "Account", imageSelected: "settings-account-on", imageUnselected: "settings-account-off")
 ]

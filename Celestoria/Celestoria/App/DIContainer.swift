@@ -31,6 +31,7 @@ final class DIContainer: ObservableObject {
     let memoryRepository: MemoryRepository
     let mediaRepository: MediaRepository
     let authRepository: AuthRepositoryProtocol
+    let notificationRepository: NotificationRepository
 
     // Use Cases
     let fetchMemoriesUseCase: FetchMemoriesUseCase
@@ -43,6 +44,8 @@ final class DIContainer: ObservableObject {
     private let exploreUseCase: ExploreUseCase
     private let blockedUsersUseCase: BlockedUsersUseCase
     let memoryUseCase: FetchMemoriesUseCase
+    let commentUseCase: CommentUseCase
+    let notificationUseCase: NotificationUseCase
 
     init() {
         Logger.info("Initializing DIContainer...")
@@ -63,6 +66,7 @@ final class DIContainer: ObservableObject {
         self.memoryRepository = MemoryRepository(supabase: supabaseClient)
         self.mediaRepository = MediaRepository()
         self.authRepository = AuthRepository(supabase: supabaseClient)
+        self.notificationRepository = NotificationRepository(supabase: supabaseClient)
 
         // Initialize Use Cases
         self.profileUseCase = ProfileUseCase(
@@ -83,6 +87,15 @@ final class DIContainer: ObservableObject {
             authRepository: authRepository
         )
         self.memoryUseCase = self.fetchMemoriesUseCase
+        self.commentUseCase = CommentUseCase(
+            memoryRepository: memoryRepository,
+            profileUseCase: profileUseCase
+        )
+        self.notificationUseCase = NotificationUseCase(
+            notificationRepository: notificationRepository,
+            profileUseCase: profileUseCase,
+            memoryRepository: memoryRepository
+        )
 
         #if os(visionOS)
         // 먼저 SpaceCoordinator와 MainViewModel을 임시로 생성

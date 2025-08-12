@@ -32,12 +32,12 @@ struct RightSettingView: View {
                 ProfileSettingView()
             case .thumbnail:
                 ThumbnailSettingView()
+            case .notifications:
+                NotificationsSettingView()
             case .blockedUsers:
                 BlockedUsersSettingView()
             case .account:
                 AccountSettingView()
-            case .profileSelector:
-                ProfileSelectorView()
             }
         }
     }

@@ -18,6 +18,7 @@ final class MemoryDetailViewModel: ObservableObject {
     private let authRepository: AuthRepositoryProtocol?
     private let appState: AppState
     private let spaceCoordinator: SpaceCoordinator
+    private let commentUseCase: CommentUseCase?
     
     @Published private(set) var memory: Memory
     @Published var popupData: PopupData? // Data for the popup
@@ -31,13 +32,22 @@ final class MemoryDetailViewModel: ObservableObject {
     @Published var isLiked: Bool = false
     @Published var isLikeLoading: Bool = false
     
+    // Comment-related properties
+    @Published var comments: [(comment: Comment, userProfile: UserProfile?)] = []
+    @Published var commentText: String = ""
+    @Published var isLoadingComments: Bool = false
+    @Published var isPostingComment: Bool = false
+    @Published var editingCommentId: UUID? = nil
+    @Published var editingCommentText: String = ""
+    
     init(
         memory: Memory,
         memoryRepository: MemoryRepository,
         profileUseCase: ProfileUseCase? = nil,
         authRepository: AuthRepositoryProtocol? = nil,
         appState: AppState,
-        spaceCoordinator: SpaceCoordinator
+        spaceCoordinator: SpaceCoordinator,
+        commentUseCase: CommentUseCase? = nil
     ) {
         self.memory = memory
         self.memoryRepository = memoryRepository
@@ -46,6 +56,7 @@ final class MemoryDetailViewModel: ObservableObject {
         self.authRepository = authRepository
         self.appState = appState
         self.spaceCoordinator = spaceCoordinator
+        self.commentUseCase = commentUseCase
 
         formatDate()
         checkVideoURL()
@@ -54,6 +65,7 @@ final class MemoryDetailViewModel: ObservableObject {
         Task {
             await fetchUserProfile()
             await loadLikeData()
+            await loadComments()
         }
     }
 
@@ -356,6 +368,86 @@ final class MemoryDetailViewModel: ObservableObject {
         }
     }
 
+    // MARK: - 댓글 관련 메서드
+    
+    private func loadComments() async {
+        guard let commentUseCase = commentUseCase else { return }
+        
+        isLoadingComments = true
+        defer { isLoadingComments = false }
+        
+        do {
+            let commentsWithProfiles = try await commentUseCase.fetchCommentsWithProfiles(for: memory.id)
+            self.comments = commentsWithProfiles
+        } catch {
+            logger.error("Failed to load comments: \(error.localizedDescription)")
+        }
+    }
+    
+    func addComment() async {
+        guard let commentUseCase = commentUseCase,
+              let currentUserId = appState.userId,
+              !commentText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        
+        isPostingComment = true
+        defer { 
+            isPostingComment = false
+            commentText = ""
+        }
+        
+        do {
+            try await commentUseCase.createComment(
+                memoryId: memory.id,
+                userId: currentUserId,
+                content: commentText
+            )
+            await loadComments()
+        } catch {
+            logger.error("Failed to add comment: \(error.localizedDescription)")
+            errorMessage = "Failed to post comment. Please try again."
+        }
+    }
+    
+    func startEditingComment(_ commentId: UUID, currentText: String) {
+        editingCommentId = commentId
+        editingCommentText = currentText
+    }
+    
+    func cancelEditingComment() {
+        editingCommentId = nil
+        editingCommentText = ""
+    }
+    
+    func saveEditedComment() async {
+        guard let commentUseCase = commentUseCase,
+              let editingId = editingCommentId,
+              !editingCommentText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        
+        do {
+            try await commentUseCase.updateComment(
+                commentId: editingId,
+                newContent: editingCommentText
+            )
+            await loadComments()
+            cancelEditingComment()
+        } catch {
+            logger.error("Failed to update comment: \(error.localizedDescription)")
+            errorMessage = "Failed to update comment. Please try again."
+        }
+    }
+    
+    func deleteComment(_ commentId: UUID) async {
+        guard let commentUseCase = commentUseCase else { return }
+        
+        do {
+            try await commentUseCase.deleteComment(commentId: commentId)
+            await loadComments()
+        } catch {
+            logger.error("Failed to delete comment: \(error.localizedDescription)")
+            errorMessage = "Failed to delete comment. Please try again."
+        }
+    }
+    
     func showDeletePopup(dismissWindow: @escaping () -> Void, onMemoryDeleted: @escaping (Memory) -> Void) {
         self.isDeleting = true
         popupData = PopupData(
@@ -398,8 +490,8 @@ final class MemoryDetailViewModel: ObservableObject {
 }
 
 // NotificationCenter extension for custom notification
-extension Notification.Name {
-    static let dismissMemoryDetailView = Notification.Name("dismissMemoryDetailView")
-    static let dismissMemoryDetailViewOnly = Notification.Name("dismissMemoryDetailViewOnly")
-    static let dismissAllAndGoMain = Notification.Name("dismissAllAndGoMain")
+extension Foundation.Notification.Name {
+    static let dismissMemoryDetailView = Foundation.Notification.Name("dismissMemoryDetailView")
+    static let dismissMemoryDetailViewOnly = Foundation.Notification.Name("dismissMemoryDetailViewOnly")
+    static let dismissAllAndGoMain = Foundation.Notification.Name("dismissAllAndGoMain")
 }
