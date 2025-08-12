@@ -176,6 +176,81 @@ class MemoryRepository {
         return !likes.isEmpty
     }
     
+    // MARK: - 댓글 관련 메서드
+    
+    // 댓글 생성
+    func createComment(memoryId: UUID, userId: UUID, content: String) async throws {
+        let comment = Comment(userId: userId, memoryId: memoryId, content: content)
+        
+        Logger().info("Creating comment - userId: \(userId), memoryId: \(memoryId)")
+        
+        do {
+            try await supabase
+                .from("comments")
+                .insert(comment)
+                .execute()
+            Logger().info("Comment created successfully")
+        } catch {
+            Logger().error("Failed to create comment: \(error)")
+            throw error
+        }
+    }
+    
+    // 댓글 수정
+    func updateComment(commentId: UUID, newContent: String) async throws {
+        try await supabase
+            .from("comments")
+            .update(["content": newContent, "updated_at": Date().ISO8601Format()])
+            .eq("id", value: commentId.uuidString)
+            .execute()
+    }
+    
+    // 댓글 삭제
+    func deleteComment(commentId: UUID) async throws {
+        try await supabase
+            .from("comments")
+            .delete()
+            .eq("id", value: commentId.uuidString)
+            .execute()
+    }
+    
+    // 특정 메모리의 댓글 조회
+    func fetchComments(for memoryId: UUID) async throws -> [Comment] {
+        let comments: [Comment] = try await supabase
+            .from("comments")
+            .select()
+            .eq("memory_id", value: memoryId.uuidString)
+            .order("created_at", ascending: false)
+            .execute()
+            .value
+            
+        return comments
+    }
+    
+    // 특정 댓글 조회
+    func fetchComment(id: UUID) async throws -> Comment? {
+        let comments: [Comment] = try await supabase
+            .from("comments")
+            .select()
+            .eq("id", value: id.uuidString)
+            .execute()
+            .value
+            
+        return comments.first
+    }
+    
+    // 특정 메모리의 댓글 수 조회
+    func getCommentCount(for memoryId: UUID) async throws -> Int {
+        let comments: [Comment] = try await supabase
+            .from("comments")
+            .select()
+            .eq("memory_id", value: memoryId.uuidString)
+            .execute()
+            .value
+            
+        return comments.count
+    }
+    
     // MARK: - URL 토큰 갱신
     
     // 썸네일 URL 토큰 갱신

@@ -64,4 +64,7 @@ enum Colors {
     static let IconWhite50 = Color(hex: "FFFFFF", opacity: 0.5)
     static let BtnGraySolid = Color(hex: "353535")
     static let CheckedBoxStroke = Color(hex: "A7E9FE") // This will be used with gradient in practice
+    
+    // Additional Colors for Notifications
+    static let StarfieldPurple = Color(hex: "A68CFF")
 }

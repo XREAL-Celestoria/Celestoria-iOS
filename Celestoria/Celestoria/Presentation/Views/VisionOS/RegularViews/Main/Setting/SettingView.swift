@@ -11,6 +11,7 @@ import PhotosUI
 enum SettingSection: String {
     case profile = "Profile"
     case thumbnail = "Thumbnail"
+    case notifications = "Notifications"
     case blockedUsers = "Blocked Users"
     case account = "Account"
 }
@@ -155,6 +156,8 @@ struct RightSettingView: View {
                 ProfileSettingView()
             case .thumbnail:
                 ThumbnailSettingView()
+            case .notifications:
+                NotificationsSettingView()
             case .blockedUsers:
                 BlockedUsersSettingView()
             case .account:
