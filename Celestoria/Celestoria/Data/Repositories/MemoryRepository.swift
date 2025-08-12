@@ -163,6 +163,52 @@ class MemoryRepository {
         return likes.count
     }
     
+    // 모든 유저의 총 좋아요 수를 한 번에 가져오기 (효율적)
+    func getAllUsersLikeCounts() async throws -> [UUID: Int] {
+        // SQL 쿼리로 유저별 총 좋아요 수 집계
+        let result: [UserLikeCount] = try await supabase
+            .rpc("get_user_like_counts")
+            .execute()
+            .value
+        
+        // UUID: Int 형태로 변환
+        var likeCountMap: [UUID: Int] = [:]
+        for item in result {
+            if let userId = UUID(uuidString: item.userId) {
+                likeCountMap[userId] = item.totalLikes
+            }
+        }
+        
+        return likeCountMap
+    }
+    
+    // RPC 함수가 없을 경우를 대비한 대체 방법
+    func getAllUsersLikeCountsFallback() async throws -> [UUID: Int] {
+        // 모든 좋아요 데이터를 가져와서 Swift에서 집계
+        let allLikes: [Like] = try await supabase
+            .from("likes")
+            .select()
+            .execute()
+            .value
+        
+        // 메모리 ID로 그룹화하여 유저별 좋아요 수 계산
+        var memoryLikeCounts: [UUID: Int] = [:]
+        for like in allLikes {
+            memoryLikeCounts[like.memoryId, default: 0] += 1
+        }
+        
+        // 메모리별 좋아요 수를 유저별로 집계
+        let allMemories = try await fetchAllMemories()
+        var userLikeCounts: [UUID: Int] = [:]
+        
+        for memory in allMemories {
+            let likeCount = memoryLikeCounts[memory.id] ?? 0
+            userLikeCounts[memory.userId, default: 0] += likeCount
+        }
+        
+        return userLikeCounts
+    }
+    
     // 사용자가 특정 메모리에 좋아요를 눌렀는지 확인
     func hasLiked(memoryId: UUID, userId: UUID) async throws -> Bool {
         let likes: [Like] = try await supabase

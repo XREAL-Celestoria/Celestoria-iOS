@@ -24,11 +24,24 @@ struct iOSMemoryDetailView: View {
     init(memory: Memory, diContainer: DIContainer) {
         self.memory = memory
         self.diContainer = diContainer
+        self.onBack = nil
         _viewModel = StateObject(wrappedValue: iOSMemoryDetailViewModel(
             memory: memory,
             diContainer: diContainer
         ))
     }
+    
+    init(memory: Memory, diContainer: DIContainer, onBack: @escaping () -> Void) {
+        self.memory = memory
+        self.diContainer = diContainer
+        self.onBack = onBack
+        _viewModel = StateObject(wrappedValue: iOSMemoryDetailViewModel(
+            memory: memory,
+            diContainer: diContainer
+        ))
+    }
+    
+    private let onBack: (() -> Void)?
     
     var body: some View {
         ZStack {
@@ -39,7 +52,7 @@ struct iOSMemoryDetailView: View {
                 .shadow(color: Color(red: 0.4, green: 0.7, blue: 1).opacity(0.6), radius: 12, x: 0, y: 0)
             
             VStack(alignment: .leading, spacing: 0) {
-                iOSNavigationView(title: "", onBack: {dismiss()})
+                iOSNavigationView(title: "", onBack: onBack ?? { dismiss() })
                     .zIndex(1)
                 
                 ScrollView {

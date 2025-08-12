@@ -56,7 +56,7 @@ struct MemoriesTabContentView: View {
                 
                 LazyVStack(spacing: 40) {
                     ForEach(sortedAndFilteredMemories) { memory in
-                        MemoryListItemView(memory: memory)
+                        MemoryListItemView(memory: memory, viewModel: viewModel)
                             .environmentObject(appState)
                     }
                 }

@@ -23,6 +23,7 @@ class UserInfoModalViewModel: ObservableObject {
     @Published var dragOffset: CGFloat = 0
     @Published var isLoading: Bool = false
     @Published var sortOption: SortOption = .latest
+    @Published var selectedMemory: Memory?
     
     // MARK: - Real Data for Expanded Content
     @Published var memories: [Memory] = []
@@ -272,5 +273,11 @@ class UserInfoModalViewModel: ObservableObject {
         } catch {
             Logger.error("UserInfoModalViewModel: Failed to reload user profile: \(error.localizedDescription)")
         }
+    }
+    
+    // MARK: - Memory Selection
+    func selectMemory(_ memory: Memory) {
+        selectedMemory = memory
+        Logger.info("UserInfoModalViewModel: Memory selected - ID: \(memory.id), Title: \(memory.title)")
     }
 } 

@@ -35,4 +35,15 @@ struct Like: Identifiable, Codable, Hashable {
         case memoryId = "memory_id"
         case createdAt = "created_at"
     }
+}
+
+// 유저별 총 좋아요 수를 위한 DTO
+struct UserLikeCount: Codable {
+    let userId: String
+    let totalLikes: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case userId = "user_id"
+        case totalLikes = "total_likes"
+    }
 } 

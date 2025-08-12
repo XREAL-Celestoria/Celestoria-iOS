@@ -12,7 +12,8 @@ import os
 struct UserInfoModalView: View {
     let userId: UUID
     let isOwnGalaxy: Bool
-    let onAddMemory: () -> Void
+    let onAddMemory: (() -> Void)?
+    let onSelectMemory: ((Memory) -> Void)?
     let diContainer: DIContainer
     @StateObject private var viewModel: UserInfoModalViewModel
     @State private var selectedTab: ProfileTab = .memories
@@ -20,10 +21,11 @@ struct UserInfoModalView: View {
     @State private var showCategoryFilter = false
     @EnvironmentObject var appState: AppState
     
-    init(userId: UUID, isOwnGalaxy: Bool, onAddMemory: @escaping () -> Void, diContainer: DIContainer) {
+    init(userId: UUID, isOwnGalaxy: Bool, onAddMemory: (() -> Void)?, onSelectMemory: ((Memory) -> Void)? = nil, diContainer: DIContainer) {
         self.userId = userId
         self.isOwnGalaxy = isOwnGalaxy
         self.onAddMemory = onAddMemory
+        self.onSelectMemory = onSelectMemory
         self.diContainer = diContainer
         _viewModel = StateObject(wrappedValue: diContainer.makeUserInfoModalViewModel(userId: userId))
     }
@@ -57,8 +59,8 @@ struct UserInfoModalView: View {
                     }
                 }
                 
-                // Add memory button (축소 상태에서만 외부에 표시)
-                if isOwnGalaxy && !viewModel.isExpanded {
+                // Add memory button (축소 상태에서만 외부에 표시, onAddMemory가 있을 때만)
+                if isOwnGalaxy && !viewModel.isExpanded && onAddMemory != nil {
                     AddMemoryButton(onAddMemory: onAddMemory, isExpanded: viewModel.isExpanded)
                 }
                 
@@ -118,13 +120,14 @@ struct UserInfoModalView: View {
                             
                             ZStack {
                                 ThumbnailSectionView(profile: profile)
-                                
-                                VStack {
-                                    HStack {
+                                if isOwnGalaxy && onAddMemory != nil {
+                                    VStack {
+                                        HStack {
+                                            Spacer()
+                                            AddMemoryButton(onAddMemory: onAddMemory, isExpanded: viewModel.isExpanded)
+                                        }
                                         Spacer()
-                                        AddMemoryButton(onAddMemory: onAddMemory, isExpanded: viewModel.isExpanded)
                                     }
-                                    Spacer()
                                 }
                             }
                             
@@ -137,7 +140,7 @@ struct UserInfoModalView: View {
                                     memoryCount: viewModel.memoryCount,
                                     commentCount: viewModel.commentCount,
                                     likeCount: viewModel.likeCount,
-                                    showEditButton: true,
+                                    showEditButton: isOwnGalaxy, 
                                     isExpanded: viewModel.isExpanded,
                                     selectedTab: selectedTab,
                                     onEditTap: {
@@ -165,6 +168,20 @@ struct UserInfoModalView: View {
                             TabContentView(selectedTab: $selectedTab, viewModel: viewModel, selectedCategories: selectedCategories)
                                 .frame(minHeight: 400)
                                 .environmentObject(appState)
+                                .onReceive(viewModel.$selectedMemory) { memory in
+                                    if let memory = memory {
+                                        if let onSelectMemory = onSelectMemory {
+                                            // 부모에게 위임 (예: 다른 유저의 갤럭시 내부에서 로컬 프리젠트)
+                                            onSelectMemory(memory)
+                                        } else {
+                                            // 기본: AppState 기반 네비게이션 (메인 컨테이너 경로)
+                                            appState.selectedMemoryForDetail = memory
+                                            appState.shouldNavigateToMemoryDetail = true
+                                        }
+                                        // 선택 상태 리셋
+                                        viewModel.selectedMemory = nil
+                                    }
+                                }
                             
                             
                             Spacer()

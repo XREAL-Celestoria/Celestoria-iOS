@@ -260,5 +260,13 @@ final class DIContainer: ObservableObject {
             appState: appState
         )
     }
+    
+    func makeExploreViewModel() -> ExploreViewModel {
+        return ExploreViewModel(
+            exploreUseCase: exploreUseCase,
+            appState: self.appState,
+            diContainer: self
+        )
+    }
     #endif
 }

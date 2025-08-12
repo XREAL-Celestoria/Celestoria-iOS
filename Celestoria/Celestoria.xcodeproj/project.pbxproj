@@ -119,6 +119,11 @@
 		5D707EDD2E4266AA00CC1224 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5D707EDC2E4266AA00CC1224 /* LaunchScreen.storyboard */; };
 		5D707EE72E4276ED00CC1224 /* CornerRadius.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707EE62E4276ED00CC1224 /* CornerRadius.swift */; };
 		5D707EE82E4276ED00CC1224 /* CornerRadius.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D707EE62E4276ED00CC1224 /* CornerRadius.swift */; };
+		5D76A4CB2E4B8D5E00C688DE /* iOSExpolreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76A4CA2E4B8D5E00C688DE /* iOSExpolreView.swift */; };
+		5D76A4CE2E4B8D9B00C688DE /* iOSNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76A4CD2E4B8D9B00C688DE /* iOSNotificationView.swift */; };
+		5D76A4CF2E4B93FE00C688DE /* ExploreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2198CA42D48814300B0AF65 /* ExploreViewModel.swift */; };
+		5D76A4D02E4B945200C688DE /* ExploreUserCardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB501DF2D4655D9005FB0B6 /* ExploreUserCardItem.swift */; };
+		5D76A4D42E4BB8BE00C688DE /* ExploreSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76A4D32E4BB8BE00C688DE /* ExploreSearchView.swift */; };
 		5D76F3EC2E43EE930026579D /* CommentListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76F3EB2E43EE930026579D /* CommentListItemView.swift */; };
 		5D76F3EE2E43EEB50026579D /* LikeListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76F3ED2E43EEB50026579D /* LikeListItemView.swift */; };
 		5D76F3F02E43EEE90026579D /* MemoryReviewItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76F3EF2E43EEE90026579D /* MemoryReviewItemView.swift */; };
@@ -321,6 +326,9 @@
 		5D707EDA2E42293E00CC1224 /* iOSUnifiedLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSUnifiedLoadingView.swift; sourceTree = "<group>"; };
 		5D707EDC2E4266AA00CC1224 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5D707EE62E4276ED00CC1224 /* CornerRadius.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CornerRadius.swift; sourceTree = "<group>"; };
+		5D76A4CA2E4B8D5E00C688DE /* iOSExpolreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSExpolreView.swift; sourceTree = "<group>"; };
+		5D76A4CD2E4B8D9B00C688DE /* iOSNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSNotificationView.swift; sourceTree = "<group>"; };
+		5D76A4D32E4BB8BE00C688DE /* ExploreSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreSearchView.swift; sourceTree = "<group>"; };
 		5D76F3EB2E43EE930026579D /* CommentListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentListItemView.swift; sourceTree = "<group>"; };
 		5D76F3ED2E43EEB50026579D /* LikeListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeListItemView.swift; sourceTree = "<group>"; };
 		5D76F3EF2E43EEE90026579D /* MemoryReviewItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryReviewItemView.swift; sourceTree = "<group>"; };
@@ -718,7 +726,6 @@
 				5D707E622E3E6C2D00CC1224 /* Main */,
 				A2A286B52E2C311A001D89B2 /* Settings */,
 				5D707E842E3F2CD300CC1224 /* AddMemory */,
-				5D707E672E3E8A9200CC1224 /* ModalStyleModifier.swift */,
 				5D6C19FB2E3E05EA004A0B17 /* Components */,
 			);
 			path = iOS;
@@ -758,6 +765,7 @@
 		5D6C19FB2E3E05EA004A0B17 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				5D707E672E3E8A9200CC1224 /* ModalStyleModifier.swift */,
 				5D707EDA2E42293E00CC1224 /* iOSUnifiedLoadingView.swift */,
 				5D707E8E2E3F3E3500CC1224 /* iOSAddMemoryComponents.swift */,
 				5D6C19F82E3E05EA004A0B17 /* iOSHeaderView.swift */,
@@ -796,6 +804,9 @@
 				5D707EBA2E41FB0000CC1224 /* iOSGyroscopeVideoView.swift */,
 				A2A286C02E2C3157001D89B2 /* iOS3DMemoryStarNode.swift */,
 				A2A286BE2E2C314B001D89B2 /* iOS3DGalaxyView.swift */,
+				5D76A4CA2E4B8D5E00C688DE /* iOSExpolreView.swift */,
+				5D76A4D32E4BB8BE00C688DE /* ExploreSearchView.swift */,
+				5D76A4CD2E4B8D9B00C688DE /* iOSNotificationView.swift */,
 				5D76F3F12E43EEF30026579D /* UserModal */,
 			);
 			path = Main;
@@ -1032,6 +1043,7 @@
 			files = (
 				5D6C1A112E3E06B2004A0B17 /* Text+.swift in Sources */,
 				A2A286852E2C043C001D89B2 /* Color+.swift in Sources */,
+				5D76A4D02E4B945200C688DE /* ExploreUserCardItem.swift in Sources */,
 				A2A2867A2E2C03EF001D89B2 /* SettingViewModel.swift in Sources */,
 				A2A2868D2E2C09D3001D89B2 /* DeleteAccountUseCase.swift in Sources */,
 				A2A286822E2C0421001D89B2 /* PopupData.swift in Sources */,
@@ -1053,6 +1065,7 @@
 				5D707E972E405FEE00CC1224 /* ImageCache.swift in Sources */,
 				A2A286C12E2C3157001D89B2 /* iOS3DMemoryStarNode.swift in Sources */,
 				5D707E6A2E3E9D6800CC1224 /* iOSConfirmationPopupView.swift in Sources */,
+				5D76A4CE2E4B8D9B00C688DE /* iOSNotificationView.swift in Sources */,
 				A2A286782E2C03E1001D89B2 /* DIContainer.swift in Sources */,
 				5D707EBD2E41FB2A00CC1224 /* GyroscopeMotionManager.swift in Sources */,
 				A2A2866D2E2BF9FB001D89B2 /* iOSTermsAndConditionsView.swift in Sources */,
@@ -1064,6 +1077,7 @@
 				A2A286BD2E2C3133001D89B2 /* iOSThumbnailSettingView.swift in Sources */,
 				A2A2867F2E2C0415001D89B2 /* ContentReport.swift in Sources */,
 				A2D6E0C82E4B99E60087C203 /* NotificationUseCase.swift in Sources */,
+				5D76A4D42E4BB8BE00C688DE /* ExploreSearchView.swift in Sources */,
 				A2A286832E2C0434001D89B2 /* Logger.swift in Sources */,
 				A2A286922E2C0A25001D89B2 /* ExploreUseCase.swift in Sources */,
 				A2A2868F2E2C0A1B001D89B2 /* SignInWithAppleUseCase.swift in Sources */,
@@ -1071,7 +1085,9 @@
 				5D6C19FC2E3E05EA004A0B17 /* iOSHeaderView.swift in Sources */,
 				5D76F3F32E43EF160026579D /* LikeTapContent.swift in Sources */,
 				5D6C19FD2E3E05EA004A0B17 /* iOSMainButton.swift in Sources */,
+				5D76A4CF2E4B93FE00C688DE /* ExploreViewModel.swift in Sources */,
 				5D6C19FE2E3E05EA004A0B17 /* iOSNavigationBar.swift in Sources */,
+				5D76A4CB2E4B8D5E00C688DE /* iOSExpolreView.swift in Sources */,
 				5D76F3EE2E43EEB50026579D /* LikeListItemView.swift in Sources */,
 				A2A286962E2C0A3C001D89B2 /* AuthRepository.swift in Sources */,
 				A2D6E0C52E4B99DD0087C203 /* CommentUseCase.swift in Sources */,
@@ -1325,12 +1341,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Celestoria/Celestoria.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=xros*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1.1.1;
 				DEVELOPMENT_ASSET_PATHS = "\"Celestoria/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=xros*]" = B3CU8MA548;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Celestoria/App/Configuration/Info.plist;
@@ -1343,7 +1357,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Celestoria.Celestoria;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=xros*]" = "Celestoria Release";
 				SUPPORTED_PLATFORMS = "xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -1359,12 +1372,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Celestoria/Celestoria.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=xros*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1.1.1;
 				DEVELOPMENT_ASSET_PATHS = "\"Celestoria/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=xros*]" = B3CU8MA548;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Celestoria/App/Configuration/Info.plist;
@@ -1377,7 +1388,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Celestoria.Celestoria;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=xros*]" = "Celestoria Release";
 				SUPPORTED_PLATFORMS = "xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
