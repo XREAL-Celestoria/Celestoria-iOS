@@ -9,31 +9,52 @@ import SwiftUI
 
 // MARK: - Like List Item View
 struct LikeListItemView: View {
-    let index: Int
+    let userProfile: UserProfile?
+    let likedAt: Date
     
     var body: some View {
-        HStack {
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color.white.opacity(0.1))
-                .frame(width: 80, height: 60)
-                .overlay(
-                    Image(systemName: "heart.fill")
-                        .font(.system(size: 20))
-                        .foregroundColor(.white.opacity(0.3))
-                )
+        HStack(alignment: .top, spacing: 16) {
+            if let profile = userProfile {
+                ProfileImageView(profile: profile, size: 32)
+            } else {
+                Image("profile_gray")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 32, height: 32)
+                    .clipShape(Circle())
+            }
+
             
             VStack(alignment: .leading, spacing: 4) {
-                Text("Liked Memory \(index + 1)")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.white)
-                
-                Text("Liked \(Int.random(in: 1...30)) days ago")
-                    .font(.system(size: 14))
-                    .foregroundColor(.white.opacity(0.6))
+                HStack(alignment: .center, spacing: 10) {
+                    Text(userProfile?.name ?? "Unknown User")
+                        .fontStyle(Fonts.subheadline)
+                        .foregroundColor(Colors.NebulaWhite)
+                    
+                    Text("•")
+                        .fontStyle(Fonts.callout)
+                        .foregroundColor(Colors.NebulaWhite)
+                    
+                    Text(formatDate(likedAt))
+                        .fontStyle(Fonts.callout)
+                        .foregroundColor(Colors.Placeholder)
+                }
+                Text("Liked your memory")
+                    .fontStyle(Fonts.caption2)
+                    .foregroundColor(Colors.Placeholder)
             }
             
             Spacer()
         }
-        .padding(.horizontal, 16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    
+    private func formatDate(_ date: Date) -> String {
+        let now = Date()
+        let timeInterval = now.timeIntervalSince(date)
+        if timeInterval < 60 { return "now" }
+        if timeInterval < 3600 { return "\(Int(timeInterval / 60))m" }
+        if timeInterval < 86400 { return "\(Int(timeInterval / 3600))h" }
+        return "\(Int(timeInterval / 86400))d"
     }
 }

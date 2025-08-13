@@ -163,6 +163,17 @@ class MemoryRepository {
         return likes.count
     }
     
+    // 특정 메모리의 좋아요 리스트 조회
+    func fetchLikes(for memoryId: UUID) async throws -> [Like] {
+        try await supabase
+            .from("likes")
+            .select()
+            .eq("memory_id", value: memoryId.uuidString)
+            .order("created_at", ascending: false)
+            .execute()
+            .value
+    }
+    
     // 모든 유저의 총 좋아요 수를 한 번에 가져오기 (효율적)
     func getAllUsersLikeCounts() async throws -> [UUID: Int] {
         // SQL 쿼리로 유저별 총 좋아요 수 집계

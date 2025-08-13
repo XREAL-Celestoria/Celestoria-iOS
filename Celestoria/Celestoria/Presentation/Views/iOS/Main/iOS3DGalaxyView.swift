@@ -283,8 +283,8 @@ struct iOS3DGalaxyContainerView: View {
                     }
                     .navigationViewStyle(StackNavigationViewStyle())
                 case .notification:
-                    iOSNotificationView()
-                        .customNavigationView(title: "Explore", onBack: { activeScreen = nil })
+                    iOSNotificationView(diContainer: diContainer)
+                        .customNavigationView(title: "Notice", onBack: { activeScreen = nil })
                 case .addMemory:
                     iOSAddMemoryContentView(
                         diContainer: diContainer,

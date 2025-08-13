@@ -2,69 +2,143 @@
 //  iOSMemoryDetailViewModel.swift
 //  Celestoria
 //
-//  Created by Assistant on 1/28/25.
+//  Created by Seyoung Park on 8/7/25.
 //
 
 import Foundation
 import SwiftUI
 import os
+import Combine
 
 @MainActor
 final class iOSMemoryDetailViewModel: ObservableObject {
     // MARK: - Dependencies
+    private let memory: Memory
     private let diContainer: DIContainer
-    private var appState: AppState?
     private let logger = Logger(subsystem: "Celestoria", category: "iOSMemoryDetailViewModel")
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Published Properties
-    @Published var memory: Memory
     @Published var userProfile: UserProfile?
     @Published var likeCount: Int = 0
     @Published var isLiked: Bool = false
-    @Published var isLikeLoading: Bool = false
-    @Published var isLoading: Bool = false
+    @Published var commentCount: Int = 0
     @Published var errorMessage: String?
+    @Published var isLoading: Bool = false
     @Published var showDeleteAlert: Bool = false
     
     // MARK: - Computed Properties
     var formattedDate: String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy.MM.dd HH:mm"
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
         return formatter.string(from: memory.createdAt)
     }
     
     var isOwner: Bool {
-        memory.userId == appState?.userId
+        guard let appState = appState else { return false }
+        return memory.userId == appState.userId
     }
     
     var canLike: Bool {
-        !isLikeLoading && memory.userId != appState?.userId
+        guard let currentUserId = appState?.userId else { return false }
+        return memory.userId != currentUserId
+    }
+    
+    private var appState: AppState? {
+        diContainer.appState
     }
     
     // MARK: - Initialization
     init(memory: Memory, diContainer: DIContainer) {
         self.memory = memory
         self.diContainer = diContainer
-    }
-    
-    // MARK: - Setup
-    func setup(appState: AppState) {
-        self.appState = appState
-    }
-    
-    // MARK: - Data Loading
-    func loadData() async {
-        isLoading = true
-        defer { isLoading = false }
         
-        // Load all data in parallel
+        setupCommentNotifications()
+    }
+    
+    deinit {
+        cancellables.removeAll()
+    }
+    
+    // MARK: - Public Methods
+    func loadData() async {
         async let profileTask = loadUserProfile()
         async let likeDataTask = loadLikeData()
+        async let commentCountTask = loadCommentCount()
         
         await profileTask
         await likeDataTask
+        await commentCountTask
     }
     
+    func toggleLike() async {
+        guard let appState = appState,
+              let currentUserId = appState.userId else { return }
+        
+        do {
+            if isLiked {
+                // 좋아요 제거
+                try await diContainer.memoryRepository.deleteLike(memoryId: memory.id, userId: currentUserId)
+                likeCount -= 1
+                isLiked = false
+                logger.info("Like removed for memory: \(self.memory.id)")
+                
+                NotificationCenter.default.post(name: .likeRemoved, object: nil, userInfo: [
+                    CommentNotificationKeys.memoryId: memory.id,
+                    CommentNotificationKeys.userId: currentUserId
+                ])
+            } else {
+                // 좋아요 추가
+                try await diContainer.memoryRepository.createLike(memoryId: memory.id, userId: currentUserId)
+                likeCount += 1
+                isLiked = true
+                logger.info("Like added for memory: \(self.memory.id)")
+                
+                NotificationCenter.default.post(name: .likeAdded, object: nil, userInfo: [
+                    CommentNotificationKeys.memoryId: memory.id,
+                    CommentNotificationKeys.userId: currentUserId
+                ])
+            }
+        } catch {
+            logger.error("Failed to toggle like: \(error.localizedDescription)")
+            errorMessage = "좋아요 처리 중 오류가 발생했습니다."
+        }
+    }
+    
+    func showDeleteConfirmation() {
+        showDeleteAlert = true
+    }
+    
+    func deleteMemory() async -> Bool {
+        isLoading = true
+        defer { isLoading = false }
+        
+        do {
+            let videoPath = extractPathFromURL(memory.videoURL)
+            let thumbnailPath = extractPathFromURL(memory.thumbnailURL)
+            try await diContainer.deleteMemoryUseCase.execute(
+                memoryId: memory.id,
+                videoPath: videoPath,
+                thumbnailPath: thumbnailPath
+            )
+            
+            // Notify main view to refresh
+            diContainer.appState.refreshMainView = true
+            logger.info("Memory successfully deleted: \(self.memory.id.uuidString)")
+            return true
+        } catch {
+            logger.error("Error deleting memory: \(error.localizedDescription)")
+            self.errorMessage = "An error occurred while deleting the memory."
+            return false
+        }
+    }
+    
+    func clearError() {
+        errorMessage = nil
+    }
+    
+    // MARK: - Private Methods
     private func loadUserProfile() async {
         do {
             let profile = try await diContainer.profileUseCase.fetchProfileByUserId(userId: memory.userId)
@@ -93,76 +167,57 @@ final class iOSMemoryDetailViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Like Functionality
-    func toggleLike() async {
-        guard let appState = appState,
-              let currentUserId = appState.userId else { return }
-        guard !isLikeLoading else { return }
-        
-        // Check if user is trying to like their own memory
-        if memory.userId == currentUserId {
-            self.errorMessage = "You cannot like your own memory."
-            return
-        }
-        
-        isLikeLoading = true
-        defer { isLikeLoading = false }
-        
+    private func loadCommentCount() async {
         do {
-            if isLiked {
-                // Unlike
-                try await diContainer.memoryRepository.deleteLike(memoryId: memory.id, userId: currentUserId)
-                self.likeCount = max(0, self.likeCount - 1)
-                self.isLiked = false
-            } else {
-                // Like
-                try await diContainer.memoryRepository.createLike(memoryId: memory.id, userId: currentUserId)
-                self.likeCount += 1
-                self.isLiked = true
+            let count = try await diContainer.memoryRepository.getCommentCount(for: memory.id)
+            self.commentCount = count
+        } catch {
+            logger.error("Error loading comment count: \(error.localizedDescription)")
+        }
+    }
+    
+    private func setupCommentNotifications() {
+        // Listen for comment additions
+        NotificationCenter.default.publisher(for: .commentAdded)
+            .sink { [weak self] notification in
+                guard let self = self,
+                      let memoryId = notification.userInfo?[CommentNotificationKeys.memoryId] as? UUID,
+                      memoryId == self.memory.id else { return }
+                
+                Task { @MainActor in
+                    await self.loadCommentCount()
+                }
             }
-        } catch {
-            logger.error("Error toggling like: \(error.localizedDescription)")
-            self.errorMessage = "An error occurred while processing the like."
-        }
-    }
-    
-    // MARK: - Delete Functionality
-    func showDeleteConfirmation() {
-        showDeleteAlert = true
-    }
-    
-    func deleteMemory() async -> Bool {
-        guard let appState = appState else { return false }
+            .store(in: &cancellables)
         
-        isLoading = true
-        defer { isLoading = false }
+        // Listen for comment updates
+        NotificationCenter.default.publisher(for: .commentUpdated)
+            .sink { [weak self] notification in
+                guard let self = self,
+                      let memoryId = notification.userInfo?[CommentNotificationKeys.memoryId] as? UUID,
+                      memoryId == self.memory.id else { return }
+                
+                Task { @MainActor in
+                    await self.loadCommentCount()
+                }
+            }
+            .store(in: &cancellables)
         
-        do {
-            // Extract paths from URLs for file deletion
-            let videoPath = extractPathFromURL(memory.videoURL)
-            let thumbnailPath = extractPathFromURL(memory.thumbnailURL)
-            
-            // Delete memory using UseCase
-            try await diContainer.deleteMemoryUseCase.execute(
-                memoryId: memory.id,
-                videoPath: videoPath,
-                thumbnailPath: thumbnailPath
-            )
-            
-            // Refresh main view
-            appState.refreshMainView = true
-            
-            logger.info("Memory successfully deleted: \(self.memory.id.uuidString)")
-            return true
-            
-        } catch {
-            logger.error("Error deleting memory: \(error.localizedDescription)")
-            self.errorMessage = "An error occurred while deleting the memory."
-            return false
-        }
+        // Listen for comment deletions
+        NotificationCenter.default.publisher(for: .commentDeleted)
+            .sink { [weak self] notification in
+                guard let self = self,
+                      let memoryId = notification.userInfo?[CommentNotificationKeys.memoryId] as? UUID,
+                      memoryId == self.memory.id else { return }
+                
+                Task { @MainActor in
+                    await self.loadCommentCount()
+                }
+            }
+            .store(in: &cancellables)
     }
     
-    // MARK: - Helper Methods
+    // MARK: - Helpers
     private func extractPathFromURL(_ urlString: String?) -> String? {
         guard let urlString = urlString,
               let url = URL(string: urlString) else {
@@ -191,8 +246,7 @@ final class iOSMemoryDetailViewModel: ObservableObject {
         return nil
     }
     
-    // MARK: - Error Handling
-    func clearError() {
-        errorMessage = nil
-    }
+    // Compatibility no-op (legacy API)
+    func setup(appState: AppState) { }
 }
+

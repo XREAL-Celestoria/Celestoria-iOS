@@ -11,31 +11,62 @@ import SwiftUI
 struct LikesTabContentView: View {
     @ObservedObject var viewModel: UserInfoModalViewModel
     
-    var body: some View {
-        VStack(spacing: 24) {
+    private var emptyStateView: some View {
+        VStack(spacing: 16) {
             Spacer()
             
-            VStack(spacing: 16) {
-                Image("Like-on")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 48, height: 48)
-                    .foregroundColor(Colors.NebulaWhite.opacity(0.6))
-                
-                Text("Coming Soon")
-                    .fontStyle(Fonts.title3)
-                    .foregroundColor(Colors.NebulaWhite)
-                
-                Text("Likes feature is currently under development.\nStay tuned for updates!")
-                    .fontStyle(Fonts.body2)
-                    .foregroundColor(Colors.NebulaWhite.opacity(0.7))
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(4)
-            }
+            Image("Like-on")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 48, height: 48)
+            
+            Text("No likes yet")
+                .fontStyle(Fonts.subheadline)
+                .foregroundColor(Colors.NebulaWhite)
+            
+            Text("This user's memories haven't received any likes yet.")
+                .fontStyle(Fonts.caption1)
+                .foregroundColor(Colors.Placeholder)
             
             Spacer()
         }
         .frame(maxWidth: .infinity)
-        .padding(.horizontal, 32)
+    }
+    
+    private var likedUsersListView: some View {
+        ScrollView {
+            LazyVStack(spacing: 32) {
+                ForEach(viewModel.likedUsers.indices, id: \.self) { index in
+                    let item = viewModel.likedUsers[index]
+                    Button(action: {
+                        if let memory = viewModel.memories.first(where: { $0.id == item.2 }) {
+                            viewModel.selectMemory(memory)
+                        }
+                    }) {
+                        LikeListItemView(
+                            userProfile: item.0,
+                            likedAt: item.1
+                        )
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 32)
+        }
+        .scrollBounceBehavior(.basedOnSize)
+        .scrollIndicators(.hidden)
+    }
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            if viewModel.likedUsers.isEmpty {
+                emptyStateView
+            } else {
+                likedUsersListView
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

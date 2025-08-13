@@ -268,7 +268,7 @@ struct ProfileHeaderStatsView: View {
                         // 축소 상태에서는 일반 스탯 아이템
                         StatItem(icon: "Memory-icon", count: memoryCount)
                         StatItem(icon: "CommentIcon", count: commentCount)
-                        StatItem(icon: "Like-on", count: likeCount)
+                        StatItem(icon: "likeIcon", count: likeCount)
                     }
                 }
                 Spacer()

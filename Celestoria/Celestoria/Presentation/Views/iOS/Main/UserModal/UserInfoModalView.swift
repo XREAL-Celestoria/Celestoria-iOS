@@ -102,11 +102,11 @@ struct UserInfoModalView: View {
             }
         }
         .onAppear {
-            viewModel.refreshProfileData()
+            Task { await viewModel.refreshProfileData() }
             selectedTab = .memories
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
-            viewModel.refreshProfileData()
+            Task { await viewModel.refreshProfileData() }
         }
     }
     

@@ -124,6 +124,9 @@
 		5D76A4CF2E4B93FE00C688DE /* ExploreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2198CA42D48814300B0AF65 /* ExploreViewModel.swift */; };
 		5D76A4D02E4B945200C688DE /* ExploreUserCardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB501DF2D4655D9005FB0B6 /* ExploreUserCardItem.swift */; };
 		5D76A4D42E4BB8BE00C688DE /* iOSExploreSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76A4D32E4BB8BE00C688DE /* iOSExploreSearchView.swift */; };
+		5D76A4E82E4BF93C00C688DE /* CommentSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76A4E72E4BF93C00C688DE /* CommentSheetView.swift */; };
+		5D76A4EA2E4BF95C00C688DE /* CommentSheetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76A4E92E4BF95C00C688DE /* CommentSheetViewModel.swift */; };
+		5D76A4EC2E4C0CD800C688DE /* LikeSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76A4EB2E4C0CD800C688DE /* LikeSheetView.swift */; };
 		5D76F3EC2E43EE930026579D /* CommentListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76F3EB2E43EE930026579D /* CommentListItemView.swift */; };
 		5D76F3EE2E43EEB50026579D /* LikeListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76F3ED2E43EEB50026579D /* LikeListItemView.swift */; };
 		5D76F3F02E43EEE90026579D /* MemoryReviewItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76F3EF2E43EEE90026579D /* MemoryReviewItemView.swift */; };
@@ -329,6 +332,9 @@
 		5D76A4CA2E4B8D5E00C688DE /* iOSExpolreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSExpolreView.swift; sourceTree = "<group>"; };
 		5D76A4CD2E4B8D9B00C688DE /* iOSNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSNotificationView.swift; sourceTree = "<group>"; };
 		5D76A4D32E4BB8BE00C688DE /* iOSExploreSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSExploreSearchView.swift; sourceTree = "<group>"; };
+		5D76A4E72E4BF93C00C688DE /* CommentSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentSheetView.swift; sourceTree = "<group>"; };
+		5D76A4E92E4BF95C00C688DE /* CommentSheetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentSheetViewModel.swift; sourceTree = "<group>"; };
+		5D76A4EB2E4C0CD800C688DE /* LikeSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeSheetView.swift; sourceTree = "<group>"; };
 		5D76F3EB2E43EE930026579D /* CommentListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentListItemView.swift; sourceTree = "<group>"; };
 		5D76F3ED2E43EEB50026579D /* LikeListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeListItemView.swift; sourceTree = "<group>"; };
 		5D76F3EF2E43EEE90026579D /* MemoryReviewItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryReviewItemView.swift; sourceTree = "<group>"; };
@@ -800,6 +806,8 @@
 		5D707E622E3E6C2D00CC1224 /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				5D76A4EB2E4C0CD800C688DE /* LikeSheetView.swift */,
+				5D76A4E72E4BF93C00C688DE /* CommentSheetView.swift */,
 				A2A286C62E2C3173001D89B2 /* iOSMemoryDetailView.swift */,
 				5D707EBA2E41FB0000CC1224 /* iOSGyroscopeVideoView.swift */,
 				A2A286C02E2C3157001D89B2 /* iOS3DMemoryStarNode.swift */,
@@ -824,6 +832,7 @@
 		5D707EBF2E41FC0D00CC1224 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				5D76A4E92E4BF95C00C688DE /* CommentSheetViewModel.swift */,
 				5D707E5B2E3E481000CC1224 /* UserInfoModalViewModel.swift */,
 				5D707EC22E41FDDE00CC1224 /* iOS3DMemoryStarNodeViewModel.swift */,
 				5D707EC02E41FC3000CC1224 /* iOSMemoryDetailViewModel.swift */,
@@ -1053,6 +1062,7 @@
 				A2A2868E2E2C09D7001D89B2 /* SignOutUseCase.swift in Sources */,
 				5D707E5C2E3E481000CC1224 /* UserInfoModalViewModel.swift in Sources */,
 				A2A286992E2C0D37001D89B2 /* StarField.swift in Sources */,
+				5D76A4EA2E4BF95C00C688DE /* CommentSheetViewModel.swift in Sources */,
 				A2A286932E2C0A29001D89B2 /* CreateMemoryUseCase.swift in Sources */,
 				A2A286902E2C0A1E001D89B2 /* DeleteMemoryUseCase.swift in Sources */,
 				5D76F3EC2E43EE930026579D /* CommentListItemView.swift in Sources */,
@@ -1068,6 +1078,7 @@
 				5D76A4CE2E4B8D9B00C688DE /* iOSNotificationView.swift in Sources */,
 				A2A286782E2C03E1001D89B2 /* DIContainer.swift in Sources */,
 				5D707EBD2E41FB2A00CC1224 /* GyroscopeMotionManager.swift in Sources */,
+				5D76A4EC2E4C0CD800C688DE /* LikeSheetView.swift in Sources */,
 				A2A2866D2E2BF9FB001D89B2 /* iOSTermsAndConditionsView.swift in Sources */,
 				5D6C1A0B2E3E0684004A0B17 /* Colors.swift in Sources */,
 				A2A2868C2E2C09AF001D89B2 /* iOSOnboardingView.swift in Sources */,
@@ -1078,7 +1089,7 @@
 				A2A2867F2E2C0415001D89B2 /* ContentReport.swift in Sources */,
 				5D76A4D42E4BB8BE00C688DE /* iOSExploreSearchView.swift in Sources */,
 				A2D6E0C82E4B99E60087C203 /* NotificationUseCase.swift in Sources */,
-				5D76A4D42E4BB8BE00C688DE /* ExploreSearchView.swift in Sources */,
+				5D76A4D42E4BB8BE00C688DE /* iOSExploreSearchView.swift in Sources */,
 				A2A286832E2C0434001D89B2 /* Logger.swift in Sources */,
 				A2A286922E2C0A25001D89B2 /* ExploreUseCase.swift in Sources */,
 				A2A2868F2E2C0A1B001D89B2 /* SignInWithAppleUseCase.swift in Sources */,
@@ -1089,6 +1100,7 @@
 				5D76A4CF2E4B93FE00C688DE /* ExploreViewModel.swift in Sources */,
 				5D6C19FE2E3E05EA004A0B17 /* iOSNavigationBar.swift in Sources */,
 				5D76A4CB2E4B8D5E00C688DE /* iOSExpolreView.swift in Sources */,
+				5D76A4E82E4BF93C00C688DE /* CommentSheetView.swift in Sources */,
 				5D76F3EE2E43EEB50026579D /* LikeListItemView.swift in Sources */,
 				A2A286962E2C0A3C001D89B2 /* AuthRepository.swift in Sources */,
 				A2D6E0C52E4B99DD0087C203 /* CommentUseCase.swift in Sources */,
