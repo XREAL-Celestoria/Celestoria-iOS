@@ -10,6 +10,10 @@ import SwiftUI
 // If iOSUndefinedLoadingView is in a separate module, add the import here
 // import YourModuleName
 
+extension Foundation.Notification.Name {
+	static let openMemoryDetail = Foundation.Notification.Name("OpenMemoryDetail")
+}
+
 struct iOSNotificationView: View {
     @StateObject private var viewModel: NotificationViewModel
     @Environment(\.dismiss) private var dismiss
@@ -17,6 +21,7 @@ struct iOSNotificationView: View {
     @State private var showMemoryDetail = false
     @State private var showCommentSheet = false
     @State private var showLikeSheet = false
+    @State private var presentedMemory: Memory?
     
     init(diContainer: DIContainer) {
         let useCase = diContainer.notificationUseCase
@@ -31,22 +36,11 @@ struct iOSNotificationView: View {
                 .background(Colors.BackgroundBlack)
                 .navigationBarHidden(true)
         }
-        .fullScreenCover(isPresented: $showMemoryDetail) {
-            if let memory = selectedMemory {
-                iOSMemoryDetailView(
-                    memory: memory,
-                    diContainer: viewModel.diContainer,
-                    onBack: { showMemoryDetail = false },
-                    onCommentTap: {
-                        showMemoryDetail = false
-                        showCommentSheet = true
-                    },
-                    onLikeTap: {
-                        showMemoryDetail = false
-                        showLikeSheet = true
-                    }
-                )
-            }
+        .fullScreenCover(item: $presentedMemory) { memory in
+            iOSMemoryDetailView(
+                memory: memory,
+                diContainer: viewModel.diContainer
+            )
         }
         .sheet(isPresented: $showCommentSheet) {
             if let memory = selectedMemory {
@@ -188,16 +182,9 @@ struct iOSNotificationView: View {
     }
     
     private func handleCommentTap(comment: Comment) {
-        print("DEBUG: handleCommentTap called for comment: \(comment.id)")
         Task {
-            print("DEBUG: Loading memory for comment with memoryId: \(comment.memoryId)")
             if let memory = await viewModel.getMemoryFromComment(comment) {
-                await MainActor.run {
-                    selectedMemory = memory
-                    showMemoryDetail = true
-                }
-            } else {
-                print("DEBUG: Failed to load memory for comment")
+                await MainActor.run { presentedMemory = memory }
             }
         }
     }
@@ -205,10 +192,7 @@ struct iOSNotificationView: View {
     private func handleLikeTap(likeData: (UserProfile?, Date, UUID)) {
         Task {
             if let memory = await viewModel.getMemoryFromLike(likeData) {
-                await MainActor.run {
-                    selectedMemory = memory
-                    showMemoryDetail = true
-                }
+                await MainActor.run { presentedMemory = memory }
             }
         }
     }

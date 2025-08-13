@@ -232,10 +232,8 @@ final class UserInfoModalViewModel: ObservableObject {
             for memory in memories {
                 let likes = try await diContainer.memoryRepository.fetchLikes(for: memory.id)
                 for like in likes {
-                    if like.userId != userId { // 자기 자신이 아닌 경우만
-                        let profile = try? await diContainer.profileUseCase.fetchProfileByUserId(userId: like.userId)
-                        allLikedUsers.append((profile, like.createdAt, memory.id))
-                    }
+                    let profile = try? await diContainer.profileUseCase.fetchProfileByUserId(userId: like.userId)
+                    allLikedUsers.append((profile, like.createdAt, memory.id))
                 }
             }
             
