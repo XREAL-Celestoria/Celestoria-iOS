@@ -10,6 +10,7 @@ import SwiftUI
 // MARK: - Memory List Item View
 struct MemoryListItemView: View {
     let memory: Memory
+    let viewModel: UserInfoModalViewModel
     @EnvironmentObject var appState: AppState
     
     private var daysAgo: Int {
@@ -140,9 +141,8 @@ struct MemoryListItemView: View {
         .padding(.horizontal, 16)
         .contentShape(Rectangle()) // 전체 영역을 탭 가능하게 만듦
         .onTapGesture {
-            // 메모리 디테일로 이동
-            appState.selectedMemoryForDetail = memory
-            appState.shouldNavigateToMemoryDetail = true
+            // ViewModel을 통해 메모리 선택 처리
+            viewModel.selectMemory(memory)
         }
     }
 }

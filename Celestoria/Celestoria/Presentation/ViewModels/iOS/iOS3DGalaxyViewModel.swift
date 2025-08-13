@@ -13,6 +13,7 @@ import os
 class iOS3DGalaxyViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published var isContentReady = false
+    @Published var isOtherUserSpace = false
     
     // MARK: - Scene Properties
     var scene: SCNScene?
@@ -46,11 +47,25 @@ class iOS3DGalaxyViewModel: ObservableObject {
         self.appState = appState
         self.diContainer = diContainer
         
+        // 다른 유저의 우주인지 확인
+        if let targetUserId = appState.galaxyTargetUserId,
+           let currentUserId = appState.userId,
+           targetUserId != currentUserId {
+            self.isOtherUserSpace = true
+        }
+        
         setupContentReady()
         setupMemoryObserver()
     }
     
     // MARK: - Public Methods
+    func dismissOtherUserSpace() {
+        // 다른 유저의 우주에서 나가기
+        appState.galaxyTargetUserId = nil
+        // fullScreenCover를 닫기 위해 isContentReady를 false로 설정
+        isContentReady = false
+    }
+    
     func setupScene(_ scene: SCNScene) {
         self.scene = scene
         setupCamera(in: scene)

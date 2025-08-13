@@ -11,17 +11,17 @@ import os
 // MARK: - Profile Tab Enum
 enum ProfileTab: String, CaseIterable {
     case memories = "memories"
-    // case comments = "comments"  // Temporarily disabled for App Store submission
-    // case likes = "likes"        // Temporarily disabled for App Store submission
+    case comments = "comments"
+    case likes = "likes"
     
     var displayName: String {
         switch self {
         case .memories:
             return "Memories"
-        // case .comments:
-        //     return "Comments"
-        // case .likes:
-        //     return "Likes"
+        case .comments:
+            return "Comments"
+        case .likes:
+            return "Likes"
         }
     }
 }
@@ -115,10 +115,14 @@ struct ProfileImageView: View {
     let size: CGFloat
     @State private var imageKey: String = ""
     
+    // Profile image size ratio (same as iOSProfileSettingView: 160/220 = 0.727)
+    private var profileImageSize: CGFloat { size * 0.727 }
+    
     var body: some View {
         Group {
             if let profileKey = profile.profileKey,
                let predefinedImage = PredefinedProfileImage.fromKey(profileKey) {
+                // Predefined profile image (no background needed)
                 Image(predefinedImage.rawValue)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
@@ -126,13 +130,39 @@ struct ProfileImageView: View {
                         Logger.info("ProfileImageView: Using predefined image - key: \(profileKey), image: \(predefinedImage.rawValue)")
                     }
             } else if let profileImageURL = profile.profileImageURL {
-                CachedAsyncImage(urlString: profileImageURL, size: size)
-                    .id("\(profileImageURL)_\(imageKey)") // URL과 추가 키로 강제 리로딩
-                    .onAppear {
-                        Logger.info("ProfileImageView: Using CachedAsyncImage - URL: \(profileImageURL)")
-                    }
+                // Custom profile image with background (same logic as iOSProfileSettingView)
+                ZStack {
+                    Image("profile_bg")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: size, height: size)
+                        .clipShape(Circle())
+                    
+                    // Custom profile image on top (72.7% of background size)
+                    CachedAsyncImage(urlString: profileImageURL, size: profileImageSize)
+                        .id("\(profileImageURL)_\(imageKey)")
+                        .frame(width: profileImageSize, height: profileImageSize)
+                        .clipShape(Circle())
+                        .onAppear {
+                            Logger.info("ProfileImageView: CachedAsyncImage appeared - URL: \(profileImageURL)")
+                        }
+                        .onDisappear {
+                            Logger.info("ProfileImageView: CachedAsyncImage disappeared - URL: \(profileImageURL)")
+                        }
+                }
             } else {
-                fallbackImageView
+                // Fallback image with background
+                ZStack {
+                    // Background image
+                    Image("profile_bg")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: size, height: size)
+                        .clipShape(Circle())
+                    
+                    // Fallback icon
+                    fallbackImageView
+                }
             }
         }
         .frame(width: size, height: size)
@@ -152,7 +182,7 @@ struct ProfileImageView: View {
     @ViewBuilder
     private var fallbackImageView: some View {
         Image(systemName: "person.circle.fill")
-            .font(.system(size: size))
+            .font(.system(size: profileImageSize))
             .foregroundColor(.gray)
             .onAppear {
                 Logger.info("ProfileImageView: Using fallback image - profileKey: \(profile.profileKey ?? -1), imageURL: \(profile.profileImageURL ?? "nil")")
@@ -222,23 +252,23 @@ struct ProfileHeaderStatsView: View {
                             isSelected: selectedTab == .memories,
                             onTap: { onTabSelected(.memories) }
                         )
-                        // TabStatItem(
-                        //     tab: .comments,
-                        //     count: commentCount,
-                        //     isSelected: selectedTab == .comments,
-                        //     onTap: { onTabSelected(.comments) }
-                        // )
-                        // TabStatItem(
-                        //     tab: .likes,
-                        //     count: likeCount,
-                        //     isSelected: selectedTab == .likes,
-                        //     onTap: { onTabSelected(.likes) }
-                        // )
+                        TabStatItem(
+                            tab: .comments,
+                            count: commentCount,
+                            isSelected: selectedTab == .comments,
+                            onTap: { onTabSelected(.comments) }
+                        )
+                        TabStatItem(
+                            tab: .likes,
+                            count: likeCount,
+                            isSelected: selectedTab == .likes,
+                            onTap: { onTabSelected(.likes) }
+                        )
                     } else {
                         // 축소 상태에서는 일반 스탯 아이템
                         StatItem(icon: "Memory-icon", count: memoryCount)
-                        // StatItem(icon: "CommentIcon", count: commentCount)  // Temporarily disabled
-                        // StatItem(icon: "Like-on", count: likeCount)        // Temporarily disabled
+                        StatItem(icon: "CommentIcon", count: commentCount)
+                        StatItem(icon: "likeIcon", count: likeCount)
                     }
                 }
                 Spacer()
@@ -307,10 +337,10 @@ struct TabStatItem: View {
         switch tab {
         case .memories:
             return isSelected ? "Memory-icon" : "memoryOff"
-        // case .comments:
-        //     return isSelected ? "CommentIcon" : "commentOff"
-        // case .likes:
-        //     return isSelected ? "likeIcon" : "likeOff"
+        case .comments:
+            return isSelected ? "CommentIcon" : "commentOff"
+        case .likes:
+            return isSelected ? "likeIcon" : "likeOff"
         }
     }
     
@@ -344,11 +374,13 @@ struct LoadingView: View {
 
 // MARK: - Add Memory Button
 struct AddMemoryButton: View {
-    let onAddMemory: () -> Void
+    let onAddMemory: (() -> Void)?
     let isExpanded: Bool
     
     var body: some View {
-        Button(action: onAddMemory) {
+        Button(action: {
+            onAddMemory?()
+        }) {
             HStack(alignment: .center, spacing: 4) {
                 Image("addMemoryIcon")
                     .resizable()
@@ -501,10 +533,10 @@ struct TabContentView: View {
                 case .memories:
                     MemoriesTabContentView(viewModel: viewModel, selectedCategories: selectedCategories)
                         .environmentObject(appState)
-                // case .comments:
-                //     CommentsTabContentView(viewModel: viewModel)
-                // case .likes:
-                //     LikesTabContentView(viewModel: viewModel)
+                case .comments:
+                    CommentsTabContentView(viewModel: viewModel)
+                case .likes:
+                    LikesTabContentView(viewModel: viewModel)
                 }
             }
             .transition(.opacity)

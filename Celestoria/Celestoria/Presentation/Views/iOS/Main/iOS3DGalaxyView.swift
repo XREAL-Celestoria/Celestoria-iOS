@@ -10,11 +10,29 @@ import SwiftUI
 import SceneKit
 import AudioToolbox
 import os
+import Foundation
 
 struct iOS3DGalaxyView: View {
     @StateObject private var viewModel: iOS3DGalaxyViewModel
-    @EnvironmentObject var appState: AppState
+    @Environment(\.dismiss) private var dismiss
+    @State private var selectedMemory: Memory?
     
+    // 다른 유저의 우주를 보기 위한 생성자
+    init(diContainer: DIContainer, targetUserId: UUID) {
+        let galaxyViewModel = diContainer.makeGalaxyViewModel()
+        let appState = AppState()
+        
+        // 현재 로그인된 사용자 ID 설정 (DIContainer에서 가져오기)
+        if let currentUserId = diContainer.appState.userId {
+            appState.userId = currentUserId
+        }
+        appState.galaxyTargetUserId = targetUserId
+        
+        _viewModel = StateObject(wrappedValue: iOS3DGalaxyViewModel(galaxyViewModel: galaxyViewModel, appState: appState, diContainer: diContainer))
+        self.onMemorySelectedCallback = { _ in }
+    }
+    
+    // 기존 생성자 (기존 코드와의 호환성을 위해)
     init(galaxyViewModel: GalaxyViewModel, appState: AppState, diContainer: DIContainer, onMemorySelected: @escaping (Memory) -> Void) {
         _viewModel = StateObject(wrappedValue: iOS3DGalaxyViewModel(galaxyViewModel: galaxyViewModel, appState: appState, diContainer: diContainer))
         
@@ -32,24 +50,77 @@ struct iOS3DGalaxyView: View {
                 .opacity(viewModel.isContentReady ? 1.0 : 0.0)
                 .transition(.opacity.combined(with: .scale(scale: 0.95)))
             
-            // 로딩 중일 때 검은 화면 오버레이
+            // 로딩 중일 때 iOSUnifiedLoadingView 표시
             if !viewModel.isContentReady {
-                Color.black
+                iOSUnifiedLoadingView.fullscreen(title: "Loading Galaxy.")
                     .edgesIgnoringSafeArea(.all)
                     .transition(.opacity)
             }
+            
+            // 내부 콘텐츠는 끝. 버튼/모달은 고정 오버레이로 분리합니다.
         }
         .animation(.easeInOut(duration: 1.5), value: viewModel.isContentReady)
+        // Top-back button overlay (fixed position, above modal)
+        .overlay(alignment: .topLeading) {
+            if viewModel.isOtherUserSpace {
+                Button(action: {
+                    viewModel.dismissOtherUserSpace()
+                    dismiss()
+                }) {
+                    Image("backButton")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                        .foregroundStyle(Colors.NebulaWhite)
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 16)
+                .zIndex(2)
+            }
+        }
+        // Bottom user modal overlay (fixed, below back button)
+        .overlay {
+            VStack {
+                    Spacer()
+                        .frame(minHeight: 52)
+                if viewModel.isContentReady && viewModel.isOtherUserSpace,
+                   let targetUserId = viewModel.appState.galaxyTargetUserId {
+                    UserInfoModalView(
+                        userId: targetUserId,
+                        isOwnGalaxy: (viewModel.appState.userId == targetUserId),
+                        onAddMemory: nil,
+                        onSelectMemory: { memory in
+                            selectedMemory = memory
+                        },
+                        diContainer: viewModel.diContainer
+                    )
+                    .environmentObject(viewModel.appState)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .zIndex(1)
+                }
+            }
+        }
         .onAppear {
             // 콜백 설정 - 앱 스테이트를 사용하도록 수정
             viewModel.onMemorySelected = { memory in
                 print("🔍 iOS3DGalaxyView - Memory selected from 3D view: \(memory.id.uuidString)")
-                // 앱 스테이트를 통해 메모리 디테일 네비게이션
-                appState.selectedMemoryForDetail = memory
-                appState.shouldNavigateToMemoryDetail = true
+                
+                // 로컬 상태로 메모리 디테일 표시 (item 기반 프레젠테이션)
+                selectedMemory = memory
+                
                 // 기존 콜백도 호출 (호환성을 위해)
                 onMemorySelectedCallback(memory)
             }
+        }
+        .fullScreenCover(item: $selectedMemory) { memory in
+            iOSMemoryDetailView(
+                memory: memory,
+                diContainer: viewModel.diContainer,
+                onBack: {
+                    selectedMemory = nil
+                }
+            )
+            .environmentObject(viewModel.appState)
         }
     }
 }
@@ -148,6 +219,7 @@ struct iOS3DGalaxyContainerView: View {
     @State private var lastTargetUserId: UUID? // UserInfoModal 안정화를 위해
     @State private var shouldShowUserModal: Bool = false // 모달 표시 제어
     @State private var modalRefreshCounter = 0 // UserInfoModal 강제 리프레시용
+    @State private var showingExploreSearch: Bool = false // Explore 검색 상태
     
     enum MainActiveScreen {
         case explore, notification, addMemory, settings
@@ -169,7 +241,6 @@ struct iOS3DGalaxyContainerView: View {
             diContainer: diContainer,
             onMemorySelected: { memory in
                 print("🔍 iOS3DGalaxyContainerView - Memory selected from 3D view: \(memory.id.uuidString)")
-                // 앱 스테이트를 통해 메모리 디테일 네비게이션 (iOS3DGalaxyView에서 처리됨)
             }
         )
         .environmentObject(appState)
@@ -199,10 +270,21 @@ struct iOS3DGalaxyContainerView: View {
             if let screen = activeScreen {
                 switch screen {
                 case .explore:
-                    ExploreView()
-                        .customNavigationView(title: "Explore", onBack: { activeScreen = nil })
+                    NavigationStack {
+                        iOSExploreView(
+                            diContainer: diContainer,
+                            showingSearchView: $showingExploreSearch
+                        )
+                        .customNavigationBarWithSearch(
+                            title: "Explore",
+                            onBack: { activeScreen = nil },
+                            onSearch: { showingExploreSearch = true }
+                        )
+                    }
+                    .navigationViewStyle(StackNavigationViewStyle())
                 case .notification:
-                    NotificationView()
+                    iOSNotificationView(diContainer: diContainer)
+                        .customNavigationView(title: "Notice", onBack: { activeScreen = nil })
                 case .addMemory:
                     iOSAddMemoryContentView(
                         diContainer: diContainer,
@@ -284,19 +366,19 @@ struct iOS3DGalaxyContainerView: View {
                     Spacer()
                     
                     HStack(spacing: 16) {
-//                        Button(action: { activeScreen = .explore }) {
-//                            Image("exploreIcon")
-//                                .resizable()
-//                                .scaledToFit()
-//                                .frame(width: 24, height: 24)
-//                        }
-//                        
-//                        Button(action: { activeScreen = .notification }) {
-//                            Image("NotificationIcon")
-//                                .resizable()
-//                                .scaledToFit()
-//                                .frame(width: 24, height: 24)
-//                        }
+                        Button(action: { activeScreen = .explore }) {
+                            Image("exploreIcon")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 24, height: 24)
+                        }
+                        
+                        Button(action: { activeScreen = .notification }) {
+                            Image("NotificationIcon")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 24, height: 24)
+                        }
                         
                         Button(action: { activeScreen = .settings }) {
                             Image("menuIcon")
@@ -323,9 +405,9 @@ struct iOS3DGalaxyContainerView: View {
                     UserInfoModalView(
                         userId: targetUserId,
                         isOwnGalaxy: targetUserId == appState.currentUserId,
-                        onAddMemory: {
+                        onAddMemory: targetUserId == appState.currentUserId ? {
                             activeScreen = .addMemory
-                        },
+                        } : nil,
                         diContainer: diContainer
                     )
                     .id("UserInfoModal-\(targetUserId.uuidString)-\(modalRefreshCounter)")
@@ -335,36 +417,5 @@ struct iOS3DGalaxyContainerView: View {
         )
         .animation(.easeInOut(duration: 0.3), value: shouldShowUserModal)
         .animation(.easeInOut(duration: 0.3), value: modalRefreshCounter)
-    }
-}
-
-// 화면들
-struct ExploreView: View {
-    var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
-            VStack {
-                Text("Explore")
-                    .font(.largeTitle)
-                    .foregroundColor(.white)
-                Text("탐색 화면")
-                    .foregroundColor(.gray)
-            }
-        }
-    }
-}
-
-struct NotificationView: View {
-    var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
-            VStack {
-                Text("Notification")
-                    .font(.largeTitle)
-                    .foregroundColor(.white)
-                Text("알림 화면")
-                    .foregroundColor(.gray)
-            }
-        }
     }
 }

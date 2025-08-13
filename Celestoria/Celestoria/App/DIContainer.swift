@@ -137,7 +137,8 @@ final class DIContainer: ObservableObject {
         #if os(visionOS)
         self.exploreViewModel = ExploreViewModel(
             exploreUseCase: exploreUseCase,
-            appState: self.appState
+            appState: self.appState,
+            diContainer: self
         )
         self.addMemoryMainViewModel = AddMemoryMainViewModel(createMemoryUseCase: createMemoryUseCase, appState: self.appState)
         self.galaxyViewModel = GalaxyViewModel(
@@ -249,15 +250,21 @@ final class DIContainer: ObservableObject {
     
     func makeUserInfoModalViewModel(userId: UUID) -> UserInfoModalViewModel {
         return UserInfoModalViewModel(
-            diContainer: self,
-            userId: userId
-        )
+            userId: userId, diContainer: self)
     }
     
     func makeAddMemoryMainViewModel() -> AddMemoryMainViewModel {
         return AddMemoryMainViewModel(
             createMemoryUseCase: createMemoryUseCase,
             appState: appState
+        )
+    }
+    
+    func makeExploreViewModel() -> ExploreViewModel {
+        return ExploreViewModel(
+            exploreUseCase: exploreUseCase,
+            appState: self.appState,
+            diContainer: self
         )
     }
     #endif

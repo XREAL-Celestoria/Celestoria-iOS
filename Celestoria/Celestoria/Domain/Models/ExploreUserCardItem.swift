@@ -11,6 +11,7 @@ struct ExploreUserCardItem {
     let userName: String
     let userProfileImageName: String
     let memoryStars: Int
+    let likeCount: Int
     let imageName: String
     let isCustomImage: Bool
 }
