@@ -81,7 +81,8 @@ final class DIContainer: ObservableObject {
         self.signOutUseCase = SignOutUseCase(repository: authRepository)
         self.exploreUseCase = ExploreUseCase(
             authRepository: authRepository,
-            memoryRepository: memoryRepository
+            memoryRepository: memoryRepository,
+            supabase: supabaseClient
         )
         self.blockedUsersUseCase = BlockedUsersUseCase(
             authRepository: authRepository

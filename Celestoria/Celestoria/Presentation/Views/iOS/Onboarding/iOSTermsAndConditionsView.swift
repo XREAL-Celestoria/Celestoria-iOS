@@ -82,8 +82,8 @@ struct iOSTermsAndConditionsView: View {
                             UserDefaults.standard.set(true, forKey: "hasAcceptedTerms")
                             appState.hasAcceptedTerms = true
                             
-                            // 약관 동의 후에는 먼저 통일된 로딩뷰를 보여줌
-                            appState.navigationState = .initializing
+                            // 약관 동의 후 바로 메인 화면으로 이동
+                            appState.navigationState = .main
                             
                             // 백그라운드에서 리소스 로딩 시작
                             Task {

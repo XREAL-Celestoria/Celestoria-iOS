@@ -77,7 +77,20 @@ final class UserInfoModalViewModel: ObservableObject {
     }
     
     func refreshProfileData() async {
+        // 로딩 상태를 명확하게 표시
+        isLoading = true
+        
+        // 기존 데이터를 일시적으로 숨김
+        let previousProfile = userProfile
+        userProfile = nil
+        
+        // 약간의 지연으로 로딩 상태가 보이도록 함
+        try? await Task.sleep(nanoseconds: 300_000_000) // 0.3초
+        
         await loadUserData()
+        
+        // 로딩이 완료되면 isLoading을 false로 설정
+        isLoading = false
     }
     
     // MARK: - UI State Controls (used by View)

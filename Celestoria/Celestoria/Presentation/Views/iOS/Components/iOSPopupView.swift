@@ -116,8 +116,7 @@ struct DeleteMemoryConfirmationPopup: View {
         iOSConfirmationPopupView(
             title: "Delete Memory Star",
             message: "Are you sure you want to delete this? This action cannot be undone.",
-            cancelTitle: "Cancel",
-            confirmTitle: "Delete",
+            style: .twoButtons(cancelTitle: "Cancel", confirmTitle: "Delete"),
             onCancel: onCancel,
             onConfirm: onDelete
         )

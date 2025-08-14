@@ -12,8 +12,9 @@ import os
 @MainActor
 class iOS3DGalaxyViewModel: ObservableObject {
     // MARK: - Published Properties
-    @Published var isContentReady = false
+    @Published var isContentReady = false // 초기에는 false로 시작해서 로딩 오버레이가 바로 보임
     @Published var isOtherUserSpace = false
+    @Published var isLoadingOtherUserGalaxy = false
     
     // MARK: - Scene Properties
     var scene: SCNScene?
@@ -52,6 +53,8 @@ class iOS3DGalaxyViewModel: ObservableObject {
            let currentUserId = appState.userId,
            targetUserId != currentUserId {
             self.isOtherUserSpace = true
+            // 다른 유저 갤럭시 진입 시 즉시 로딩 상태로 전환하여 첫 프레임부터 오버레이가 보이도록 처리
+            self.isLoadingOtherUserGalaxy = true
         }
         
         setupContentReady()
@@ -64,6 +67,8 @@ class iOS3DGalaxyViewModel: ObservableObject {
         appState.galaxyTargetUserId = nil
         // fullScreenCover를 닫기 위해 isContentReady를 false로 설정
         isContentReady = false
+        // 다른 유저 갤럭시 로딩 상태 리셋
+        isLoadingOtherUserGalaxy = false
     }
     
     func setupScene(_ scene: SCNScene) {
@@ -76,8 +81,12 @@ class iOS3DGalaxyViewModel: ObservableObject {
     func loadMemories() {
         Task {
             do {
+                // 다른 유저의 갤럭시를 로딩하는 경우 로딩 상태 설정
                 if let targetUserId = appState.galaxyTargetUserId,
                    targetUserId != appState.currentUserId {
+                    await MainActor.run {
+                        self.isLoadingOtherUserGalaxy = true
+                    }
                     try await galaxyViewModel.fetchMemoriesFromOtherUser(userId: targetUserId)
                 } else {
                     try await galaxyViewModel.fetchCurrentUserMemories()
@@ -271,6 +280,11 @@ class iOS3DGalaxyViewModel: ObservableObject {
                     if !self.appState.isGalaxyLoadingComplete {
                         print("🔧 iOS3DGalaxyViewModel: Setting galaxy loading complete after background + 3D render")
                         self.appState.isGalaxyLoadingComplete = true
+                    }
+                    
+                    // 다른 유저의 갤럭시 로딩 완료
+                    if self.isOtherUserSpace {
+                        self.isLoadingOtherUserGalaxy = false
                     }
                 }
             }

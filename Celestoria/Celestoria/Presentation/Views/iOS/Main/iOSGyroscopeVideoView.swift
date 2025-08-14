@@ -17,6 +17,7 @@ struct GyroscopeVideoView: View {
     @ObservedObject var motionManager: MotionManager
     @State private var thumbnailLoaded = false
     @State private var imageLoadError = false
+    @State private var isThumbnailLoading = false
     
     var body: some View {
         GeometryReader { geometry in
@@ -36,47 +37,26 @@ struct GyroscopeVideoView: View {
                         .onDisappear {
                             player.pause()
                         }
-                } else if let thumbnailURL = URL(string: memory.thumbnailURL ?? "") {
-                    // AsyncImage - EXACTLY like visionOS (no complex overlay structure)
-                    AsyncImage(url: thumbnailURL) { phase in
-                        switch phase {
-                        case .empty:
-                            ProgressView()
-                                .frame(width: 44, height: 44)
-                                .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
-                                .background(Color.gray.opacity(0.3))
-                                .clipShape(RoundedRectangle(cornerRadius: 20))
-                                .onAppear {
-                                    thumbnailLoaded = false
-                                    print("🔄 DEBUG: Loading thumbnail: \(thumbnailURL)")
-                                }
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
-                                .clipShape(RoundedRectangle(cornerRadius: 20))
-                                .onAppear {
-                                    thumbnailLoaded = true
-                                    imageLoadError = false
-                                    print("✅ DEBUG: Thumbnail loaded successfully")
-                                }
-                        case .failure(let error):
-                            Color.gray
-                                .opacity(0.3)
-                                .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
-                                .clipShape(RoundedRectangle(cornerRadius: 20))
-                                .onAppear {
-                                    imageLoadError = true
-                                    print("❌ DEBUG: AsyncImage failed to load: \(error)")
-                                    print("❌ DEBUG: Failed URL: \(thumbnailURL)")
-                                }
-                        @unknown default:
-                            Color.gray.opacity(0.3)
-                                .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
-                                .clipShape(RoundedRectangle(cornerRadius: 20))
+                } else if let thumbnailURLString = memory.thumbnailURL, !thumbnailURLString.isEmpty {
+                    // Cached thumbnail image with simple progress view
+                    CachedAsyncImage(
+                        urlString: thumbnailURLString,
+                        size: geometry.size.width * 0.5,
+                        onLoadingChange: { isLoading in
+                            isThumbnailLoading = isLoading
+                            if isLoading {
+                                thumbnailLoaded = false
+                                imageLoadError = false
+                            }
+                        },
+                        onCompletion: { success in
+                            thumbnailLoaded = success
+                            imageLoadError = !success
                         }
-                    }
+                    )
+                    .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.5)
+                    .background(Color.gray.opacity(0.3))
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
             } else {
                     // No thumbnail URL available
                     Color.gray.opacity(0.3)
@@ -95,7 +75,7 @@ struct GyroscopeVideoView: View {
                 }
                 
                 // Play button overlay - positioned like visionOS
-                if (thumbnailLoaded || memory.videoURL != nil) && !isPlayingInline && !imageLoadError {
+                if (thumbnailLoaded || memory.videoURL != nil) && !isPlayingInline && !imageLoadError && !isThumbnailLoading {
                     Button(action: {
                         if let videoURLString = memory.videoURL,
                            let videoURL = URL(string: videoURLString) {

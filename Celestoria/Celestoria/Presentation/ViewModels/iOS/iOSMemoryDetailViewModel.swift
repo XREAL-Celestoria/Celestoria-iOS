@@ -26,6 +26,7 @@ final class iOSMemoryDetailViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var isLoading: Bool = false
     @Published var showDeleteAlert: Bool = false
+    @Published var showOwnLikePopup: Bool = false
     
     // MARK: - Computed Properties
     var formattedDate: String {
@@ -76,9 +77,17 @@ final class iOSMemoryDetailViewModel: ObservableObject {
         guard let appState = appState,
               let currentUserId = appState.userId else { return }
         
+        // Block liking own memory and show one-button popup
+        if memory.userId == currentUserId {
+            await MainActor.run { [weak self] in
+                self?.showOwnLikePopup = true
+            }
+            return
+        }
+        
         do {
             if isLiked {
-                // 좋아요 제거
+                // Remove like
                 try await diContainer.memoryRepository.deleteLike(memoryId: memory.id, userId: currentUserId)
                 likeCount -= 1
                 isLiked = false
@@ -89,7 +98,7 @@ final class iOSMemoryDetailViewModel: ObservableObject {
                     CommentNotificationKeys.userId: currentUserId
                 ])
             } else {
-                // 좋아요 추가
+                // Add like
                 try await diContainer.memoryRepository.createLike(memoryId: memory.id, userId: currentUserId)
                 likeCount += 1
                 isLiked = true
@@ -102,7 +111,7 @@ final class iOSMemoryDetailViewModel: ObservableObject {
             }
         } catch {
             logger.error("Failed to toggle like: \(error.localizedDescription)")
-            errorMessage = "좋아요 처리 중 오류가 발생했습니다."
+            errorMessage = "An error occurred while processing the like."
         }
     }
     

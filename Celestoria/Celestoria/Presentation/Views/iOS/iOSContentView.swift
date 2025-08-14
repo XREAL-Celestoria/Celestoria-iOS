@@ -12,7 +12,6 @@ struct iOSContentView: View {
     @EnvironmentObject var loginViewModel: LoginViewModel
     @EnvironmentObject var settingViewModel: SettingViewModel
     let diContainer: DIContainer
-    @State private var showSplash = true
     @State private var selectedMemory: Memory?
     
     init(diContainer: DIContainer) {
@@ -23,12 +22,6 @@ struct iOSContentView: View {
         ZStack {
             // 메인 컨텐츠
             currentView
-            
-            // 스플래시 오버레이 (앱 시작 시 0.5초만)
-            if showSplash {
-                iOSSplashView()
-                    .transition(.opacity)
-            }
         }
         .onAppear {
             initializeApp()
@@ -72,15 +65,7 @@ struct iOSContentView: View {
         case .terms:
             iOSTermsAndConditionsView()
             
-        case .initializing:
-            iOSUnifiedLoadingView.appInitializing()
-                .onAppear {
-                    // 2초 후 메인으로 이동
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                        appState.isGalaxyLoadingComplete = false
-                        appState.navigationState = .main
-                    }
-                }
+
             
         case .main:
             ZStack {
@@ -97,39 +82,19 @@ struct iOSContentView: View {
                     }
                 }
                 
-                // 로딩 중일 때만 갤럭시뷰 위에 블러 오버레이 (터치는 통과)
-                if !appState.isGalaxyLoadingComplete {
-                    iOSUnifiedLoadingView.stars()
-                        .allowsHitTesting(false) // 터치 이벤트 통과
-                        .onAppear {
-                            // 4초 후 자동으로 로딩뷰 숨김 (안전장치)
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
-                                if !appState.isGalaxyLoadingComplete {
-                                    print("⏰ Auto-hiding loading view after 4 seconds timeout")
-                                    appState.isGalaxyLoadingComplete = true
-                                }
-                            }
-                        }
-                }
+                // 로딩 오버레이는 iOSContentView의 ZStack에서 처리
             }
         }
     }
     
     private func initializeApp() {
-        // 0.5초 스플래시 표시 후 숨김
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            withAnimation(.easeOut(duration: 0.3)) {
-                showSplash = false
-            }
-            
-            // 스플래시 후 적절한 화면으로 이동
-            determineInitialScreen()
-        }
+        // 스플래시 없이 바로 적절한 화면으로 이동
+        determineInitialScreen()
     }
     
     private func determineInitialScreen() {
         if appState.userId != nil {
-            // 기존 로그인된 사용자 -> 바로 메인 (갤럭시 로딩 포함)
+            // 기존 로그인된 사용자 -> 바로 메인 (3D 갤럭시 뷰 + 로딩 오버레이)
             appState.isGalaxyLoadingComplete = false
             appState.navigationState = .main
         } else {

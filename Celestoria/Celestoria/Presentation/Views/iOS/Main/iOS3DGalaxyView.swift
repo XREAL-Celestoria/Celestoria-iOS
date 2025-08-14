@@ -16,6 +16,7 @@ struct iOS3DGalaxyView: View {
     @StateObject private var viewModel: iOS3DGalaxyViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var selectedMemory: Memory?
+    @State private var shouldCreateSceneView: Bool = true
     
     // 다른 유저의 우주를 보기 위한 생성자
     init(diContainer: DIContainer, targetUserId: UUID) {
@@ -44,22 +45,34 @@ struct iOS3DGalaxyView: View {
     
     var body: some View {
         ZStack {
-            // Scene은 항상 렌더링하되, opacity로 표시 여부 제어
-            GalaxySceneView(viewModel: viewModel)
-                .edgesIgnoringSafeArea(.all)
-                .opacity(viewModel.isContentReady ? 1.0 : 0.0)
-                .transition(.opacity.combined(with: .scale(scale: 0.95)))
-            
-            // 로딩 중일 때 iOSUnifiedLoadingView 표시
-            if !viewModel.isContentReady {
-                iOSUnifiedLoadingView.fullscreen(title: "Loading Galaxy.")
+            // 무거운 SCNView 생성은 첫 프레임 이후로 미뤄서 오버레이가 즉시 보이도록 함
+            if shouldCreateSceneView {
+                GalaxySceneView(viewModel: viewModel)
                     .edgesIgnoringSafeArea(.all)
-                    .transition(.opacity)
+                    .opacity(viewModel.isContentReady ? 1.0 : 0.0) // 완전 불투명으로 변경
+                    .animation(.easeInOut(duration: 0.3), value: viewModel.isContentReady) // 애니메이션 단축
             }
+            
+            // 로딩 오버레이를 항상 렌더링하고, 상태에 따라 투명도만 조절하여 첫 프레임부터 표시되도록 함
+            iOSUnifiedLoadingView.fullscreen(title: viewModel.isOtherUserSpace ? "Loading Other Galaxy." : "Loading Galaxy.")
+                .edgesIgnoringSafeArea(.all)
+                .opacity((!viewModel.isContentReady || viewModel.isLoadingOtherUserGalaxy) ? 1.0 : 0.0)
+                .animation(.easeInOut(duration: 0.25), value: viewModel.isContentReady)
+                .animation(.easeInOut(duration: 0.25), value: viewModel.isLoadingOtherUserGalaxy)
+                .zIndex(50) // 상단 버튼보다 낮게 설정
+                .allowsHitTesting(false) // 로딩 오버레이가 터치를 차단하지 않도록
             
             // 내부 콘텐츠는 끝. 버튼/모달은 고정 오버레이로 분리합니다.
         }
-        .animation(.easeInOut(duration: 1.5), value: viewModel.isContentReady)
+
+        .onChange(of: viewModel.isContentReady) { _, isReady in
+            if isReady {
+                // 로딩이 완료되면 appState 업데이트
+                DispatchQueue.main.async {
+                    viewModel.appState.isGalaxyLoadingComplete = true
+                }
+            }
+        }
         // Top-back button overlay (fixed position, above modal)
         .overlay(alignment: .topLeading) {
             if viewModel.isOtherUserSpace {
@@ -101,6 +114,7 @@ struct iOS3DGalaxyView: View {
             }
         }
         .onAppear {
+            // SCNView는 이미 true로 설정되어 있어서 즉시 생성됨
             // 콜백 설정 - 앱 스테이트를 사용하도록 수정
             viewModel.onMemorySelected = { memory in
                 print("🔍 iOS3DGalaxyView - Memory selected from 3D view: \(memory.id.uuidString)")
@@ -138,6 +152,7 @@ struct GalaxySceneView: UIViewRepresentable {
         let scene = SCNScene()
         scnView.scene = scene
         
+        // 로딩 상태를 즉시 표시하기 위해 초기화 시작
         viewModel.setupScene(scene)
         viewModel.loadMemories()
         
@@ -214,11 +229,11 @@ struct iOS3DGalaxyContainerView: View {
     @EnvironmentObject var appState: AppState
     @StateObject private var galaxyViewModel: GalaxyViewModel
     @State private var activeScreen: MainActiveScreen?
-    @State private var containerOpacity: Double = 0
+    @State private var containerOpacity: Double = 1
     @State private var settingsNavigationPath: [SettingsScreen] = []
     @State private var lastTargetUserId: UUID? // UserInfoModal 안정화를 위해
     @State private var shouldShowUserModal: Bool = false // 모달 표시 제어
-    @State private var modalRefreshCounter = 0 // UserInfoModal 강제 리프레시용
+
     @State private var showingExploreSearch: Bool = false // Explore 검색 상태
     
     enum MainActiveScreen {
@@ -235,25 +250,62 @@ struct iOS3DGalaxyContainerView: View {
     }
     
     var body: some View {
-        iOS3DGalaxyView(
-            galaxyViewModel: galaxyViewModel,
-            appState: appState,
-            diContainer: diContainer,
-            onMemorySelected: { memory in
-                print("🔍 iOS3DGalaxyContainerView - Memory selected from 3D view: \(memory.id.uuidString)")
+        ZStack {
+            // 갤럭시 뷰 (배경)
+            iOS3DGalaxyView(
+                galaxyViewModel: galaxyViewModel,
+                appState: appState,
+                diContainer: diContainer,
+                onMemorySelected: { memory in
+                    print("🔍 iOS3DGalaxyContainerView - Memory selected from 3D view: \(memory.id.uuidString)")
+                }
+            )
+            .environmentObject(appState)
+            .opacity(containerOpacity)
+            
+            // 상단 버튼들을 갤럭시 뷰와 완전히 분리된 절대 고정 위치로 배치
+            VStack {
+                HStack {
+                    Spacer()
+                    
+                    HStack(spacing: 16) {
+                        Button(action: { activeScreen = .explore }) {
+                            Image("exploreIcon")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 24, height: 24)
+                        }
+                        
+                        Button(action: { activeScreen = .notification }) {
+                            Image("NotificationIcon")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 24, height: 24)
+                        }
+                        
+                        Button(action: { activeScreen = .settings }) {
+                            Image("menuIcon")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 24, height: 24)
+                        }
+                    }
+                    .padding(.trailing, 16)
+                    .padding(.top, 16)
+                }
+                
+                Spacer()
             }
-        )
-        .environmentObject(appState)
-        .opacity(containerOpacity)
-        .animation(.easeInOut(duration: 1.0), value: containerOpacity)
+            .frame(maxWidth: .infinity, maxHeight: .infinity) // 전체 화면 고정
+            .allowsHitTesting(true) // 터치 허용
+            .zIndex(1000) // 최상위 레이어
+        }
         .onAppear {
             print("🔍 iOS3DGalaxyContainerView - onAppear")
-            withAnimation(.easeInOut(duration: 1.0).delay(0.3)) {
-                containerOpacity = 1
-            }
+            // containerOpacity는 이미 1로 시작하므로 애니메이션 불필요
             
             // 초기 UserInfoModal 상태 설정 (안정화)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 if let targetUserId = appState.galaxyTargetUserId {
                     shouldShowUserModal = true
                     lastTargetUserId = targetUserId
@@ -328,18 +380,16 @@ struct iOS3DGalaxyContainerView: View {
             if shouldRefresh {
                 print("ℹ️ INFO: Refresh Main View: \(shouldRefresh)")
                 galaxyViewModel.refreshGalaxy()
-                // UserInfoModal 강제 리프레시
-                modalRefreshCounter += 1
-                print("ℹ️ INFO: UserInfoModal refresh counter: \(modalRefreshCounter)")
-                // 즉시 false로 설정하여 중복 리프레시 방지
+                
+                // 즉시 false로 설정하여 중복 리프레시 방지 (모달 리프레시 제거)
                 appState.refreshMainView = false
             }
         }
         .onChange(of: appState.galaxyTargetUserId) { _, newTargetUserId in
-            // UserInfoModal 표시 조건 최적화
+            // UserInfoModal 표시 조건 최적화 (애니메이션 최소화)
             if let newUserId = newTargetUserId, newUserId != lastTargetUserId {
-                shouldShowUserModal = true
                 lastTargetUserId = newUserId
+                shouldShowUserModal = true
             } else if newTargetUserId == nil {
                 shouldShowUserModal = false
                 lastTargetUserId = nil
@@ -359,41 +409,7 @@ struct iOS3DGalaxyContainerView: View {
             }
         }
 
-        .overlay(
-            // 상단 버튼들 - 독립적인 ZStack
-            VStack {
-                HStack {
-                    Spacer()
-                    
-                    HStack(spacing: 16) {
-                        Button(action: { activeScreen = .explore }) {
-                            Image("exploreIcon")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 24, height: 24)
-                        }
-                        
-                        Button(action: { activeScreen = .notification }) {
-                            Image("NotificationIcon")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 24, height: 24)
-                        }
-                        
-                        Button(action: { activeScreen = .settings }) {
-                            Image("menuIcon")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 24, height: 24)
-                        }
-                    }
-                    .padding(.trailing, 16)
-                    .padding(.top, 16)
-                }
-                
-                Spacer()
-            }
-        )
+
         .overlay(
             // 하단 유저 모달 - 최적화된 조건부 렌더링
             VStack {
@@ -410,12 +426,11 @@ struct iOS3DGalaxyContainerView: View {
                         } : nil,
                         diContainer: diContainer
                     )
-                    .id("UserInfoModal-\(targetUserId.uuidString)-\(modalRefreshCounter)")
+                    .id("UserInfoModal-\(targetUserId.uuidString)")
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
         )
         .animation(.easeInOut(duration: 0.3), value: shouldShowUserModal)
-        .animation(.easeInOut(duration: 0.3), value: modalRefreshCounter)
     }
 }

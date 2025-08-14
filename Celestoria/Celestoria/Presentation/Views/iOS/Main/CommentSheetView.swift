@@ -132,21 +132,23 @@ struct CommentSheetView: View {
                 .navigationBarHidden(true)
                 
                 // Fullscreen overlay popup for delete confirmation
-                Group {
-                    if let pending = commentToDelete {
-                        iOSConfirmationPopupView(
-                            title: "Delete Comment",
-                            message: "Are you sure you want to delete this comment?",
-                            cancelTitle: "Cancel",
-                            confirmTitle: "Delete",
-                            isDestructive: true,
-                            onCancel: { commentToDelete = nil },
-                            onConfirm: {
-                                Task { await viewModel.deleteComment(pending.id) }
-                                commentToDelete = nil
+                if let commentToDelete = commentToDelete {
+                    iOSConfirmationPopupView(
+                        title: "Delete Comment",
+                        message: "Are you sure you want to delete this comment?",
+                        style: .twoButtons(cancelTitle: "Cancel", confirmTitle: "Delete", isDestructive: true),
+                        onCancel: { 
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                self.commentToDelete = nil
                             }
-                        )
-                    }
+                        },
+                        onConfirm: {
+                            Task { await viewModel.deleteComment(commentToDelete.id) }
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                self.commentToDelete = nil
+                            }
+                        }
+                    )
                 }
             }
         }

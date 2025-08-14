@@ -12,6 +12,10 @@ import os
 struct CachedAsyncImage: View {
     let urlString: String
     let size: CGFloat
+    // Optional callbacks to propagate loading/completion state to parent views
+    var onLoadingChange: ((Bool) -> Void)? = nil
+    var onCompletion: ((Bool) -> Void)? = nil
+    
     @State private var image: UIImage?
     @State private var isLoading = true
     @State private var hasError = false
@@ -41,24 +45,31 @@ struct CachedAsyncImage: View {
         guard !urlString.isEmpty else {
             isLoading = false
             hasError = true
+            onLoadingChange?(false)
+            onCompletion?(false)
             return
         }
         
         isLoading = true
         hasError = false
+        onLoadingChange?(true)
         
         Task {
             if let loadedImage = await ImageCache.shared.loadImage(from: urlString) {
                 await MainActor.run {
                     self.image = loadedImage
                     self.isLoading = false
+                    self.onLoadingChange?(false)
+                    self.onCompletion?(true)
                 }
             } else {
                 await MainActor.run {
                     self.isLoading = false
                     self.hasError = true
+                    self.onLoadingChange?(false)
+                    self.onCompletion?(false)
                 }
             }
         }
     }
-} 
+}

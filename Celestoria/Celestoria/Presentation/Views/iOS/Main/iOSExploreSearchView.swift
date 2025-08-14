@@ -18,6 +18,7 @@ struct iOSExploreSearchView: View {
     @State private var hasSubmittedSearch: Bool = false
     @State private var isLoadingSuggestions: Bool = false
     @State private var showingGalaxyFromSearch: Bool = false
+    @State private var showingOwnGalaxyPopup = false
     private let historyKey = "ExploreSearchHistory"
     
     private enum Phase { 
@@ -29,8 +30,10 @@ struct iOSExploreSearchView: View {
             return showingSuggestions ? .suggest : .history
         }
         if hasSubmittedSearch {
+            // 검색어가 있고 제출된 상태라면 결과 또는 빈 결과 표시
             return viewModel.exploreUsers.isEmpty ? .empty : .result
         }
+        // 검색어가 있지만 아직 제출되지 않은 상태라면 추천 표시
         return .suggest
     }
     
@@ -53,18 +56,21 @@ struct iOSExploreSearchView: View {
                             .foregroundStyle(Colors.NebulaWhite)
                             .focused($isSearchFocused)
                             .onChange(of: viewModel.searchText) { _, newValue in
-                                if newValue.isEmpty {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        showingSuggestions = false
-                                        hasSubmittedSearch = false
+                                // 최신검색어를 누른 후에는 onChange에서 hasSubmittedSearch를 false로 설정하지 않음
+                                if !hasSubmittedSearch {
+                                    if newValue.isEmpty {
+                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                            showingSuggestions = false
+                                            hasSubmittedSearch = false
+                                        }
+                                    } else {
+                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                            showingSuggestions = true
+                                            hasSubmittedSearch = false
+                                        }
                                     }
-                                } else {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        showingSuggestions = true
-                                        hasSubmittedSearch = false
-                                    }
+                                    Task { await viewModel.onChangeSearchText() }
                                 }
-                                Task { await viewModel.onChangeSearchText() }
                             }
                             .onSubmit {
                                 addHistory(viewModel.searchText)
@@ -132,7 +138,10 @@ struct iOSExploreSearchView: View {
                                                 hasSubmittedSearch = true
                                                 showingSuggestions = false
                                             }
-                                            Task { await viewModel.onChangeSearchText() }
+                                            Task { 
+                                                // 검색 결과를 명시적으로 가져오기
+                                                await viewModel.fetchExploreUsers()
+                                            }
                                         }
                                     Spacer()
                                     Button(action: { removeHistory(term) }) {
@@ -156,31 +165,23 @@ struct iOSExploreSearchView: View {
                         LazyVStack(spacing: 20) {
                             if viewModel.searchText.isEmpty {
                                 // 포커싱만 되었을 때 기본 추천 유저들 표시
-                                if isLoadingSuggestions {
-                                    // 추천 로딩 중일 때
-                                    VStack(spacing: 16) {
-                                        ProgressView()
-                                            .progressViewStyle(CircularProgressViewStyle(tint: Colors.NebulaWhite))
-                                            .scaleEffect(1.2)
-                                        Text("Loading recommendations...")
-                                            .fontStyle(Fonts.caption1)
-                                            .foregroundStyle(Colors.Placeholder)
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 40)
-                                } else {
-                                    // 추천 유저들 표시
-                                    ForEach(viewModel.popularUsers.prefix(5), id: \.profile.userId) { user in
-                                        if let card = viewModel.getCardItem(by: user.profile.userId) {
-                                            Button(action: {
+                                // 추천 유저들 표시
+                                ForEach(viewModel.popularUsers.prefix(5), id: \.profile.userId) { user in
+                                    if let card = viewModel.getCardItem(by: user.profile.userId) {
+                                        Button(action: {
+                                            if viewModel.isCurrentUser(user) {
+                                                // 자기 자신의 갤럭시를 누를 때
+                                                showingOwnGalaxyPopup = true
+                                            } else {
+                                                // 다른 유저의 갤럭시를 누를 때
                                                 addHistory(user.profile.name)
                                                 viewModel.selectedUser = user
                                                 showingGalaxyFromSearch = true
-                                            }) { 
-                                                SuggestionRow(card: card, user: user) 
                                             }
-                                            .buttonStyle(PlainButtonStyle())
+                                        }) { 
+                                            SuggestionRow(card: card, user: user) 
                                         }
+                                        .buttonStyle(PlainButtonStyle())
                                     }
                                 }
                             } else {
@@ -188,9 +189,15 @@ struct iOSExploreSearchView: View {
                                 ForEach(viewModel.exploreUsers, id: \.profile.userId) { user in
                                     if let card = viewModel.getCardItem(by: user.profile.userId) {
                                         Button(action: {
-                                            addHistory(viewModel.searchText)
-                                            viewModel.selectedUser = user
-                                            showingGalaxyFromSearch = true
+                                            if viewModel.isCurrentUser(user) {
+                                                // 자기 자신의 갤럭시를 누를 때
+                                                showingOwnGalaxyPopup = true
+                                            } else {
+                                                // 다른 유저의 갤럭시를 누를 때
+                                                addHistory(viewModel.searchText)
+                                                viewModel.selectedUser = user
+                                                showingGalaxyFromSearch = true
+                                            }
                                         }) { 
                                             SuggestionRow(card: card, user: user) 
                                         }
@@ -213,9 +220,15 @@ struct iOSExploreSearchView: View {
                             ForEach(viewModel.exploreUsers, id: \.profile.userId) { user in
                                 if let card = viewModel.getCardItem(by: user.profile.userId) {
                                     Button(action: {
-                                        addHistory(viewModel.searchText)
-                                        viewModel.selectedUser = user
-                                        showingGalaxyFromSearch = true
+                                        if viewModel.isCurrentUser(user) {
+                                            // 자기 자신의 갤럭시를 누를 때
+                                            showingOwnGalaxyPopup = true
+                                        } else {
+                                            // 다른 유저의 갤럭시를 누를 때
+                                            addHistory(viewModel.searchText)
+                                            viewModel.selectedUser = user
+                                            showingGalaxyFromSearch = true
+                                        }
                                     }) { 
                                         LargeResultRow(card: card, user: user) 
                                     }
@@ -311,6 +324,40 @@ struct iOSExploreSearchView: View {
                     .toolbar(.hidden, for: .navigationBar)
             }
         }
+        .overlay(
+            Group {
+                if isLoadingSuggestions && phase == .suggest {
+                    VStack(spacing: 16) {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: Colors.NebulaWhite))
+                            .scaleEffect(1.2)
+                        Text("Loading Suggestions...")
+                            .fontStyle(Fonts.caption1)
+                            .foregroundStyle(Colors.Placeholder)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Colors.BackgroundBlack.opacity(0.8))
+                }
+                
+                if showingOwnGalaxyPopup {
+                    iOSConfirmationPopupView(
+                        title: "Your Own Galaxy",
+                        message: "This is your own galaxy. You can view it from the main screen.",
+                        style: .singleButton(title: "OK"),
+                        onCancel: { 
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                showingOwnGalaxyPopup = false
+                            }
+                        },
+                        onConfirm: { 
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                showingOwnGalaxyPopup = false
+                            }
+                        }
+                    )
+                }
+            }
+        )
     }
     
     // MARK: - Private Methods

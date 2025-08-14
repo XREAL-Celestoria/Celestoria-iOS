@@ -12,6 +12,7 @@ import os
 final class ExploreViewModel: ObservableObject {
     @Published var searchText: String = ""
     @Published var isLoading: Bool = false
+    @Published var isInitialLoading: Bool = false
     @Published var errorMessage: String? = nil
 
     // 최종으로 View에서 그리는 데이터
@@ -28,11 +29,42 @@ final class ExploreViewModel: ObservableObject {
     private let exploreUseCase: ExploreUseCase
     private let appState: AppState
     let diContainer: DIContainer
+    private var hasLoadedInitialExploreData: Bool = false
 
     init(exploreUseCase: ExploreUseCase, appState: AppState, diContainer: DIContainer) {
         self.exploreUseCase = exploreUseCase
         self.appState = appState
         self.diContainer = diContainer
+    }
+
+    /// 익스플로어 뷰 최초 진입 시 필요한 데이터 일괄 로드
+    func loadInitialExploreData() async {
+        // 이미 최초 로드가 끝났다면 재로딩/로딩오버레이 생략
+        if hasLoadedInitialExploreData {
+            return
+        }
+
+        // 최초 진입 로딩 오버레이 표시 (최소 0.2초 보장)
+        isInitialLoading = true
+        let loadingStartAt = Date()
+
+        // 가능한 한 병렬로 불러오기
+        async let most = fetchMostStarsUsers()
+        async let popular = fetchPopularUsers()
+        async let latest = fetchLatestUsers()
+        _ = await (most, popular, latest)
+
+        // 최소 로딩 시간 보장
+        let elapsed = Date().timeIntervalSince(loadingStartAt)
+        let minimumLoadingDuration: TimeInterval = 0.2
+        if elapsed < minimumLoadingDuration {
+            let remaining = minimumLoadingDuration - elapsed
+            let nanos = UInt64(remaining * 1_000_000_000)
+            try? await Task.sleep(nanoseconds: nanos)
+        }
+
+        isInitialLoading = false
+        hasLoadedInitialExploreData = true
     }
 
     /// 검색어 바뀔 때마다 즉시 검색: onChangeSearchText()
@@ -56,10 +88,10 @@ final class ExploreViewModel: ObservableObject {
         defer { isLoading = false }
 
         do {
-            let currentUserId = appState.userId
+            // 현재 유저도 포함하도록 excludeUserId를 nil로 설정
             let users = try await exploreUseCase.fetchExploreUsers(
                 searchText: searchText,
-                excludeUserId: currentUserId
+                excludeUserId: nil  // nil로 설정하여 현재 유저도 포함
             )
             self.exploreUsers = users
         } catch {
@@ -68,13 +100,13 @@ final class ExploreViewModel: ObservableObject {
         }
     }
 
-    /// 메인(모스트 스타)용 데이터 로드 (검색어와 무관, 상단 섹션 전용)
+    /// 메인(모스트 스탈)용 데이터 로드 (검색어와 무관, 상단 섹션 전용)
     func fetchMostStarsUsers() async {
         do {
-            let currentUserId = appState.userId
+            // 현재 유저도 포함하도록 excludeUserId를 nil로 설정
             let users = try await exploreUseCase.fetchExploreUsers(
                 searchText: "",
-                excludeUserId: currentUserId
+                excludeUserId: nil  // nil로 설정하여 현재 유저도 포함
             )
             // 별 수(메모리 카운트) 기준 내림차순 정렬 후 보관
             self.mostStarsUsers = users.sorted { $0.memoryCount > $1.memoryCount }
@@ -86,10 +118,10 @@ final class ExploreViewModel: ObservableObject {
 
     func fetchPopularUsers() async {
         do {
-            let currentUserId = appState.userId
+            // 현재 유저도 포함하도록 excludeUserId를 nil로 설정
             let users = try await exploreUseCase.fetchPopularUsers(
                 searchText: searchText,
-                excludeUserId: currentUserId
+                excludeUserId: nil  // nil로 설정하여 현재 유저도 포함
             )
             self.popularUsers = users
         } catch {
@@ -103,10 +135,10 @@ final class ExploreViewModel: ObservableObject {
         defer { isLoadingLatestUsers = false }
 
         do {
-            let currentUserId = appState.userId
-            let users = try await exploreUseCase.fetchLatestUsers(
+            // 현재 유저도 포함하도록 excludeUserId를 nil로 설정
+            let users = try await exploreUseCase.fetchUsersByLatestMemoryUpload(
                 searchText: searchText,
-                excludeUserId: currentUserId,
+                excludeUserId: nil,  // nil로 설정하여 현재 유저도 포함
                 page: 1,
                 limit: 10
             )
@@ -123,11 +155,10 @@ final class ExploreViewModel: ObservableObject {
         defer { isLoadingLatestUsers = false }
 
         do {
-            let currentUserId = appState.userId
             let nextPage = (latestUsers.count / 10) + 1
-            let moreUsers = try await exploreUseCase.fetchLatestUsers(
+            let moreUsers = try await exploreUseCase.fetchUsersByLatestMemoryUpload(
                 searchText: searchText,
-                excludeUserId: currentUserId,
+                excludeUserId: nil,  // nil로 설정하여 현재 유저도 포함
                 page: nextPage,
                 limit: 10
             )
@@ -140,6 +171,53 @@ final class ExploreViewModel: ObservableObject {
         } catch {
             os.Logger.error("ExploreViewModel: loadMoreLatestUsers() failed: \(error.localizedDescription)")
             self.errorMessage = "Fail to load more latest users"
+        }
+    }
+    
+    /// 최근 메모리 업로드 순서로 정렬된 유저 목록 가져오기
+    func fetchUsersByLatestMemoryUpload() async {
+        isLoadingLatestUsers = true
+        defer { isLoadingLatestUsers = false }
+
+        do {
+            let currentUserId = appState.userId
+            let users = try await exploreUseCase.fetchUsersByLatestMemoryUpload(
+                searchText: searchText,
+                excludeUserId: currentUserId,
+                page: 1,
+                limit: 10
+            )
+            self.latestUsers = users
+        } catch {
+            os.Logger.error("ExploreViewModel: fetchUsersByLatestMemoryUpload() failed: \(error.localizedDescription)")
+            self.errorMessage = "Fail to fetch users by latest memory upload"
+        }
+    }
+    
+    /// 최근 메모리 업로드 순서로 정렬된 유저 더 로드하기
+    func loadMoreUsersByLatestMemoryUpload() async {
+        guard !isLoadingLatestUsers else { return }
+        isLoadingLatestUsers = true
+        defer { isLoadingLatestUsers = false }
+
+        do {
+            let currentUserId = appState.userId
+            let nextPage = (latestUsers.count / 10) + 1
+            let moreUsers = try await exploreUseCase.fetchUsersByLatestMemoryUpload(
+                searchText: searchText,
+                excludeUserId: currentUserId,
+                page: nextPage,
+                limit: 10
+            )
+            // 중복 데이터 방지: 이미 있는 유저는 추가하지 않음
+            let existingUserIds = Set(latestUsers.map { $0.profile.userId })
+            let newUsers = moreUsers.filter { !existingUserIds.contains($0.profile.userId) }
+            if !newUsers.isEmpty {
+                self.latestUsers.append(contentsOf: newUsers)
+            }
+        } catch {
+            os.Logger.error("ExploreViewModel: loadMoreUsersByLatestMemoryUpload() failed: \(error.localizedDescription)")
+            self.errorMessage = "Fail to load more users by latest memory upload"
         }
     }
 

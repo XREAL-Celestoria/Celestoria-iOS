@@ -41,9 +41,9 @@ struct iOSAddMemoryContentView: View {
                             Spacer()
                             
                             Button(action: {
-                                // 메인 뷰
+                                // 메인 뷰로 돌아가기 (리프레시 최소화)
                                 dismiss()
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                     appState.refreshMainView = true
                                 }
                             }) {
@@ -71,8 +71,8 @@ struct iOSAddMemoryContentView: View {
                             onShowMemoryDetail: onShowMemoryDetail,
                             onComplete: {
                                 dismiss()
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    // 메인 뷰 새로고 침
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    // 메인 뷰 새로고침 (지연시간 증가)
                                     appState.refreshMainView = true
                                 }
                             }
@@ -101,6 +101,10 @@ struct iOSAddMemoryContentView: View {
                 
                 if showFileSizePopup {
                     fileSizePopup
+                        .transition(.asymmetric(
+                            insertion: .scale(scale: 0.8).combined(with: .opacity),
+                            removal: .scale(scale: 0.9).combined(with: .opacity)
+                        ))
                 }
             }
         )
@@ -176,19 +180,28 @@ struct iOSAddMemoryContentView: View {
             iOSConfirmationPopupView(
                 title: popupData.title,
                 message: popupData.notes,
-                cancelTitle: popupData.leadingButtonText ?? "Cancel",
-                confirmTitle: popupData.trailingButtonText,
+                style: .twoButtons(
+                    cancelTitle: popupData.leadingButtonText ?? "Cancel", 
+                    confirmTitle: popupData.trailingButtonText
+                ),
                 onCancel: {
-                    showFileSizePopup = false
-                    showUploadProgress = false  // 업로딩 프로그레스 화면도 함께 숨김
+                    withAnimation(.easeInOut(duration: 0.4)) {
+                        showFileSizePopup = false
+                        showUploadProgress = false  // 업로딩 프로그레스 화면도 함께 숨김
+                    }
                     popupData.leadingButtonAction?()
                 },
                 onConfirm: {
-                    showFileSizePopup = false
-                    showUploadProgress = false  // 업로딩 프로그레스 화면도 함께 숨김
+                    withAnimation(.easeInOut(duration: 0.4)) {
+                        showFileSizePopup = false
+                        showUploadProgress = false  // 업로딩 프로그레스 화면도 함께 숨김
+                    }
                     popupData.trailingButtonAction()
                 }
             )
+            .opacity(showFileSizePopup ? 1.0 : 0.0)
+            .zIndex(showFileSizePopup ? 1000 : -1)
+            .allowsHitTesting(showFileSizePopup)
         }
     }
 }

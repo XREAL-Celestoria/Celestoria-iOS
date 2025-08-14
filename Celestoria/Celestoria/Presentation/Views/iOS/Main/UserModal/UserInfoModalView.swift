@@ -65,9 +65,21 @@ struct UserInfoModalView: View {
                 }
                 
             } else if viewModel.isLoading {
-                LoadingView()
-                    .modifier(ModalStyleModifier(isExpanded: viewModel.isExpanded))
-                    .padding(.horizontal, 20)
+                // 기본 프로그레스뷰 사용 (축소 상태에서도 동일한 크기 유지)
+                VStack(spacing: 16) {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: Colors.NebulaWhite))
+                        .scaleEffect(1.2)
+                    
+                    Text("Loading Profile...")
+                        .fontStyle(Fonts.body1)
+                        .foregroundColor(Colors.NebulaWhite.opacity(0.8))
+                }
+                .frame(maxWidth: .infinity, maxHeight: viewModel.isExpanded ? .infinity : 120)
+                .frame(height: viewModel.isExpanded ? UIScreen.main.bounds.height - 52 : 120)
+                .modifier(ModalStyleModifier(cornerRadius: 24, isExpanded: viewModel.isExpanded))
+                .padding(.horizontal, viewModel.isExpanded ? 0 : 28)
+                .padding(.bottom, viewModel.isExpanded ? 0 : 30)
             } else {
                 // Empty state or error state
                 EmptyProfileView()

@@ -368,7 +368,17 @@ struct TabStatItem: View {
 // MARK: - Loading View
 struct LoadingView: View {
     var body: some View {
-        iOSUnifiedLoadingView.fullscreen()
+        VStack(spacing: 16) {
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle(tint: Colors.NebulaWhite))
+                .scaleEffect(1.2)
+            
+            Text("Loading...")
+                .fontStyle(Fonts.body1)
+                .foregroundColor(Colors.NebulaWhite.opacity(0.8))
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Colors.BackgroundBlack.opacity(0.8))
     }
 }
 

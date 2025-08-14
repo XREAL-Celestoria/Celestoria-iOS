@@ -107,7 +107,6 @@ struct iOSMemoryDetailView: View {
                                         .foregroundStyle(Colors.NebulaWhite)
                                 }
                             }
-                            .disabled(!viewModel.canLike)
                             .highPriorityGesture(
                                 LongPressGesture(minimumDuration: 0.5)
                                     .onEnded { _ in
@@ -267,16 +266,17 @@ struct iOSMemoryDetailView: View {
             await viewModel.loadData()
         }
         .overlay(
-            Group {
+            ZStack {
+                // Delete Alert Popup
                 if viewModel.showDeleteAlert {
                     iOSConfirmationPopupView(
                         title: "Delete Memory Star",
                         message: "Are you sure you want to delete this memory? This action cannot be undone.",
-                        cancelTitle: "Cancel",
-                        confirmTitle: "Delete",
-                        isDestructive: true,
+                        style: .twoButtons(cancelTitle: "Cancel", confirmTitle: "Delete", isDestructive: false),
                         onCancel: {
-                            viewModel.showDeleteAlert = false
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                viewModel.showDeleteAlert = false
+                            }
                         },
                         onConfirm: {
                             Task {
@@ -284,6 +284,25 @@ struct iOSMemoryDetailView: View {
                                 if success {
                                     dismiss()
                                 }
+                            }
+                        }
+                    )
+                }
+                
+                // Own Like Popup
+                if viewModel.showOwnLikePopup {
+                    iOSConfirmationPopupView(
+                        title: "Cannot Like Your Own Memory",
+                        message: "You cannot like your own memory.",
+                        style: .singleButton(title: "OK"),
+                        onCancel: { 
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                viewModel.showOwnLikePopup = false
+                            }
+                        },
+                        onConfirm: { 
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                viewModel.showOwnLikePopup = false
                             }
                         }
                     )

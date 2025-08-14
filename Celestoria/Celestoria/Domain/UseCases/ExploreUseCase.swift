@@ -19,13 +19,16 @@ struct ExploreUser {
 final class ExploreUseCase {
     private let authRepository: AuthRepositoryProtocol
     private let memoryRepository: MemoryRepository
+    private let supabase: SupabaseClient
 
     init(
         authRepository: AuthRepositoryProtocol,
-        memoryRepository: MemoryRepository
+        memoryRepository: MemoryRepository,
+        supabase: SupabaseClient
     ) {
         self.authRepository = authRepository
         self.memoryRepository = memoryRepository
+        self.supabase = supabase
     }
 
     /// searchText가 nil/빈값이면 -> 모든 유저,
@@ -171,5 +174,62 @@ final class ExploreUseCase {
         }
         
         return Array(sortedUsers[startIndex..<endIndex])
+    }
+    
+    /// 최근 메모리 업로드 순서로 정렬된 유저 목록 가져오기
+    func fetchUsersByLatestMemoryUpload(
+        searchText: String?,
+        excludeUserId: UUID?,
+        page: Int,
+        limit: Int
+    ) async throws -> [ExploreUser] {
+        
+        // Supabase RPC 함수 호출
+        let result: [UserProfileWithMemoryStats] = try await supabase
+            .rpc("get_users_by_latest_memory_upload", params: [
+                "search_text": searchText,
+                "exclude_user_id": excludeUserId?.uuidString,
+                "page_num": String(page),
+                "page_limit": String(limit)
+            ])
+            .execute()
+            .value
+        
+        // ExploreUser로 변환
+        return result.map { userStats in
+            ExploreUser(
+                profile: UserProfile(
+                    id: userStats.id, // userId를 id로 사용
+                    userId: userStats.id,
+                    name: userStats.name, // displayName을 name으로 사용
+                    profileImageURL: userStats.profileImageURL,
+                    profileKey: nil,
+                    spaceThumbnailId: nil,
+                    createdAt: Date(), // 실제 데이터가 없으므로 현재 시간으로 설정
+                    starfield: nil
+                ),
+                memoryCount: Int(userStats.memoryCount),
+                likeCount: 0 // 좋아요 개수는 현재 데이터에 포함되지 않음
+            )
+        }
+    }
+}
+
+// MARK: - Helper Types
+
+/// Supabase RPC 함수 결과를 위한 DTO
+struct UserProfileWithMemoryStats: Codable {
+    let id: UUID
+    let name: String
+    let profileImageURL: String?
+    let memoryCount: Int64
+    let latestMemoryDate: Date
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case profileImageURL = "profile_image_url"
+        case memoryCount = "memory_count"
+        case latestMemoryDate = "latest_memory_date"
     }
 }

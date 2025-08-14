@@ -46,7 +46,7 @@ class MediaRepository {
                                                 progressCallback: progressCallback)
         
         // 진행률: 100% - 완료
-        progressCallback?(1.0, "Upload Success!")
+        progressCallback?(1.0, "Upload Complete!")
         os.Logger.info("✅ uploadVideo completed - public URL: \(uploadResult.url)")
         return (url: uploadResult.url, metadata: metadata)
     }
@@ -60,7 +60,7 @@ class MediaRepository {
         
         // JPEG 압축 (0.8 품질로 썸네일은 조금 더 높은 품질 유지)
         guard let imageData = optimizedImage.optimizedJPEGData(compressionQuality: 0.8) else {
-            os.Logger.info("uploadThumbnail 실패: 이미지 JPEG 변환 실패")
+            os.Logger.info("uploadThumbnail failed: Image JPEG conversion failed")
             throw MediaError.invalidFormat
         }
         
@@ -87,7 +87,7 @@ class MediaRepository {
         
         // JPEG 압축 (0.5 품질로 용량 대폭 감소 - 프로필용으로 충분)
         guard let imageData = optimizedImage.optimizedJPEGData(compressionQuality: 0.5) else {
-            os.Logger.info("uploadProfileImage 실패: 프로필 이미지 JPEG 변환 실패")
+            os.Logger.info("uploadProfileImage failed: Profile image JPEG conversion failed")
             throw MemoryError.invalidImageData
         }
         
@@ -122,7 +122,7 @@ class MediaRepository {
         
         let asset = AVURLAsset(url: tempFileURL)
         guard try await validateMVHEVC(asset: asset) else {
-            os.Logger.info("MV-HEVC 포맷 검증 실패")
+            os.Logger.info("MV-HEVC format validation failed")
             throw MediaError.invalidFormat
         }
         let metadata = try await extractSpatialMetadata(from: asset)
@@ -164,7 +164,7 @@ class MediaRepository {
         let (uploadUrl, uploadAuthToken) = try await b2GetUploadURL(bucketId: b2BucketId, accountAuthToken: accountAuthToken, apiUrl: apiUrl)
         
         // 3. 파일 업로드
-        progressCallback?(0.4, "Uploading files...")
+        progressCallback?(0.4, "Uploading File...")
         try await b2UploadFile(uploadUrl: uploadUrl, uploadAuthToken: uploadAuthToken, fileName: path, data: data, mimeType: mimeType, progressCallback: progressCallback)
         
         // 4. URL 구성
@@ -186,7 +186,7 @@ class MediaRepository {
         let (accountAuthToken, apiUrl, _) = try await b2Authorize()
         
         // 2. 멀티파트 업로드 시작
-        progressCallback?(0.25, "Preparing")
+        progressCallback?(0.25, "Preparing Multipart Upload...")
         let fileId = try await b2StartLargeFile(fileName: path, mimeType: mimeType, accountAuthToken: accountAuthToken, apiUrl: apiUrl)
         
         // 3. 각 청크를 순차적으로 업로드 (안정성을 위해 병렬 업로드 제거)
@@ -198,7 +198,7 @@ class MediaRepository {
             
             // 진행률 업데이트 (0.3 ~ 0.9)
             let progress = 0.3 + (Double(completedChunks) / Double(totalChunks)) * 0.6
-            let progressMessage = "Uploading... (\(completedChunks)/\(totalChunks) chunks)"
+            let progressMessage = "Uploading Chunks... (\(completedChunks)/\(totalChunks))"
             progressCallback?(progress, progressMessage)
             
             // 청크 업로드 (재시도 로직 포함)
@@ -216,7 +216,7 @@ class MediaRepository {
         }
         
         // 4. 멀티파트 업로드 완료
-        progressCallback?(0.95, "Combining Files...")
+        progressCallback?(0.95, "Finalizing Upload...")
         uploadedParts.sort { $0.partNumber < $1.partNumber }
         let sha1Array = uploadedParts.map { $0.sha1 }
         
@@ -273,7 +273,7 @@ class MediaRepository {
             }
         }
         
-        throw lastError ?? MediaError.uploadFailed(message: "Chunk \(partNumber) upload failed")
+        throw lastError ?? MediaError.uploadFailed(message: "Chunk \(partNumber) upload failed after \(maxRetries) attempts")
     }
     
     /// 개별 청크 업로드 (기존 함수 - 재시도 로직 없음)
@@ -305,7 +305,7 @@ class MediaRepository {
         os.Logger.info("validateMVHEVC 호출")
         guard let track = try await asset.loadTracks(withMediaType: .video).first,
               let formatDescription = try await track.load(.formatDescriptions).first else {
-            os.Logger.info("트랙 또는 포맷 디스크립션 로드 실패")
+            os.Logger.info("Track or format description loading failed")
             return false
         }
         let codecType = CMFormatDescriptionGetMediaSubType(formatDescription)
@@ -318,13 +318,13 @@ class MediaRepository {
     private func extractSpatialMetadata(from asset: AVAsset) async throws -> Memory.SpatialMetadata? {
         os.Logger.info("extractSpatialMetadata 호출")
         guard let videoTrack = try await asset.loadTracks(withMediaType: .video).first else {
-            os.Logger.info("videoTrack 로드 실패")
+            os.Logger.info("Video track loading failed")
             return nil
         }
         let formatDescriptions = try await videoTrack.load(.formatDescriptions)
         guard let formatDescription = formatDescriptions.first,
               let extensions = CMFormatDescriptionGetExtensions(formatDescription) as? [String: Any] else {
-            os.Logger.info("포맷 디스크립션 또는 확장 정보 로드 실패")
+            os.Logger.info("Format description or extension info loading failed")
             return nil
         }
         os.Logger.info("확장 정보: \(extensions)")
@@ -368,7 +368,7 @@ class MediaRepository {
               let authToken = json["authorizationToken"] as? String,
               let apiUrl = json["apiUrl"] as? String,
               let downloadUrl = json["downloadUrl"] as? String else {
-            os.Logger.info("b2_authorize_account JSON 파싱 실패")
+            os.Logger.info("b2_authorize_account JSON parsing failed")
             throw MediaError.uploadFailed()
         }
         os.Logger.info("b2_authorize_account 성공 - authToken: \(authToken.prefix(6))..., apiUrl: \(apiUrl)")
@@ -396,16 +396,16 @@ class MediaRepository {
         let (data, response) = try await URLSession.shared.data(for: request)
         
         if let responseString = String(data: data, encoding: .utf8) {
-            os.Logger.info("b2_get_upload_url 응답: \(responseString)")
+            os.Logger.info("b2_get_upload_url response: \(responseString)")
         }
         
         if let httpResponse = response as? HTTPURLResponse {
-            os.Logger.info("b2_get_upload_url HTTP 상태 코드: \(httpResponse.statusCode)")
+            os.Logger.info("b2_get_upload_url HTTP status code: \(httpResponse.statusCode)")
             if httpResponse.statusCode == 401 {
                 if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                    let code = json["code"] as? String,
                    let message = json["message"] as? String {
-                    throw MediaError.uploadFailed(message: "인증 실패 - \(code): \(message)")
+                    throw MediaError.uploadFailed(message: "Authentication failed - \(code): \(message)")
                 }
             }
             guard (200...299).contains(httpResponse.statusCode) else {
@@ -417,14 +417,14 @@ class MediaRepository {
             guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                   let uploadUrl = json["uploadUrl"] as? String,
                   let uploadAuthToken = json["authorizationToken"] as? String else {
-                os.Logger.info("b2_get_upload_url JSON 파싱 실패 - 필수 필드 누락")
-                throw MediaError.uploadFailed(message: "JSON 파싱 실패")
+                os.Logger.info("b2_get_upload_url JSON parsing failed - required fields missing")
+                throw MediaError.uploadFailed(message: "JSON parsing failed")
             }
             os.Logger.info("b2_get_upload_url 성공 - uploadUrl: \(uploadUrl)")
             return (uploadUrl, uploadAuthToken)
         } catch {
-            os.Logger.info("b2_get_upload_url JSON 파싱 에러: \(error.localizedDescription)")
-            throw MediaError.uploadFailed(message: "JSON 파싱 에러: \(error.localizedDescription)")
+            os.Logger.info("b2_get_upload_url JSON parsing error: \(error.localizedDescription)")
+            throw MediaError.uploadFailed(message: "JSON parsing error: \(error.localizedDescription)")
         }
     }
     
@@ -466,14 +466,14 @@ class MediaRepository {
                 os.Logger.info("🚀 b2_upload_file 시작 - 파일 크기: \(data.count) bytes, 시도: \(currentRetry + 1)/\(maxRetries)")
                 
                 // 업로드 시작 진행률 업데이트
-                progressCallback?(0.5, "파일 전송 중...")
+                progressCallback?(0.5, "Transferring File...")
                 
                 // 백그라운드 업로드 가능한 uploadTask 사용 (진행률 추적 가능)
                 let (responseData, response) = try await session.upload(for: request, from: data)
                 
                 // 업로드 완료 진행률 업데이트
-                progressCallback?(0.9, "업로드 검증 중...")
-                os.Logger.info("✅ b2_upload_file 응답 받음 - 응답 크기: \(responseData.count) bytes")
+                progressCallback?(0.9, "Verifying Upload...")
+                os.Logger.info("✅ b2_upload_file response received - response size: \(responseData.count) bytes")
                 
                 if let httpResponse = response as? HTTPURLResponse {
                     if httpResponse.statusCode == 200 {
@@ -481,7 +481,7 @@ class MediaRepository {
                         return // 성공하면 함수 종료
                     } else {
                         if let errorString = String(data: responseData, encoding: .utf8) {
-                            os.Logger.error("b2_upload_file 실패 - HTTP 응답 코드: \(httpResponse.statusCode), 에러: \(errorString)")
+                            os.Logger.error("b2_upload_file failed - HTTP response code: \(httpResponse.statusCode), error: \(errorString)")
                         }
                         
                         // 🧠 스마트 재시도 로직 (에러 타입별 차별화)
@@ -490,30 +490,30 @@ class MediaRepository {
                         if shouldRetry {
                             currentRetry += 1
                             if currentRetry < maxRetries {
-                                os.Logger.info("🔄 \(getRetryMessage(for: httpResponse.statusCode)) - 시도 \(currentRetry)/\(maxRetries), \(retryDelay)초 대기")
+                                os.Logger.info("🔄 \(getRetryMessage(for: httpResponse.statusCode)) - Attempt \(currentRetry)/\(maxRetries), waiting \(retryDelay) seconds")
                                 try await Task.sleep(nanoseconds: UInt64(retryDelay * 1_000_000_000))
                                 continue
                             }
                         }
                         
-                        throw MediaError.uploadFailed(message: "업로드 실패 (HTTP \(httpResponse.statusCode))")
+                        throw MediaError.uploadFailed(message: "Upload failed (HTTP \(httpResponse.statusCode))")
                     }
                 } else {
                     throw MediaError.uploadFailed()
                 }
             } catch {
-                os.Logger.error("b2_upload_file 에러 발생: \(error.localizedDescription)")
+                os.Logger.error("b2_upload_file error occurred: \(error.localizedDescription)")
                 currentRetry += 1
                 if currentRetry >= maxRetries {
-                    os.Logger.error("b2_upload_file 최대 재시도 횟수 초과 - 에러: \(error)")
+                    os.Logger.error("b2_upload_file maximum retry attempts exceeded - error: \(error)")
                     throw error
                 }
-                os.Logger.info("b2_upload_file 재시도 중... (시도 \(currentRetry)/\(maxRetries)) - 에러: \(error.localizedDescription)")
+                os.Logger.info("b2_upload_file retrying... (attempt \(currentRetry)/\(maxRetries)) - error: \(error.localizedDescription)")
                 try await Task.sleep(nanoseconds: UInt64(pow(2.0, Double(currentRetry)) * 1_000_000_000))
             }
         }
         
-        throw MediaError.uploadFailed(message: "최대 재시도 횟수 초과")
+        throw MediaError.uploadFailed(message: "Maximum retry attempts exceeded")
     }
     
     // MARK: - 스마트 재시도 전략
@@ -574,13 +574,13 @@ class MediaRepository {
         
         if let httpResponse = response as? HTTPURLResponse {
             guard httpResponse.statusCode == 200 else {
-                throw MediaError.uploadFailed(message: "b2_start_large_file 실패: HTTP \(httpResponse.statusCode)")
+                throw MediaError.uploadFailed(message: "b2_start_large_file failed: HTTP \(httpResponse.statusCode)")
             }
         }
         
         guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
               let fileId = json["fileId"] as? String else {
-            throw MediaError.uploadFailed(message: "b2_start_large_file 응답 파싱 실패")
+            throw MediaError.uploadFailed(message: "b2_start_large_file response parsing failed")
         }
         
         os.Logger.info("✅ b2_start_large_file 성공 - fileId: \(fileId)")
@@ -602,14 +602,14 @@ class MediaRepository {
         
         if let httpResponse = response as? HTTPURLResponse {
             guard httpResponse.statusCode == 200 else {
-                throw MediaError.uploadFailed(message: "b2_get_upload_part_url 실패: HTTP \(httpResponse.statusCode)")
+                throw MediaError.uploadFailed(message: "b2_get_upload_part_url failed: HTTP \(httpResponse.statusCode)")
             }
         }
         
         guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
               let uploadUrl = json["uploadUrl"] as? String,
               let uploadAuthToken = json["authorizationToken"] as? String else {
-            throw MediaError.uploadFailed(message: "b2_get_upload_part_url 응답 파싱 실패")
+            throw MediaError.uploadFailed(message: "b2_get_upload_part_url response parsing failed")
         }
         
         return (url: uploadUrl, authToken: uploadAuthToken)
@@ -646,7 +646,7 @@ class MediaRepository {
         
         if let httpResponse = response as? HTTPURLResponse {
             guard httpResponse.statusCode == 200 else {
-                throw MediaError.uploadFailed(message: "b2_upload_part 실패: HTTP \(httpResponse.statusCode)")
+                throw MediaError.uploadFailed(message: "b2_upload_part failed: HTTP \(httpResponse.statusCode)")
             }
         }
         
@@ -679,9 +679,9 @@ class MediaRepository {
         if let httpResponse = response as? HTTPURLResponse {
             guard httpResponse.statusCode == 200 else {
                 if let errorString = String(data: data, encoding: .utf8) {
-                    os.Logger.error("b2_finish_large_file 에러: \(errorString)")
+                    os.Logger.error("b2_finish_large_file error: \(errorString)")
                 }
-                throw MediaError.uploadFailed(message: "b2_finish_large_file 실패: HTTP \(httpResponse.statusCode)")
+                throw MediaError.uploadFailed(message: "b2_finish_large_file failed: HTTP \(httpResponse.statusCode)")
             }
         }
         

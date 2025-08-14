@@ -57,19 +57,24 @@ struct iOSNotificationView: View {
     // MARK: - Subviews
     
     private var contentView: some View {
-        Group {
+        ZStack {
+            // 항상 콘텐츠 표시 (로딩 중에도 배경으로)
+            Group {
+                if viewModel.combinedActivities.isEmpty && !viewModel.isLoading {
+                    emptyStateView
+                } else {
+                    activitiesListView
+                }
+            }
+            .opacity(viewModel.isLoading ? 0.3 : 1.0)
+            .animation(.easeInOut(duration: 0.3), value: viewModel.isLoading)
+            
+            // 로딩 오버레이
             if viewModel.isLoading {
-                loadingView
-            } else if viewModel.combinedActivities.isEmpty {
-                emptyStateView
-            } else {
-                activitiesListView
+                iOSUnifiedLoadingView(title: "Loading...")
+                    .transition(.opacity.animation(.easeInOut(duration: 0.5)))
             }
         }
-    }
-    
-    private var loadingView: some View {
-        iOSUnifiedLoadingView(title: "Loading...")
     }
     
     private var emptyStateView: some View {

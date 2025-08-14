@@ -31,13 +31,11 @@ struct MemoryListItemView: View {
             // Thumbnail with duration overlay
             ZStack(alignment: .bottomTrailing) {
                 if let thumbnailURL = memory.thumbnailURL {
-                    // Real thumbnail from server
-                    AsyncImage(url: URL(string: thumbnailURL)) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    } placeholder: {
-                        // Placeholder while loading
+                    // Cached thumbnail with in-image progress indicator
+                    let thumbnailHeight = UIScreen.main.bounds.height * 0.1
+                    let thumbnailWidth = thumbnailHeight * (150.0 / 95.0)
+                    ZStack {
+                        // Gradient placeholder background
                         RoundedRectangle(cornerRadius: 20)
                             .fill(
                                 LinearGradient(
@@ -49,8 +47,13 @@ struct MemoryListItemView: View {
                                     endPoint: .bottomTrailing
                                 )
                             )
+
+                        // Cached image loader (shows ProgressView while loading)
+                        CachedAsyncImage(urlString: thumbnailURL, size: thumbnailHeight)
+                            .frame(width: thumbnailWidth, height: thumbnailHeight)
+                            .clipped()
                     }
-                    .frame(width: UIScreen.main.bounds.height * 0.1 * (150.0 / 95.0), height: UIScreen.main.bounds.height * 0.1)
+                    .frame(width: thumbnailWidth, height: thumbnailHeight)
                     .clipShape(RoundedRectangle(cornerRadius: 20))
                 } else {
                     // Fallback placeholder

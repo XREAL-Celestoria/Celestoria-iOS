@@ -37,8 +37,16 @@ struct iOSAccountSettingView: View {
             }
             .padding(.top, 20)
             
-            if showDeleteConfirmation {
-                iOSConfirmationPopupView(title: "Delete Your Account", message: "Are you sure you want to continue? This action cannot be undone.", cancelTitle: "Cancel", confirmTitle: "Delete", isDestructive: true, onCancel: {dismiss()}, onConfirm: {
+            iOSConfirmationPopupView(
+                title: "Delete Your Account", 
+                message: "Are you sure you want to continue? This action cannot be undone.", 
+                style: .twoButtons(cancelTitle: "Cancel", confirmTitle: "Delete", isDestructive: true),
+                onCancel: { 
+                    withAnimation(.easeInOut(duration: 0.4)) {
+                        showDeleteConfirmation = false
+                    }
+                }, 
+                onConfirm: {
                     Task {
                         do {
                             try await settingViewModel.deleteAccount()
@@ -46,8 +54,11 @@ struct iOSAccountSettingView: View {
                             errorMessage = error.localizedDescription
                         }
                     }
-                })
-            }
+                }
+            )
+            .opacity(showDeleteConfirmation ? 1.0 : 0.0)
+            .zIndex(showDeleteConfirmation ? 1000 : -1)
+            .allowsHitTesting(showDeleteConfirmation)
         }
         .navigationTitle("Account Setting")
         .navigationBarTitleDisplayMode(.inline)
