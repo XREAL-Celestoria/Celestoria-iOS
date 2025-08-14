@@ -233,6 +233,7 @@ struct iOS3DGalaxyContainerView: View {
     @State private var settingsNavigationPath: [SettingsScreen] = []
     @State private var lastTargetUserId: UUID? // UserInfoModal 안정화를 위해
     @State private var shouldShowUserModal: Bool = false // 모달 표시 제어
+    @State private var modalRefreshCounter = 0 // UserInfoModal 강제 리프레시용
 
     @State private var showingExploreSearch: Bool = false // Explore 검색 상태
     
@@ -381,7 +382,11 @@ struct iOS3DGalaxyContainerView: View {
                 print("ℹ️ INFO: Refresh Main View: \(shouldRefresh)")
                 galaxyViewModel.refreshGalaxy()
                 
-                // 즉시 false로 설정하여 중복 리프레시 방지 (모달 리프레시 제거)
+                // UserInfoModal 강제 리프레시
+                modalRefreshCounter += 1
+                print("ℹ️ INFO: UserInfoModal refresh counter: \(modalRefreshCounter)")
+                
+                // 즉시 false로 설정하여 중복 리프레시 방지
                 appState.refreshMainView = false
             }
         }
@@ -426,11 +431,12 @@ struct iOS3DGalaxyContainerView: View {
                         } : nil,
                         diContainer: diContainer
                     )
-                    .id("UserInfoModal-\(targetUserId.uuidString)")
+                    .id("UserInfoModal-\(targetUserId.uuidString)-\(modalRefreshCounter)")
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
         )
         .animation(.easeInOut(duration: 0.3), value: shouldShowUserModal)
+        .animation(.easeInOut(duration: 0.3), value: modalRefreshCounter)
     }
 }
