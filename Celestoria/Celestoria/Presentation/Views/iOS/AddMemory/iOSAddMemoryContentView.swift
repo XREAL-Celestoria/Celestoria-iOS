@@ -43,7 +43,7 @@ struct iOSAddMemoryContentView: View {
                             Button(action: {
                                 // 메인 뷰로 돌아가기 (리프레시 최소화)
                                 dismiss()
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { // 지연 시간 증가
                                     appState.refreshMainView = true
                                 }
                             }) {
@@ -71,7 +71,7 @@ struct iOSAddMemoryContentView: View {
                             onShowMemoryDetail: onShowMemoryDetail,
                             onComplete: {
                                 dismiss()
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { // 지연 시간 증가
                                     // 메인 뷰 새로고침 (지연시간 증가)
                                     appState.refreshMainView = true
                                 }

@@ -55,7 +55,7 @@ struct UserInfoModalView: View {
                 )
                 .onTapGesture {
                     if !viewModel.isExpanded {
-                        viewModel.expandModal()
+                        viewModel.toggleExpanded()
                     }
                 }
                 
@@ -65,21 +65,24 @@ struct UserInfoModalView: View {
                 }
                 
             } else if viewModel.isLoading {
-                // 기본 프로그레스뷰 사용 (축소 상태에서도 동일한 크기 유지)
+                // 로딩 상태 - 유저모달 내부에만 프로그레스뷰 표시
                 VStack(spacing: 16) {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: Colors.NebulaWhite))
-                        .scaleEffect(1.2)
-                    
-                    Text("Loading Profile...")
-                        .fontStyle(Fonts.body1)
-                        .foregroundColor(Colors.NebulaWhite.opacity(0.8))
+                    // 빈 공간만 유지 (프로그레스뷰 제거)
+                    Spacer()
                 }
                 .frame(maxWidth: .infinity, maxHeight: viewModel.isExpanded ? .infinity : 120)
                 .frame(height: viewModel.isExpanded ? UIScreen.main.bounds.height - 52 : 120)
                 .modifier(ModalStyleModifier(cornerRadius: 24, isExpanded: viewModel.isExpanded))
                 .padding(.horizontal, viewModel.isExpanded ? 0 : 28)
                 .padding(.bottom, viewModel.isExpanded ? 0 : 30)
+                .overlay(
+                    ZStack {
+                        Color.black.opacity(0.2) // 매우 연한 반투명
+                        
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: Colors.NebulaWhite))
+                    }
+                )
             } else {
                 // Empty state or error state
                 EmptyProfileView()

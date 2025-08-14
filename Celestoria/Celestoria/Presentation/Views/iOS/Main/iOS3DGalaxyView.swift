@@ -300,13 +300,15 @@ struct iOS3DGalaxyContainerView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity) // 전체 화면 고정
             .allowsHitTesting(true) // 터치 허용
             .zIndex(1000) // 최상위 레이어
+            .opacity(appState.isGalaxyLoadingComplete ? 1.0 : 0.0) // 로딩 완료 시에만 표시
+            .animation(.easeInOut(duration: 0.3), value: appState.isGalaxyLoadingComplete) // 부드러운 페이드인
         }
         .onAppear {
             print("🔍 iOS3DGalaxyContainerView - onAppear")
             // containerOpacity는 이미 1로 시작하므로 애니메이션 불필요
             
-            // 초기 UserInfoModal 상태 설정 (안정화)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            // 초기 UserInfoModal 상태 설정 (로딩 완료 후에만 표시)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { // 1초로 늘림
                 if let targetUserId = appState.galaxyTargetUserId {
                     shouldShowUserModal = true
                     lastTargetUserId = targetUserId
@@ -380,9 +382,27 @@ struct iOS3DGalaxyContainerView: View {
         .onChange(of: appState.refreshMainView) { _, shouldRefresh in
             if shouldRefresh {
                 print("ℹ️ INFO: Refresh Main View: \(shouldRefresh)")
+                
+                // 현재 사용자의 유저모달만 업데이트 (다른 사람용은 제외)
+                if let targetUserId = appState.galaxyTargetUserId,
+                   targetUserId == appState.currentUserId {
+                    // UserInfoModal을 부드럽게 숨기고 새로고침
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        shouldShowUserModal = false
+                    }
+                    
+                    // 약간의 지연 후 UserInfoModal 다시 표시
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            shouldShowUserModal = true
+                        }
+                    }
+                }
+                
+                // 갤럭시 새로고침
                 galaxyViewModel.refreshGalaxy()
                 
-                // UserInfoModal 강제 리프레시
+                // UserInfoModal 강제 리프레시 (현재 사용자용만)
                 modalRefreshCounter += 1
                 print("ℹ️ INFO: UserInfoModal refresh counter: \(modalRefreshCounter)")
                 
@@ -391,8 +411,12 @@ struct iOS3DGalaxyContainerView: View {
             }
         }
         .onChange(of: appState.galaxyTargetUserId) { _, newTargetUserId in
-            // UserInfoModal 표시 조건 최적화 (애니메이션 최소화)
-            if let newUserId = newTargetUserId, newUserId != lastTargetUserId {
+            // UserInfoModal 표시 조건 최적화 (로딩 완료 후에만 표시)
+            if let newUserId = newTargetUserId, 
+               newUserId != lastTargetUserId,
+               appState.isGalaxyLoadingComplete, // 로딩 완료 상태 확인
+               (newUserId == appState.currentUserId || // 현재 사용자이거나
+                (newUserId != appState.currentUserId && appState.galaxyTargetUserId == newUserId)) { // 다른 사용자이고 실제로 해당 갤럭시를 보고 있는 경우
                 lastTargetUserId = newUserId
                 shouldShowUserModal = true
             } else if newTargetUserId == nil {
@@ -422,7 +446,10 @@ struct iOS3DGalaxyContainerView: View {
                     .frame(minHeight: 52)
                 
                 if let targetUserId = appState.galaxyTargetUserId,
-                   shouldShowUserModal {
+                   shouldShowUserModal,
+                   appState.isGalaxyLoadingComplete, // 로딩 완료 후에만 표시
+                   targetUserId == appState.currentUserId || // 현재 사용자이거나
+                   (targetUserId != appState.currentUserId && appState.galaxyTargetUserId == targetUserId) { // 다른 사용자이고 실제로 해당 갤럭시를 보고 있는 경우
                     UserInfoModalView(
                         userId: targetUserId,
                         isOwnGalaxy: targetUserId == appState.currentUserId,
@@ -432,11 +459,15 @@ struct iOS3DGalaxyContainerView: View {
                         diContainer: diContainer
                     )
                     .id("UserInfoModal-\(targetUserId.uuidString)-\(modalRefreshCounter)")
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .bottom).combined(with: .opacity),
+                        removal: .move(edge: .bottom).combined(with: .opacity)
+                    ))
+                    .opacity(appState.isGalaxyLoadingComplete ? 1.0 : 0.0) // 로딩 완료 시에만 표시
                 }
             }
         )
-        .animation(.easeInOut(duration: 0.3), value: shouldShowUserModal)
-        .animation(.easeInOut(duration: 0.3), value: modalRefreshCounter)
+        .animation(.easeInOut(duration: 0.4), value: shouldShowUserModal) // 애니메이션 시간 증가
+        .animation(.easeInOut(duration: 0.4), value: modalRefreshCounter) // 애니메이션 시간 증가
     }
 }

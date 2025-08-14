@@ -372,10 +372,6 @@ struct LoadingView: View {
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle(tint: Colors.NebulaWhite))
                 .scaleEffect(1.2)
-            
-            Text("Loading...")
-                .fontStyle(Fonts.body1)
-                .foregroundColor(Colors.NebulaWhite.opacity(0.8))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Colors.BackgroundBlack.opacity(0.8))

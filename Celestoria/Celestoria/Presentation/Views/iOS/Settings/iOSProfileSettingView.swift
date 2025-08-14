@@ -141,19 +141,12 @@ struct iOSProfileSettingView: View {
                 .presentationDragIndicator(.visible)
         }
         .overlay(
-            // Loading overlay - 맨 위에 정 가운데
+            // Loading overlay - iOSUnifiedLoadingView 사용
             Group {
                 if isImageLoading || isUpdating {
-                    Color.black.opacity(0.5)
-                        .ignoresSafeArea()
-                    
-                    VStack {
-                        Spacer()
-                        LoadingView()
-                        Spacer()
-                    }
-                    .ignoresSafeArea()
-                    .frame(maxWidth: UIScreen.main.bounds.width , maxHeight: .infinity)
+                    iOSUnifiedLoadingView.fullscreen(
+                        title: isImageLoading ? "Loading Profile" : "Updating Profile"
+                    )
                 }
             }
         )

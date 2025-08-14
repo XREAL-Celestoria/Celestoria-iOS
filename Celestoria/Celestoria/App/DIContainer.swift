@@ -251,7 +251,7 @@ final class DIContainer: ObservableObject {
     
     func makeUserInfoModalViewModel(userId: UUID) -> UserInfoModalViewModel {
         return UserInfoModalViewModel(
-            userId: userId, diContainer: self)
+            diContainer: self, userId: userId)
     }
     
     func makeAddMemoryMainViewModel() -> AddMemoryMainViewModel {

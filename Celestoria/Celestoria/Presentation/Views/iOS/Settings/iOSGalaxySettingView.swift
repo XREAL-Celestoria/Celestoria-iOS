@@ -18,6 +18,7 @@ import SwiftUI
 struct iOSGalaxySettingView: View {
     @StateObject private var galaxyViewModel: GalaxyViewModel
     @Environment(\.dismiss) private var dismiss
+    @State private var isLoading = true
     let diContainer: DIContainer
     
     init(diContainer: DIContainer) {
@@ -40,6 +41,7 @@ struct iOSGalaxySettingView: View {
             Colors.BackgroundBlack
                 .ignoresSafeArea()
             
+            // 메인 콘텐츠는 항상 렌더링
             ScrollView {
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                     ForEach(starfields, id: \.self) { starfield in
@@ -91,6 +93,13 @@ struct iOSGalaxySettingView: View {
                 .padding(.bottom, 30)
             }
             .background(LinearGradient.BtnBackGrad)
+            
+            // 로딩 오버레이
+            if isLoading {
+                iOSUnifiedLoadingView.fullscreen(title: "Loading Galaxy Settings")
+                    .opacity(isLoading ? 1.0 : 0.0)
+                    .animation(.easeInOut(duration: 0.3), value: isLoading)
+            }
         }
         .navigationTitle("Galaxy")
         .navigationBarTitleDisplayMode(.inline)
@@ -105,6 +114,12 @@ struct iOSGalaxySettingView: View {
                         .scaledToFit()
                         .frame(width: 24, height: 24)
                 }
+            }
+        }
+        .onAppear {
+            // 초기 데이터 로딩 완료 후 로딩 상태 해제
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                isLoading = false
             }
         }
     }

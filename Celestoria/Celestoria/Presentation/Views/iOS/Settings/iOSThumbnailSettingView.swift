@@ -20,6 +20,7 @@ private func thumbnailName(for id: String) -> String {
 struct iOSThumbnailSettingView: View {
     @StateObject private var settingViewModel: SettingViewModel
     @State private var selectedThumbnail: String?
+    @State private var isLoading = true
     @Environment(\.dismiss) private var dismiss
     let diContainer: DIContainer
     
@@ -46,6 +47,7 @@ struct iOSThumbnailSettingView: View {
             Colors.BackgroundBlack
                 .ignoresSafeArea()
             
+            // 메인 콘텐츠는 항상 렌더링
             ScrollView {
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                     ForEach(thumbnails, id: \.self) { thumbnail in
@@ -102,6 +104,13 @@ struct iOSThumbnailSettingView: View {
                 .padding(.bottom, 30)
             }
             .background(LinearGradient.BtnBackGrad)
+            
+            // 로딩 오버레이
+            if isLoading {
+                iOSUnifiedLoadingView.fullscreen(title: "Loading Thumbnail Settings")
+                    .opacity(isLoading ? 1.0 : 0.0)
+                    .animation(.easeInOut(duration: 0.3), value: isLoading)
+            }
         }
         .navigationTitle("Thumbnail")
         .navigationBarTitleDisplayMode(.inline)
@@ -116,6 +125,12 @@ struct iOSThumbnailSettingView: View {
                         .scaledToFit()
                         .frame(width: 24, height: 24)
                 }
+            }
+        }
+        .onAppear {
+            // 초기 데이터 로딩 완료 후 로딩 상태 해제
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                isLoading = false
             }
         }
     }

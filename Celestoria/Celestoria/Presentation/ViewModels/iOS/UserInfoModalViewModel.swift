@@ -2,7 +2,7 @@
 //  UserInfoModalViewModel.swift
 //  Celestoria
 //
-//  Created by Seyoung Park on 8/7/25.
+//  Created by Minjun Kim on 7/20/25.
 //
 
 import Foundation
@@ -12,43 +12,64 @@ import Combine
 
 @MainActor
 final class UserInfoModalViewModel: ObservableObject {
-    // MARK: - Dependencies
-    private let userId: UUID
-    private let diContainer: DIContainer
-    private let logger = Logger(subsystem: "Celestoria", category: "UserInfoModalViewModel")
-    private var cancellables = Set<AnyCancellable>()
-    
-    // MARK: - Published Properties (Data)
+    // MARK: - Published Properties
     @Published var userProfile: UserProfile?
     @Published var memoryCount: Int = 0
+    @Published var followerCount: Int = 0 // TODO: Implement followers when available
+    @Published var commentCount: Int = 0 // Comments feature not implemented yet
     @Published var likeCount: Int = 0
-    @Published var commentCount: Int = 0
+    
+    // MARK: - Data Properties (for tabs)
     @Published var comments: [(Comment, UserProfile?)] = []
     @Published var likedMemories: [Memory] = []
     @Published var likedUsers: [(UserProfile?, Date, UUID)] = []
     @Published var memories: [Memory] = []
-    @Published var isLoading: Bool = false
+    @Published var selectedMemory: Memory? = nil
     @Published var errorMessage: String?
     
-    // MARK: - Sorting
+    // MARK: - UI State Properties
+    @Published var isExpanded: Bool = false
+    @Published var dragOffset: CGFloat = 0
+    @Published var isLoading: Bool = false
+    @Published var sortOption: SortOption = .latest
+    
+    // MARK: - Mock Data for Expanded Content
+    @Published var mockMemories: [MockMemory] = []
+    
+    // MARK: - Dependencies
+    private let diContainer: DIContainer
+    private let userId: UUID
+    private let appState: AppState
+    private let logger = Logger(subsystem: "Celestoria", category: "UserInfoModalViewModel")
+    private var cancellables = Set<AnyCancellable>()
+    
+    // MARK: - Enums
     enum SortOption: String, CaseIterable {
         case latest = "Latest"
         case oldest = "Oldest"
+        case popular = "Popular"
         
         var displayName: String { rawValue }
     }
-    @Published var sortOption: SortOption = .latest
     
-    // MARK: - Published Properties (UI State expected by View)
-    @Published var isExpanded: Bool = false
-    @Published var dragOffset: CGFloat = 0
-    @Published var selectedMemory: Memory? = nil
+    struct MockMemory: Identifiable {
+        let id = UUID()
+        let title: String
+        let views: Int
+        let daysAgo: Int
+        let duration: String
+    }
     
     // MARK: - Initialization
-    init(userId: UUID, diContainer: DIContainer) {
-        self.userId = userId
+    init(diContainer: DIContainer, userId: UUID) {
         self.diContainer = diContainer
+        self.userId = userId
+        self.appState = diContainer.appState
         
+        Logger.info("UserInfoModalViewModel: Initialized for userId: \(userId)")
+        
+        generateMockMemories()
+        loadUserData()
         setupNotifications()
     }
     
@@ -57,26 +78,77 @@ final class UserInfoModalViewModel: ObservableObject {
     }
     
     // MARK: - Public Methods
-    func loadUserData() async {
+    func loadUserData() {
         isLoading = true
-        defer { isLoading = false }
-        
-        async let profileTask = loadUserProfile()
-        async let statsTask = loadUserStats()
-        async let commentsTask = loadComments()
-        async let likedMemoriesTask = loadLikedMemories()
-        async let likedUsersTask = loadLikedUsers()
-        async let memoriesTask = loadMemories()
-        
-        await profileTask
-        await statsTask
-        await commentsTask
-        await likedMemoriesTask
-        await likedUsersTask
-        await memoriesTask
+        Task {
+            async let profileTask = loadUserProfile()
+            async let statsTask = loadUserStats()
+            async let commentsTask = loadComments()
+            async let likedMemoriesTask = loadLikedMemories()
+            async let likedUsersTask = loadLikedUsers()
+            async let memoriesTask = loadMemories()
+            
+            await profileTask
+            await statsTask
+            await commentsTask
+            await likedMemoriesTask
+            await likedUsersTask
+            await memoriesTask
+            
+            isLoading = false
+        }
+    }
+    
+    // MARK: - UI State Management
+    func toggleExpanded() {
+        withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+            isExpanded.toggle()
+            if !isExpanded {
+                dragOffset = 0
+            }
+        }
+    }
+    
+    func handleDragChanged(_ value: DragGesture.Value) {
+        if value.translation.height < 0 {
+            dragOffset = value.translation.height * 0.3
+        }
+    }
+    
+    func handleDragEnded(_ value: DragGesture.Value) {
+        if value.translation.height < -60 {
+            withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+                isExpanded = true
+                dragOffset = 0
+            }
+        } else {
+            withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+                dragOffset = 0
+            }
+        }
+    }
+    
+    func closeModal() {
+        withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+            isExpanded = false
+        }
+    }
+    
+    func changeSortOption(_ newOption: SortOption) {
+        sortOption = newOption
+        sortMemories()
+    }
+    
+    func selectMemory(_ memory: Memory) {
+        selectedMemory = memory
+        Logger.info("UserInfoModalViewModel: Memory selected - ID: \(memory.id), Title: \(memory.title)")
     }
     
     func refreshProfileData() async {
+        // 로딩 중 중복 호출 방지
+        if isLoading { return }
+        
+        Logger.info("UserInfoModalViewModel: Manual profile refresh requested")
         // 로딩 상태를 명확하게 표시
         isLoading = true
         
@@ -87,80 +159,23 @@ final class UserInfoModalViewModel: ObservableObject {
         // 약간의 지연으로 로딩 상태가 보이도록 함
         try? await Task.sleep(nanoseconds: 300_000_000) // 0.3초
         
-        await loadUserData()
+        await loadUserProfile()
+            await loadUserStats()
         
         // 로딩이 완료되면 isLoading을 false로 설정
         isLoading = false
     }
     
-    // MARK: - UI State Controls (used by View)
-    func toggleExpanded() {
-        withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-            isExpanded.toggle()
-            if !isExpanded { dragOffset = 0 }
-        }
-    }
-    
-    func handleDragChanged(_ value: DragGesture.Value) {
-        if isExpanded {
-            if value.translation.height > 0 { dragOffset = value.translation.height * 0.3 }
-        } else {
-            if value.translation.height < 0 { dragOffset = value.translation.height * 0.3 }
-        }
-    }
-    
-    func handleDragEnded(_ value: DragGesture.Value) {
-        if isExpanded {
-            if value.translation.height > 100 {
-                withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-                    isExpanded = false
-                    dragOffset = 0
-                }
-            } else {
-                withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) { dragOffset = 0 }
-            }
-        } else {
-            if value.translation.height < -60 {
-                withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-                    isExpanded = true
-                    dragOffset = 0
-                }
-            } else {
-                withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) { dragOffset = 0 }
-            }
-        }
-    }
-    
-    func expandModal() {
-        withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-            isExpanded = true
-            dragOffset = 0
-        }
-    }
-    
-    func closeModal() {
-        withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-            isExpanded = false
-            dragOffset = 0
-        }
-    }
-    
-    func selectMemory(_ memory: Memory) {
-        selectedMemory = memory
-        logger.info("UserInfoModalViewModel: Memory selected - ID: \(memory.id), Title: \(memory.title)")
-    }
-    
-    func changeSortOption(_ newOption: SortOption) {
-        sortOption = newOption
-        sortMemories()
-    }
-    
-    private func sortMemories() {
-        switch sortOption {
-        case .latest:
-            memories.sort { $0.createdAt > $1.createdAt }
-        case .oldest:
-            memories.sort { $0.createdAt < $1.createdAt }
+    // MARK: - Mock Data Generation
+    private func generateMockMemories() {
+        let durations = ["0:15", "0:32", "1:05", "0:48", "2:12", "0:23", "1:34", "0:56", "1:18", "0:41"]
+        mockMemories = (1...10).map { index in
+            MockMemory(
+                title: "Memory \(index)",
+                views: Int.random(in: 10...100),
+                daysAgo: Int.random(in: 1...7),
+                duration: durations.randomElement() ?? "0:30"
+            )
         }
     }
     
@@ -169,8 +184,11 @@ final class UserInfoModalViewModel: ObservableObject {
         do {
             userProfile = try await diContainer.profileUseCase.fetchProfileByUserId(userId: userId)
             
+            // 프로필 이미지 미리 로딩
             if let profileImageURL = userProfile?.profileImageURL {
-                Task { await ImageCache.shared.preloadProfileImage(urlString: profileImageURL) }
+                Task {
+                    await ImageCache.shared.preloadProfileImage(urlString: profileImageURL)
+                }
             }
         } catch {
             Logger.error("Error loading user profile: \(error.localizedDescription)")
@@ -268,7 +286,38 @@ final class UserInfoModalViewModel: ObservableObject {
         }
     }
     
+    private func sortMemories() {
+        switch sortOption {
+        case .latest:
+            memories.sort { $0.createdAt > $1.createdAt }
+        case .oldest:
+            memories.sort { $0.createdAt < $1.createdAt }
+        case .popular:
+            // For popular sorting, we could sort by like count in the future
+            memories.sort { $0.createdAt > $1.createdAt }
+        }
+    }
+    
     private func setupNotifications() {
+        // AppState userProfile 변경 감지 (더 효율적인 프로필 업데이트)
+        appState.$userProfile
+            .compactMap { $0 }
+            .filter { [weak self] profile in
+                // 현재 모달의 사용자 프로필이 변경된 경우에만 반응
+                guard let self = self else { return false }
+                return profile.userId == self.userId
+            }
+            .sink { [weak self] updatedProfile in
+                guard let self = self else { return }
+                Task { @MainActor in
+                    // 프로필 데이터만 즉시 업데이트 (로딩 없이)
+                    self.userProfile = updatedProfile
+                    self.logger.info("UserInfoModalViewModel: Profile updated from AppState - \(updatedProfile.name)")
+                }
+            }
+            .store(in: &cancellables)
+        
+        // Comment notifications
         NotificationCenter.default.publisher(for: .commentAdded)
             .sink { [weak self] notification in
                 guard let self = self,
@@ -311,7 +360,7 @@ final class UserInfoModalViewModel: ObservableObject {
             }
             .store(in: &cancellables)
         
-        // Likes
+        // Like notifications
         NotificationCenter.default.publisher(for: .likeAdded)
             .sink { [weak self] notification in
                 guard let self = self,
@@ -342,4 +391,6 @@ final class UserInfoModalViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
+    
+
 } 

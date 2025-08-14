@@ -11,6 +11,7 @@ import SwiftUI
 struct iOSBlockedUsersSettingView: View {
     @StateObject private var settingViewModel: SettingViewModel
     @Environment(\.dismiss) private var dismiss
+    @State private var isLoading = true
     let diContainer: DIContainer
     
     init(diContainer: DIContainer) {
@@ -23,6 +24,7 @@ struct iOSBlockedUsersSettingView: View {
             Colors.BackgroundBlack
                 .ignoresSafeArea()
             
+            // 메인 콘텐츠는 항상 렌더링
             if settingViewModel.blockedUsers.isEmpty {
                 VStack(alignment: .center) {
                     Spacer()
@@ -109,6 +111,13 @@ struct iOSBlockedUsersSettingView: View {
                 .scrollContentBackground(.hidden)
                 .background(Colors.BackgroundBlack)
             }
+            
+            // 로딩 오버레이
+            if isLoading {
+                iOSUnifiedLoadingView.fullscreen(title: "Loading Blocked Users")
+                    .opacity(isLoading ? 1.0 : 0.0)
+                    .animation(.easeInOut(duration: 0.3), value: isLoading)
+            }
         }
         .navigationTitle("Blocked Users")
         .navigationBarTitleDisplayMode(.inline)
@@ -127,6 +136,7 @@ struct iOSBlockedUsersSettingView: View {
         }
         .task {
             await settingViewModel.fetchBlockedUsers()
+            isLoading = false
         }
         .refreshable {
             await settingViewModel.fetchBlockedUsers()
