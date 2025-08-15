@@ -181,7 +181,23 @@ class GalaxyViewModel: ObservableObject {
     func fetchCurrentUserMemories() async throws {
         guard let userId = appState.userId else { return }
         isLoading = true
-        defer { isLoading = false }
+        
+        // 최소 로딩 시간 보장
+        let startTime = Date()
+        
+        defer { 
+            // 최소 0.2초 로딩 시간 보장
+            let elapsedTime = Date().timeIntervalSince(startTime)
+            let minLoadingTime: TimeInterval = 0.2
+            if elapsedTime < minLoadingTime {
+                Task { @MainActor in
+                    try? await Task.sleep(nanoseconds: UInt64((minLoadingTime - elapsedTime) * 1_000_000_000))
+                    isLoading = false
+                }
+            } else {
+                isLoading = false
+            }
+        }
         
         do {
             memories = try await memoryUseCase.execute(for: userId)
@@ -199,7 +215,23 @@ class GalaxyViewModel: ObservableObject {
     
     func fetchMemoriesFromOtherUser(userId: UUID) async throws {
         isLoading = true
-        defer { isLoading = false }
+        
+        // 최소 로딩 시간 보장
+        let startTime = Date()
+        
+        defer { 
+            // 최소 0.2초 로딩 시간 보장
+            let elapsedTime = Date().timeIntervalSince(startTime)
+            let minLoadingTime: TimeInterval = 0.2
+            if elapsedTime < minLoadingTime {
+                Task { @MainActor in
+                    try? await Task.sleep(nanoseconds: UInt64((minLoadingTime - elapsedTime) * 1_000_000_000))
+                    isLoading = false
+                }
+            } else {
+                isLoading = false
+            }
+        }
         
         do {
             memories = try await memoryUseCase.execute(for: userId)

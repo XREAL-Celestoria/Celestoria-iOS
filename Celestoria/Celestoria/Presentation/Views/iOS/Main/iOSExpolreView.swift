@@ -12,15 +12,17 @@ struct iOSExploreView: View {
     @StateObject private var viewModel: ExploreViewModel
     @EnvironmentObject private var appState: AppState
     @Binding var showingSearchView: Bool
+    @Binding var showingUserSpace: Bool
     @State private var showingOwnGalaxyPopup = false
     
     private let columns: [GridItem] = [
         GridItem(.flexible(), spacing: 12)
     ]
     
-    init(diContainer: DIContainer, showingSearchView: Binding<Bool>) {
+    init(diContainer: DIContainer, showingSearchView: Binding<Bool>, showingUserSpace: Binding<Bool>) {
         _viewModel = StateObject(wrappedValue: diContainer.makeExploreViewModel())
         self._showingSearchView = showingSearchView
+        self._showingUserSpace = showingUserSpace
     }
     
     var body: some View {
@@ -32,7 +34,7 @@ struct iOSExploreView: View {
             .task {
                 await viewModel.loadInitialExploreData()
             }
-            .fullScreenCover(isPresented: $viewModel.showingUserSpace) {
+            .fullScreenCover(isPresented: $showingUserSpace) {
                 if let selectedUser = viewModel.selectedUser {
                     iOS3DGalaxyView(diContainer: viewModel.diContainer, targetUserId: selectedUser.profile.userId)
                         .transition(.move(edge: .trailing))
@@ -69,6 +71,31 @@ struct iOSExploreView: View {
                 }
             }
         )
+        .onChange(of: appState.refreshExplore) { _, shouldRefresh in
+            if shouldRefresh {
+                Task { await viewModel.reloadAllSections() }
+                appState.refreshExplore = false
+            }
+        }
+        .onChange(of: appState.forceCloseExploreUserSpace) { _, shouldForceClose in
+            if shouldForceClose {
+                print("🔍 iOSExploreView: forceCloseExploreUserSpace received, immediately closing user space")
+                showingUserSpace = false
+                appState.forceCloseExploreUserSpace = false
+                print("🔍 iOSExploreView: user space force closed, showingUserSpace = \(showingUserSpace)")
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: AppState.forceCloseExploreUserSpace)) { _ in
+            print("🔍 iOSExploreView: Notification received, closing user space")
+            showingUserSpace = false
+            print("🔍 iOSExploreView: user space closed via notification, showingUserSpace = \(showingUserSpace)")
+        }
+        .onChange(of: viewModel.selectedUser) { _, selectedUser in
+            if selectedUser != nil {
+                showingUserSpace = true
+                print("🔍 iOSExploreView: selectedUser changed, showingUserSpace = \(showingUserSpace)")
+            }
+        }
     }
     
     // MARK: - Content View
@@ -244,14 +271,16 @@ struct iOSExploreView: View {
                         )
                     
                     VStack(alignment: .leading, spacing: 8) {
+                        // Profile image (더 명확하게 표시)
                         ProfileImageView(
                             profile: user.profile,
-                            size: 32
+                            size: 36
                         )
                         
                         Text(card.userName)
                             .fontStyle(Fonts.subheadline)
                             .foregroundStyle(Colors.NebulaWhite)
+                            .lineLimit(1)
                         
                         Text("\(card.memoryStars) Memory Stars")
                             .fontStyle(Fonts.caption2)
@@ -287,10 +316,10 @@ struct iOSExploreView: View {
                     )
                 
                 HStack(spacing: 8) {
-                    // Profile image
+                    // Profile image (더 명확하게 표시)
                     ProfileImageView(
                         profile: user.profile,
-                        size: 32
+                        size: 36
                     )
                     
                     VStack(alignment: .leading, spacing: 4) {
@@ -307,8 +336,7 @@ struct iOSExploreView: View {
             }
         }
     }
-}
-    
+
     // MARK: - Latest Explore Item View
     private struct LatestExploreItemView: View {
         let card: ExploreUserCardItem
@@ -316,33 +344,25 @@ struct iOSExploreView: View {
         
         var body: some View {
             HStack(alignment: .top, spacing: 12) {
-                Image(card.imageName)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(
-                        width: UIScreen.main.bounds.width * 0.61,
-                        height: UIScreen.main.bounds.width * 0.61 * (152.0 / 240.0)
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 30))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 30)
-                            .stroke(LinearGradient.SearchUsercardBG, lineWidth: 5)
-                    )
+                // 프로필 이미지 우선 노출 (요청사항)
+                ProfileImageView(
+                    profile: user.profile,
+                    size: 72
+                )
                 
                 VStack(alignment: .leading, spacing: 8) {
-                    ProfileImageView(
-                        profile: user.profile,
-                        size: 32
-                    )
-                    
                     Text(card.userName)
                         .fontStyle(Fonts.subheadline)
                         .foregroundStyle(Colors.NebulaWhite)
+                        .lineLimit(1)
                     
                     Text("\(card.memoryStars) Memory Stars")
                         .fontStyle(Fonts.caption2)
                         .foregroundStyle(Colors.Placeholder)
                 }
+                
+                Spacer()
             }
         }
     }
+}

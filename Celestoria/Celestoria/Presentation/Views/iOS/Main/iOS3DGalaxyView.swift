@@ -31,17 +31,20 @@ struct iOS3DGalaxyView: View {
         
         _viewModel = StateObject(wrappedValue: iOS3DGalaxyViewModel(galaxyViewModel: galaxyViewModel, appState: appState, diContainer: diContainer))
         self.onMemorySelectedCallback = { _ in }
+        self.onLoadingStateChanged = { _, _ in }
     }
     
     // 기존 생성자 (기존 코드와의 호환성을 위해)
-    init(galaxyViewModel: GalaxyViewModel, appState: AppState, diContainer: DIContainer, onMemorySelected: @escaping (Memory) -> Void) {
+    init(galaxyViewModel: GalaxyViewModel, appState: AppState, diContainer: DIContainer, onMemorySelected: @escaping (Memory) -> Void, onLoadingStateChanged: @escaping (Bool, Bool) -> Void = { _, _ in }) {
         _viewModel = StateObject(wrappedValue: iOS3DGalaxyViewModel(galaxyViewModel: galaxyViewModel, appState: appState, diContainer: diContainer))
         
         // 콜백 설정은 onAppear에서 처리 (StateObject 초기화 후)
         self.onMemorySelectedCallback = onMemorySelected
+        self.onLoadingStateChanged = onLoadingStateChanged
     }
     
     private let onMemorySelectedCallback: (Memory) -> Void
+    private let onLoadingStateChanged: (Bool, Bool) -> Void
     
     var body: some View {
         ZStack {
@@ -72,6 +75,12 @@ struct iOS3DGalaxyView: View {
                     viewModel.appState.isGalaxyLoadingComplete = true
                 }
             }
+            // 로딩 상태 변경을 상위 뷰에 알림
+            onLoadingStateChanged(viewModel.isLoadingOtherUserGalaxy, isReady)
+        }
+        .onChange(of: viewModel.isLoadingOtherUserGalaxy) { _, isLoading in
+            // 로딩 상태 변경을 상위 뷰에 알림
+            onLoadingStateChanged(isLoading, viewModel.isContentReady)
         }
         // Top-back button overlay (fixed position, above modal)
         .overlay(alignment: .topLeading) {
@@ -236,6 +245,11 @@ struct iOS3DGalaxyContainerView: View {
     @State private var modalRefreshCounter = 0 // UserInfoModal 강제 리프레시용
 
     @State private var showingExploreSearch: Bool = false // Explore 검색 상태
+    @State private var showingExploreUserSpace: Bool = false // Explore 유저 우주 상태
+    
+    // iOS3DGalaxyView의 로딩 상태를 추적하기 위한 상태
+    @State private var isGalaxyLoading: Bool = true
+    @State private var isGalaxyContentReady: Bool = false
     
     enum MainActiveScreen {
         case explore, notification, addMemory, settings
@@ -259,47 +273,55 @@ struct iOS3DGalaxyContainerView: View {
                 diContainer: diContainer,
                 onMemorySelected: { memory in
                     print("🔍 iOS3DGalaxyContainerView - Memory selected from 3D view: \(memory.id.uuidString)")
+                },
+                onLoadingStateChanged: { isLoading, isReady in
+                    isGalaxyLoading = isLoading
+                    isGalaxyContentReady = isReady
                 }
             )
             .environmentObject(appState)
             .opacity(containerOpacity)
             
             // 상단 버튼들을 갤럭시 뷰와 완전히 분리된 절대 고정 위치로 배치
-            VStack {
-                HStack {
-                    Spacer()
-                    
-                    HStack(spacing: 16) {
-                        Button(action: { activeScreen = .explore }) {
-                            Image("exploreIcon")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 24, height: 24)
-                        }
+            // 로딩 중일 때는 버튼들을 숨김
+            if isGalaxyContentReady {
+                VStack {
+                    HStack {
+                        Spacer()
                         
-                        Button(action: { activeScreen = .notification }) {
-                            Image("NotificationIcon")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 24, height: 24)
+                        HStack(spacing: 16) {
+                            Button(action: { activeScreen = .explore }) {
+                                Image("exploreIcon")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 24, height: 24)
+                            }
+                            
+                            Button(action: { activeScreen = .notification }) {
+                                Image("NotificationIcon")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 24, height: 24)
+                            }
+                            
+                            Button(action: { activeScreen = .settings }) {
+                                Image("menuIcon")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 24, height: 24)
+                            }
                         }
-                        
-                        Button(action: { activeScreen = .settings }) {
-                            Image("menuIcon")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 24, height: 24)
-                        }
+                        .padding(.trailing, 16)
+                        .padding(.top, 16)
                     }
-                    .padding(.trailing, 16)
-                    .padding(.top, 16)
+                    
+                    Spacer()
                 }
-                
-                Spacer()
+                .frame(maxWidth: .infinity, maxHeight: .infinity) // 전체 화면 고정
+                .allowsHitTesting(true) // 터치 허용
+                .zIndex(1000) // 최상위 레이어
+                .transition(.opacity) // 부드러운 페이드 인/아웃 효과
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity) // 전체 화면 고정
-            .allowsHitTesting(true) // 터치 허용
-            .zIndex(1000) // 최상위 레이어
         }
         .onAppear {
             print("🔍 iOS3DGalaxyContainerView - onAppear")
@@ -326,7 +348,8 @@ struct iOS3DGalaxyContainerView: View {
                     NavigationStack {
                         iOSExploreView(
                             diContainer: diContainer,
-                            showingSearchView: $showingExploreSearch
+                            showingSearchView: $showingExploreSearch,
+                            showingUserSpace: $showingExploreUserSpace
                         )
                         .customNavigationBarWithSearch(
                             title: "Explore",
@@ -375,6 +398,40 @@ struct iOS3DGalaxyContainerView: View {
                     }
                     .navigationViewStyle(StackNavigationViewStyle())
                 }
+            }
+        }
+        // 블락 직후 Explore로 이동 처리
+        .onChange(of: appState.shouldNavigateToExplore) { _, shouldNavigate in
+            if shouldNavigate {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    activeScreen = .explore
+                }
+                // 플래그 리셋
+                appState.shouldNavigateToExplore = false
+            }
+        }
+        // Force close iOSExploreView's user space via notification
+        .onReceive(NotificationCenter.default.publisher(for: AppState.forceCloseExploreUserSpace)) { _ in
+            print("🔍 iOS3DGalaxyContainerView: Notification received, resetting explore state")
+            // Reset explore view state to close user space
+            showingExploreUserSpace = false
+            print("🔍 iOS3DGalaxyContainerView: explore state reset, showingExploreUserSpace = \(showingExploreUserSpace)")
+            
+            // 약간의 지연 후 explore view 전체를 닫기
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                print("🔍 iOS3DGalaxyContainerView: delayed closing of explore view")
+                activeScreen = nil
+                print("🔍 iOS3DGalaxyContainerView: explore view closed, activeScreen = \(String(describing: activeScreen))")
+            }
+        }
+        // 블락 완료 후 유저 우주 닫기 처리
+        .onChange(of: appState.shouldCloseUserSpace) { _, shouldClose in
+            if shouldClose {
+                print("🔍 iOS3DGalaxyContainerView: shouldCloseUserSpace received, closing explore view")
+                // Close explore view and return to main galaxy
+                activeScreen = nil
+                appState.shouldCloseUserSpace = false
+                print("🔍 iOS3DGalaxyContainerView: explore view closed, activeScreen = \(String(describing: activeScreen))")
             }
         }
         .onChange(of: appState.refreshMainView) { _, shouldRefresh in

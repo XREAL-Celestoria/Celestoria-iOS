@@ -23,7 +23,9 @@ struct iOSBlockedUsersSettingView: View {
             Colors.BackgroundBlack
                 .ignoresSafeArea()
             
-            if settingViewModel.blockedUsers.isEmpty {
+            if settingViewModel.isLoadingBlockedUsers {
+                iOSUnifiedLoadingView.basic(title: "Loading Blocked Users.")
+            } else if settingViewModel.blockedUsers.isEmpty {
                 VStack(alignment: .center) {
                     Spacer()
                     

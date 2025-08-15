@@ -134,6 +134,13 @@
 		5D76F3F72E43EF4D0026579D /* CommentTapContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76F3F62E43EF4D0026579D /* CommentTapContent.swift */; };
 		5D76F3FA2E43EF950026579D /* MemoryTabContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76F3F92E43EF950026579D /* MemoryTabContent.swift */; };
 		5D76F4002E4410A70026579D /* CategoryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D76F3FF2E4410A70026579D /* CategoryButton.swift */; };
+		5D877C752E4EA05300D3491A /* Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 5D877C742E4EA05300D3491A /* Release.xcconfig */; };
+		5D877C762E4EA05300D3491A /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 5D877C732E4EA05300D3491A /* Debug.xcconfig */; };
+		5D877C772E4EA05300D3491A /* Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 5D877C742E4EA05300D3491A /* Release.xcconfig */; };
+		5D877C782E4EA05300D3491A /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 5D877C732E4EA05300D3491A /* Debug.xcconfig */; };
+		5D877C7A2E4EA34200D3491A /* ReportAndBlockUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D877C792E4EA34200D3491A /* ReportAndBlockUseCase.swift */; };
+		5D877C7B2E4EA34200D3491A /* ReportAndBlockUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D877C792E4EA34200D3491A /* ReportAndBlockUseCase.swift */; };
+		5D877C7E2E4EA3AB00D3491A /* MemoryDetailOptionMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D877C7C2E4EA3AB00D3491A /* MemoryDetailOptionMenuView.swift */; };
 		A2198CA32D48812500B0AF65 /* ExploreUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2198CA22D48812500B0AF65 /* ExploreUseCase.swift */; };
 		A2198CA52D48814300B0AF65 /* ExploreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2198CA42D48814300B0AF65 /* ExploreViewModel.swift */; };
 		A2198CAA2D49063800B0AF65 /* Family.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A2198CA72D49063800B0AF65 /* Family.usdz */; };
@@ -294,8 +301,6 @@
 		2FBE4E682DE319D200796FAA /* ProfileSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSelectorView.swift; sourceTree = "<group>"; };
 		2FBE4E6A2DE31A1400796FAA /* ThumbnailSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailSettingView.swift; sourceTree = "<group>"; };
 		2FBE4E6C2DE31A3400796FAA /* AccountSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSettingView.swift; sourceTree = "<group>"; };
-		2FC41AD72DDE33E000E03025 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
-		2FC41AD92DDE33EF00E03025 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		2FE857F62D43425B0055902B /* PopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupView.swift; sourceTree = "<group>"; };
 		2FE857F82D4344740055902B /* CircularButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularButton.swift; sourceTree = "<group>"; };
 		2FE857FE2D434ABA0055902B /* PopupData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupData.swift; sourceTree = "<group>"; };
@@ -342,6 +347,10 @@
 		5D76F3F62E43EF4D0026579D /* CommentTapContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTapContent.swift; sourceTree = "<group>"; };
 		5D76F3F92E43EF950026579D /* MemoryTabContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryTabContent.swift; sourceTree = "<group>"; };
 		5D76F3FF2E4410A70026579D /* CategoryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryButton.swift; sourceTree = "<group>"; };
+		5D877C732E4EA05300D3491A /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		5D877C742E4EA05300D3491A /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		5D877C792E4EA34200D3491A /* ReportAndBlockUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportAndBlockUseCase.swift; sourceTree = "<group>"; };
+		5D877C7C2E4EA3AB00D3491A /* MemoryDetailOptionMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryDetailOptionMenuView.swift; sourceTree = "<group>"; };
 		A2198CA22D48812500B0AF65 /* ExploreUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreUseCase.swift; sourceTree = "<group>"; };
 		A2198CA42D48814300B0AF65 /* ExploreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewModel.swift; sourceTree = "<group>"; };
 		A2198CA62D49063800B0AF65 /* Enter.usdc */ = {isa = PBXFileReference; lastKnownFileType = file; path = Enter.usdc; sourceTree = "<group>"; };
@@ -622,6 +631,7 @@
 		2F8800C72D38D43300220F89 /* UseCases */ = {
 			isa = PBXGroup;
 			children = (
+				5D877C792E4EA34200D3491A /* ReportAndBlockUseCase.swift */,
 				2F3672042D3DA2FE0048D9AD /* FetchMemoriesUseCase.swift */,
 				2F3672062D3DA3170048D9AD /* CreateMemoryUseCase.swift */,
 				A2198CA22D48812500B0AF65 /* ExploreUseCase.swift */,
@@ -671,8 +681,8 @@
 				2F8800B72D38CE6800220F89 /* Info.plist */,
 				5D707EDC2E4266AA00CC1224 /* LaunchScreen.storyboard */,
 				2F36720A2D3DA3F20048D9AD /* Config.swift */,
-				2FC41AD72DDE33E000E03025 /* Debug.xcconfig */,
-				2FC41AD92DDE33EF00E03025 /* Release.xcconfig */,
+				5D877C732E4EA05300D3491A /* Debug.xcconfig */,
+				5D877C742E4EA05300D3491A /* Release.xcconfig */,
 			);
 			path = Configuration;
 			sourceTree = "<group>";
@@ -806,6 +816,7 @@
 		5D707E622E3E6C2D00CC1224 /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				5D877C7D2E4EA3AB00D3491A /* MemoryDetail */,
 				5D76A4EB2E4C0CD800C688DE /* LikeSheetView.swift */,
 				5D76A4E72E4BF93C00C688DE /* CommentSheetView.swift */,
 				A2A286C62E2C3173001D89B2 /* iOSMemoryDetailView.swift */,
@@ -879,6 +890,14 @@
 				5D76F3EF2E43EEE90026579D /* MemoryReviewItemView.swift */,
 			);
 			path = Memory;
+			sourceTree = "<group>";
+		};
+		5D877C7D2E4EA3AB00D3491A /* MemoryDetail */ = {
+			isa = PBXGroup;
+			children = (
+				5D877C7C2E4EA3AB00D3491A /* MemoryDetailOptionMenuView.swift */,
+			);
+			path = MemoryDetail;
 			sourceTree = "<group>";
 		};
 		A21E476F2D38CD55002B60FA = {
@@ -1023,6 +1042,8 @@
 				A2A286D62E2CBE45001D89B2 /* Assets.xcassets in Resources */,
 				A2A286DA2E2CC0CA001D89B2 /* fireworks.usdz in Resources */,
 				A2A286D92E2CC0C7001D89B2 /* Pet.usdz in Resources */,
+				5D877C772E4EA05300D3491A /* Release.xcconfig in Resources */,
+				5D877C782E4EA05300D3491A /* Debug.xcconfig in Resources */,
 				A2A286D72E2CC0BD001D89B2 /* Enter.usdc in Resources */,
 				A2A286D82E2CC0C3001D89B2 /* Family.usdz in Resources */,
 				5D707EDD2E4266AA00CC1224 /* LaunchScreen.storyboard in Resources */,
@@ -1037,6 +1058,8 @@
 				2F8800C02D38CE6800220F89 /* Assets.xcassets in Resources */,
 				A2198CAA2D49063800B0AF65 /* Family.usdz in Resources */,
 				A2C1D8262E2BC9E200CA2D9A /* fireworks.usdz in Resources */,
+				5D877C752E4EA05300D3491A /* Release.xcconfig in Resources */,
+				5D877C762E4EA05300D3491A /* Debug.xcconfig in Resources */,
 				A2198CAC2D49063800B0AF65 /* Enter.usdc in Resources */,
 				A2198CAD2D49063800B0AF65 /* Pet.usdz in Resources */,
 				A2198CB12D4909BF00B0AF65 /* Travel.usdc in Resources */,
@@ -1060,6 +1083,7 @@
 				A2A286842E2C0438001D89B2 /* Gradient+.swift in Sources */,
 				5D707EC12E41FC3000CC1224 /* iOSMemoryDetailViewModel.swift in Sources */,
 				A2A2868E2E2C09D7001D89B2 /* SignOutUseCase.swift in Sources */,
+				5D877C7A2E4EA34200D3491A /* ReportAndBlockUseCase.swift in Sources */,
 				5D707E5C2E3E481000CC1224 /* UserInfoModalViewModel.swift in Sources */,
 				A2A286992E2C0D37001D89B2 /* StarField.swift in Sources */,
 				5D76A4EA2E4BF95C00C688DE /* CommentSheetViewModel.swift in Sources */,
@@ -1085,6 +1109,7 @@
 				5D707E912E3FBF6A00CC1224 /* iOSUploadButton.swift in Sources */,
 				5D707E952E400B7900CC1224 /* View+Navigation.swift in Sources */,
 				5D707EC92E4217F800CC1224 /* UIImage+Extensions.swift in Sources */,
+				5D877C7E2E4EA3AB00D3491A /* MemoryDetailOptionMenuView.swift in Sources */,
 				A2A286BD2E2C3133001D89B2 /* iOSThumbnailSettingView.swift in Sources */,
 				A2A2867F2E2C0415001D89B2 /* ContentReport.swift in Sources */,
 				5D76A4D42E4BB8BE00C688DE /* iOSExploreSearchView.swift in Sources */,
@@ -1208,6 +1233,7 @@
 				2F8800BC2D38CE6800220F89 /* ContentView.swift in Sources */,
 				5D707E9D2E40D3F200CC1224 /* CachedAsyncImage.swift in Sources */,
 				2F36721A2D3E19A30048D9AD /* GalaxyView.swift in Sources */,
+				5D877C7B2E4EA34200D3491A /* ReportAndBlockUseCase.swift in Sources */,
 				A2D6E0BB2E4B96B40087C203 /* Notification.swift in Sources */,
 				2FBE4E672DE317C600796FAA /* ProfileSettingView.swift in Sources */,
 				2FB501E02D4655D9005FB0B6 /* ExploreUserCardItem.swift in Sources */,
@@ -1262,7 +1288,7 @@
 /* Begin XCBuildConfiguration section */
 		2FAA9CE32E22341900A0CAD7 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2FC41AD72DDE33E000E03025 /* Debug.xcconfig */;
+			baseConfigurationReference = 5D877C732E4EA05300D3491A /* Debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -1306,7 +1332,7 @@
 		};
 		2FAA9CE42E22341900A0CAD7 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2FC41AD92DDE33EF00E03025 /* Release.xcconfig */;
+			baseConfigurationReference = 5D877C742E4EA05300D3491A /* Release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -1350,7 +1376,7 @@
 		};
 		A21E47912D38CD57002B60FA /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2FC41AD72DDE33E000E03025 /* Debug.xcconfig */;
+			baseConfigurationReference = 5D877C732E4EA05300D3491A /* Debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -1359,7 +1385,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1.1.1;
 				DEVELOPMENT_ASSET_PATHS = "\"Celestoria/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = B3CU8MA548;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Celestoria/App/Configuration/Info.plist;
@@ -1381,7 +1407,7 @@
 		};
 		A21E47922D38CD57002B60FA /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2FC41AD92DDE33EF00E03025 /* Release.xcconfig */;
+			baseConfigurationReference = 5D877C742E4EA05300D3491A /* Release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -1390,7 +1416,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1.1.1;
 				DEVELOPMENT_ASSET_PATHS = "\"Celestoria/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = B3CU8MA548;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Celestoria/App/Configuration/Info.plist;
@@ -1412,7 +1438,7 @@
 		};
 		A21E47932D38CD57002B60FA /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2FC41AD72DDE33E000E03025 /* Debug.xcconfig */;
+			baseConfigurationReference = 5D877C732E4EA05300D3491A /* Debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -1476,7 +1502,7 @@
 		};
 		A21E47942D38CD57002B60FA /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2FC41AD92DDE33EF00E03025 /* Release.xcconfig */;
+			baseConfigurationReference = 5D877C742E4EA05300D3491A /* Release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

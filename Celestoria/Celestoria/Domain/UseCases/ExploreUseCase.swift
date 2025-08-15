@@ -10,10 +10,14 @@ import Supabase
 import os
 
 /// 유저 정보 + 메모리 개수 + 좋아요 개수를 담는 DTO
-struct ExploreUser {
+struct ExploreUser: Equatable {
     let profile: UserProfile
     let memoryCount: Int
     let likeCount: Int
+    
+    static func == (lhs: ExploreUser, rhs: ExploreUser) -> Bool {
+        return lhs.profile.userId == rhs.profile.userId
+    }
 }
 
 final class ExploreUseCase {
@@ -46,9 +50,9 @@ final class ExploreUseCase {
                 excludingUserId: excludeUserId
             )
         } else {
-            // iOS에서는 현재 유저도 포함하도록 수정
+            // 블락한 유저는 제외하되, 현재 유저는 포함
             userProfiles = try await authRepository.fetchAllProfiles(
-                excludingUserId: nil
+                excludingUserId: excludeUserId
             )
         }
 
@@ -88,7 +92,7 @@ final class ExploreUseCase {
             )
         } else {
             userProfiles = try await authRepository.fetchAllProfiles(
-                excludingUserId: nil
+                excludingUserId: excludeUserId
             )
         }
         
@@ -142,7 +146,7 @@ final class ExploreUseCase {
             )
         } else {
             userProfiles = try await authRepository.fetchAllProfiles(
-                excludingUserId: nil
+                excludingUserId: excludeUserId
             )
         }
         

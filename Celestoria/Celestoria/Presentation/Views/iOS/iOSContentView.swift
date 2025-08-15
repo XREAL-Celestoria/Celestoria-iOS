@@ -46,6 +46,14 @@ struct iOSContentView: View {
                     // 메모리 디테일 관련 앱 스테이트 리셋
                     appState.selectedMemoryForDetail = nil
                     appState.shouldNavigateToMemoryDetail = false
+                    
+                    // 블락 완료 후 메인으로 이동
+                    if appState.shouldGoToMain {
+                        appState.shouldGoToMain = false
+                        // 갤럭시 뷰 리프레시
+                        appState.refreshMainView = true
+                        // 익스플로어로 이동 요청 유지 (iOS3DGalaxyContainerView에서 처리)
+                    }
                 }
         }
         .presentationBackground(.clear) // iPad에서 배경 투명하게

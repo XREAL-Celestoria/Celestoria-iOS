@@ -13,6 +13,7 @@ struct iOSUnifiedLoadingView: View {
     let title: String
     let subtitle: String?
     @State private var viewAppeared = false
+    @State private var shouldShow = false
     
     init(title: String, subtitle: String? = nil) {
         self.title = title
@@ -30,18 +31,18 @@ struct iOSUnifiedLoadingView: View {
                 // 커스텀 로딩 애니메이션
                 CustomLoadingAnimation()
                     .frame(width: 80, height: 80)
-                    .opacity(viewAppeared ? 1 : 0)
-                    .scaleEffect(viewAppeared ? 1 : 0.8)
-                    .animation(.easeOut(duration: 0.3), value: viewAppeared)
+                    .opacity(shouldShow ? 1 : 0)
+                    .scaleEffect(shouldShow ? 1 : 0.8)
+                    .animation(.easeOut(duration: 0.3), value: shouldShow)
                 
                 // 타이틀
                 Text(title)
                     .font(.system(size: 18, weight: .medium))
                     .foregroundColor(.white)
                     .multilineTextAlignment(.center)
-                    .opacity(viewAppeared ? 1 : 0)
-                    .offset(y: viewAppeared ? 0 : 10)
-                    .animation(.easeOut(duration: 0.3).delay(0.1), value: viewAppeared)
+                    .opacity(shouldShow ? 1 : 0)
+                    .offset(y: shouldShow ? 0 : 10)
+                    .animation(.easeOut(duration: 0.3).delay(0.1), value: shouldShow)
                 
                 // 서브타이틀 (필요시만)
                 if let subtitle = subtitle {
@@ -49,22 +50,30 @@ struct iOSUnifiedLoadingView: View {
                         .font(.system(size: 14, weight: .regular))
                         .foregroundColor(.white.opacity(0.7))
                         .multilineTextAlignment(.center)
-                        .opacity(viewAppeared ? 1 : 0)
-                        .offset(y: viewAppeared ? 0 : 10)
-                        .animation(.easeOut(duration: 0.3).delay(0.2), value: viewAppeared)
+                        .opacity(shouldShow ? 1 : 0)
+                        .offset(y: shouldShow ? 0 : 10)
+                        .animation(.easeOut(duration: 0.3).delay(0.2), value: shouldShow)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .opacity(viewAppeared ? 1 : 0)
+        .animation(.easeInOut(duration: 0.2), value: viewAppeared)
         .onAppear {
-            // 뷰가 나타날 때 애니메이션 즉시 시작
-            withAnimation(.easeOut(duration: 0.3)) {
-                viewAppeared = true
+            // 뷰가 나타날 때 즉시 표시
+            viewAppeared = true
+            
+            // 약간의 지연 후 애니메이션 시작
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeOut(duration: 0.3)) {
+                    shouldShow = true
+                }
             }
         }
         .onDisappear {
             // 뷰가 사라질 때 상태 리셋
             viewAppeared = false
+            shouldShow = false
         }
     }
 }

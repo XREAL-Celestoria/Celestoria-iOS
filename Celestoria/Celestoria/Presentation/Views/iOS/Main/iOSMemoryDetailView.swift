@@ -20,6 +20,8 @@ struct iOSMemoryDetailView: View {
     @State private var showCommentSheet = false
     @State private var showLikeSheet = false
     @State private var didLongPressLike = false
+    @State private var showOptionMenu = false
+    @State private var optionButtonFrame: CGRect = .zero
     @StateObject private var motionManager = MotionManager()
     @EnvironmentObject var appState: AppState
     @Environment(\.dismiss) private var dismiss
@@ -73,8 +75,42 @@ struct iOSMemoryDetailView: View {
                 .shadow(color: Color(red: 0.4, green: 0.7, blue: 1).opacity(0.6), radius: 12, x: 0, y: 0)
             
             VStack(alignment: .leading, spacing: 0) {
-                iOSNavigationView(title: "", onBack: onBack ?? { dismiss() })
-                    .zIndex(1)
+                // Custom Navigation Bar with Option Menu
+                HStack {
+                    Button(action: onBack ?? { dismiss() }) {
+                        Image("backButton")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 24, height: 24)
+                    }
+                    
+                    Spacer()
+                    
+                    // Option Menu Button (only show for non-owners)
+                    if !viewModel.isOwner {
+                        Button(action: { showOptionMenu.toggle() }) {
+                            Image("detailOptionIcon")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 24, height: 24)
+                        }
+                        .background(
+                            GeometryReader { geometry in
+                                Color.clear
+                                    .onAppear {
+                                        optionButtonFrame = geometry.frame(in: .global)
+                                    }
+                                    .onChange(of: geometry.frame(in: .global)) { _, newFrame in
+                                        optionButtonFrame = newFrame
+                                    }
+                            }
+                        )
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 16)
+                .frame(height: 44)
+                .zIndex(1)
                 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 0) {
@@ -267,6 +303,39 @@ struct iOSMemoryDetailView: View {
         }
         .overlay(
             ZStack {
+                // Option Menu
+                if showOptionMenu {
+                    Color.black.opacity(0.3)
+                        .ignoresSafeArea()
+                        .onTapGesture {
+                            showOptionMenu = false
+                        }
+                    
+                    VStack {
+                        Spacer()
+                        
+                        HStack {
+                            Spacer()
+                            
+                            MemoryDetailOptionMenuView(
+                                onReportTap: {
+                                    showOptionMenu = false
+                                    viewModel.showReportPopup()
+                                },
+                                onBlockUserTap: {
+                                    showOptionMenu = false
+                                    viewModel.showBlockPopup()
+                                },
+                                onDismiss: {
+                                    showOptionMenu = false
+                                },
+                                hasAlreadyReported: viewModel.hasAlreadyReported,
+                                optionButtonFrame: optionButtonFrame
+                            )
+                        }
+                    }
+                }
+                
                 // Delete Alert Popup
                 if viewModel.showDeleteAlert {
                     iOSConfirmationPopupView(
@@ -295,14 +364,127 @@ struct iOSMemoryDetailView: View {
                         title: "Cannot Like Your Own Memory",
                         message: "You cannot like your own memory.",
                         style: .singleButton(title: "OK"),
-                        onCancel: { 
+                        onCancel: {
                             withAnimation(.easeInOut(duration: 0.4)) {
                                 viewModel.showOwnLikePopup = false
                             }
                         },
-                        onConfirm: { 
+                        onConfirm: {
                             withAnimation(.easeInOut(duration: 0.4)) {
                                 viewModel.showOwnLikePopup = false
+                            }
+                        }
+                    )
+                }
+                
+                // Already Reported Popup
+                if viewModel.showAlreadyReportedPopup {
+                    iOSConfirmationPopupView(
+                        title: "Already Reported",
+                        message: "You have already submitted a report for this post.",
+                        style: .singleButton(title: "OK"),
+                        onCancel: {
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                viewModel.showAlreadyReportedPopup = false
+                            }
+                        },
+                        onConfirm: {
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                viewModel.showAlreadyReportedPopup = false
+                            }
+                        }
+                    )
+                }
+                
+                // Report Confirmation Popup
+                if viewModel.showReportConfirmation {
+                    iOSConfirmationPopupView(
+                        title: "Report this post?",
+                        message: "Are you sure you want to report this post? This action cannot be undone.",
+                        style: .twoButtons(cancelTitle: "No", confirmTitle: "Yes", isDestructive: false),
+                        onCancel: {
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                viewModel.showReportConfirmation = false
+                            }
+                        },
+                        onConfirm: {
+                            Task {
+                                await viewModel.reportMemory()
+                            }
+                        }
+                    )
+                }
+                
+                // Block Confirmation Popup
+                if viewModel.showBlockConfirmation {
+                    iOSConfirmationPopupView(
+                        title: "Block this user?",
+                        message: "Are you sure you want to block this user? This action cannot be undone.",
+                        style: .twoButtons(cancelTitle: "No", confirmTitle: "Yes", isDestructive: false),
+                        onCancel: {
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                viewModel.showBlockConfirmation = false
+                            }
+                        },
+                        onConfirm: {
+                            Task {
+                                await viewModel.blockUser()
+                            }
+                        }
+                    )
+                }
+                
+                // Report Completion Popup
+                if viewModel.showReportCompletion {
+                    iOSConfirmationPopupView(
+                        title: "Report submitted!",
+                        message: "Our team will review this post shortly.",
+                        style: .singleButton(title: "Complete"),
+                        onCancel: {
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                viewModel.showReportCompletion = false
+                                dismiss() // 메모리 닫기
+                            }
+                        },
+                        onConfirm: {
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                viewModel.showReportCompletion = false
+                                dismiss() // 메모리 닫기
+                            }
+                        }
+                    )
+                }
+                
+                // Block Completion Popup
+                if viewModel.showBlockCompletion {
+                    iOSConfirmationPopupView(
+                        title: "User blocked!",
+                        message: "Manage blocked users in Settings",
+                        style: .singleButton(title: "Complete"),
+                        onCancel: {
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                viewModel.showBlockCompletion = false
+                                // Send notification to close explore user space
+                                NotificationCenter.default.post(name: AppState.forceCloseExploreUserSpace, object: nil)
+                                // Close detail immediately (pop 1st)
+                                dismiss()
+                                // Reload Explore after closing
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                                    appState.refreshExplore = true
+                                }
+                            }
+                        },
+                        onConfirm: {
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                viewModel.showBlockCompletion = false
+                                // Send notification to close explore user space
+                                NotificationCenter.default.post(name: AppState.forceCloseExploreUserSpace, object: nil)
+                                // Close detail immediately (pop 1st)
+                                dismiss()
+                                // Reload Explore after closing
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                                    appState.refreshExplore = true
+                                }
                             }
                         }
                     )

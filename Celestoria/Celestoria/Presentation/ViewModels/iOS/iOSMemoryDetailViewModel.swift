@@ -28,6 +28,16 @@ final class iOSMemoryDetailViewModel: ObservableObject {
     @Published var showDeleteAlert: Bool = false
     @Published var showOwnLikePopup: Bool = false
     
+    // Report and Block related properties
+    @Published var showReportConfirmation: Bool = false
+    @Published var showBlockConfirmation: Bool = false
+    @Published var showReportCompletion: Bool = false
+    @Published var hasAlreadyReported: Bool = false
+    @Published var showAlreadyReportedPopup: Bool = false
+    @Published var showBlockCompletion: Bool = false
+    @Published var isReportLoading: Bool = false
+    @Published var isBlockLoading: Bool = false
+    
     // MARK: - Computed Properties
     var formattedDate: String {
         let formatter = DateFormatter()
@@ -63,14 +73,99 @@ final class iOSMemoryDetailViewModel: ObservableObject {
     }
     
     // MARK: - Public Methods
+    
+    // Report and Block methods
+    func showReportPopup() {
+        // 이미 신고한 경우 이미 신고했다는 팝업 표시
+        if hasAlreadyReported {
+            showAlreadyReportedPopup = true
+            return
+        }
+        showReportConfirmation = true
+    }
+    
+    func showBlockPopup() {
+        showBlockConfirmation = true
+    }
+    
+    func reportMemory() async {
+        guard let appState = appState,
+              let currentUserId = appState.userId else { return }
+        
+        isReportLoading = true
+        defer { isReportLoading = false }
+        
+        do {
+            let reportUseCase = ReportAndBlockUseCase(
+                memoryRepository: diContainer.memoryRepository,
+                authRepository: diContainer.authRepository
+            )
+            
+            try await reportUseCase.reportMemory(memoryId: memory.id, reporterId: currentUserId)
+            
+            await MainActor.run {
+                showReportConfirmation = false
+                showReportCompletion = true
+            }
+            
+            logger.info("Memory reported successfully: \(self.memory.id)")
+        } catch {
+            logger.error("Failed to report memory: \(error.localizedDescription)")
+            
+            // 중복 신고 에러 처리
+            if let nsError = error as NSError?, nsError.domain == "ReportError" && nsError.code == 409 {
+                await MainActor.run {
+                    hasAlreadyReported = true
+                    showReportConfirmation = false
+                    showAlreadyReportedPopup = true
+                }
+            } else {
+                errorMessage = "Failed to report memory. Please try again."
+            }
+        }
+    }
+    
+    func blockUser() async {
+        guard let appState = appState,
+              let currentUserId = appState.userId else { return }
+        
+        isBlockLoading = true
+        defer { isBlockLoading = false }
+        
+        do {
+            let reportUseCase = ReportAndBlockUseCase(
+                memoryRepository: diContainer.memoryRepository,
+                authRepository: diContainer.authRepository
+            )
+            
+            try await reportUseCase.blockUser(reporterId: currentUserId, blockedUserId: memory.userId)
+            
+            await MainActor.run {
+                showBlockConfirmation = false
+                showBlockCompletion = true
+                // 메인으로 이동하도록 앱 스테이트 설정
+                diContainer.appState.shouldGoToMain = true
+                // 익스플로어로 이동 요청
+                diContainer.appState.shouldNavigateToExplore = true
+            }
+            
+            logger.info("User blocked successfully: \(self.memory.userId)")
+        } catch {
+            logger.error("Failed to block user: \(error.localizedDescription)")
+            errorMessage = "Failed to block user. Please try again."
+        }
+    }
+    
     func loadData() async {
         async let profileTask = loadUserProfile()
         async let likeDataTask = loadLikeData()
         async let commentCountTask = loadCommentCount()
+        async let reportStatusTask = loadReportStatus()
         
         await profileTask
         await likeDataTask
         await commentCountTask
+        await reportStatusTask
     }
     
     func toggleLike() async {
@@ -182,6 +277,26 @@ final class iOSMemoryDetailViewModel: ObservableObject {
             self.commentCount = count
         } catch {
             logger.error("Error loading comment count: \(error.localizedDescription)")
+        }
+    }
+    
+    private func loadReportStatus() async {
+        guard let appState = appState,
+              let currentUserId = appState.userId else { return }
+        
+        do {
+            let reportUseCase = ReportAndBlockUseCase(
+                memoryRepository: diContainer.memoryRepository,
+                authRepository: diContainer.authRepository
+            )
+            
+            let hasReported = try await reportUseCase.hasReportedMemory(memoryId: memory.id, reporterId: currentUserId)
+            
+            await MainActor.run {
+                self.hasAlreadyReported = hasReported
+            }
+        } catch {
+            logger.error("Error loading report status: \(error.localizedDescription)")
         }
     }
     

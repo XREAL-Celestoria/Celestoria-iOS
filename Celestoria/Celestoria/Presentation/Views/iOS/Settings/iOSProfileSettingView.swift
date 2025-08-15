@@ -100,7 +100,19 @@ struct iOSProfileSettingView: View {
                         
                         Task {
                             isUpdating = true
+                            
+                            // 최소 로딩 시간 보장
+                            let startTime = Date()
+                            
                             await settingViewModel.updateProfileIfNeeded(newName: tempNickname, selectedImage: settingViewModel.selectedImage)
+                            
+                            // 최소 0.2초 로딩 시간 보장
+                            let elapsedTime = Date().timeIntervalSince(startTime)
+                            let minLoadingTime: TimeInterval = 0.2
+                            if elapsedTime < minLoadingTime {
+                                try? await Task.sleep(nanoseconds: UInt64((minLoadingTime - elapsedTime) * 1_000_000_000))
+                            }
+                            
                             isUpdating = false
                             dismiss()
                         }
@@ -143,23 +155,20 @@ struct iOSProfileSettingView: View {
         .overlay(
             // Loading overlay - 맨 위에 정 가운데
             Group {
-                if isImageLoading || isUpdating {
-                    Color.black.opacity(0.5)
-                        .ignoresSafeArea()
-                    
-                    VStack {
-                        Spacer()
-                        LoadingView()
-                        Spacer()
-                    }
-                    .ignoresSafeArea()
-                    .frame(maxWidth: UIScreen.main.bounds.width , maxHeight: .infinity)
+                if isImageLoading {
+                    iOSUnifiedLoadingView.profile()
+                } else if isUpdating {
+                    iOSUnifiedLoadingView.basic(title: "Updating Profile.")
                 }
             }
         )
         .task {
             Task {
                 isImageLoading = true
+                
+                // 최소 로딩 시간 보장
+                let startTime = Date()
+                
                 await settingViewModel.fetchProfile()
                 
                 let profile = settingViewModel.profile
@@ -183,6 +192,13 @@ struct iOSProfileSettingView: View {
                     }
                 } else {
                     settingViewModel.selectedImage = .predefined(.profile_gray)
+                }
+                
+                // 최소 0.2초 로딩 시간 보장
+                let elapsedTime = Date().timeIntervalSince(startTime)
+                let minLoadingTime: TimeInterval = 0.2
+                if elapsedTime < minLoadingTime {
+                    try? await Task.sleep(nanoseconds: UInt64((minLoadingTime - elapsedTime) * 1_000_000_000))
                 }
                 
                 isImageLoading = false

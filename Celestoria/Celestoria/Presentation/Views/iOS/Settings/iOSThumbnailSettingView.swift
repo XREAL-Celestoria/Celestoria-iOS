@@ -46,42 +46,46 @@ struct iOSThumbnailSettingView: View {
             Colors.BackgroundBlack
                 .ignoresSafeArea()
             
-            ScrollView {
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
-                    ForEach(thumbnails, id: \.self) { thumbnail in
-                        Button(action: {
-                            selectedThumbnail = thumbnail
-                        }) {
-                            ZStack {
-                                // Thumbnail image
-                                Image(thumbnail)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: (UIScreen.main.bounds.width - 40) / 2, height: 190)
-                                    .clipped()
-                                    .cornerRadius(10)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(
-                                                isSelected(thumbnail: thumbnail)
-                                                ? AnyShapeStyle(LinearGradient.GradientSub)
-                                                : AnyShapeStyle(Colors.GrayStroke),
-                                                lineWidth: isSelected(thumbnail: thumbnail) ? 1.5 : 1
-                                            )
-                                    )
-                                
-                                if isSelected(thumbnail: thumbnail) {
-                                    Image("Check-Circle")
-                                        .frame(width: 24, height: 24)
-                                        .offset(x: 68, y: -68)
+            if settingViewModel.isLoading {
+                iOSUnifiedLoadingView.basic(title: "Loading Thumbnails.")
+            } else {
+                ScrollView {
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                        ForEach(thumbnails, id: \.self) { thumbnail in
+                            Button(action: {
+                                selectedThumbnail = thumbnail
+                            }) {
+                                ZStack {
+                                    // Thumbnail image
+                                    Image(thumbnail)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: (UIScreen.main.bounds.width - 40) / 2, height: 190)
+                                        .clipped()
+                                        .cornerRadius(10)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .stroke(
+                                                    isSelected(thumbnail: thumbnail)
+                                                    ? AnyShapeStyle(LinearGradient.GradientSub)
+                                                    : AnyShapeStyle(Colors.GrayStroke),
+                                                    lineWidth: isSelected(thumbnail: thumbnail) ? 1.5 : 1
+                                                )
+                                        )
+                                    
+                                    if isSelected(thumbnail: thumbnail) {
+                                        Image("Check-Circle")
+                                            .frame(width: 24, height: 24)
+                                            .offset(x: 68, y: -68)
+                                    }
                                 }
                             }
                         }
                     }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 20)
+                    .padding(.bottom, 120)
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 20)
-                .padding(.bottom, 120)
             }
             
             VStack {

@@ -66,6 +66,15 @@ final class ExploreViewModel: ObservableObject {
         isInitialLoading = false
         hasLoadedInitialExploreData = true
     }
+    
+    /// 모든 섹션 데이터 강제 재로드 (블락 후 등)
+    func reloadAllSections() async {
+        // 강제로 모든 섹션 데이터 재로드
+        async let most = fetchMostStarsUsers()
+        async let popular = fetchPopularUsers()
+        async let latest = fetchLatestUsers()
+        _ = await (most, popular, latest)
+    }
 
     /// 검색어 바뀔 때마다 즉시 검색: onChangeSearchText()
     /// (onSubmit 대신 즉시 검색을 원하면 유지)
@@ -88,10 +97,10 @@ final class ExploreViewModel: ObservableObject {
         defer { isLoading = false }
 
         do {
-            // 현재 유저도 포함하도록 excludeUserId를 nil로 설정
+            // 블락한 유저는 제외하되, 현재 유저는 포함
             let users = try await exploreUseCase.fetchExploreUsers(
                 searchText: searchText,
-                excludeUserId: nil  // nil로 설정하여 현재 유저도 포함
+                excludeUserId: appState.userId
             )
             self.exploreUsers = users
         } catch {
@@ -103,10 +112,10 @@ final class ExploreViewModel: ObservableObject {
     /// 메인(모스트 스탈)용 데이터 로드 (검색어와 무관, 상단 섹션 전용)
     func fetchMostStarsUsers() async {
         do {
-            // 현재 유저도 포함하도록 excludeUserId를 nil로 설정
+            // 블락한 유저는 제외하되, 현재 유저는 포함
             let users = try await exploreUseCase.fetchExploreUsers(
                 searchText: "",
-                excludeUserId: nil  // nil로 설정하여 현재 유저도 포함
+                excludeUserId: appState.userId
             )
             // 별 수(메모리 카운트) 기준 내림차순 정렬 후 보관
             self.mostStarsUsers = users.sorted { $0.memoryCount > $1.memoryCount }
@@ -118,10 +127,10 @@ final class ExploreViewModel: ObservableObject {
 
     func fetchPopularUsers() async {
         do {
-            // 현재 유저도 포함하도록 excludeUserId를 nil로 설정
+            // 블락한 유저는 제외하되, 현재 유저는 포함
             let users = try await exploreUseCase.fetchPopularUsers(
                 searchText: searchText,
-                excludeUserId: nil  // nil로 설정하여 현재 유저도 포함
+                excludeUserId: appState.userId
             )
             self.popularUsers = users
         } catch {
@@ -135,10 +144,10 @@ final class ExploreViewModel: ObservableObject {
         defer { isLoadingLatestUsers = false }
 
         do {
-            // 현재 유저도 포함하도록 excludeUserId를 nil로 설정
+            // 블락한 유저는 제외하되, 현재 유저는 포함
             let users = try await exploreUseCase.fetchUsersByLatestMemoryUpload(
                 searchText: searchText,
-                excludeUserId: nil,  // nil로 설정하여 현재 유저도 포함
+                excludeUserId: appState.userId,
                 page: 1,
                 limit: 10
             )
@@ -158,7 +167,7 @@ final class ExploreViewModel: ObservableObject {
             let nextPage = (latestUsers.count / 10) + 1
             let moreUsers = try await exploreUseCase.fetchUsersByLatestMemoryUpload(
                 searchText: searchText,
-                excludeUserId: nil,  // nil로 설정하여 현재 유저도 포함
+                excludeUserId: appState.userId,  // 블락한 유저는 제외하되, 현재 유저는 포함
                 page: nextPage,
                 limit: 10
             )

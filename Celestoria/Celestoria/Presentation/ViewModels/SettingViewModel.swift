@@ -55,7 +55,23 @@ class SettingViewModel: ObservableObject {
     
     func fetchProfile() async {
         isLoading = true
-        defer { isLoading = false }
+        
+        // 최소 로딩 시간 보장
+        let startTime = Date()
+        
+        defer { 
+            // 최소 0.2초 로딩 시간 보장
+            let elapsedTime = Date().timeIntervalSince(startTime)
+            let minLoadingTime: TimeInterval = 0.2
+            if elapsedTime < minLoadingTime {
+                Task { @MainActor in
+                    try? await Task.sleep(nanoseconds: UInt64((minLoadingTime - elapsedTime) * 1_000_000_000))
+                    isLoading = false
+                }
+            } else {
+                isLoading = false
+            }
+        }
 
         do {
             let fetchedProfile = try await profileUseCase.fetchProfile()
@@ -265,7 +281,23 @@ class SettingViewModel: ObservableObject {
         guard let userId = appState.userId else { return }
         
         isLoadingBlockedUsers = true
-        defer { isLoadingBlockedUsers = false }
+        
+        // 최소 로딩 시간 보장
+        let startTime = Date()
+        
+        defer { 
+            // 최소 0.2초 로딩 시간 보장
+            let elapsedTime = Date().timeIntervalSince(startTime)
+            let minLoadingTime: TimeInterval = 0.2
+            if elapsedTime < minLoadingTime {
+                Task { @MainActor in
+                    try? await Task.sleep(nanoseconds: UInt64((minLoadingTime - elapsedTime) * 1_000_000_000))
+                    isLoadingBlockedUsers = false
+                }
+            } else {
+                isLoadingBlockedUsers = false
+            }
+        }
         
         do {
             blockedUsers = try await blockedUsersUseCase.fetchBlockedUsers(for: userId)

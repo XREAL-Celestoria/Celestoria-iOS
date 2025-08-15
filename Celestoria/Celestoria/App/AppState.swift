@@ -135,6 +135,44 @@ final class AppState: ObservableObject {
         }
     }
     
+    // Explore Navigation Trigger
+    @Published var shouldNavigateToExplore: Bool = false {
+        didSet {
+            Logger.info("Should Navigate To Explore: \(shouldNavigateToExplore)")
+        }
+    }
+    
+    // Close User Space and Return to Explore
+    @Published var shouldCloseUserSpace: Bool = false {
+        didSet {
+            Logger.info("Should Close User Space: \(shouldCloseUserSpace)")
+        }
+    }
+    
+    // Refresh Explore View
+    @Published var refreshExplore: Bool = false {
+        didSet {
+            Logger.info("Refresh Explore: \(refreshExplore)")
+        }
+    }
+    
+    // Force close iOSExploreView's user space
+    @Published var forceCloseExploreUserSpace: Bool = false {
+        didSet {
+            Logger.info("Force Close Explore User Space: \(forceCloseExploreUserSpace)")
+        }
+    }
+    
+    // MARK: - Notification Names
+    static let forceCloseExploreUserSpace = Foundation.Notification.Name("forceCloseExploreUserSpace")
+    
+    // Main navigation control
+    @Published var shouldGoToMain: Bool = false {
+        didSet {
+            Logger.info("Should Go To Main: \(shouldGoToMain)")
+        }
+    }
+    
     var currentUserId: UUID? {
         return userId
     }

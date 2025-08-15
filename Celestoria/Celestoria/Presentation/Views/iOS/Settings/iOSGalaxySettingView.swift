@@ -40,42 +40,46 @@ struct iOSGalaxySettingView: View {
             Colors.BackgroundBlack
                 .ignoresSafeArea()
             
-            ScrollView {
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
-                    ForEach(starfields, id: \.self) { starfield in
-                        Button(action: {
-                            galaxyViewModel.selectImage(with: starfield)
-                        }) {
-                            ZStack {
-                                // Galaxy image
-                                Image(starfield)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: (UIScreen.main.bounds.width - 40) / 2 , height: 180)
-                                    .clipped()
-                                    .cornerRadius(10)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(
-                                                isSelected(starfield: starfield)
-                                                ? AnyShapeStyle(LinearGradient.GradientSub)
-                                                : AnyShapeStyle(Colors.GrayStroke),
-                                                lineWidth: isSelected(starfield: starfield) ? 1.5 : 1
-                                            )
-                                    )
-                                
-                                if isSelected(starfield: starfield) {
-                                    Image("Check-Circle")
-                                        .frame(width: 24, height: 24)
-                                        .offset(x: 68, y: -68)
+            if galaxyViewModel.isLoading {
+                iOSUnifiedLoadingView.stars()
+            } else {
+                ScrollView {
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                        ForEach(starfields, id: \.self) { starfield in
+                            Button(action: {
+                                galaxyViewModel.selectImage(with: starfield)
+                            }) {
+                                ZStack {
+                                    // Galaxy image
+                                    Image(starfield)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: (UIScreen.main.bounds.width - 40) / 2 , height: 180)
+                                        .clipped()
+                                        .cornerRadius(10)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .stroke(
+                                                    isSelected(starfield: starfield)
+                                                    ? AnyShapeStyle(LinearGradient.GradientSub)
+                                                    : AnyShapeStyle(Colors.GrayStroke),
+                                                    lineWidth: isSelected(starfield: starfield) ? 1.5 : 1
+                                                )
+                                        )
+                                    
+                                    if isSelected(starfield: starfield) {
+                                        Image("Check-Circle")
+                                            .frame(width: 24, height: 24)
+                                            .offset(x: 68, y: -68)
+                                    }
                                 }
                             }
                         }
                     }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 20)
+                    .padding(.bottom, 120)
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 20)
-                .padding(.bottom, 120)
             }
             
             VStack {

@@ -27,15 +27,19 @@ struct iOSAccountSettingView: View {
             Colors.BackgroundBlack
                 .ignoresSafeArea()
             
-            VStack(spacing: 24) {
-                
-                deleteAccountButton
-                
-                signoutButton
-                
-                Spacer()
+            if settingViewModel.isLoading {
+                iOSUnifiedLoadingView.basic(title: "Loading Account.")
+            } else {
+                VStack(spacing: 24) {
+                    
+                    deleteAccountButton
+                    
+                    signoutButton
+                    
+                    Spacer()
+                }
+                .padding(.top, 20)
             }
-            .padding(.top, 20)
             
             iOSConfirmationPopupView(
                 title: "Delete Your Account", 
