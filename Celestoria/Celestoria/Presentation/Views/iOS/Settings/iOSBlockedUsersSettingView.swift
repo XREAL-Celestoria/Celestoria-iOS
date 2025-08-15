@@ -54,62 +54,46 @@ struct iOSBlockedUsersSettingView: View {
                 }
                 .padding()
             } else {
-                List {
-                    ForEach(settingViewModel.blockedUsers) { blockedUser in
-                        HStack {
-                            // Profile Image
-                            Group {
-                                if let profileKey = blockedUser.profile.profileKey,
-                                   let predefinedImage = PredefinedProfileImage.fromKey(profileKey) {
-                                    Image(predefinedImage.rawValue)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                } else if let profileImageUrl = blockedUser.profile.profileImageURL {
-                                    AsyncImage(url: URL(string: profileImageUrl)) { image in
-                                        image
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fill)
-                                    } placeholder: {
-                                        Circle()
-                                            .fill(Color.gray.opacity(0.3))
-                                    }
-                                } else {
-                                    Image(PredefinedProfileImage.profile_blue.rawValue)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                }
-                            }
-                            .frame(width: 32, height: 32)
-                            .clipShape(Circle())
-                            
-                            // User Info
-                            Text(blockedUser.profile.name)
-                                .fontStyle(Fonts.title3)
-                                .foregroundColor(Colors.NebulaWhite)
-                            
-                            Spacer()
-                            
-                            // Unblock Button
-                            Button(action: {
-                                Task {
-                                    await settingViewModel.unblockUser(blockedUser.block.blockedUserId)
-                                }
-                            }) {
-                                Text("Unblock")
-                                    .fontStyle(Fonts.caption1)
+                ScrollView {
+                    VStack(spacing: 0) {
+                        ForEach(settingViewModel.blockedUsers) { blockedUser in
+                            HStack(spacing: 16) {
+                                // Profile Image - ProfileImageView 사용
+                                ProfileImageView(
+                                    profile: blockedUser.profile,
+                                    size: 32
+                                )
+                                
+                                // User Name - 중앙 정렬
+                                Text(blockedUser.profile.name)
+                                    .fontStyle(Fonts.title3)
                                     .foregroundColor(Colors.NebulaWhite)
-                                    .padding(.horizontal, 20)
-                                    .padding(.vertical, 10)
-                                    .background(Colors.AccountSelectedBtn)
-                                    .cornerRadius(10)
+                                    .lineLimit(1)
+                                
+                                Spacer()
+                                
+                                // Unblock Button - 둥근 모서리, 이미지와 같은 스타일
+                                Button(action: {
+                                    Task {
+                                        await settingViewModel.unblockUser(blockedUser.block.blockedUserId)
+                                    }
+                                }) {
+                                    Text("Unblock")
+                                        .fontStyle(Fonts.caption1)
+                                        .foregroundColor(Colors.NebulaWhite)
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 8)
+                                        .background(Color.gray.opacity(0.3))
+                                        .cornerRadius(10)
+                                }
                             }
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 16)
+                            .background(Color.clear)
                         }
-                        .padding(.vertical, 8)
                     }
+                    .background(Colors.BackgroundBlack)
                 }
-                .listStyle(PlainListStyle())
-                .scrollContentBackground(.hidden)
-                .background(Colors.BackgroundBlack)
             }
         }
         .navigationTitle("Blocked Users")

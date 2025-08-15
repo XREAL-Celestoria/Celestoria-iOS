@@ -199,8 +199,27 @@ final class ExploreUseCase {
             .execute()
             .value
         
+        // 블락한 유저 제외 (RPC 함수가 블락한 유저를 제외하지 않는 경우를 대비)
+        let filteredResult: [UserProfileWithMemoryStats]
+        if let excludeUserId = excludeUserId {
+            // 블락한 유저 ID 목록 가져오기
+            let blockedUsers: [Block] = try await supabase
+                .from("blocks")
+                .select()
+                .eq("reporter_id", value: excludeUserId.uuidString)
+                .execute()
+                .value
+            
+            let blockedUserIds = Set(blockedUsers.map { $0.blockedUserId })
+            
+            // 블락한 유저 제외
+            filteredResult = result.filter { !blockedUserIds.contains($0.id) }
+        } else {
+            filteredResult = result
+        }
+        
         // ExploreUser로 변환
-        return result.map { userStats in
+        return filteredResult.map { userStats in
             ExploreUser(
                 profile: UserProfile(
                     id: userStats.id, // userId를 id로 사용

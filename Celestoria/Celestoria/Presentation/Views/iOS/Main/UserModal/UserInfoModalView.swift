@@ -70,10 +70,6 @@ struct UserInfoModalView: View {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: Colors.NebulaWhite))
                         .scaleEffect(1.2)
-                    
-                    Text("Loading Profile...")
-                        .fontStyle(Fonts.body1)
-                        .foregroundColor(Colors.NebulaWhite.opacity(0.8))
                 }
                 .frame(maxWidth: .infinity, maxHeight: viewModel.isExpanded ? .infinity : 120)
                 .frame(height: viewModel.isExpanded ? UIScreen.main.bounds.height - 52 : 120)

@@ -8,6 +8,8 @@
 import SwiftUI
 import Foundation
 
+// PredefinedProfileImage 사용을 위한 import
+
 struct iOSExploreView: View {
     @StateObject private var viewModel: ExploreViewModel
     @EnvironmentObject private var appState: AppState
@@ -343,25 +345,62 @@ struct iOSExploreView: View {
         let user: ExploreUser
         
         var body: some View {
-            HStack(alignment: .top, spacing: 12) {
-                // 프로필 이미지 우선 노출 (요청사항)
-                ProfileImageView(
-                    profile: user.profile,
-                    size: 72
-                )
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(card.userName)
-                        .fontStyle(Fonts.subheadline)
-                        .foregroundStyle(Colors.NebulaWhite)
-                        .lineLimit(1)
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(alignment: .top, spacing: 12) {
+                    Image(card.imageName)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(
+                            width: UIScreen.main.bounds.width * 0.61,
+                            height: UIScreen.main.bounds.width * 0.61 * (152.0 / 240.0)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 30))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 30)
+                                .stroke(LinearGradient.SearchUsercardBG, lineWidth: 5)
+                        )
                     
-                    Text("\(card.memoryStars) Memory Stars")
-                        .fontStyle(Fonts.caption2)
-                        .foregroundStyle(Colors.Placeholder)
+                    VStack(alignment: .leading, spacing: 8) {
+                        // Profile image - user.profile 직접 사용
+                        if let profileKey = user.profile.profileKey,
+                           let predefinedImage = PredefinedProfileImage.fromKey(profileKey) {
+                            // 프리로드된 이미지
+                            Image(predefinedImage.rawValue)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 36, height: 36)
+                                .clipShape(Circle())
+                        } else if let profileImageUrl = user.profile.profileImageURL {
+                            // 커스텀 이미지 (URL)
+                            AsyncImage(url: URL(string: profileImageUrl)) { image in
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            } placeholder: {
+                                Circle()
+                                    .fill(Color.gray.opacity(0.3))
+                            }
+                            .frame(width: 36, height: 36)
+                            .clipShape(Circle())
+                        } else {
+                            // 기본 이미지
+                            Image(PredefinedProfileImage.profile_gray.rawValue)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 36, height: 36)
+                                .clipShape(Circle())
+                        }
+                        
+                        Text(card.userName)
+                            .fontStyle(Fonts.subheadline)
+                            .foregroundStyle(Colors.NebulaWhite)
+                            .lineLimit(1)
+                        
+                        Text("\(card.memoryStars) Memory Stars")
+                            .fontStyle(Fonts.caption2)
+                            .foregroundStyle(Colors.Placeholder)
+                    }
                 }
-                
-                Spacer()
             }
         }
     }
