@@ -16,11 +16,17 @@ final class DIContainer: ObservableObject {
     // Core State
     let appState: AppState
     
-    // Additional ViewModels (나중에 필요시 접근)
+    // Additional ViewModels (필요시 접근)
     #if os(visionOS)
     let addMemoryMainViewModel: AddMemoryMainViewModel
     let galaxyViewModel: GalaxyViewModel
-    let exploreViewModel: ExploreViewModel
+    lazy var exploreViewModel: ExploreViewModel = {
+        ExploreViewModel(
+            exploreUseCase: self.exploreUseCase,
+            appState: self.appState,
+            diContainer: self
+        )
+    }()
     #endif
     let settingViewModel: SettingViewModel
 
@@ -43,6 +49,7 @@ final class DIContainer: ObservableObject {
     let profileUseCase: ProfileUseCase
     private let exploreUseCase: ExploreUseCase
     private let blockedUsersUseCase: BlockedUsersUseCase
+    
     let memoryUseCase: FetchMemoriesUseCase
     let commentUseCase: CommentUseCase
     let notificationUseCase: NotificationUseCase
@@ -50,8 +57,8 @@ final class DIContainer: ObservableObject {
     init() {
         Logger.info("Initializing DIContainer...")
 
-        // Initialize Supabase Client with basic configuration
-        self.supabaseClient = SupabaseClient(
+        // --- Supabase Client ---
+        let supabaseClient = SupabaseClient(
             supabaseURL: Config.supabaseURL,
             supabaseKey: Config.supabaseAnonKey,
             options: SupabaseClientOptions(
@@ -61,85 +68,74 @@ final class DIContainer: ObservableObject {
                 )
             )
         )
+        self.supabaseClient = supabaseClient
         
-        // Initialize Repositories
-        self.memoryRepository = MemoryRepository(supabase: supabaseClient)
-        self.mediaRepository = MediaRepository()
-        self.authRepository = AuthRepository(supabase: supabaseClient)
-        self.notificationRepository = NotificationRepository(supabase: supabaseClient)
+        // --- Repositories ---
+        let memoryRepository = MemoryRepository(supabase: supabaseClient)
+        let mediaRepository = MediaRepository()
+        let authRepository = AuthRepository(supabase: supabaseClient)
+        let notificationRepository = NotificationRepository(supabase: supabaseClient)
+        
+        self.memoryRepository = memoryRepository
+        self.mediaRepository = mediaRepository
+        self.authRepository = authRepository
+        self.notificationRepository = notificationRepository
 
-        // Initialize Use Cases
-        self.profileUseCase = ProfileUseCase(
-            authRepository: authRepository,
-            mediaRepository: mediaRepository
-        )
-        self.fetchMemoriesUseCase = FetchMemoriesUseCase(memoryRepository: memoryRepository)
-        self.createMemoryUseCase = CreateMemoryUseCase(memoryRepository: memoryRepository, mediaRepository: mediaRepository)
-        self.deleteMemoryUseCase = DeleteMemoryUseCase(memoryRepository: memoryRepository)
-        self.signInWithAppleUseCase = SignInWithAppleUseCase(repository: authRepository)
-        self.deleteAccountUseCase = DeleteAccountUseCase(repository: authRepository)
-        self.signOutUseCase = SignOutUseCase(repository: authRepository)
-        self.exploreUseCase = ExploreUseCase(
-            authRepository: authRepository,
-            memoryRepository: memoryRepository
-        )
-        self.blockedUsersUseCase = BlockedUsersUseCase(
-            authRepository: authRepository
-        )
-        self.memoryUseCase = self.fetchMemoriesUseCase
-        self.commentUseCase = CommentUseCase(
-            memoryRepository: memoryRepository,
-            profileUseCase: profileUseCase
-        )
-        self.notificationUseCase = NotificationUseCase(
+        // --- Use Cases ---
+        let profileUseCase = ProfileUseCase(authRepository: authRepository, mediaRepository: mediaRepository)
+        let fetchMemoriesUseCase = FetchMemoriesUseCase(memoryRepository: memoryRepository)
+        let createMemoryUseCase = CreateMemoryUseCase(memoryRepository: memoryRepository, mediaRepository: mediaRepository)
+        let deleteMemoryUseCase = DeleteMemoryUseCase(memoryRepository: memoryRepository)
+        let signInWithAppleUseCase = SignInWithAppleUseCase(repository: authRepository)
+        let deleteAccountUseCase = DeleteAccountUseCase(repository: authRepository)
+        let signOutUseCase = SignOutUseCase(repository: authRepository)
+        let exploreUseCase = ExploreUseCase(authRepository: authRepository, memoryRepository: memoryRepository)
+        let blockedUsersUseCase = BlockedUsersUseCase(authRepository: authRepository)
+        
+        let commentUseCase = CommentUseCase(memoryRepository: memoryRepository, profileUseCase: profileUseCase)
+        let notificationUseCase = NotificationUseCase(
             notificationRepository: notificationRepository,
             profileUseCase: profileUseCase,
             memoryRepository: memoryRepository
         )
 
-        #if os(visionOS)
-        // 먼저 SpaceCoordinator와 MainViewModel을 임시로 생성
-        let spaceCoordinator = SpaceCoordinator(
-            memoryRepository: memoryRepository,
-            profileUseCase: profileUseCase
-        )
+        self.profileUseCase = profileUseCase
+        self.fetchMemoriesUseCase = fetchMemoriesUseCase
+        self.createMemoryUseCase = createMemoryUseCase
+        self.deleteMemoryUseCase = deleteMemoryUseCase
+        self.signInWithAppleUseCase = signInWithAppleUseCase
+        self.deleteAccountUseCase = deleteAccountUseCase
+        self.signOutUseCase = signOutUseCase
+        self.exploreUseCase = exploreUseCase
+        self.blockedUsersUseCase = blockedUsersUseCase
+        self.memoryUseCase = fetchMemoriesUseCase
+        self.commentUseCase = commentUseCase
+        self.notificationUseCase = notificationUseCase
 
-        // 나머지 ViewModels 초기화
+        // --- AppState ---
+        #if os(visionOS)
+        let spaceCoordinator = SpaceCoordinator(memoryRepository: memoryRepository, profileUseCase: profileUseCase)
         let mainViewModel = MainViewModel(
             fetchMemoriesUseCase: fetchMemoriesUseCase,
             deleteMemoryUseCase: deleteMemoryUseCase,
             spaceCoordinator: spaceCoordinator
         )
-        // AppState 초기화 (loginViewModel 없이)
-        self.appState = AppState(
-            spaceCoordinator: spaceCoordinator,
-            mainViewModel: mainViewModel
-        )
-        
-        // SpaceCoordinator에 AppState 연결
+        self.appState = AppState(spaceCoordinator: spaceCoordinator, mainViewModel: mainViewModel)
         spaceCoordinator.appState = self.appState
         #else
-        // iOS에서는 AppState만 초기화
         self.appState = AppState()
         #endif
         
-        // LoginViewModel을 AppState와 함께 초기화
+        // --- LoginViewModel ---
         let loginViewModel = LoginViewModel(
             signInUseCase: signInWithAppleUseCase,
             profileUseCase: profileUseCase,
             appState: self.appState
         )
-        
-        // AppState에 loginViewModel 설정
         self.appState.loginViewModel = loginViewModel
         
-        // 기타 ViewModels
+        // --- visionOS ViewModels ---
         #if os(visionOS)
-        self.exploreViewModel = ExploreViewModel(
-            exploreUseCase: exploreUseCase,
-            appState: self.appState,
-            diContainer: self
-        )
         self.addMemoryMainViewModel = AddMemoryMainViewModel(createMemoryUseCase: createMemoryUseCase, appState: self.appState)
         self.galaxyViewModel = GalaxyViewModel(
             appState: self.appState,
@@ -149,6 +145,7 @@ final class DIContainer: ObservableObject {
         )
         #endif
         
+        // --- SettingViewModel ---
         self.settingViewModel = SettingViewModel(
             deleteAccountUseCase: deleteAccountUseCase,
             signOutUseCase: signOutUseCase,
@@ -157,48 +154,41 @@ final class DIContainer: ObservableObject {
             appState: self.appState
         )
 
-        // 앱 첫 실행 체크 및 이전 세션 정리
+        // --- 앱 첫 실행 체크 ---
         let isFirstLaunch = !UserDefaults.standard.bool(forKey: "hasLaunchedBefore")
         if isFirstLaunch {
             UserDefaults.standard.set(true, forKey: "hasLaunchedBefore")
-            // 완전히 새로운 설치이므로 UserDefaults 초기화
             UserDefaults.standard.removeObject(forKey: "hasCompletedOnboarding")
             UserDefaults.standard.removeObject(forKey: "hasAcceptedTerms")
-            // 이전 세션이 있다면 정리
+            let supabaseClient = supabaseClient
             Task {
-                try? await self.supabaseClient.auth.signOut()
+                try? await supabaseClient.auth.signOut()
                 Logger.info("First launch detected: cleared any existing session and UserDefaults")
             }
         }
-        
-        // 모든 초기화가 끝난 후 자동 로그인 체크 (첫 실행이 아닌 경우에만)
-        if !isFirstLaunch, let currentUser = self.supabaseClient.auth.currentUser {
-            // AppState 업데이트
-            self.appState.userId = currentUser.id
-            self.appState.galaxyTargetUserId = currentUser.id  // 자동 로그인 시에도 Galaxy 대상 설정
-            
-            // 약관 동의 상태 확인 (플랫폼 공통)
+
+        // --- 자동 로그인 체크 ---
+        if !isFirstLaunch, let currentUser = supabaseClient.auth.currentUser {
+            appState.userId = currentUser.id
+            appState.galaxyTargetUserId = currentUser.id
             let hasAcceptedTerms = UserDefaults.standard.bool(forKey: "hasAcceptedTerms")
-            
+
             #if os(visionOS)
-            self.appState.activeScreen = .main
+            appState.activeScreen = .main
             #else
-            // iOS에서는 로그인된 사용자가 있으면 온보딩은 완료된 것으로 간주
-            // 로그인된 상태면 온보딩은 완료된 것으로 설정
             UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
-            self.appState.hasCompletedOnboarding = true
-            self.appState.hasAcceptedTerms = hasAcceptedTerms
-            
-            // 약관 동의 여부에 따라 화면 결정
-            self.appState.navigationState = hasAcceptedTerms ? .main : .terms
+            appState.hasCompletedOnboarding = true
+            appState.hasAcceptedTerms = hasAcceptedTerms
+            appState.navigationState = hasAcceptedTerms ? .main : .terms
             #endif
-            
+
+            let profileUseCase = profileUseCase
+            let appState = appState
+
             Task {
                 do {
                     let fetchedProfile = try await profileUseCase.fetchProfile()
-                    self.appState.userProfile = fetchedProfile
-                    
-                    // 약관 동의 완료된 사용자만 이미지 미리 로딩
+                    appState.userProfile = fetchedProfile
                     if hasAcceptedTerms, let profileImageURL = fetchedProfile.profileImageURL {
                         await ImageCache.shared.preloadProfileImage(urlString: profileImageURL)
                         Logger.info("DIContainer: Preloaded profile image for returning user")
@@ -208,64 +198,39 @@ final class DIContainer: ObservableObject {
                 }
             }
         } else {
-            // AppState 업데이트
-            self.appState.userId = nil
-            self.appState.userProfile = nil
-            
+            appState.userId = nil
+            appState.userProfile = nil
             #if os(visionOS)
-            self.appState.activeScreen = .login
+            appState.activeScreen = .login
             #else
-            // iOS에서는 UserDefaults 상태를 확인하여 navigationState 설정
             let hasCompletedOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
-            
-            self.appState.hasCompletedOnboarding = hasCompletedOnboarding
-            self.appState.hasAcceptedTerms = UserDefaults.standard.bool(forKey: "hasAcceptedTerms")
-            
-            if hasCompletedOnboarding {
-                self.appState.navigationState = .login
-            } else {
-                self.appState.navigationState = .onboarding
-            }
+            appState.hasCompletedOnboarding = hasCompletedOnboarding
+            appState.hasAcceptedTerms = UserDefaults.standard.bool(forKey: "hasAcceptedTerms")
+            appState.navigationState = hasCompletedOnboarding ? .login : .onboarding
             #endif
         }
     }
     
-    // iOS용 ViewModels 생성 메서드 추가
+    // --- iOS용 팩토리 메서드 ---
     #if !os(visionOS)
     func makeGalaxyViewModel() -> GalaxyViewModel {
-        return GalaxyViewModel(
-            appState: appState,
-            profileUseCase: profileUseCase,
-            memoryUseCase: fetchMemoriesUseCase
-        )
+        GalaxyViewModel(appState: appState, profileUseCase: profileUseCase, memoryUseCase: fetchMemoriesUseCase)
     }
     
     func makeiOS3DGalaxyViewModel() -> iOS3DGalaxyViewModel {
-        return iOS3DGalaxyViewModel(
-            galaxyViewModel: makeGalaxyViewModel(),
-            appState: appState,
-            diContainer: self
-        )
+        iOS3DGalaxyViewModel(galaxyViewModel: makeGalaxyViewModel(), appState: appState, diContainer: self)
     }
     
     func makeUserInfoModalViewModel(userId: UUID) -> UserInfoModalViewModel {
-        return UserInfoModalViewModel(
-            userId: userId, diContainer: self)
+        UserInfoModalViewModel(userId: userId, diContainer: self)
     }
     
     func makeAddMemoryMainViewModel() -> AddMemoryMainViewModel {
-        return AddMemoryMainViewModel(
-            createMemoryUseCase: createMemoryUseCase,
-            appState: appState
-        )
+        AddMemoryMainViewModel(createMemoryUseCase: createMemoryUseCase, appState: appState)
     }
     
     func makeExploreViewModel() -> ExploreViewModel {
-        return ExploreViewModel(
-            exploreUseCase: exploreUseCase,
-            appState: self.appState,
-            diContainer: self
-        )
+        ExploreViewModel(exploreUseCase: exploreUseCase, appState: appState, diContainer: self)
     }
     #endif
 }
