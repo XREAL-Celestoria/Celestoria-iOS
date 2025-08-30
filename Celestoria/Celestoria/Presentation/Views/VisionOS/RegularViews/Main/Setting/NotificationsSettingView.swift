@@ -18,6 +18,7 @@ import Supabase
 
 struct NotificationsSettingView: View {
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var diContainer: DIContainer
     
     var body: some View {
         // Creating notification dependencies inline
@@ -42,10 +43,11 @@ struct NotificationsSettingView: View {
             profileUseCase: profileUseCase,
             memoryRepository: memoryRepository
         )
-        
+
         NotificationsView(
             notificationUseCase: notificationUseCase,
-            appState: appState
+            appState: appState,
+            diContainer: diContainer
         )
     }
 }

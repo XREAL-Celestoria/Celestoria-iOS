@@ -64,11 +64,21 @@ class SpaceBackgroundEntity: Entity {
     
     // MARK: - Update Texture
     func updateTexture(with imageName: String) {
+        // 만약 없는 이미지면 Starfield-1로 대체
         guard let textureResource = try? TextureResource.load(named: imageName) else {
-            fatalError("Failed to load texture: \(imageName)")
+            print("⚠️ Failed to load texture: \(imageName), falling back to Starfield-1")
+            if let fallback = try? TextureResource.load(named: "Starfield-1") {
+                applyTexture(fallback)
+                textureName = "Starfield-1"
+            }
+            return
         }
         
+        applyTexture(textureResource)
         textureName = imageName
+    }
+    
+    private func applyTexture(_ textureResource: TextureResource) {
         if let sphereEntity = children.first as? ModelEntity {
             var material = UnlitMaterial()
             material.color = .init(texture: .init(textureResource))

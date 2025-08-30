@@ -22,10 +22,11 @@ struct NotificationsView: View {
     @Environment(\.openWindow) private var openWindow
     @State private var showDeleteAllConfirmation = false
     
-    init(notificationUseCase: NotificationUseCase, appState: AppState) {
+    init(notificationUseCase: NotificationUseCase, appState: AppState, diContainer: DIContainer) {
         _viewModel = StateObject(wrappedValue: NotificationViewModel(
             notificationUseCase: notificationUseCase,
-            appState: appState
+            appState: appState,
+            diContainer: diContainer
         ))
     }
     
