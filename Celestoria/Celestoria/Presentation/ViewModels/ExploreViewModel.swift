@@ -89,7 +89,7 @@ final class ExploreViewModel: ObservableObject {
             let currentUserId = appState.userId
             let users = try await exploreUseCase.fetchPopularUsers(
                 searchText: searchText,
-                excludeUserId: currentUserId
+                excludeUserId: nil
             )
             self.popularUsers = users
         } catch {
