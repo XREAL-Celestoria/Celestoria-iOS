@@ -51,11 +51,11 @@ class MediaRepository {
         return (url: uploadResult.url, metadata: metadata)
     }
     
-    // 썸네일 업로드 (최적화됨)
+    // 썸네일 업로드
     func uploadThumbnail(image: UIImage, userId: UUID) async throws -> String {
         os.Logger.info("uploadThumbnail started")
         
-        // 썸네일 최적화: 800px 최대 크기로 리사이징 (썸네일은 프로필보다 조금 클 수 있음)
+        // 썸네일 최적화: 800px 최대 크기로 리사이징
         let optimizedImage = image.resized(to: 800)
         
         // JPEG 압축 (0.8 품질로 썸네일은 조금 더 높은 품질 유지)
@@ -110,7 +110,7 @@ class MediaRepository {
     
     // MARK: - Private Helpers
     
-    /// 동영상 검증, 압축 및 메타데이터 추출 (압축 기능 추가)
+    /// 동영상 검증, 압축 및 메타데이터 추출 
     private func validateAndExtractMetadata(from data: Data) async throws -> (Data, Memory.SpatialMetadata?) {
         os.Logger.info("validateAndExtractMetadata 시작")
         let tempFileURL = try await createTempFile(with: data)
@@ -128,8 +128,8 @@ class MediaRepository {
         let metadata = try await extractSpatialMetadata(from: asset)
         os.Logger.info("메타데이터 추출 완료")
         
-        // 공간 비디오는 원본 그대로 업로드 (메타데이터 보존)
-        os.Logger.info("📦 Spatial video original upload: \(data.count) bytes")
+        // 공간 비디오는 원본 그대로 업로드
+        os.Logger.info("Spatial video original upload: \(data.count) bytes")
         return (data, metadata)
     }
     
@@ -137,18 +137,14 @@ class MediaRepository {
     
     /// 파일 업로드: 크기에 따라 단일/멀티파트 업로드 선택
     private func uploadToB2(data: Data, folder: String, fileExtension: String, userId: UUID, mimeType: String, customFileName: String? = nil, progressCallback: UploadProgressCallback? = nil) async throws -> (url: String, path: String) {
-        os.Logger.info("📦 uploadToB2 started - folder: \(folder), size: \(data.count) bytes")
         let fileName = customFileName ?? "\(UUID().uuidString).\(fileExtension)"
         let path = "\(folder)/\(userId.uuidString)/\(fileName)"
         
-        // 멀티파트 업로드 임계값: 100MB
         let multipartThreshold = 100 * 1024 * 1024
         
         if data.count >= multipartThreshold {
-            os.Logger.info("🚀 Large file detected - Starting multipart upload")
             return try await uploadLargeFile(fileName: fileName, path: path, data: data, mimeType: mimeType, userId: userId, progressCallback: progressCallback)
         } else {
-            os.Logger.info("⚡ Standard upload")
             return try await uploadSingleFile(fileName: fileName, path: path, data: data, mimeType: mimeType, progressCallback: progressCallback)
         }
     }
@@ -178,8 +174,6 @@ class MediaRepository {
         
         let chunkSize = 10 * 1024 * 1024 // 10MB 청크 (안정성을 위해 20MB에서 10MB로 조정)
         let totalChunks = (data.count + chunkSize - 1) / chunkSize
-        
-        os.Logger.info("🚀 멀티파트 업로드 시작 - 총 \(totalChunks)개 청크, 파일크기: \(data.count) bytes")
         
         // 1. B2 인증
         progressCallback?(0.2, "Authenticating...")
@@ -212,7 +206,6 @@ class MediaRepository {
             
             uploadedParts.append((partNumber: partNumber, sha1: sha1))
             completedChunks += 1
-            os.Logger.info("📦 Chunk completed: \(completedChunks)/\(totalChunks)")
         }
         
         // 4. 멀티파트 업로드 완료
@@ -224,7 +217,6 @@ class MediaRepository {
         
         // 5. URL 구성
         let publicURL = "\(cloudflareDomain)/\(bucketName)/\(path)"
-        os.Logger.info("🎉 Multipart upload completed - URL: \(publicURL)")
         
         return (url: publicURL, path: path)
     }
@@ -556,7 +548,9 @@ class MediaRepository {
     
     /// 멀티파트 업로드 시작
     private func b2StartLargeFile(fileName: String, mimeType: String, accountAuthToken: String, apiUrl: String) async throws -> String {
-        let url = URL(string: "\(apiUrl)/b2api/v2/b2_start_large_file")!
+        guard let url = URL(string: "\(apiUrl)/b2api/v2/b2_start_large_file") else {
+            throw MediaError.uploadFailed(message: "Invalid API URL: \(apiUrl)")
+        }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue(accountAuthToken, forHTTPHeaderField: "Authorization")
@@ -589,7 +583,9 @@ class MediaRepository {
     
     /// 청크 업로드 URL 획득
     private func b2GetUploadPartUrl(fileId: String, accountAuthToken: String, apiUrl: String) async throws -> (url: String, authToken: String) {
-        let url = URL(string: "\(apiUrl)/b2api/v2/b2_get_upload_part_url")!
+        guard let url = URL(string: "\(apiUrl)/b2api/v2/b2_get_upload_part_url") else {
+            throw MediaError.uploadFailed(message: "Invalid API URL: \(apiUrl)")
+        }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue(accountAuthToken, forHTTPHeaderField: "Authorization")
@@ -629,7 +625,11 @@ class MediaRepository {
             throw MediaError.uploadFailed(message: "Chunk size too large. Maximum 5GB, current: \(data.count) bytes")
         }
         
-        var request = URLRequest(url: URL(string: uploadUrl)!)
+        guard let url = URL(string: uploadUrl) else {
+            throw MediaError.uploadFailed(message: "Invalid upload URL: \(uploadUrl)")
+        }
+        
+        var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue(authToken, forHTTPHeaderField: "Authorization")
         request.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
@@ -661,7 +661,9 @@ class MediaRepository {
     
     /// 멀티파트 업로드 완료
     private func b2FinishLargeFile(fileId: String, sha1Array: [String], accountAuthToken: String, apiUrl: String) async throws {
-        let url = URL(string: "\(apiUrl)/b2api/v2/b2_finish_large_file")!
+        guard let url = URL(string: "\(apiUrl)/b2api/v2/b2_finish_large_file") else {
+            throw MediaError.uploadFailed(message: "Invalid API URL: \(apiUrl)")
+        }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue(accountAuthToken, forHTTPHeaderField: "Authorization")

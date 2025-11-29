@@ -204,4 +204,16 @@ final class AppState: ObservableObject {
         self.activeScreen = .main
         logger.info("User set: \(userId)")
     }
+    
+    /// 인증이 필요할 때 자동으로 로그인 화면으로 리다이렉트
+    func requireAuthentication() {
+        logger.warning("Authentication required but not available, redirecting to login")
+        userId = nil
+        userProfile = nil
+        #if os(visionOS)
+        activeScreen = .login
+        #else
+        navigationState = .login
+        #endif
+    }
 }

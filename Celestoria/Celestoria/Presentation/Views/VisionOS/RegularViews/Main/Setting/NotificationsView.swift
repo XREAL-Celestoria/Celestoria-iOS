@@ -109,41 +109,15 @@ struct NotificationsView: View {
     }
     
     private var loadingView: some View {
-        VStack {
-            Spacer()
-            ProgressView()
-                .progressViewStyle(CircularProgressViewStyle())
-                .scaleEffect(1.5)
-            Text("Loading notifications...")
-                .font(.system(size: 14))
-                .foregroundColor(Colors.NebulaWhite.opacity(0.5))
-                .padding(.top, 16)
-            Spacer()
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        UnifiedLoadingView(title: "Loading notifications...")
     }
     
     private var emptyView: some View {
-        VStack(spacing: 16) {
-            Spacer()
-            
-            Image(systemName: "bell.slash")
-                .font(.system(size: 48))
-                .foregroundColor(Colors.NebulaWhite.opacity(0.3))
-            
-            Text("No notifications yet")
-                .font(.system(size: 18, weight: .medium))
-                .foregroundColor(Colors.NebulaWhite.opacity(0.5))
-            
-            Text("You'll see likes and comments on your memories here")
-                .font(.system(size: 14))
-                .foregroundColor(Colors.NebulaWhite.opacity(0.3))
-                .multilineTextAlignment(.center)
-            
-            Spacer()
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(40)
+        EmptyStateView(
+            icon: "bell.slash",
+            title: "No notifications yet",
+            message: "You'll see likes and comments on your memories here"
+        )
     }
     
     private var notificationsList: some View {
@@ -161,7 +135,10 @@ struct NotificationsView: View {
                                 
                                 // Open memory detail
                                 if let memory = notificationDetail.memory {
-                                    openWindow(value: memory)
+                                    MemoryWindowManager.shared.openMemoryDetailView(
+                                        memory: memory,
+                                        openWindow: openWindow
+                                    )
                                 }
                             }
                         },

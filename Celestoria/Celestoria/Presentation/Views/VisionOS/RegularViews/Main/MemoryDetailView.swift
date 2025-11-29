@@ -158,9 +158,17 @@ struct MemoryDetailView: View {
         )
         .onAppear {
             setupNotificationObservers()
+            // 메모리 창이 열렸음을 추적
+            Task { @MainActor in
+                MemoryWindowManager.shared.onMemoryWindowOpened(memoryId: viewModel.memory.id)
+            }
         }
         .onDisappear {
             cleanupNotificationObservers()
+            // 메모리 창이 닫혔음을 추적
+            Task { @MainActor in
+                MemoryWindowManager.shared.onMemoryWindowClosed(memoryId: viewModel.memory.id)
+            }
         }
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active && !appState.mainWindowActive {

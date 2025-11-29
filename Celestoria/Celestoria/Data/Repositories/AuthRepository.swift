@@ -115,39 +115,49 @@ class AuthRepository: AuthRepositoryProtocol {
     }
 
     func fetchProfile() async throws -> UserProfile {
-        guard let userId = supabase.auth.currentUser?.id else {
+        guard let userId = self.supabase.auth.currentUser?.id else {
             throw NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not found."])
         }
         
-        let profiles: [UserProfile] = try await supabase
-            .from("user_profiles")
-            .select("id, user_id, name, profile_image_url, profile_key, space_thumbnail_id, created_at, starfield")
-            .eq("user_id", value: userId.uuidString)
-            .execute()
-            .value
-        
-        // 불필요한 로그 제거
-        
-        guard let profile = profiles.first else {
-            throw NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Profile not found."])
+        do {
+            let profiles: [UserProfile] = try await self.supabase
+                .from("user_profiles")
+                .select("id, user_id, name, profile_image_url, profile_key, space_thumbnail_id, created_at, starfield")
+                .eq("user_id", value: userId.uuidString)
+                .execute()
+                .value
+            
+            guard let profile = profiles.first else {
+                throw NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Profile not found."])
+            }
+            
+            return profile
+        } catch {
+            let logger = Logger(subsystem: "com.Celestoria.Celestoria", category: "AuthRepository")
+            logger.error("❌ fetchProfile failed: \(error.localizedDescription)")
+            throw error
         }
-        
-        return profile
     }
 
     func fetchProfileByUserId(userId: UUID) async throws -> UserProfile {
-        let profiles: [UserProfile] = try await supabase
-            .from("user_profiles")
-            .select()
-            .eq("user_id", value: userId.uuidString)
-            .execute()
-            .value
+        do {
+            let profiles: [UserProfile] = try await self.supabase
+                .from("user_profiles")
+                .select()
+                .eq("user_id", value: userId.uuidString)
+                .execute()
+                .value
 
-        guard let profile = profiles.first else {
-            throw NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Profile not found."])
+            guard let profile = profiles.first else {
+                throw NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Profile not found."])
+            }
+
+            return profile
+        } catch {
+            let logger = Logger(subsystem: "com.Celestoria.Celestoria", category: "AuthRepository")
+            logger.error("❌ fetchProfileByUserId failed: \(error.localizedDescription)")
+            throw error
         }
-        
-        return profile
     }
 
     func fetchAllProfiles(excludingUserId: UUID?) async throws -> [UserProfile] {

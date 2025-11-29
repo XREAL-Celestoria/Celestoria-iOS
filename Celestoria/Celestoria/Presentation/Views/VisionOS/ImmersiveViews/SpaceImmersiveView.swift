@@ -36,7 +36,7 @@ struct SpaceImmersiveView: View {
                 if let modelEntity = value.entity as? ModelEntity,
                    let starEntity = modelEntity.parent as? MemoryStarEntity {
                     let mem = starEntity.memory
-                    print("[DEBUG] Tapped Star's Memory => id: \(mem.id), title: \(mem.title), video: \(mem.videoURL ?? "nil")")
+                    os.Logger().info("Tapped Star's Memory => id: \(mem.id), title: \(mem.title)")
                     
                     AudioServicesPlaySystemSound(1104)
                     Task { @MainActor in
@@ -49,7 +49,10 @@ struct SpaceImmersiveView: View {
     }
 
     private func openMemoryDetailView(for starEntity: MemoryStarEntity) async {
-        openWindow(value: starEntity.memory)
+        MemoryWindowManager.shared.openMemoryDetailView(
+            memory: starEntity.memory,
+            openWindow: openWindow
+        )
     }
     
     private func initializeAndAddEntity(to content: RealityViewContent) {

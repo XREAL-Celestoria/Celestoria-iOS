@@ -91,12 +91,13 @@ struct BlockedUsersSettingView: View {
                 .padding(.horizontal, 55)
             
             if settingViewModel.isLoadingBlockedUsers {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                UnifiedLoadingView(title: "Loading blocked users...")
             } else if settingViewModel.blockedUsers.isEmpty {
-                Text("No blocked users")
-                    .foregroundColor(Colors.NebulaWhite)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                EmptyStateView(
+                    icon: "person.crop.circle.badge.xmark",
+                    title: "No blocked users",
+                    message: "You haven't blocked anyone yet"
+                )
             } else {
                 ScrollView {
                     VStack(spacing: 20) {

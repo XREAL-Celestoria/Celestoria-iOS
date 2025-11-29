@@ -112,14 +112,12 @@ final class SpaceCoordinator: ObservableObject {
             
             // 메모리 로드
             let userMemories = try await memoryRepository.fetchMemories(for: userId)
-            memories = userMemories
+            self.memories = userMemories
             await spaceEntity?.updateStars(with: userMemories)
             
             currentLoadedUserId = userId
-            logger.info("Loaded data for user: \(userId)")
-            
         } catch {
-            logger.error("Failed to load data: \(error.localizedDescription)")
+            logger.error("❌ loadData failed: \(error.localizedDescription)")
         }
     }
     
@@ -128,8 +126,8 @@ final class SpaceCoordinator: ObservableObject {
         isLoading = true
         defer { isLoading = false }
         
-        memories = newMemories
-        await spaceEntity?.updateStars(with: memories)
+        self.memories = newMemories
+        await spaceEntity?.updateStars(with: self.memories)
     }
     
     // MARK: - Like Animation

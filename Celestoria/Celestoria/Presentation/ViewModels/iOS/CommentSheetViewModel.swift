@@ -91,8 +91,26 @@ final class CommentSheetViewModel: ObservableObject {
             await loadComments()
             
         } catch {
-            logger.error("Failed to post comment: \(error.localizedDescription)")
-            showError(message: "댓글 작성에 실패했습니다. 다시 시도해주세요.")
+            logger.error("❌ Failed to post comment")
+            logger.error("   Error: \(error)")
+            logger.error("   Error type: \(type(of: error))")
+            logger.error("   Error description: \(error.localizedDescription)")
+            
+            // NSError인 경우 추가 정보
+            if let nsError = error as NSError? {
+                logger.error("   NSError domain: \(nsError.domain)")
+                logger.error("   NSError code: \(nsError.code)")
+                logger.error("   NSError userInfo: \(nsError.userInfo)")
+            }
+            
+            // 사용자에게 더 구체적인 에러 메시지 표시
+            let errorMsg = error.localizedDescription.contains("RLS") 
+                ? "권한 문제로 댓글을 작성할 수 없습니다."
+                : error.localizedDescription.contains("foreign key")
+                ? "메모리를 찾을 수 없습니다."
+                : "댓글 작성에 실패했습니다: \(error.localizedDescription)"
+            
+            showError(message: errorMsg)
         }
     }
     

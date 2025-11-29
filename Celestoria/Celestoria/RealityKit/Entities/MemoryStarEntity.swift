@@ -10,6 +10,7 @@ import Combine
 import RealityKit
 import RealityKitContent
 import AVFoundation
+import os
 
 // MARK: - MemoryStarEntity
 @MainActor
@@ -48,7 +49,21 @@ class MemoryStarEntity: Entity, HasModel, HasCollision {
     }
     
     required init() {
-        fatalError("init() has not been implemented")
+        // 기본 메모리로 초기화 (필수 init 요구사항 충족)
+        self.memory = Memory(
+            id: UUID(),
+            userId: UUID(),
+            category: .ENTERTAINMENT,
+            title: "",
+            note: "",
+            createdAt: Date(),
+            position: Memory.Position(x: 0, y: 0, z: 0),
+            videoURL: nil,
+            thumbnailURL: nil,
+            spatialMetadata: nil,
+            isHidden: false
+        )
+        super.init()
     }
     
     // MARK: - Animation
@@ -76,13 +91,18 @@ class MemoryStarEntity: Entity, HasModel, HasCollision {
         )
         
         // 두 애니메이션을 연결
-        let sequence = try! AnimationResource.sequence(with: [
-            .generate(with: scaleUpAnimation),
-            .generate(with: scaleDownAnimation)
-        ])
-        
-        // 시퀀스를 반복 재생
-        self.playAnimation(sequence.repeat())
+        do {
+            let sequence = try AnimationResource.sequence(with: [
+                .generate(with: scaleUpAnimation),
+                .generate(with: scaleDownAnimation)
+            ])
+            
+            // 시퀀스를 반복 재생
+            self.playAnimation(sequence.repeat())
+        } catch {
+            os.Logger().error("Failed to create animation sequence: \(error.localizedDescription)")
+            // 애니메이션 실패 시에도 엔티티는 정상 작동
+        }
     }
     
     func loadModel(for category: Category) async {
@@ -106,7 +126,7 @@ class MemoryStarEntity: Entity, HasModel, HasCollision {
             
             self.addChild(modelEntity)
         } catch {
-            print("Failed to load model '\(modelName)': \(error.localizedDescription)")
+            os.Logger().error("Failed to load model '\(modelName)': \(error.localizedDescription)")
         }
     }
 }

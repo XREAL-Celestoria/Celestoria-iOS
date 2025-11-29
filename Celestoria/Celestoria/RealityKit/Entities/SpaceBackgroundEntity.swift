@@ -8,6 +8,7 @@
 import SwiftUI
 import RealityKit
 import RealityKitContent
+import os
 
 @MainActor
 class SpaceBackgroundEntity: Entity {
@@ -53,8 +54,22 @@ class SpaceBackgroundEntity: Entity {
     }
     
     private func createStarfieldMaterial() -> UnlitMaterial {
-        guard let textureResource = try? TextureResource.load(named: textureName) else {
-            fatalError("Failed to load texture: \(textureName)")
+        // 기본 텍스처로 폴백 처리
+        let fallbackTextureName = "Starfield-1"
+        
+        guard let textureResource = try? TextureResource.load(named: self.textureName) else {
+            os.Logger().warning("⚠️ Failed to load texture: \(self.textureName), using fallback: \(fallbackTextureName)")
+            // 폴백 텍스처 시도
+            guard let fallbackResource = try? TextureResource.load(named: fallbackTextureName) else {
+                os.Logger().error("❌ Failed to load fallback texture: \(fallbackTextureName)")
+                // 최후의 수단: 단색 재질 반환
+                var material = UnlitMaterial()
+                material.color = .init(tint: .white)
+                return material
+            }
+            var material = UnlitMaterial()
+            material.color = .init(texture: .init(fallbackResource))
+            return material
         }
         
         var material = UnlitMaterial()

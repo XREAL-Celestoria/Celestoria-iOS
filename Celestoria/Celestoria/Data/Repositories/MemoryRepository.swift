@@ -18,54 +18,84 @@ class MemoryRepository {
 
     // 특정 유저의 메모리 조회 (숨김처리된 메모리 제외)
     func fetchMemories(for userId: UUID) async throws -> [Memory] {
-        try await supabase
-            .from("memories")
-            .select()
-            .eq("user_id", value: userId.uuidString)
-            .eq("is_hidden", value: false)  // 숨김처리되지 않은 메모리만 조회
-            .execute()
-            .value
+        do {
+            return try await self.supabase
+                .from("memories")
+                .select()
+                .eq("user_id", value: userId.uuidString)
+                .eq("is_hidden", value: false)  // 숨김처리되지 않은 메모리만 조회
+                .execute()
+                .value
+        } catch {
+            let logger = Logger(subsystem: "com.Celestoria.Celestoria", category: "MemoryRepository")
+            logger.error("❌ fetchMemories failed: \(error.localizedDescription)")
+            throw error
+        }
     }
     
     // 모든 메모리 조회 (숨김처리된 메모리 제외)
     func fetchAllMemories() async throws -> [Memory] {
-        try await supabase
-            .from("memories")
-            .select()
-            .eq("is_hidden", value: false)  // 숨김처리되지 않은 메모리만 조회
-            .execute()
-            .value
+        do {
+            return try await self.supabase
+                .from("memories")
+                .select()
+                .eq("is_hidden", value: false)  // 숨김처리되지 않은 메모리만 조회
+                .execute()
+                .value
+        } catch {
+            let logger = Logger(subsystem: "com.Celestoria.Celestoria", category: "MemoryRepository")
+            logger.error("❌ fetchAllMemories failed: \(error.localizedDescription)")
+            throw error
+        }
     }
     
     // 특정 메모리 조회 (숨김처리된 메모리도 조회 가능 - 관리자용 또는 신고 처리용)
     func fetchMemory(id: UUID) async throws -> Memory? {
-        let memories: [Memory] = try await supabase
-            .from("memories")
-            .select()
-            .eq("id", value: id.uuidString)
-            .execute()
-            .value
-        
-        return memories.first
+        do {
+            let memories: [Memory] = try await self.supabase
+                .from("memories")
+                .select()
+                .eq("id", value: id.uuidString)
+                .execute()
+                .value
+            
+            return memories.first
+        } catch {
+            let logger = Logger(subsystem: "com.Celestoria.Celestoria", category: "MemoryRepository")
+            logger.error("❌ fetchMemory failed: \(error.localizedDescription)")
+            throw error
+        }
     }
     
     func createMemory(_ memory: Memory) async throws {
-        try await supabase
-            .from("memories")
-            .insert(memory)
-            .execute()
+        do {
+            try await self.supabase
+                .from("memories")
+                .insert(memory)
+                .execute()
+        } catch {
+            let logger = Logger(subsystem: "com.Celestoria.Celestoria", category: "MemoryRepository")
+            logger.error("❌ createMemory failed: \(error.localizedDescription)")
+            throw error
+        }
     }
 
     func deleteMemory(_ memoryId: UUID) async throws {
-        try await supabase
-            .from("memories")
-            .delete()
-            .eq("id", value: memoryId.uuidString)
-            .execute()
+        do {
+            try await self.supabase
+                .from("memories")
+                .delete()
+                .eq("id", value: memoryId.uuidString)
+                .execute()
+        } catch {
+            let logger = Logger(subsystem: "com.Celestoria.Celestoria", category: "MemoryRepository")
+            logger.error("❌ deleteMemory failed: \(error.localizedDescription)")
+            throw error
+        }
     }
     
     func deleteStorageFile(bucketName: String, path: String) async throws {
-        try await supabase.storage
+        try await self.supabase.storage
             .from(bucketName)
             .remove(paths: [path])
     }
@@ -80,13 +110,13 @@ class MemoryRepository {
         )
         
         // 1. 신고 생성
-        try await supabase
+        try await self.supabase
             .from("reports")
             .insert(report)
             .execute()
             
         // 2. 해당 메모리의 총 신고 수 조회
-        let reports: [ContentReport] = try await supabase
+        let reports: [ContentReport] = try await self.supabase
             .from("reports")
             .select()
             .eq("memory_id", value: memoryId.uuidString)
@@ -95,7 +125,7 @@ class MemoryRepository {
             
         // 3. 신고가 3회 이상이면 메모리 숨김 처리
         if reports.count >= 3 {
-            try await supabase
+            try await self.supabase
                 .from("memories")
                 .update(["is_hidden": true])
                 .eq("id", value: memoryId.uuidString)
@@ -105,7 +135,7 @@ class MemoryRepository {
     
     // 이미 신고한 메모리인지 확인
     func hasReported(memoryId: UUID, reporterId: UUID) async throws -> Bool {
-        let reports: [ContentReport] = try await supabase
+        let reports: [ContentReport] = try await self.supabase
             .from("reports")
             .select()
             .eq("memory_id", value: memoryId.uuidString)
@@ -127,110 +157,144 @@ class MemoryRepository {
             createdAt: Date()
         )
         
-        Logger().info("Creating like - userId: \(userId), memoryId: \(memoryId)")
-        
         do {
-            try await supabase
+            try await self.supabase
                 .from("likes")
                 .insert(like)
                 .execute()
-            Logger().info("Like created successfully")
         } catch {
-            Logger().error("Failed to create like: \(error)")
+            let logger = Logger(subsystem: "com.Celestoria.Celestoria", category: "MemoryRepository")
+            logger.error("❌ createLike failed: \(error.localizedDescription)")
             throw error
         }
     }
     
     // 좋아요 삭제 (좋아요 취소)
     func deleteLike(memoryId: UUID, userId: UUID) async throws {
-        try await supabase
-            .from("likes")
-            .delete()
-            .eq("memory_id", value: memoryId.uuidString)
-            .eq("user_id", value: userId.uuidString)
-            .execute()
+        do {
+            try await self.supabase
+                .from("likes")
+                .delete()
+                .eq("memory_id", value: memoryId.uuidString)
+                .eq("user_id", value: userId.uuidString)
+                .execute()
+        } catch {
+            let logger = Logger(subsystem: "com.Celestoria.Celestoria", category: "MemoryRepository")
+            logger.error("❌ deleteLike failed: \(error.localizedDescription)")
+            throw error
+        }
     }
     
     // 특정 메모리의 좋아요 수 조회
     func getLikeCount(for memoryId: UUID) async throws -> Int {
-        let likes: [Like] = try await supabase
-            .from("likes")
-            .select()
-            .eq("memory_id", value: memoryId.uuidString)
-            .execute()
-            .value
+        do {
+            let likes: [Like] = try await self.supabase
+                .from("likes")
+                .select()
+                .eq("memory_id", value: memoryId.uuidString)
+                .execute()
+                .value
             
-        return likes.count
+            return likes.count
+        } catch {
+            let logger = Logger(subsystem: "com.Celestoria.Celestoria", category: "MemoryRepository")
+            logger.error("❌ getLikeCount failed: \(error.localizedDescription)")
+            throw error
+        }
     }
     
     // 특정 메모리의 좋아요 리스트 조회
     func fetchLikes(for memoryId: UUID) async throws -> [Like] {
-        try await supabase
-            .from("likes")
-            .select()
-            .eq("memory_id", value: memoryId.uuidString)
-            .order("created_at", ascending: false)
-            .execute()
-            .value
+        do {
+            return try await self.supabase
+                .from("likes")
+                .select()
+                .eq("memory_id", value: memoryId.uuidString)
+                .order("created_at", ascending: false)
+                .execute()
+                .value
+        } catch {
+            let logger = Logger(subsystem: "com.Celestoria.Celestoria", category: "MemoryRepository")
+            logger.error("❌ fetchLikes failed: \(error.localizedDescription)")
+            throw error
+        }
     }
     
     // 모든 유저의 총 좋아요 수를 한 번에 가져오기 (효율적)
     func getAllUsersLikeCounts() async throws -> [UUID: Int] {
-        // SQL 쿼리로 유저별 총 좋아요 수 집계
-        let result: [UserLikeCount] = try await supabase
-            .rpc("get_user_like_counts")
-            .execute()
-            .value
-        
-        // UUID: Int 형태로 변환
-        var likeCountMap: [UUID: Int] = [:]
-        for item in result {
-            if let userId = UUID(uuidString: item.userId) {
-                likeCountMap[userId] = item.totalLikes
+        do {
+            // SQL 쿼리로 유저별 총 좋아요 수 집계
+            let result: [UserLikeCount] = try await self.supabase
+                .rpc("get_user_like_counts")
+                .execute()
+                .value
+            
+            // UUID: Int 형태로 변환
+            var likeCountMap: [UUID: Int] = [:]
+            for item in result {
+                if let userId = UUID(uuidString: item.userId) {
+                    likeCountMap[userId] = item.totalLikes
+                }
             }
+            
+            return likeCountMap
+        } catch {
+            let logger = Logger(subsystem: "com.Celestoria.Celestoria", category: "MemoryRepository")
+            logger.error("❌ getAllUsersLikeCounts failed: \(error.localizedDescription)")
+            throw error
         }
-        
-        return likeCountMap
     }
     
     // RPC 함수가 없을 경우를 대비한 대체 방법
     func getAllUsersLikeCountsFallback() async throws -> [UUID: Int] {
-        // 모든 좋아요 데이터를 가져와서 Swift에서 집계
-        let allLikes: [Like] = try await supabase
-            .from("likes")
-            .select()
-            .execute()
-            .value
-        
-        // 메모리 ID로 그룹화하여 유저별 좋아요 수 계산
-        var memoryLikeCounts: [UUID: Int] = [:]
-        for like in allLikes {
-            memoryLikeCounts[like.memoryId, default: 0] += 1
+        do {
+            // 모든 좋아요 데이터를 가져와서 Swift에서 집계
+            let allLikes: [Like] = try await self.supabase
+                .from("likes")
+                .select()
+                .execute()
+                .value
+            
+            // 메모리 ID로 그룹화하여 유저별 좋아요 수 계산
+            var memoryLikeCounts: [UUID: Int] = [:]
+            for like in allLikes {
+                memoryLikeCounts[like.memoryId, default: 0] += 1
+            }
+            
+            // 메모리별 좋아요 수를 유저별로 집계
+            let allMemories = try await fetchAllMemories()
+            var userLikeCounts: [UUID: Int] = [:]
+            
+            for memory in allMemories {
+                let likeCount = memoryLikeCounts[memory.id] ?? 0
+                userLikeCounts[memory.userId, default: 0] += likeCount
+            }
+            
+            return userLikeCounts
+        } catch {
+            let logger = Logger(subsystem: "com.Celestoria.Celestoria", category: "MemoryRepository")
+            logger.error("❌ getAllUsersLikeCountsFallback failed: \(error.localizedDescription)")
+            throw error
         }
-        
-        // 메모리별 좋아요 수를 유저별로 집계
-        let allMemories = try await fetchAllMemories()
-        var userLikeCounts: [UUID: Int] = [:]
-        
-        for memory in allMemories {
-            let likeCount = memoryLikeCounts[memory.id] ?? 0
-            userLikeCounts[memory.userId, default: 0] += likeCount
-        }
-        
-        return userLikeCounts
     }
     
     // 사용자가 특정 메모리에 좋아요를 눌렀는지 확인
     func hasLiked(memoryId: UUID, userId: UUID) async throws -> Bool {
-        let likes: [Like] = try await supabase
-            .from("likes")
-            .select()
-            .eq("memory_id", value: memoryId.uuidString)
-            .eq("user_id", value: userId.uuidString)
-            .execute()
-            .value
-            
-        return !likes.isEmpty
+        do {
+            let likes: [Like] = try await self.supabase
+                .from("likes")
+                .select()
+                .eq("memory_id", value: memoryId.uuidString)
+                .eq("user_id", value: userId.uuidString)
+                .execute()
+                .value
+                
+            return !likes.isEmpty
+        } catch {
+            let logger = Logger(subsystem: "com.Celestoria.Celestoria", category: "MemoryRepository")
+            logger.error("❌ hasLiked failed: \(error.localizedDescription)")
+            throw error
+        }
     }
     
     // MARK: - 댓글 관련 메서드
@@ -239,49 +303,74 @@ class MemoryRepository {
     func createComment(memoryId: UUID, userId: UUID, content: String) async throws {
         let comment = Comment(userId: userId, memoryId: memoryId, content: content)
         
-        Logger().info("Creating comment - userId: \(userId), memoryId: \(memoryId)")
+        // 인증 상태 확인 및 세션 갱신
+        var currentUser = self.supabase.auth.currentUser
+        if currentUser == nil {
+            do {
+                let session = try await self.supabase.auth.refreshSession()
+                currentUser = session.user
+            } catch {
+                // 세션 갱신 실패는 무시하고 계속 진행
+            }
+        }
         
         do {
-            try await supabase
+            try await self.supabase
                 .from("comments")
                 .insert(comment)
                 .execute()
-            Logger().info("Comment created successfully")
         } catch {
-            Logger().error("Failed to create comment: \(error)")
+            let logger = Logger(subsystem: "com.Celestoria.Celestoria", category: "MemoryRepository")
+            logger.error("❌ createComment failed: \(error.localizedDescription)")
             throw error
         }
     }
     
     // 댓글 수정
     func updateComment(commentId: UUID, newContent: String) async throws {
-        try await supabase
-            .from("comments")
-            .update(["content": newContent, "updated_at": Date().ISO8601Format()])
-            .eq("id", value: commentId.uuidString)
-            .execute()
+        do {
+            try await self.supabase
+                .from("comments")
+                .update(["content": newContent, "updated_at": Date().ISO8601Format()])
+                .eq("id", value: commentId.uuidString)
+                .execute()
+        } catch {
+            let logger = Logger(subsystem: "com.Celestoria.Celestoria", category: "MemoryRepository")
+            logger.error("❌ updateComment failed: \(error.localizedDescription)")
+            throw error
+        }
     }
     
     // 댓글 삭제
     func deleteComment(commentId: UUID) async throws {
-        try await supabase
-            .from("comments")
-            .delete()
-            .eq("id", value: commentId.uuidString)
-            .execute()
+        do {
+            try await self.supabase
+                .from("comments")
+                .delete()
+                .eq("id", value: commentId.uuidString)
+                .execute()
+        } catch {
+            let logger = Logger(subsystem: "com.Celestoria.Celestoria", category: "MemoryRepository")
+            logger.error("❌ deleteComment failed: \(error.localizedDescription)")
+            throw error
+        }
     }
     
     // 특정 메모리의 댓글 조회
     func fetchComments(for memoryId: UUID) async throws -> [Comment] {
-        let comments: [Comment] = try await supabase
-            .from("comments")
-            .select()
-            .eq("memory_id", value: memoryId.uuidString)
-            .order("created_at", ascending: false)
-            .execute()
-            .value
-            
-        return comments
+        do {
+            return try await self.supabase
+                .from("comments")
+                .select()
+                .eq("memory_id", value: memoryId.uuidString)
+                .order("created_at", ascending: false)
+                .execute()
+                .value
+        } catch {
+            let logger = Logger(subsystem: "com.Celestoria.Celestoria", category: "MemoryRepository")
+            logger.error("❌ fetchComments failed: \(error.localizedDescription)")
+            throw error
+        }
     }
     
     // 특정 댓글 조회
@@ -319,7 +408,7 @@ class MemoryRepository {
         guard let path = path else { return nil }
         
         // 새로운 서명된 URL 생성
-        let signedURL = try await supabase.storage
+        let signedURL = try await self.supabase.storage
             .from("thumbnails")
             .createSignedURL(
                 path: path,
@@ -338,7 +427,7 @@ class MemoryRepository {
         guard let path = path else { return nil }
         
         // 새로운 서명된 URL 생성
-        let signedURL = try await supabase.storage
+        let signedURL = try await self.supabase.storage
             .from("spatial_videos")
             .createSignedURL(
                 path: path,

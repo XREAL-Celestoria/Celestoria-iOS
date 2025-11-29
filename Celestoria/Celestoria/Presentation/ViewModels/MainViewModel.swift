@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import os
 
 @MainActor
 class MainViewModel: ObservableObject {
+    private let logger = Logger(subsystem: "com.Celestoria.Celestoria", category: "MainViewModel")
     @Published var memories: [Memory] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
@@ -33,9 +35,10 @@ class MainViewModel: ObservableObject {
         defer { isLoading = false }
         
         do {
-            memories = try await fetchMemoriesUseCase.executeAll()
-            await spaceCoordinator.setInitialMemories(memories)
+            self.memories = try await fetchMemoriesUseCase.executeAll()
+            await spaceCoordinator.setInitialMemories(self.memories)
         } catch {
+            logger.error("❌ fetchAllMemories failed: \(error.localizedDescription)")
             errorMessage = error.localizedDescription
         }
     }
@@ -47,17 +50,11 @@ class MainViewModel: ObservableObject {
         
         do {
             let fetched = try await fetchMemoriesUseCase.execute(for: userId)
-            // 디버그용 로그
-            print("[DEBUG] Fetched \(fetched.count) memories for user \(userId).")
-            for mem in fetched {
-                print("   Memory ID: \(mem.id), title: \(mem.title), video: \(mem.videoURL ?? "nil")")
-            }
-
-            memories = fetched
-            await spaceCoordinator.setInitialMemories(memories)
+            self.memories = fetched
+            await spaceCoordinator.setInitialMemories(self.memories)
         } catch {
+            logger.error("❌ fetchMemories failed: \(error.localizedDescription)")
             errorMessage = error.localizedDescription
-            print("[DEBUG] Error fetching memories: \(error.localizedDescription)")
         }
     }
     

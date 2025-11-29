@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+#if !os(visionOS)
 @main
 struct iOSCelestoriaApp: App {
     @StateObject private var diContainer = DIContainer()
@@ -25,3 +26,4 @@ struct iOSCelestoriaApp: App {
         }
     }
 }
+#endif

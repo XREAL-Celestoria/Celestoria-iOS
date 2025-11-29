@@ -48,7 +48,10 @@ struct AddMemoryDoneView: View {
             Button(action: {
                 dismissWindow(id: "Add-Memory")
                 if let memory = viewModel.getLastUploadedMemory() {
-                    openWindow(value: memory)
+                    MemoryWindowManager.shared.openMemoryDetailView(
+                        memory: memory,
+                        openWindow: openWindow
+                    )
                 }
             }) {
                 Text("View Memory Star")

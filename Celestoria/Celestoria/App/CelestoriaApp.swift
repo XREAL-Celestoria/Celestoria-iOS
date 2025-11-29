@@ -9,6 +9,7 @@
 import SwiftUI
 import os
 
+#if os(visionOS)
 @main
 struct CelestoriaApp: App {
     @StateObject private var diContainer = DIContainer()
@@ -29,6 +30,7 @@ struct CelestoriaApp: App {
                         .environmentObject(diContainer.settingViewModel)
                         .environmentObject(diContainer.galaxyViewModel)
                         .environmentObject(diContainer.exploreViewModel)
+                        .environmentObject(diContainer)
                 } else {
                     ZStack {
                         Color.black.ignoresSafeArea()
@@ -133,3 +135,4 @@ struct CelestoriaApp: App {
         .windowResizability(.contentSize)
     }
 }
+#endif

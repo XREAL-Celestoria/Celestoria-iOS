@@ -27,7 +27,9 @@ class SpaceEntity: Entity {
     }
     
     required init() {
-        fatalError("init() has not been implemented")
+        super.init()
+        // 기본 배경으로 초기화
+        setupSpace(with: "Starfield-1")
     }
     
     // MARK: - Setup
